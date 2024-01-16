@@ -1,0 +1,22 @@
+<div class="title-container">
+    <h2>{{ lobbyData.game.name }}</h2>
+</div>
+
+<div id="nPlayers">Number of players: {{ lobbyData.players.length }}</div>
+
+<div>Lobby code: {{ lobbyData.id }}</div>
+
+<div id="players-container">
+    <p>Players:</p>
+    <div class="player-container" *ngFor="let player of lobbyData.players">
+        {{ player.name }}
+    </div>
+</div>
+
+<a routerLink=""> Back </a>
+
+<button (click)="startGame()">Start game</button>
+
+<div *ngIf="lobbyData.started">
+    <app-game-count-down [gameName]="lobbyData.game.name"></app-game-count-down>
+</div>
