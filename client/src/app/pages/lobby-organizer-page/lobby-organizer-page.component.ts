@@ -1,20 +1,22 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { map, filter } from 'rxjs/operators';
 import { LobbyData } from '@common/lobby-data';
 import { ActivatedRoute } from '@angular/router';
+import { ServerData } from '@common/server-data';
 
 @Component({
     selector: 'app-lobby-organizer-page',
     templateUrl: './lobby-organizer-page.component.html',
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
-export class LobbyOrganizerPageComponent {
-    private readonly webSocket: WebSocketSubject<any>;
-    private readonly socketUrl: string = 'ws://localhost:3000';
+export class LobbyOrganizerPageComponent implements OnInit {
+    @Input() lobbyId: number;
+
     lobbyData: LobbyData;
 
-    @Input() lobbyId: number;
+    private readonly webSocket: WebSocketSubject<ServerData>;
+    private readonly socketUrl: string = 'ws://localhost:3000';
 
     constructor(private readonly route: ActivatedRoute) {
         this.webSocket = new WebSocketSubject(this.socketUrl);
@@ -28,7 +30,7 @@ export class LobbyOrganizerPageComponent {
     subscribeToLobby = () => {
         const data = this.webSocket.pipe(
             filter((message) => message.type === 'lobbyData'),
-            map((message) => message.data),
+            map((message) => JSON.parse(message.data) as LobbyData),
         );
 
         data.subscribe((lobbyData) => {
