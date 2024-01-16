@@ -13,10 +13,12 @@
     </div>
 </div>
 
+<footer>
 <a routerLink=""> Back </a>
 
-<button (click)="startGame()">Start game</button>
+    <button (click)="startGame()">Start game</button>
+</footer>
 
-<div *ngIf="lobbyData.started">
-    <app-game-count-down [gameName]="lobbyData.game.name"></app-game-count-down>
-</div>
+    <div *ngIf="lobbyData.started">
+        <app-game-count-down [gameName]="lobbyData.game.name"></app-game-count-down>
+    </div>
