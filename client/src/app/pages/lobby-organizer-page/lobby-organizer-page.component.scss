@@ -16,6 +16,16 @@ h2 {
     align-items: center;
 }
 
+footer {
+    display: flex;
+    height: 50px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    flex-direction: row;
+}
+
 app-game-count-down {
     display: flex;
     position: absolute;
@@ -24,6 +34,8 @@ app-game-count-down {
     left: 10%;
     width: 80%;
     height: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
     justify-content: center;
     align-items: center;
     flex-direction: column;
