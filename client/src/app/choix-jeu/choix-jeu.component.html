@@ -1,0 +1,19 @@
+<p>choix-jeu works!</p>
+
+<div class="container">
+  <h1>Choisissez un jeu</h1>
+  <div class="liste-jeux">
+    <button *ngFor="let jeu of jeux" (click)="choisirJeu(jeu)" class="bouton-jeu">
+      {{ jeu }}
+    </button>
+  </div>
+  <p *ngIf="jeuSelectionne">Jeu sélectionné: {{ jeuSelectionne }}</p>
+  <div class="button-navigation">
+    <button class="back">
+      Back
+    </button>
+    <button class="next">
+      Next
+    </button>
+  </div>
+</div>
