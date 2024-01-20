@@ -1,12 +1,2 @@
-<h2>{{ questionData.question }}</h2>
-
-<p>Points: {{ questionData.value }}</p>
-
-<div id="question-container" (keyup)="handleKeyUp($event)">
-    <div *ngFor="let answer of questionData.answers; let i = index">
-        <label>
-            <input type="checkbox" [(ngModel)]="isChecked[i]" />
-            {{ i + 1 }} ) {{ answer }}
-        </label>
-    </div>
-</div>
+{{ time }}
+<app-question [questionId]="currentQuestionIndex"></app-question>

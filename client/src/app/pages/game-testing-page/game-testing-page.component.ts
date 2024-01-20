@@ -1,6 +1,5 @@
-import { Component, Input, OnInit, HostListener } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { GameData } from '@common/game-data';
-import { QuestionData } from '@common/question-data';
 import { TimeService } from '@app/services/time.service';
 
 @Component({
@@ -11,48 +10,41 @@ import { TimeService } from '@app/services/time.service';
 export class GameTestingPageComponent implements OnInit {
     @Input() gameId: number;
 
-
-    gameData: GameData;
-    questionData: QuestionData;
     currentQuestionIndex: number = 0;
-    isChecked: boolean[];
 
-    @HostListener('window:keyup', ['$event'])
-    handleKeyUp(event: KeyboardEvent): void {
-        const key = parseInt(event.key, 10) - 1;
+    private gameData: GameData;
 
-        if (key >= 0 && key < this.questionData.answers.length) {
-            this.isChecked[key] = !this.isChecked[key];
-        }
+    constructor(private timeService: TimeService) {}
+
+    get time(): number {
+        return this.timeService.time;
     }
-
 
     ngOnInit(): void {
         this.getGameData();
-        this.getQuestionData(this.currentQuestionIndex);
-        this.isChecked = new Array(this.questionData.answers.length);
+        this.loadNextQuestion();
     }
 
     getGameData(): void {
         const testGame: GameData = {
             id: 0,
             name: 'Math',
-            questionIds: [],
+            questionIds: [0, 1, 2, 3],
+            timePerQuestion: 10,
         };
 
         this.gameData = testGame;
     }
 
-    getQuestionData(id: number): void {
-        const testQuestion: QuestionData = {
-            id: 0,
-            value: 1,
-            question: '1+1=?',
-            answers: ['1', '2', '3', '4'],
-            correctAnswers: ['2'],
-            isMCQ: true,
-        };
+    loadNextQuestion(): void {
+        if (this.currentQuestionIndex >= this.gameData.questionIds.length) {
+            // TODO : Afficher le score
+            return;
+        }
 
-        this.questionData = testQuestion;
+        this.timeService.startTimer(this.gameData.timePerQuestion, () => {
+        this.currentQuestionIndex++;
+            this.loadNextQuestion();
+        });
     }
 }
