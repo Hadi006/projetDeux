@@ -7,6 +7,7 @@ export class TimeService {
     // TODO : Permettre plus qu'une minuterie à la fois
     private interval: number | undefined;
     private readonly tick = 1000;
+    private onTimerEndCallback: (() => void) | undefined;
 
     private counter = 0;
     get time() {
@@ -16,14 +17,16 @@ export class TimeService {
         this.counter = newTime;
     }
 
-    startTimer(startValue: number) {
+    startTimer(startValue: number, onTimerEnd?: () => void) {
         if (this.interval) return;
         this.time = startValue;
+        this.onTimerEndCallback = onTimerEnd;
         this.interval = window.setInterval(() => {
             if (this.time > 0) {
                 this.time--;
             } else {
                 this.stopTimer();
+                this.onTimerEndCallback?.();
             }
         }, this.tick);
     }
