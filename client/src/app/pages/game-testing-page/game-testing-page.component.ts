@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
+import { TimeService } from '@app/services/time.service';
 
 @Component({
     selector: 'app-game-testing-page',
@@ -10,13 +11,26 @@ import { QuestionData } from '@common/question-data';
 export class GameTestingPageComponent implements OnInit {
     @Input() gameId: number;
 
+
     gameData: GameData;
     questionData: QuestionData;
     currentQuestionIndex: number = 0;
+    isChecked: boolean[];
+
+    @HostListener('window:keyup', ['$event'])
+    handleKeyUp(event: KeyboardEvent): void {
+        const key = parseInt(event.key, 10) - 1;
+
+        if (key >= 0 && key < this.questionData.answers.length) {
+            this.isChecked[key] = !this.isChecked[key];
+        }
+    }
+
 
     ngOnInit(): void {
         this.getGameData();
         this.getQuestionData(this.currentQuestionIndex);
+        this.isChecked = new Array(this.questionData.answers.length);
     }
 
     getGameData(): void {
