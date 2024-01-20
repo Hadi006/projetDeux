@@ -1,6 +1,6 @@
 export interface QuestionData {
     id: number;
-    value: number;
+    points: number;
     question: string;
     answers: string[];
     correctAnswers: string[];
