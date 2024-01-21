@@ -47,19 +47,11 @@ export class QuestionComponent implements OnChanges {
             },
             {
                 id: 2,
-                points: 3,
-                question: 'Quel est le résultat de 3 + 3 ?',
-                answers: ['1', '2', '3', '6'],
-                correctAnswers: ['6'],
-                isMCQ: true,
-            },
-            {
-                id: 3,
                 points: 4,
-                question: 'Quel est le résultat de 4 + 4 ?',
-                answers: ['1', '2', '3', '8'],
-                correctAnswers: ['8'],
-                isMCQ: true,
+                question: 'Question réponse libre',
+                answers: [],
+                correctAnswers: [],
+                isMCQ: false,
             },
         ];
 

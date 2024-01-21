@@ -2,8 +2,7 @@
 
 <p>Points: {{ questionData.points }}</p>
 
-{{questionId}}
-<div id="question-container" (keyup)="handleKeyUp($event)">
+<div *ngIf="questionData.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
     <div *ngFor="let answer of questionData.answers; let i = index">
         <label>
             <input type="checkbox" [(ngModel)]="isChecked[i]" />
@@ -11,3 +10,9 @@
         </label>
     </div>
 </div>
+
+<div *ngIf="!questionData.isMCQ" id="question-container">
+    <textarea placeholder="Type your answer here..."></textarea>
+</div>
+
+<a href="#"> Leave </a>
