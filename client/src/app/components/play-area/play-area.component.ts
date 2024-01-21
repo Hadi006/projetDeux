@@ -22,10 +22,11 @@ export enum MouseButton {
 export class PlayAreaComponent {
     buttonPressed = '';
     private readonly timer = 5;
+    private timerId: number;
     constructor(private readonly timeService: TimeService) {}
 
     get time(): number {
-        return this.timeService.time;
+        return this.timeService.getTime(this.timerId);
     }
 
     @HostListener('keydown', ['$event'])
@@ -36,7 +37,7 @@ export class PlayAreaComponent {
     // TODO : déplacer ceci dans un service de gestion de la souris!
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
-            this.timeService.startTimer(this.timer);
+            this.timerId = this.timeService.startTimer(this.timer);
         }
     }
 }

@@ -12,12 +12,13 @@ export class GameTestingPageComponent implements OnInit {
 
     currentQuestionIndex: number = 0;
 
+    private timerId: number;
     private gameData: GameData;
 
     constructor(private timeService: TimeService) {}
 
     get time(): number {
-        return this.timeService.time;
+        return this.timeService.getTime(this.timerId);
     }
 
     ngOnInit(): void {
@@ -42,7 +43,8 @@ export class GameTestingPageComponent implements OnInit {
             return;
         }
 
-        this.timeService.startTimer(this.gameData.timePerQuestion, () => {
+        this.timerId = this.timeService.startTimer(this.gameData.timePerQuestion, () => {
+            this.timeService.stopTimer(this.timerId);
             this.currentQuestionIndex++;
             this.loadNextQuestion();
         });
