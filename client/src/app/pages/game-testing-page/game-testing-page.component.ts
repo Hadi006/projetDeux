@@ -43,7 +43,7 @@ export class GameTestingPageComponent implements OnInit {
         }
 
         this.timeService.startTimer(this.gameData.timePerQuestion, () => {
-        this.currentQuestionIndex++;
+            this.currentQuestionIndex++;
             this.loadNextQuestion();
         });
     }
