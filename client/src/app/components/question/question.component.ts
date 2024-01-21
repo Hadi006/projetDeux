@@ -14,6 +14,7 @@ export class QuestionComponent implements OnChanges {
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
+        event.stopPropagation();
         const key = parseInt(event.key, 10) - 1;
 
         if (key >= 0 && key < this.questionData.answers.length) {
