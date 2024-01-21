@@ -6,34 +6,43 @@ import { Timer } from '@app/interfaces/timer';
 })
 export class TimeService {
     private readonly tick = 1000;
-    private timers: Map<number, Timer> = new Map();
+    private timers = new Map<number, Timer>();
     private nextId = 0;
 
-    startTimer(startValue: number): number {
-        const timer: Timer = {
-            counter: startValue,
-            interval: window.setInterval(() => {
+    startTimer(startValue: number, onTimerEnd?: () => void): number {
+        const timerId = this.nextId++;
+        const interval = window.setInterval(() => {
+            const timer = this.timers.get(timerId);
+            if (timer) {
                 if (timer.counter > 0) {
                     timer.counter--;
                 } else {
                     this.stopTimer(timerId);
+                    timer.onTimerEndCallback?.();
                 }
-            }, this.tick),
+            }
+        }, this.tick);
+
+        const newTimer: Timer = {
+            interval,
+            counter: startValue,
+            onTimerEndCallback: onTimerEnd,
         };
-        const timerId = this.nextId++;
-        this.timers.set(timerId, timer);
+
+        this.timers.set(timerId, newTimer);
         return timerId;
     }
 
-    stopTimer(timerId: number) {
+    stopTimer(timerId: number): void {
         const timer = this.timers.get(timerId);
-        if (timer && timer.interval) {
+        if (timer) {
             clearInterval(timer.interval);
             this.timers.delete(timerId);
         }
     }
 
-    getTime(timerId: number): number | undefined {
-        return this.timers.get(timerId)?.counter;
+    getTime(timerId: number): number {
+        const timer = this.timers.get(timerId);
+        return timer ? timer.counter : 0;
     }
 }
