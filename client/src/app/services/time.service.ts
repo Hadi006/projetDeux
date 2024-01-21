@@ -1,38 +1,48 @@
 import { Injectable } from '@angular/core';
+import { Timer } from '@app/interfaces/timer';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimeService {
-    // TODO : Permettre plus qu'une minuterie à la fois
-    private interval: number | undefined;
     private readonly tick = 1000;
-    private onTimerEndCallback: (() => void) | undefined;
+    private timers = new Map<number, Timer>();
+    private nextId = 0;
 
-    private counter = 0;
-    get time() {
-        return this.counter;
-    }
-    private set time(newTime: number) {
-        this.counter = newTime;
-    }
-
-    startTimer(startValue: number, onTimerEnd?: () => void) {
-        if (this.interval) return;
-        this.time = startValue;
-        this.onTimerEndCallback = onTimerEnd;
-        this.interval = window.setInterval(() => {
-            if (this.time > 0) {
-                this.time--;
-            } else {
-                this.stopTimer();
-                this.onTimerEndCallback?.();
+    startTimer(startValue: number, onTimerEnd?: () => void): number {
+        const timerId = this.nextId++;
+        const interval = window.setInterval(() => {
+            const timer = this.timers.get(timerId);
+            if (timer) {
+                if (timer.counter > 0) {
+                    timer.counter--;
+                } else {
+                    this.stopTimer(timerId);
+                    timer.onTimerEndCallback?.();
+                }
             }
         }, this.tick);
+
+        const newTimer: Timer = {
+            interval,
+            counter: startValue,
+            onTimerEndCallback: onTimerEnd,
+        };
+
+        this.timers.set(timerId, newTimer);
+        return timerId;
     }
 
-    stopTimer() {
-        clearInterval(this.interval);
-        this.interval = undefined;
+    stopTimer(timerId: number): void {
+        const timer = this.timers.get(timerId);
+        if (timer) {
+            clearInterval(timer.interval);
+            this.timers.delete(timerId);
+        }
+    }
+
+    getTime(timerId: number): number {
+        const timer = this.timers.get(timerId);
+        return timer ? timer.counter : 0;
     }
 }
