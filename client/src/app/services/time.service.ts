@@ -1,35 +1,39 @@
 import { Injectable } from '@angular/core';
+import { Timer } from '@app/interfaces/timer';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimeService {
-    // TODO : Permettre plus qu'une minuterie à la fois
-    private interval: number | undefined;
     private readonly tick = 1000;
+    private timers: Map<number, Timer> = new Map();
+    private nextId = 0;
 
-    private counter = 0;
-    get time() {
-        return this.counter;
-    }
-    private set time(newTime: number) {
-        this.counter = newTime;
-    }
-
-    startTimer(startValue: number) {
-        if (this.interval) return;
-        this.time = startValue;
-        this.interval = window.setInterval(() => {
-            if (this.time > 0) {
-                this.time--;
-            } else {
-                this.stopTimer();
-            }
-        }, this.tick);
+    startTimer(startValue: number): number {
+        const timer: Timer = {
+            counter: startValue,
+            interval: window.setInterval(() => {
+                if (timer.counter > 0) {
+                    timer.counter--;
+                } else {
+                    this.stopTimer(timerId);
+                }
+            }, this.tick),
+        };
+        const timerId = this.nextId++;
+        this.timers.set(timerId, timer);
+        return timerId;
     }
 
-    stopTimer() {
-        clearInterval(this.interval);
-        this.interval = undefined;
+    stopTimer(timerId: number) {
+        const timer = this.timers.get(timerId);
+        if (timer && timer.interval) {
+            clearInterval(timer.interval);
+            this.timers.delete(timerId);
+        }
+    }
+
+    getTime(timerId: number): number | undefined {
+        return this.timers.get(timerId)?.counter;
     }
 }
