@@ -1,6 +1,8 @@
 import { Component, Input, HostListener } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 
+const MAX_GRADE = 100;
+
 @Component({
     selector: 'app-question',
     templateUrl: './question.component.html',
@@ -8,18 +10,20 @@ import { QuestionData } from '@common/question-data';
 })
 export class QuestionComponent {
     @Input() answerConfirmed: boolean;
+    @Input() showingAnswer: boolean;
     @Input() questionIdValue: number;
 
     questionData: QuestionData;
     isChecked: boolean[];
 
     @Input() set questionId(value: number) {
-        if (value === undefined) {
+        this.questionIdValue = value;
+        this.getQuestionData();
+
+        if (!this.questionData) {
             return;
         }
 
-        this.questionIdValue = value;
-        this.getQuestionData();
         this.isChecked = new Array(this.questionData.answers.length);
     }
 
@@ -36,7 +40,30 @@ export class QuestionComponent {
         }
     }
 
-    getQuestionData(): void {
+    calculateGrade(): number {
+        if (!this.questionData.isMCQ) {
+            return MAX_GRADE;
+        }
+
+        const grade = this.questionData.answers.reduce((acc, answer, index) => {
+            if (!this.isChecked[index]) {
+                return acc;
+            }
+
+            const correctAnswersLength = this.questionData.correctAnswers.length;
+            const pointsPerAnswer = MAX_GRADE / correctAnswersLength;
+
+            if (this.questionData.correctAnswers.includes(answer)) {
+                return acc + pointsPerAnswer;
+            } else {
+                return acc - pointsPerAnswer;
+            }
+        }, 0);
+
+        return grade < 0 ? 0 : grade;
+    }
+
+    private getQuestionData(): void {
         const testQuestions: QuestionData[] = [
             {
                 id: 0,
@@ -48,19 +75,19 @@ export class QuestionComponent {
             },
             {
                 id: 1,
-                points: 2,
-                question: 'Quel est le résultat de 2 + 2 ?',
-                answers: ['1', '2', '3', '4'],
-                correctAnswers: ['4'],
-                isMCQ: true,
-            },
-            {
-                id: 2,
                 points: 4,
                 question: 'Question réponse libre',
                 answers: [],
                 correctAnswers: [],
                 isMCQ: false,
+            },
+            {
+                id: 2,
+                points: 2,
+                question: 'Quel est le résultat de 2 + 2 ?',
+                answers: ['1', '2', '3', '4'],
+                correctAnswers: ['4'],
+                isMCQ: true,
             },
         ];
 

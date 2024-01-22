@@ -2,6 +2,8 @@ import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { TimeService } from '@app/services/time.service';
 
+const SHOW_ANSWER_DELAY = 3;
+
 @Component({
     selector: 'app-game-testing-page',
     templateUrl: './game-testing-page.component.html',
@@ -11,6 +13,7 @@ export class GameTestingPageComponent implements OnInit {
     @Input() gameId: number;
 
     answerConfirmed: boolean = false;
+    showingAnswer: boolean = false;
     currentQuestionIndex: number = 0;
 
     private timerId: number;
@@ -32,7 +35,7 @@ export class GameTestingPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.getGameData();
-        this.loadNextQuestion();
+        this.loadQuestion();
     }
 
     getGameData(): void {
@@ -46,17 +49,29 @@ export class GameTestingPageComponent implements OnInit {
         this.gameData = testGame;
     }
 
-    loadNextQuestion(): void {
+    loadQuestion(): void {
+        this.timeService.stopTimer(this.timerId);
         if (this.currentQuestionIndex >= this.gameData.questionIds.length) {
             // TODO : Afficher le score
             return;
         }
 
+        this.answerConfirmed = false;
+        this.showingAnswer = false;
+
         this.timerId = this.timeService.startTimer(this.gameData.timePerQuestion, () => {
-            this.timeService.stopTimer(this.timerId);
-            this.answerConfirmed = false;
+            this.showAnswer();
+        });
+    }
+
+    showAnswer(): void {
+        this.timeService.stopTimer(this.timerId);
+        this.answerConfirmed = true;
+        this.showingAnswer = true;
+
+        this.timerId = this.timeService.startTimer(SHOW_ANSWER_DELAY, () => {
             this.currentQuestionIndex++;
-            this.loadNextQuestion();
+            this.loadQuestion();
         });
     }
 
