@@ -1,0 +1,29 @@
+<p>questions works!</p>
+
+<div class="questions-container">
+    <h1>Confirmer les questions</h1>
+    <div class="game-header">
+      <h2>{{ jeu }}</h2>
+      <div class="timer-setting">
+        <label for="timePerQuestion">Temps par question</label>
+        <select id="timePerQuestion" name="timePerQuestion">
+          <option value="30">30s</option>
+          <option value="60">1min</option>
+          <option value="120">2min</option>
+          <!-- Ajoutez d'autres options ici -->
+        </select>
+      </div>
+    </div>
+  
+    <ul class="questions-list">
+      <!-- Supposons que vous ayez un tableau `questions` dans votre composant TypeScript -->
+      <li *ngFor="let question of questions">
+        <span class="question-text">{{ question }}</span>
+      </li>
+    </ul>
+  
+    <div class="navigation-buttons">
+      <button class="back" (click)="goBack()">Back</button>
+      <button class="confirm" (click)="confirmQuestions()">Confirm</button>
+    </div>
+  </div>

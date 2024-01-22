@@ -1,5 +1,4 @@
 <p>choix-jeu works!</p>
-
 <div class="container">
   <h1>Choisissez un jeu</h1>
   <div class="liste-jeux">
@@ -8,12 +7,15 @@
     </button>
   </div>
   <p *ngIf="jeuSelectionne">Jeu sélectionné: {{ jeuSelectionne }}</p>
+</div>
   <div class="button-navigation">
-    <button class="back">
+    <button class="back" (click)="goBack()">
       Back
     </button>
-    <button class="next">
+    <button class="next" (click)="goNext()" [disabled]="!jeuSelectionne">
       Next
     </button>
   </div>
-</div>
+
+
+  

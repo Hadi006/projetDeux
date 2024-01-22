@@ -38,3 +38,34 @@ p {
   margin-top: 20px;
   color: #333;
 }
+
+.button-navigation {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.back, .next {
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back:hover, .next:hover {
+  background-color: #0056b3;
+}
+
+.back.disabled, .next.disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.next:disabled {
+  background-color: #cccccc; /* Couleur différente pour indiquer qu'il est désactivé */
+  cursor: not-allowed; /* Change le curseur pour indiquer qu'il ne peut pas être cliqué */
+}
