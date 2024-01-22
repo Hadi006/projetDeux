@@ -5,21 +5,21 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-choix-jeu',
-  templateUrl: './choix-jeu.component.html',
-  styleUrls: ['./choix-jeu.component.scss']
+  templateUrl: './game-choice-page.component.html',
+  styleUrls: ['./game-choice-page.component.scss']
 })
-export class ChoixJeuComponent {
+export class GameChoicePageComponent {
   // Liste des jeux disponibles
-  jeux = ['Math', 'Science', 'Programmation', 'Histoire', 'Physique'];
+  jeux = ['Math', 'Science', 'Programmation', 'Histoire', 'Physique', 'Random mode'];
 
   // Jeu sélectionné
-  jeuSelectionne: string | null = null;
+  chosenGame: string | null = null;
 
   constructor(private router: Router)  {}
 
   // Méthode pour gérer la sélection d'un jeu
   choisirJeu(jeu: string) {
-    this.jeuSelectionne = jeu;
+    this.chosenGame = jeu;
     console.log(`Jeu choisi: ${jeu}`);
   }
 
@@ -27,13 +27,13 @@ export class ChoixJeuComponent {
     
     console.log('Retour');
     this.router.navigate(['']);
-    
+
     
   }
 
   goNext() {
-    if (this.jeuSelectionne) {
-      this.router.navigate(['/questions', this.jeuSelectionne]);
+    if (this.chosenGame) {
+      this.router.navigate(['/questions', this.chosenGame]);
     }
   }
     

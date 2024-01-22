@@ -6,13 +6,13 @@
       {{ jeu }}
     </button>
   </div>
-  <p *ngIf="jeuSelectionne">Jeu sélectionné: {{ jeuSelectionne }}</p>
+  <p *ngIf="chosenGame">Jeu sélectionné: {{ chosenGame }}</p>
 </div>
   <div class="button-navigation">
     <button class="back" (click)="goBack()">
       Back
     </button>
-    <button class="next" (click)="goNext()" [disabled]="!jeuSelectionne">
+    <button class="next" (click)="goNext()" [disabled]="!chosenGame">
       Next
     </button>
   </div>

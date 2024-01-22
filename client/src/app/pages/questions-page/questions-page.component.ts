@@ -3,10 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-questions',
-  templateUrl: './questions.component.html',
-  styleUrls: ['./questions.component.scss']
+  templateUrl: './questions-page.component.html',
+  styleUrls: ['./questions-page.component.scss']
 })
-export class QuestionsComponent implements OnInit {
+export class QuestionsPageComponent implements OnInit {
   jeu: string | null = null;
   questions: string[]; // Utilisez un type plus spécifique si nécessaire
 
@@ -74,10 +74,17 @@ export class QuestionsComponent implements OnInit {
 
 
   goBack() {
-    this.router.navigate(['choix-jeu']);
+    this.router.navigate(['game']);
   }
 
   confirmQuestions() {
     // Implémentez la logique pour confirmer la sélection des questions
   }
+
+  testQuestions(){
+    
+  }
+ 
+
+
 }

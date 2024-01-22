@@ -41,12 +41,13 @@
     text-align: center;
   }
   
-  .back, .confirm {
+  .back, .confirm, .test{
     padding: 10px 20px;
     margin: 5px;
     border: none;
     border-radius: 20px;
     cursor: pointer;
+    
   }
   
   .back {
@@ -58,3 +59,13 @@
     background-color: #4caf50;
     color: white;
   }
+
+  .test {
+    background-color: #dc1212;
+    color: white;
+    float: right;
+    
+    
+  }
+  
+

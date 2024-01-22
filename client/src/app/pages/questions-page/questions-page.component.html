@@ -1,18 +1,10 @@
-<p>questions works!</p>
+
 
 <div class="questions-container">
     <h1>Confirmer les questions</h1>
     <div class="game-header">
       <h2>{{ jeu }}</h2>
-      <div class="timer-setting">
-        <label for="timePerQuestion">Temps par question</label>
-        <select id="timePerQuestion" name="timePerQuestion">
-          <option value="30">30s</option>
-          <option value="60">1min</option>
-          <option value="120">2min</option>
-          <!-- Ajoutez d'autres options ici -->
-        </select>
-      </div>
+
     </div>
   
     <ul class="questions-list">
@@ -25,5 +17,6 @@
     <div class="navigation-buttons">
       <button class="back" (click)="goBack()">Back</button>
       <button class="confirm" (click)="confirmQuestions()">Confirm</button>
+      <button class="test "(click)="testQuestions()">Test</button>
     </div>
   </div>
