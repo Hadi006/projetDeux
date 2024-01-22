@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, HostListener } from '@angular/core';
+import { Component, Input, HostListener } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 
 @Component({
@@ -6,25 +6,30 @@ import { QuestionData } from '@common/question-data';
     templateUrl: './question.component.html',
     styleUrls: ['./question.component.scss'],
 })
-export class QuestionComponent implements OnChanges {
-    @Input() questionId: number;
+export class QuestionComponent {
+    @Input() answerConfirmed: boolean;
+    @Input() questionIdValue: number;
 
     questionData: QuestionData;
     isChecked: boolean[];
 
+    @Input() set questionId(value: number) {
+        this.questionIdValue = value;
+        this.getQuestionData();
+        this.isChecked = new Array(this.questionData.answers.length);
+    }
+
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
+        if (!this.questionData.isMCQ || this.answerConfirmed) {
+            return;
+        }
         event.stopPropagation();
         const key = parseInt(event.key, 10) - 1;
 
         if (key >= 0 && key < this.questionData.answers.length) {
             this.isChecked[key] = !this.isChecked[key];
         }
-    }
-
-    ngOnChanges(): void {
-        this.getQuestionData();
-        this.isChecked = new Array(this.questionData.answers.length);
     }
 
     getQuestionData(): void {
@@ -55,6 +60,6 @@ export class QuestionComponent implements OnChanges {
             },
         ];
 
-        this.questionData = testQuestions[this.questionId];
+        this.questionData = testQuestions[this.questionIdValue];
     }
 }
