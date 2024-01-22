@@ -74,7 +74,7 @@ export class QuestionsComponent implements OnInit {
 
 
   goBack() {
-    this.router.navigate(['choix-jeu']);
+    this.router.navigate(['game']);
   }
 
   confirmQuestions() {
