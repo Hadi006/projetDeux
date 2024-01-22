@@ -14,6 +14,10 @@ export class QuestionComponent {
     isChecked: boolean[];
 
     @Input() set questionId(value: number) {
+        if (value === undefined) {
+            return;
+        }
+
         this.questionIdValue = value;
         this.getQuestionData();
         this.isChecked = new Array(this.questionData.answers.length);
@@ -24,10 +28,10 @@ export class QuestionComponent {
         if (!this.questionData.isMCQ || this.answerConfirmed) {
             return;
         }
-        event.stopPropagation();
-        const key = parseInt(event.key, 10) - 1;
 
+        const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.questionData.answers.length) {
+            event.stopPropagation();
             this.isChecked[key] = !this.isChecked[key];
         }
     }

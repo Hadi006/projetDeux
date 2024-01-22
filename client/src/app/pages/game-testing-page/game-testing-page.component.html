@@ -3,5 +3,5 @@
 
 <div id="controls-container">
     <a href="#"> Leave </a>
-    <button (click)="confirmAnswer()">Confirm</button>
+    <button [disabled]="answerConfirmed" (click)="confirmAnswer()">Confirm</button>
 </div>

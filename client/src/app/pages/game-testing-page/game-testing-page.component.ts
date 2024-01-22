@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { TimeService } from '@app/services/time.service';
 
@@ -22,6 +22,14 @@ export class GameTestingPageComponent implements OnInit {
         return this.timeService.getTime(this.timerId);
     }
 
+    @HostListener('window:keyup', ['$event'])
+    handleKeyUp(event: KeyboardEvent): void {
+        if (!(event.key === 'Enter')) {
+            return;
+        }
+        this.confirmAnswer();
+    }
+
     ngOnInit(): void {
         this.getGameData();
         this.loadNextQuestion();
@@ -31,7 +39,7 @@ export class GameTestingPageComponent implements OnInit {
         const testGame: GameData = {
             id: 0,
             name: 'Math',
-            questionIds: [0, 1, 2, 3],
+            questionIds: [0, 1, 2],
             timePerQuestion: 10,
         };
 
