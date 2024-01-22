@@ -10,6 +10,7 @@ import { TimeService } from '@app/services/time.service';
 export class GameTestingPageComponent implements OnInit {
     @Input() gameId: number;
 
+    answerConfirmed: boolean = false;
     currentQuestionIndex: number = 0;
 
     private timerId: number;
@@ -45,8 +46,13 @@ export class GameTestingPageComponent implements OnInit {
 
         this.timerId = this.timeService.startTimer(this.gameData.timePerQuestion, () => {
             this.timeService.stopTimer(this.timerId);
+            this.answerConfirmed = false;
             this.currentQuestionIndex++;
             this.loadNextQuestion();
         });
+    }
+
+    confirmAnswer(): void {
+        this.answerConfirmed = true;
     }
 }

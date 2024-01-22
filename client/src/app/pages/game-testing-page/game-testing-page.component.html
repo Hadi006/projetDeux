@@ -1,4 +1,7 @@
 {{ time }}
-<app-question [questionId]="currentQuestionIndex"></app-question>
+<app-question [questionId]="currentQuestionIndex" [answerConfirmed]="answerConfirmed"></app-question>
 
-<a href="#"> Leave </a>
+<div id="controls-container">
+    <a href="#"> Leave </a>
+    <button (click)="confirmAnswer()">Confirm</button>
+</div>
