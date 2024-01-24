@@ -23,7 +23,9 @@ export class PlayAreaComponent {
     buttonPressed = '';
     private readonly timer = 5;
     private timerId: number;
-    constructor(private readonly timeService: TimeService) {}
+    constructor(private readonly timeService: TimeService) {
+        this.timerId = this.timeService.createTimer();
+    }
 
     get time(): number {
         return this.timeService.getTime(this.timerId);
@@ -37,7 +39,7 @@ export class PlayAreaComponent {
     // TODO : déplacer ceci dans un service de gestion de la souris!
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
-            this.timerId = this.timeService.startTimer(this.timer);
+            this.timeService.startTimer(this.timerId, this.timer);
         }
     }
 }
