@@ -9,7 +9,7 @@ describe('PlayAreaComponent', () => {
     let timeServiceSpy: SpyObj<TimeService>;
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['startTimer', 'stopTimer']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', ['startTimer', 'stopTimer', 'getTime']);
         await TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             providers: [{ provide: TimeService, useValue: timeServiceSpy }],
@@ -19,7 +19,6 @@ describe('PlayAreaComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(PlayAreaComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
     });
 
     it('should create', () => {
