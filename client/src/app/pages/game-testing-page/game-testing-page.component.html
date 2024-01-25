@@ -6,6 +6,6 @@
 ></app-question>
 
 <div id="controls-container">
-    <a href="#"> Leave </a>
-    <button [disabled]="answerConfirmed" (click)="confirmAnswer()">Confirm</button>
+    <button (click)="router.navigate([''])">Leave</button>
+    <button [disabled]="answerConfirmed" (click)="answerConfirmed = true">Confirm</button>
 </div>

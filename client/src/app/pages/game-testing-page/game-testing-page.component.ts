@@ -1,9 +1,12 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TimeService } from '@app/services/time.service';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 
 const SHOW_ANSWER_DELAY = 3;
+const QUESTION_TIMER_INDEX = 0;
+const ANSWER_TIMER_INDEX = 1;
 const QUESTION_DATA: QuestionData[] = [
     {
         id: 0,
@@ -44,12 +47,19 @@ export class GameTestingPageComponent implements OnInit {
     currentQuestionIndex: number = 0;
     gameData: GameData;
 
-    private timerId: number;
+    private timerIds: number[] = new Array(2);
 
-    constructor(private timeService: TimeService) {}
+    constructor(
+        private timeService: TimeService,
+        public router: Router,
+    ) {}
 
     get time(): number {
-        return this.timeService.getTime(this.timerId);
+        if (this.showingAnswer) {
+            return this.timeService.getTime(this.timerIds[ANSWER_TIMER_INDEX]);
+        } else {
+            return this.timeService.getTime(this.timerIds[QUESTION_TIMER_INDEX]);
+        }
     }
 
     @HostListener('window:keyup', ['$event'])
@@ -57,15 +67,25 @@ export class GameTestingPageComponent implements OnInit {
         if (!(event.key === 'Enter')) {
             return;
         }
-        this.confirmAnswer();
+
+        this.answerConfirmed = true;
     }
 
     ngOnInit(): void {
+        this.timerIds[0] = this.timeService.createTimer(() => {
+            this.showAnswer();
+        });
+        this.timerIds[1] = this.timeService.createTimer(() => {
+            this.currentQuestionIndex++;
+            this.resetGameState();
+        });
+
         this.getGameData();
-        this.loadQuestion();
+        this.resetGameState();
     }
 
     getGameData(): void {
+        // TODO : Replace with a server call
         const testGame: GameData = {
             id: 0,
             name: 'Math',
@@ -76,35 +96,22 @@ export class GameTestingPageComponent implements OnInit {
         this.gameData = testGame;
     }
 
-    loadQuestion(): void {
-        this.timeService.stopTimer(this.timerId);
+    resetGameState(): void {
         if (this.currentQuestionIndex >= this.gameData.questions.length) {
-            // TODO : Afficher le score
-            return;
+            // TODO : Replace with correct link
+            this.router.navigate(['']);
         }
 
         this.answerConfirmed = false;
         this.showingAnswer = false;
 
-        this.timerId = this.timeService.createTimer(() => {
-            this.showAnswer();
-        });
-        this.timeService.startTimer(this.timerId, this.gameData.timePerQuestion);
+        this.timeService.startTimer(this.timerIds[QUESTION_TIMER_INDEX], this.gameData.timePerQuestion);
     }
 
     showAnswer(): void {
-        this.timeService.stopTimer(this.timerId);
         this.answerConfirmed = true;
         this.showingAnswer = true;
 
-        this.timerId = this.timeService.createTimer(() => {
-            this.currentQuestionIndex++;
-            this.loadQuestion();
-        });
-        this.timeService.startTimer(this.timerId, SHOW_ANSWER_DELAY);
-    }
-
-    confirmAnswer(): void {
-        this.answerConfirmed = true;
+        this.timeService.startTimer(this.timerIds[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
     }
 }
