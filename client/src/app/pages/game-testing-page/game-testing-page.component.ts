@@ -1,8 +1,35 @@
-import { Component, Input, OnInit, HostListener } from '@angular/core';
-import { GameData } from '@common/game-data';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
+import { GameData } from '@common/game-data';
+import { QuestionData } from '@common/question-data';
 
 const SHOW_ANSWER_DELAY = 3;
+const QUESTION_DATA: QuestionData[] = [
+    {
+        id: 0,
+        points: 1,
+        question: 'Quel est le résultat de 1 + 1 ?',
+        answers: ['1', '2', '3', '4'],
+        correctAnswers: ['2'],
+        isMCQ: true,
+    },
+    {
+        id: 1,
+        points: 4,
+        question: 'Question réponse libre',
+        answers: [],
+        correctAnswers: [],
+        isMCQ: false,
+    },
+    {
+        id: 2,
+        points: 2,
+        question: 'Quel est le résultat de 2 + 2 ?',
+        answers: ['1', '2', '3', '4'],
+        correctAnswers: ['4'],
+        isMCQ: true,
+    },
+];
 
 @Component({
     selector: 'app-game-testing-page',
@@ -15,9 +42,9 @@ export class GameTestingPageComponent implements OnInit {
     answerConfirmed: boolean = false;
     showingAnswer: boolean = false;
     currentQuestionIndex: number = 0;
+    gameData: GameData;
 
     private timerId: number;
-    private gameData: GameData;
 
     constructor(private timeService: TimeService) {}
 
@@ -42,7 +69,7 @@ export class GameTestingPageComponent implements OnInit {
         const testGame: GameData = {
             id: 0,
             name: 'Math',
-            questionIds: [0, 1, 2],
+            questions: QUESTION_DATA,
             timePerQuestion: 10,
         };
 
@@ -51,7 +78,7 @@ export class GameTestingPageComponent implements OnInit {
 
     loadQuestion(): void {
         this.timeService.stopTimer(this.timerId);
-        if (this.currentQuestionIndex >= this.gameData.questionIds.length) {
+        if (this.currentQuestionIndex >= this.gameData.questions.length) {
             // TODO : Afficher le score
             return;
         }
@@ -59,9 +86,10 @@ export class GameTestingPageComponent implements OnInit {
         this.answerConfirmed = false;
         this.showingAnswer = false;
 
-        this.timerId = this.timeService.startTimer(this.gameData.timePerQuestion, () => {
+        this.timerId = this.timeService.createTimer(() => {
             this.showAnswer();
         });
+        this.timeService.startTimer(this.timerId, this.gameData.timePerQuestion);
     }
 
     showAnswer(): void {
@@ -69,10 +97,11 @@ export class GameTestingPageComponent implements OnInit {
         this.answerConfirmed = true;
         this.showingAnswer = true;
 
-        this.timerId = this.timeService.startTimer(SHOW_ANSWER_DELAY, () => {
+        this.timerId = this.timeService.createTimer(() => {
             this.currentQuestionIndex++;
             this.loadQuestion();
         });
+        this.timeService.startTimer(this.timerId, SHOW_ANSWER_DELAY);
     }
 
     confirmAnswer(): void {

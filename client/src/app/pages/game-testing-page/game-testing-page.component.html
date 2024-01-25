@@ -1,5 +1,9 @@
 {{ time }}
-<app-question [questionId]="currentQuestionIndex" [answerConfirmed]="answerConfirmed" [showingAnswer]="showingAnswer"></app-question>
+<app-question
+    [question]="gameData.questions[currentQuestionIndex]"
+    [answerConfirmed]="answerConfirmed"
+    [showingAnswer]="showingAnswer"
+></app-question>
 
 <div id="controls-container">
     <a href="#"> Leave </a>
