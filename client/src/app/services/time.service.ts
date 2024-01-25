@@ -1,48 +1,32 @@
 import { Injectable } from '@angular/core';
-import { Timer } from '@app/interfaces/timer';
+import { Timer } from '@app/classes/timer';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimeService {
-    private readonly tick = 1000;
-    private timers = new Map<number, Timer>();
-    private nextId = 0;
+    private timers: Map<number, Timer> = new Map<number, Timer>();
+    private nextId: number = 0;
 
-    startTimer(startValue: number, onTimerEnd?: () => void): number {
+    createTimer(callback?: () => void): number {
         const timerId = this.nextId++;
-        const interval = window.setInterval(() => {
-            const timer = this.timers.get(timerId);
-            if (timer) {
-                if (timer.counter > 0) {
-                    timer.counter--;
-                } else {
-                    this.stopTimer(timerId);
-                    timer.onTimerEndCallback?.();
-                }
-            }
-        }, this.tick);
-
-        const newTimer: Timer = {
-            interval,
-            counter: startValue,
-            onTimerEndCallback: onTimerEnd,
-        };
-
-        this.timers.set(timerId, newTimer);
+        const timer = new Timer(callback);
+        this.timers.set(timerId, timer);
         return timerId;
     }
 
-    stopTimer(timerId: number): void {
+    startTimer(timerId: number, startValue: number) {
         const timer = this.timers.get(timerId);
-        if (timer) {
-            clearInterval(timer.interval);
-            this.timers.delete(timerId);
-        }
+        timer?.start(startValue);
+    }
+
+    stopTimer(timerId: number) {
+        const timer = this.timers.get(timerId);
+        timer?.stop();
     }
 
     getTime(timerId: number): number {
         const timer = this.timers.get(timerId);
-        return timer ? timer.counter : 0;
+        return timer?.time ?? 0;
     }
 }
