@@ -9,6 +9,7 @@ describe('QuestionComponent', () => {
     let mockQuestionData: QuestionData;
     let mockIsChecked: boolean[];
     const MAX_GRADE = 100;
+    const GRADE = 50;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
@@ -129,7 +130,7 @@ describe('QuestionComponent', () => {
         component.isChecked[2] = false;
         component.isChecked[3] = false;
 
-        expect(component.calculateGrade()).toEqual(50);
+        expect(component.calculateGrade()).toEqual(GRADE);
     });
 
     it('should calculate grade correctly for MCQ with negative grade', () => {
