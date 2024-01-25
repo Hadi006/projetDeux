@@ -1,4 +1,4 @@
-import { Component, Input, HostListener } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 
 const MAX_GRADE = 100;
@@ -11,25 +11,22 @@ const MAX_GRADE = 100;
 export class QuestionComponent {
     @Input() answerConfirmed: boolean;
     @Input() showingAnswer: boolean;
-    @Input() questionIdValue: number;
 
     questionData: QuestionData;
     isChecked: boolean[];
 
-    @Input() set questionId(value: number) {
-        this.questionIdValue = value;
-        this.getQuestionData();
-
-        if (!this.questionData) {
+    @Input() set question(data: QuestionData | undefined) {
+        if (!data) {
             return;
         }
 
-        this.isChecked = new Array(this.questionData.answers.length);
+        this.questionData = data;
+        this.isChecked = new Array(this.questionData.answers.length).fill(false);
     }
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.questionData.isMCQ || this.answerConfirmed) {
+        if (!this.questionData || !this.questionData.isMCQ || this.answerConfirmed) {
             return;
         }
 
@@ -46,14 +43,9 @@ export class QuestionComponent {
         }
 
         const grade = this.questionData.answers.reduce((acc, answer, index) => {
-            if (!this.isChecked[index]) {
-                return acc;
-            }
+            const pointsPerAnswer = MAX_GRADE / this.questionData.answers.length;
 
-            const correctAnswersLength = this.questionData.correctAnswers.length;
-            const pointsPerAnswer = MAX_GRADE / correctAnswersLength;
-
-            if (this.questionData.correctAnswers.includes(answer)) {
+            if (this.isChecked[index] === this.questionData.correctAnswers.includes(answer)) {
                 return acc + pointsPerAnswer;
             } else {
                 return acc - pointsPerAnswer;
@@ -61,36 +53,5 @@ export class QuestionComponent {
         }, 0);
 
         return grade < 0 ? 0 : grade;
-    }
-
-    private getQuestionData(): void {
-        const testQuestions: QuestionData[] = [
-            {
-                id: 0,
-                points: 1,
-                question: 'Quel est le résultat de 1 + 1 ?',
-                answers: ['1', '2', '3', '4'],
-                correctAnswers: ['2'],
-                isMCQ: true,
-            },
-            {
-                id: 1,
-                points: 4,
-                question: 'Question réponse libre',
-                answers: [],
-                correctAnswers: [],
-                isMCQ: false,
-            },
-            {
-                id: 2,
-                points: 2,
-                question: 'Quel est le résultat de 2 + 2 ?',
-                answers: ['1', '2', '3', '4'],
-                correctAnswers: ['4'],
-                isMCQ: true,
-            },
-        ];
-
-        this.questionData = testQuestions[this.questionIdValue];
     }
 }
