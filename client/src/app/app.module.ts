@@ -13,6 +13,7 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { GameTestingPageComponent } from './pages/game-testing-page/game-testing-page.component';
 import { QuestionComponent } from './components/question/question.component';
+import { PlayPageComponent } from './pages/play-page/play-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -30,6 +31,7 @@ import { QuestionComponent } from './components/question/question.component';
         SidebarComponent,
         GameTestingPageComponent,
         QuestionComponent,
+        PlayPageComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
