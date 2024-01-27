@@ -1,6 +1,6 @@
-{{ time }}
+{{ gameHandlerService.time }}
 <app-question
-    [question]="gameData.questions[currentQuestionIndex]"
+    [question]="gameHandlerService.currentQuestion"
     [answerConfirmed]="answerConfirmed"
     [showingAnswer]="showingAnswer"
 ></app-question>
