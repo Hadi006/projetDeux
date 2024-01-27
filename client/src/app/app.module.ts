@@ -13,6 +13,7 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 // import { JoinGamePageComponent } from './join-game-page/join-game-page.component';
 import { JoinGamePageComponent } from '@app/pages/join-game-page/join-game-page.component';
+import { ChatboxComponent } from './components/chatbox/chatbox.component';
 
 /**
  * Main module that is used in main.ts.
@@ -29,6 +30,7 @@ import { JoinGamePageComponent } from '@app/pages/join-game-page/join-game-page.
         PlayAreaComponent,
         SidebarComponent,
         JoinGamePageComponent,
+        ChatboxComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
