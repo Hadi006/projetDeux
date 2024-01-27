@@ -19,7 +19,7 @@
     <div *ngIf="showingAnswer" id="grade-container">
         <span *ngFor="let correctAnswer of questionData.correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer }}</p>
-            {{ calculateGrade() }}
         </span>
+            {{ calculateGrade() }}
     </div>
 </div>
