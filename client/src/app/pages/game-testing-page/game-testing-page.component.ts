@@ -25,7 +25,7 @@ export class GameTestingPageComponent implements OnInit, OnDestroy {
             switch (state) {
                 case GameState.ShowQuestion:
                     this.answerConfirmed = false;
-                this.showingAnswer = false;
+                    this.showingAnswer = false;
                     break;
                 case GameState.ShowAnswer:
                     this.answerConfirmed = true;
