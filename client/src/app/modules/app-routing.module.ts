@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { GameTestingPageComponent } from '@app/pages/game-testing-page/game-testing-page.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 
 const routes: Routes = [
@@ -11,7 +10,6 @@ const routes: Routes = [
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
     { path: 'material', component: MaterialPageComponent },
-    { path: 'test', component: GameTestingPageComponent },
     { path: 'play', component: GameplayPlayerPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
