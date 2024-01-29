@@ -124,4 +124,32 @@ describe('TimeService', () => {
 
         expect(time).toEqual(0);
     });
+
+    it('setTime should set the correct time for the timer with the correct id', () => {
+        const mockTimer = jasmine.createSpyObj('Timer', ['time']);
+        mockTimer['time'] = TIMEOUT;
+        spyOn(service, 'createTimer').and.callFake(() => {
+            service['timers'].set(TIMER_ID, mockTimer);
+            return TIMER_ID;
+        });
+
+        const timerId = service.createTimer();
+        service.setTime(timerId, 0);
+
+        expect(mockTimer['time']).toEqual(0);
+    });
+
+    it('setTime should not set the time for the timer with the incorrect id', () => {
+        const mockTimer = jasmine.createSpyObj('Timer', ['time']);
+        mockTimer['time'] = TIMEOUT;
+        spyOn(service, 'createTimer').and.callFake(() => {
+            service['timers'].set(TIMER_ID, mockTimer);
+            return TIMER_ID;
+        });
+
+        const timerId = service.createTimer();
+        service.setTime(timerId + 1, 0);
+
+        expect(mockTimer['time']).toEqual(TIMEOUT);
+    });
 });

@@ -29,4 +29,11 @@ export class TimeService {
         const timer = this.timers.get(timerId);
         return timer?.time ?? 0;
     }
+
+    setTime(timerId: number, time: number) {
+        const timer = this.timers.get(timerId);
+        if (timer) {
+            timer.time = time;
+        }
+    }
 }

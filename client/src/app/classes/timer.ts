@@ -1,17 +1,10 @@
 export class Timer {
+    time: number = 0;
+
     private readonly tick: number = 1000;
     private interval: number | undefined;
-    private counter: number = 0;
 
     constructor(private onTimerEndCallback?: () => void) {}
-
-    get time(): number {
-        return this.counter;
-    }
-
-    private set time(value: number) {
-        this.counter = value;
-    }
 
     start(startValue: number): void {
         if (this.interval) {
@@ -20,8 +13,8 @@ export class Timer {
 
         this.time = startValue;
         this.interval = window.setInterval(() => {
-            if (this.counter > 0) {
-                this.counter--;
+            if (this.time > 0) {
+                this.time--;
             } else {
                 this.stop();
                 this.onTimerEndCallback?.();
