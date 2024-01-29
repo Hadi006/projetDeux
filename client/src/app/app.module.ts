@@ -11,7 +11,6 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { GameTestingPageComponent } from './pages/game-testing-page/game-testing-page.component';
 import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
 
@@ -29,7 +28,6 @@ import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gamepl
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
-        GameTestingPageComponent,
         QuestionComponent,
         GameplayPlayerPageComponent,
     ],
