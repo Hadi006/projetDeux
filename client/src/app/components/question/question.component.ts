@@ -35,14 +35,18 @@ export class QuestionComponent {
 
         event.stopPropagation();
         if (event.key === 'Enter') {
-            this.answerConfirmed = true;
-            this.answerConfirmedNotifier.next();
+            this.confirmAnswer();
         }
 
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.questionData.answers.length) {
             this.isChecked[key] = !this.isChecked[key];
         }
+    }
+
+    confirmAnswer(): void {
+        this.answerConfirmed = true;
+        this.answerConfirmedNotifier.next();
     }
 
     canEditAnswer(): boolean {
