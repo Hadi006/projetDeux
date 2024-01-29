@@ -2,7 +2,7 @@ import { Component, HostListener, Input } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Subject } from 'rxjs';
 
-const MAX_GRADE = 100;
+const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 @Component({
     selector: 'app-question',
@@ -54,20 +54,16 @@ export class QuestionComponent {
     }
 
     calculateGrade(): number {
+        const maxGrade: number = this.questionData.points * GOOD_ANSWER_MULTIPLIER;
         if (!this.questionData.isMCQ) {
-            return MAX_GRADE;
+            return maxGrade;
         }
 
-        const grade = this.questionData.answers.reduce((acc, answer, index) => {
-            const pointsPerAnswer = MAX_GRADE / this.questionData.answers.length;
+        let isCorrect = true;
+        this.isChecked.forEach((checked: boolean, index: number) => {
+            isCorrect = checked === this.questionData.correctAnswers.includes(this.questionData.answers[index]);
+        });
 
-            if (this.isChecked[index] === this.questionData.correctAnswers.includes(answer)) {
-                return acc + pointsPerAnswer;
-            } else {
-                return acc - pointsPerAnswer;
-            }
-        }, 0);
-
-        return grade < 0 ? 0 : grade;
+        return isCorrect ? maxGrade : 0;
     }
 }
