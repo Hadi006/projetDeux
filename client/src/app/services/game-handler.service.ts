@@ -98,19 +98,14 @@ export class GameHandlerService {
         this.playerHandlerService.answerConfirmedNotifiers.forEach((subject: Subject<void>) => {
             const answerConfirmedSubscription: Subscription = subject.subscribe(() => {
                 if (++this.nAnswersConfirmed >= this.nPlayers) {
-                    this.showAnswer();
+                    this.timeService.setTime(this.timerIds[QUESTION_TIMER_INDEX], 0);
                 }
             });
             this.answerConfirmedSubscriptions.push(answerConfirmedSubscription);
         });
 
-        this.timerIds[0] = this.timeService.createTimer(() => {
-            this.showAnswer();
-        });
-        this.timerIds[1] = this.timeService.createTimer(() => {
-            this.currentQuestionIndex++;
-            this.resetGameState();
-        });
+        this.timerIds[0] = this.timeService.createTimer(this.showAnswer.bind(this));
+        this.timerIds[1] = this.timeService.createTimer(this.setUpNextQuestion.bind(this));
 
         this.getGameData();
         this.resetGameState();
@@ -142,6 +137,11 @@ export class GameHandlerService {
         this.gameStateSubject.next(GameState.ShowAnswer);
 
         this.timeService.startTimer(this.timerIds[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
+    }
+
+    setUpNextQuestion(): void {
+        this.currentQuestionIndex++;
+        this.resetGameState();
     }
 
     cleanUp(): void {

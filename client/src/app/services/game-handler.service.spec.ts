@@ -1,58 +1,77 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GameHandlerService, GameState } from './game-handler.service';
-import { TimeService } from './time.service';
+import { GameHandlerService, GameState } from '@app/services/game-handler.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { TimeService } from '@app/services/time.service';
+import { Subject, Subscription } from 'rxjs';
+
+const TIME_OUT = 5;
+const SHOW_ANSWER_DELAY = 3;
+const QUESTION_TIMER_INDEX = 0;
+const ANSWER_TIMER_INDEX = 1;
+const TIMER_IDS = [0, 1];
+const QUESTION_DATA = [
+    {
+        id: 0,
+        points: 1,
+        question: 'Quel est le résultat de 1 + 1 ?',
+        answers: ['1', '2', '3', '4'],
+        correctAnswers: ['2'],
+        isMCQ: true,
+    },
+    {
+        id: 1,
+        points: 4,
+        question: 'Question réponse libre',
+        answers: [],
+        correctAnswers: [],
+        isMCQ: false,
+    },
+    {
+        id: 2,
+        points: 2,
+        question: 'Quel est le résultat de 2 + 2 ?',
+        answers: ['1', '2', '3', '4'],
+        correctAnswers: ['4'],
+        isMCQ: true,
+    },
+];
+const TEST_GAME = {
+    id: 0,
+    name: 'Math',
+    questions: QUESTION_DATA,
+    timePerQuestion: 10,
+};
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
+    let timerIdSequence: number;
+    let timerCallback: () => void;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
-    const TIME_OUT = 5;
-    const SHOW_ANSWER_DELAY = 3;
-    const QUESTION_TIMER_INDEX = 0;
-    const ANSWER_TIMER_INDEX = 1;
-    const TIMER_IDS = [0, 1];
-    const QUESTION_DATA = [
-        {
-            id: 0,
-            points: 1,
-            question: 'Quel est le résultat de 1 + 1 ?',
-            answers: ['1', '2', '3', '4'],
-            correctAnswers: ['2'],
-            isMCQ: true,
-        },
-        {
-            id: 1,
-            points: 4,
-            question: 'Question réponse libre',
-            answers: [],
-            correctAnswers: [],
-            isMCQ: false,
-        },
-        {
-            id: 2,
-            points: 2,
-            question: 'Quel est le résultat de 2 + 2 ?',
-            answers: ['1', '2', '3', '4'],
-            correctAnswers: ['4'],
-            isMCQ: true,
-        },
-    ];
-    const TEST_GAME = {
-        id: 0,
-        name: 'Math',
-        questions: QUESTION_DATA,
-        timePerQuestion: 10,
-    };
+
+    let answerConfirmedNotifiersSpy: Subject<void>[];
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'getTime', 'startTimer', 'stopTimer']);
-        let timerIdSequence = 0;
-        timeServiceSpy.createTimer.and.callFake(() => timerIdSequence++);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'getTime', 'startTimer', 'stopTimer', 'setTime']);
+        timerIdSequence = 0;
+        timeServiceSpy.createTimer.and.callFake((callback: () => void) => {
+            timerCallback = callback;
+            return timerIdSequence++;
+        });
+
+        answerConfirmedNotifiersSpy = [new Subject<void>(), new Subject<void>(), new Subject<void>()];
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers'], {
+            answerConfirmedNotifiers: answerConfirmedNotifiersSpy,
+        });
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: TimeService, useValue: timeServiceSpy }],
+            providers: [
+                { provide: TimeService, useValue: timeServiceSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+            ],
         });
         service = TestBed.inject(GameHandlerService);
     });
@@ -122,10 +141,50 @@ describe('GameHandlerService', () => {
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
+    it('startGame should set nPlayers to the correct value', () => {
+        service.startGame();
+        expect(service['nPlayers']).toEqual(3);
+    });
+
+    it('startGame should populate answerConfirmedSubscriptions with subscriptions', () => {
+        service.startGame();
+        expect(service['answerConfirmedSubscriptions'].length).toEqual(3);
+    });
+
+    it('should set time to 0 when all players have confirmed their answer', () => {
+        service.startGame();
+        answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
+            subject.next();
+        });
+
+        expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
+    });
+
+    it('should not set time to 0 when not all players have confirmed their answer', () => {
+        answerConfirmedNotifiersSpy[0].next();
+        expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
+    });
+
     it('startGame should create two timers and assign the correct timerIds', () => {
         service.startGame();
         expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
         expect(service['timerIds']).toEqual([0, 1]);
+    });
+
+    it('should call showAnswer when the first timer is triggered', () => {
+        spyOn(service, 'showAnswer');
+        service['timerIds'][QUESTION_TIMER_INDEX] = service['timeService'].createTimer(service.showAnswer.bind(service));
+
+        timerCallback();
+        expect(service.showAnswer).toHaveBeenCalled();
+    });
+
+    it('should call setUpNextQuestion when the second timer is triggered', () => {
+        spyOn(service, 'setUpNextQuestion');
+        service['timerIds'][ANSWER_TIMER_INDEX] = service['timeService'].createTimer(service.setUpNextQuestion.bind(service));
+
+        timerCallback();
+        expect(service.setUpNextQuestion).toHaveBeenCalled();
     });
 
     it('startGame should call getGameData and resetGameState', () => {
@@ -189,11 +248,33 @@ describe('GameHandlerService', () => {
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
     });
 
+    it('setUpNextQuestion should increment currentQuestionIndex and call resetGameState', () => {
+        service['currentQuestionIndex'] = 0;
+        spyOn(service, 'resetGameState');
+        service.setUpNextQuestion();
+
+        expect(service['currentQuestionIndex']).toEqual(1);
+        expect(service.resetGameState).toHaveBeenCalled();
+    });
+
     it('cleanUp should unsubscribe from gameStateSubject', () => {
         spyOn(service['gameStateSubscription'], 'unsubscribe');
 
         service.cleanUp();
 
         expect(service['gameStateSubscription'].unsubscribe).toHaveBeenCalled();
+    });
+
+    it('cleanUp should unsubscribe from answerConfirmedSubscriptions', () => {
+        service.startGame();
+        service['answerConfirmedSubscriptions'].forEach((subscription: Subscription) => {
+            spyOn(subscription, 'unsubscribe');
+        });
+
+        service.cleanUp();
+
+        service['answerConfirmedSubscriptions'].forEach((subscription: Subscription) => {
+            expect(subscription.unsubscribe).toHaveBeenCalled();
+        });
     });
 });
