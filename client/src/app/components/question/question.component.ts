@@ -1,5 +1,6 @@
 import { Component, HostListener, Input } from '@angular/core';
 import { QuestionData } from '@common/question-data';
+import { Subject } from 'rxjs';
 
 const MAX_GRADE = 100;
 
@@ -11,6 +12,7 @@ const MAX_GRADE = 100;
 export class QuestionComponent {
     @Input() answerConfirmed: boolean;
     @Input() showingAnswer: boolean;
+    @Input() answerConfirmedNotifier: Subject<void>;
 
     questionData: QuestionData;
     isChecked: boolean[];
@@ -34,6 +36,7 @@ export class QuestionComponent {
         event.stopPropagation();
         if (event.key === 'Enter') {
             this.answerConfirmed = true;
+            this.answerConfirmedNotifier.next();
         }
 
         const key = parseInt(event.key, 10) - 1;

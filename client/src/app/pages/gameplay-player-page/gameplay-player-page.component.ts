@@ -14,9 +14,9 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
 
     showingAnswer: boolean = false;
     gameState = GameState;
+    answerConfirmedNotifier: Subject<void> = new Subject<void>();
 
     private gameStateSubscription: Subscription;
-    private answerConfirmedNotifier: Subject<void> = new Subject<void>();
 
     constructor(
         public gameHandlerService: GameHandlerService,
