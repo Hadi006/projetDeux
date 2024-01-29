@@ -1,1 +1,12 @@
-<p>chatbox works!</p>
+<div *ngIf="showChat" class="chat-container">
+    <div class="messages">
+        <div *ngFor="let message of messages" class="message">
+            <span>{{ message.text }}</span>
+            <span class="timestamp"> {{ message.timestamp | date: 'mediumTime' }}</span>
+        </div>
+    </div>
+    <div class="input-container">
+        <input [(ngModel)]="newMessage" maxlength="200" placeholder="Type your message..." />
+        <button id="sendButton" (click)="sendMessage()">Send</button>
+    </div>
+</div>
