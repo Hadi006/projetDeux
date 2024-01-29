@@ -94,24 +94,24 @@ describe('QuestionComponent', () => {
         });
     });
 
-    it('should set answerConfirmed to true when the Enter key is pressed', () => {
+    it('should call confirmAnswer() if key press is Enter', () => {
         component.questionData = mockQuestionData;
-        spyOn(component, 'canEditAnswer').and.returnValue(true);
-        component.answerConfirmed = false;
-        const event = new KeyboardEvent('keyup', { key: 'Enter' });
-        component.handleKeyUp(event);
+        component.isChecked = mockIsChecked;
+        spyOn(component, 'confirmAnswer');
+        const mockEvent = new KeyboardEvent('keyup', { key: 'Enter' });
+        component.handleKeyUp(mockEvent);
 
-        expect(component.answerConfirmed).toBeTrue();
+        expect(component.confirmAnswer).toHaveBeenCalled();
     });
 
-    it('should not set answerConfirmed to true when a key other than Enter is pressed', () => {
+    it('should not call confirmAnswer() if key press is not Enter', () => {
         component.questionData = mockQuestionData;
-        spyOn(component, 'canEditAnswer').and.returnValue(true);
-        component.answerConfirmed = false;
-        const event = new KeyboardEvent('keyup', { key: 'Space' });
-        component.handleKeyUp(event);
+        component.isChecked = mockIsChecked;
+        spyOn(component, 'confirmAnswer');
+        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        component.handleKeyUp(mockEvent);
 
-        expect(component.answerConfirmed).toBeFalse();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
     });
 
     it('should toggle isChecked for a valid key press', () => {
@@ -160,6 +160,15 @@ describe('QuestionComponent', () => {
         component.isChecked[3] = false;
 
         expect(component.calculateGrade()).toEqual(GRADE);
+    });
+
+    it('confirmAnswer() should set answerConfirmed to true and call answerConfirmedNotifier.next()', () => {
+        component.answerConfirmedNotifier = jasmine.createSpyObj('Subject<void>', ['next']);
+        component.answerConfirmed = false;
+        component.confirmAnswer();
+
+        expect(component.answerConfirmed).toBeTrue();
+        expect(component.answerConfirmedNotifier.next).toHaveBeenCalled();
     });
 
     it('canEditAnswer() should return true if answerConfirmed and showingAnswer are false', () => {

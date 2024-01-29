@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { GameHandlerService, GameState } from '@app/services/game-handler.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { BehaviorSubject } from 'rxjs';
 
 describe('GameplayPlayerPageComponent', () => {
@@ -10,6 +11,8 @@ describe('GameplayPlayerPageComponent', () => {
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
     let gameStateSubjectSpy: BehaviorSubject<GameState>;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let answerConfirmedNotifierSubjectSpy: BehaviorSubject<void>;
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
@@ -17,6 +20,12 @@ describe('GameplayPlayerPageComponent', () => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['stateSubject', 'startGame'], {
             stateSubject: gameStateSubjectSpy,
         });
+
+        answerConfirmedNotifierSubjectSpy = new BehaviorSubject<void>(undefined);
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers'], {
+            answerConfirmedNotifiers: [answerConfirmedNotifierSubjectSpy],
+        });
+
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -26,6 +35,7 @@ describe('GameplayPlayerPageComponent', () => {
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
             ],
         }).compileComponents();
     }));
