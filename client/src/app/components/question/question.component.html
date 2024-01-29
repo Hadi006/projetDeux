@@ -6,20 +6,21 @@
     <div *ngIf="questionData.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let answer of questionData.answers; let i = index">
             <label>
-                <input [disabled]="answerConfirmed" type="checkbox" [(ngModel)]="isChecked[i]" />
+                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="isChecked[i]" />
                 {{ i + 1 }} ) {{ answer }}
             </label>
         </div>
     </div>
 
     <div *ngIf="!questionData.isMCQ" id="question-container">
-        <input type="text" [disabled]="answerConfirmed" placeholder="Type your answer here..." />
+        <textarea [disabled]="showingAnswer" placeholder="Type your answer here..."></textarea>
     </div>
 
     <div *ngIf="showingAnswer" id="grade-container">
         <span *ngFor="let correctAnswer of questionData.correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer }}</p>
         </span>
-            {{ calculateGrade() }}
+        {{ calculateGrade() }}
     </div>
 </div>
+<button [disabled]="!canEditAnswer()" (click)="answerConfirmed = true">Confirm</button>

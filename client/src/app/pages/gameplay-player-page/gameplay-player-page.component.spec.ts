@@ -40,37 +40,23 @@ describe('GameplayPlayerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should set answerConfirmed and showingAnswer to false when the game state is ShowQuestion', () => {
+    it('should set showingAnswer to false when the game state is ShowQuestion', () => {
+        component.showingAnswer = true;
         component.gameHandlerService.stateSubject.next(GameState.ShowQuestion);
 
-        expect(component.answerConfirmed).toBeFalse();
         expect(component.showingAnswer).toBeFalse();
     });
 
-    it('should set answerConfirmed and showingAnswer to true when the game state is ShowAnswer', () => {
+    it('should set showingAnswer to true when the game state is ShowAnswer', () => {
+        component.showingAnswer = false;
         component.gameHandlerService.stateSubject.next(GameState.ShowAnswer);
 
-        expect(component.answerConfirmed).toBeTrue();
         expect(component.showingAnswer).toBeTrue();
     });
 
     it('should navigate to the home page when the game state is GameEnded', () => {
         component.gameHandlerService.stateSubject.next(GameState.GameEnded);
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
-    });
-
-    it('should set answerConfirmed to true when the Enter key is pressed', () => {
-        const event = new KeyboardEvent('keyup', { key: 'Enter' });
-        component.handleKeyUp(event);
-
-        expect(component.answerConfirmed).toBeTrue();
-    });
-
-    it('should not set answerConfirmed to true when a key other than Enter is pressed', () => {
-        const event = new KeyboardEvent('keyup', { key: 'Space' });
-        component.handleKeyUp(event);
-
-        expect(component.answerConfirmed).toBeFalse();
     });
 
     it('should call gameHandlerService.startGame() when ngOnInit() is called', () => {

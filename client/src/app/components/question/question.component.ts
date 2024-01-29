@@ -22,19 +22,28 @@ export class QuestionComponent {
 
         this.questionData = data;
         this.isChecked = new Array(this.questionData.answers.length).fill(false);
+        this.answerConfirmed = false;
     }
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.questionData || !this.questionData.isMCQ || this.answerConfirmed) {
+        if (!this.questionData || !this.questionData.isMCQ || !this.canEditAnswer()) {
             return;
+        }
+
+        event.stopPropagation();
+        if (event.key === 'Enter') {
+            this.answerConfirmed = true;
         }
 
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.questionData.answers.length) {
-            event.stopPropagation();
             this.isChecked[key] = !this.isChecked[key];
         }
+    }
+
+    canEditAnswer(): boolean {
+        return !this.answerConfirmed && !this.showingAnswer;
     }
 
     calculateGrade(): number {

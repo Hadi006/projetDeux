@@ -36,20 +36,82 @@ describe('QuestionComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should correctly assign questionData and isChecked if question exists', () => {
+    it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
         component.question = mockQuestionData;
 
         expect(component.questionData).toEqual(mockQuestionData);
         expect(component.isChecked).toBeInstanceOf(Array);
         expect(component.isChecked.length).toEqual(mockQuestionData.answers.length);
         expect(component.isChecked.every((value) => value === false)).toBeTrue();
+        expect(component.answerConfirmed).toBeFalse();
     });
 
-    it('should not assign questionData and isChecked if question does not exist', () => {
+    it('should not assign questionData, isChecked and answerConfirmed if question does not exist', () => {
         component.question = undefined;
+        component.answerConfirmed = true;
 
         expect(component.questionData).toBeFalsy();
         expect(component.isChecked).toBeFalsy();
+        expect(component.answerConfirmed).toBeTrue();
+    });
+
+    it('should do nothing if questionData is not defined', () => {
+        component.isChecked = mockIsChecked;
+        component.answerConfirmed = false;
+        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        component.handleKeyUp(mockEvent);
+
+        expect(component.answerConfirmed).toBeFalse();
+        component.isChecked.forEach((value) => {
+            expect(value).toBeFalse();
+        });
+    });
+
+    it('should do nothing if questionData is not MCQ', () => {
+        component.questionData = { ...mockQuestionData, isMCQ: false };
+        component.isChecked = mockIsChecked;
+        component.answerConfirmed = false;
+        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        component.handleKeyUp(mockEvent);
+
+        expect(component.answerConfirmed).toBeFalse();
+        component.isChecked.forEach((value) => {
+            expect(value).toBeFalse();
+        });
+    });
+
+    it('should do nothing if canEditAnswer() returns false', () => {
+        component.questionData = mockQuestionData;
+        component.isChecked = mockIsChecked;
+        spyOn(component, 'canEditAnswer').and.returnValue(false);
+        component.answerConfirmed = false;
+        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        component.handleKeyUp(mockEvent);
+
+        expect(component.answerConfirmed).toBeFalse();
+        component.isChecked.forEach((value) => {
+            expect(value).toBeFalse();
+        });
+    });
+
+    it('should set answerConfirmed to true when the Enter key is pressed', () => {
+        component.questionData = mockQuestionData;
+        spyOn(component, 'canEditAnswer').and.returnValue(true);
+        component.answerConfirmed = false;
+        const event = new KeyboardEvent('keyup', { key: 'Enter' });
+        component.handleKeyUp(event);
+
+        expect(component.answerConfirmed).toBeTrue();
+    });
+
+    it('should not set answerConfirmed to true when a key other than Enter is pressed', () => {
+        component.questionData = mockQuestionData;
+        spyOn(component, 'canEditAnswer').and.returnValue(true);
+        component.answerConfirmed = false;
+        const event = new KeyboardEvent('keyup', { key: 'Space' });
+        component.handleKeyUp(event);
+
+        expect(component.answerConfirmed).toBeFalse();
     });
 
     it('should toggle isChecked for a valid key press', () => {
@@ -89,39 +151,6 @@ describe('QuestionComponent', () => {
         });
     });
 
-    it('should do nothing if questionData is not defined', () => {
-        component.isChecked = mockIsChecked;
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        component.handleKeyUp(mockEvent);
-
-        component.isChecked.forEach((value) => {
-            expect(value).toBeFalse();
-        });
-    });
-
-    it('should do nothing if questionData is not MCQ', () => {
-        component.questionData = { ...mockQuestionData, isMCQ: false };
-        component.isChecked = mockIsChecked;
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        component.handleKeyUp(mockEvent);
-
-        component.isChecked.forEach((value) => {
-            expect(value).toBeFalse();
-        });
-    });
-
-    it('should do nothing if answer is confirmed', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
-        component.answerConfirmed = true;
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        component.handleKeyUp(mockEvent);
-
-        component.isChecked.forEach((value) => {
-            expect(value).toBeFalse();
-        });
-    });
-
     it('should calculate grade correctly for MCQ', () => {
         component.questionData = mockQuestionData;
         component.isChecked = mockIsChecked;
@@ -131,6 +160,34 @@ describe('QuestionComponent', () => {
         component.isChecked[3] = false;
 
         expect(component.calculateGrade()).toEqual(GRADE);
+    });
+
+    it('canEditAnswer() should return true if answerConfirmed and showingAnswer are false', () => {
+        component.answerConfirmed = false;
+        component.showingAnswer = false;
+
+        expect(component.canEditAnswer()).toBeTrue();
+    });
+
+    it('canEditAnswer() should return false if answerConfirmed is true', () => {
+        component.answerConfirmed = true;
+        component.showingAnswer = false;
+
+        expect(component.canEditAnswer()).toBeFalse();
+    });
+
+    it('canEditAnswer() should return false if showingAnswer is true', () => {
+        component.answerConfirmed = false;
+        component.showingAnswer = true;
+
+        expect(component.canEditAnswer()).toBeFalse();
+    });
+
+    it('canEditAnswer() should return false if answerConfirmed and showingAnswer are true', () => {
+        component.answerConfirmed = true;
+        component.showingAnswer = true;
+
+        expect(component.canEditAnswer()).toBeFalse();
     });
 
     it('should calculate grade correctly for MCQ with negative grade', () => {
