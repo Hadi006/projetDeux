@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { TimeService } from './time.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
 
 export enum GameState {
     ShowQuestion = 0,
@@ -50,8 +51,14 @@ export class GameHandlerService {
     private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
     private gameStateSubscription: Subscription;
+    private answerConfirmedSubscriptions: Subscription[] = [];
+    private nPlayers: number;
+    private nAnswersConfirmed: number = 0;
 
-    constructor(private timeService: TimeService) {
+    constructor(
+        private timeService: TimeService,
+        private playerHandlerService: PlayerHandlerService,
+    ) {
         this.gameStateSubscription = this.gameStateSubject.subscribe((state: GameState) => {
             this.gameState = state;
         });
@@ -87,6 +94,16 @@ export class GameHandlerService {
     }
 
     startGame(): void {
+        this.nPlayers = this.playerHandlerService.answerConfirmedNotifiers.length;
+        this.playerHandlerService.answerConfirmedNotifiers.forEach((subject: Subject<void>) => {
+            const answerConfirmedSubscription: Subscription = subject.subscribe(() => {
+                if (++this.nAnswersConfirmed >= this.nPlayers) {
+                    this.showAnswer();
+                }
+            });
+            this.answerConfirmedSubscriptions.push(answerConfirmedSubscription);
+        });
+
         this.timerIds[0] = this.timeService.createTimer(() => {
             this.showAnswer();
         });
@@ -129,5 +146,8 @@ export class GameHandlerService {
 
     cleanUp(): void {
         this.gameStateSubscription.unsubscribe();
+        this.answerConfirmedSubscriptions.forEach((subscription: Subscription) => {
+            subscription.unsubscribe();
+        });
     }
 }

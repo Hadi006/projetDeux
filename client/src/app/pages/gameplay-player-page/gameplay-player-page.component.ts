@@ -1,7 +1,8 @@
 import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameHandlerService, GameState } from '@app/services/game-handler.service';
-import { Subscription } from 'rxjs';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { Subscription, Subject } from 'rxjs';
 
 @Component({
     selector: 'app-gameplay-player-page',
@@ -16,10 +17,12 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     gameState = GameState;
 
     private gameStateSubscription: Subscription;
+    private answerConfirmedNotifier: Subject<void> = new Subject<void>();
 
     constructor(
         public gameHandlerService: GameHandlerService,
-        public router: Router,
+        private router: Router,
+        private playerHandlerService: PlayerHandlerService,
     ) {
         this.gameStateSubscription = this.gameHandlerService.stateSubject.subscribe((state: GameState) => {
             switch (state) {
@@ -45,9 +48,11 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         }
 
         this.answerConfirmed = true;
+        this.answerConfirmedNotifier.next();
     }
 
     ngOnInit(): void {
+        this.playerHandlerService.answerConfirmedNotifiers.push(this.answerConfirmedNotifier);
         this.gameHandlerService.startGame();
     }
 
