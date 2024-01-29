@@ -5,15 +5,8 @@ import { Timer } from '@app/classes/timer';
     providedIn: 'root',
 })
 export class TimeService {
-<<<<<<< HEAD
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
-=======
-    // TODO : Permettre plus qu'une minuterie à la fois
-    private interval: number | undefined;
-    private readonly tick = 1000;
-    private onTimerEndCallback: (() => void) | undefined;
->>>>>>> f2ba0ca (Time service now accepts a callback function for when it ends)
 
     createTimer(callback?: () => void): number {
         const timerId = this.nextId++;
@@ -22,24 +15,9 @@ export class TimeService {
         return timerId;
     }
 
-<<<<<<< HEAD
     startTimer(timerId: number, startValue: number) {
         const timer = this.timers.get(timerId);
         timer?.start(startValue);
-=======
-    startTimer(startValue: number, onTimerEnd?: () => void) {
-        if (this.interval) return;
-        this.time = startValue;
-        this.onTimerEndCallback = onTimerEnd;
-        this.interval = window.setInterval(() => {
-            if (this.time > 0) {
-                this.time--;
-            } else {
-                this.stopTimer();
-                this.onTimerEndCallback?.();
-            }
-        }, this.tick);
->>>>>>> f2ba0ca (Time service now accepts a callback function for when it ends)
     }
 
     stopTimer(timerId: number) {
