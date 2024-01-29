@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameHandlerService, GameState } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { Subscription, Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-gameplay-player-page',
@@ -14,7 +14,8 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
 
     showingAnswer: boolean = false;
     gameState = GameState;
-    answerConfirmedNotifier: Subject<void> = new Subject<void>();
+    answerConfirmedSubscription: Subscription;
+    grade: number = 0;
 
     private gameStateSubscription: Subscription;
 
@@ -36,10 +37,13 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
                     break;
             }
         });
+
+        this.answerConfirmedSubscription = this.playerHandlerService.createAnswerConfirmedNotifier().subscribe((grade: number) => {
+            this.grade = grade;
+        });
     }
 
     ngOnInit(): void {
-        this.playerHandlerService.answerConfirmedNotifiers.push(this.answerConfirmedNotifier);
         this.gameHandlerService.startGame();
     }
 

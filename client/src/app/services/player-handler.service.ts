@@ -5,9 +5,15 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class PlayerHandlerService {
-    private answerConfirmedNotifierSubjects: Subject<void>[] = [];
+    private answerConfirmedNotifierSubjects: Subject<number>[] = [];
 
-    get answerConfirmedNotifiers() {
+    get answerConfirmedNotifiers(): Subject<number>[] {
         return this.answerConfirmedNotifierSubjects;
+    }
+
+    createAnswerConfirmedNotifier(): Subject<number> {
+        const subject: Subject<number> = new Subject<number>();
+        this.answerConfirmedNotifierSubjects.push(subject);
+        return subject;
     }
 }

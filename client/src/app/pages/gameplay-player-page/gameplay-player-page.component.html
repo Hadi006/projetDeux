@@ -1,9 +1,11 @@
-{{ gameHandlerService.time }}
+Time left: {{ gameHandlerService.time }}
 <app-question
     [question]="gameHandlerService.currentQuestion"
     [showingAnswer]="showingAnswer"
     [answerConfirmedNotifier]="answerConfirmedNotifier"
 ></app-question>
+
+Score: {{grade}}
 
 <div id="controls-container">
     <button routerLink="['']">Leave</button>
