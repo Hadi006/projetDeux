@@ -49,5 +49,6 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.gameStateSubscription.unsubscribe();
+        this.answerConfirmedSubscription.unsubscribe();
     }
 }
