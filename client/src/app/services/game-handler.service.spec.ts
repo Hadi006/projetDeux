@@ -14,7 +14,7 @@ const QUESTION_DATA = [
     {
         id: 0,
         points: 1,
-        question: 'Quel est le résultat de 1 + 1 ?',
+        question: '1+1?',
         answers: ['1', '2', '3', '4'],
         correctAnswers: ['2'],
         isMCQ: true,
@@ -22,7 +22,7 @@ const QUESTION_DATA = [
     {
         id: 1,
         points: 4,
-        question: 'Question réponse libre',
+        question: 'Open ended question',
         answers: [],
         correctAnswers: [],
         isMCQ: false,
@@ -30,7 +30,7 @@ const QUESTION_DATA = [
     {
         id: 2,
         points: 2,
-        question: 'Quel est le résultat de 2 + 2 ?',
+        question: '2+2?',
         answers: ['1', '2', '3', '4'],
         correctAnswers: ['4'],
         isMCQ: true,

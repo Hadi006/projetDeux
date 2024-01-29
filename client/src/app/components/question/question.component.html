@@ -1,7 +1,7 @@
 <div *ngIf="questionData">
     <h2>{{ questionData.question }}</h2>
 
-    <p>Points: {{ questionData.points }}</p>
+    <p>Question value: {{ questionData.points }} points</p>
 
     <div *ngIf="questionData.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let answer of questionData.answers; let i = index">
