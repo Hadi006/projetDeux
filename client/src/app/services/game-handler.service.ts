@@ -154,7 +154,11 @@ export class GameHandlerService {
 
         let isCorrect = true;
         isChecked.forEach((checked: boolean, index: number) => {
-            isCorrect = checked === this.currentQuestion.correctAnswers.includes(this.currentQuestion.answers[index]);
+            if (checked) {
+                isCorrect = this.currentQuestion.correctAnswers.includes(this.currentQuestion.answers[index]);
+            } else {
+                isCorrect = !this.currentQuestion.correctAnswers.includes(this.currentQuestion.answers[index]);
+            }
         });
 
         return isCorrect ? maxGrade : 0;
