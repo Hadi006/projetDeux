@@ -17,8 +17,8 @@ describe('PlayerHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('answerConfirmedNotifiers should return the correct value', () => {
-        service['answerConfirmedNotifierSubjects'] = ANSWER_CONFIRMED_NOTIFIER_SUBJECTS;
-        expect(service.answerConfirmedNotifiers).toEqual(ANSWER_CONFIRMED_NOTIFIER_SUBJECTS);
+    it('gradeNotifiers should return the correct value', () => {
+        service['gradeNotifierSubjects'] = ANSWER_CONFIRMED_NOTIFIER_SUBJECTS;
+        expect(service.gradeNotifiers).toEqual(ANSWER_CONFIRMED_NOTIFIER_SUBJECTS);
     });
 });
