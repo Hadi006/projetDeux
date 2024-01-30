@@ -20,8 +20,6 @@
         <span *ngFor="let correctAnswer of questionData.correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer }}</p>
         </span>
-        {{ calculateGrade() }}
     </div>
 </div>
 <button [disabled]="!canEditAnswer()" (click)="confirmAnswer()">Confirm</button>
-

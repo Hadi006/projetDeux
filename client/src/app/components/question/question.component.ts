@@ -1,8 +1,6 @@
 import { Component, HostListener, Input } from '@angular/core';
 import { QuestionData } from '@common/question-data';
-import { Subject } from 'rxjs';
-
-const GOOD_ANSWER_MULTIPLIER = 1.2;
+import { Player } from '@app/interfaces/player';
 
 @Component({
     selector: 'app-question',
@@ -12,7 +10,7 @@ const GOOD_ANSWER_MULTIPLIER = 1.2;
 export class QuestionComponent {
     @Input() answerConfirmed: boolean;
     @Input() showingAnswer: boolean;
-    @Input() answerConfirmedNotifier: Subject<void>;
+    @Input() player: Player;
 
     questionData: QuestionData;
     isChecked: boolean[];
@@ -46,24 +44,10 @@ export class QuestionComponent {
 
     confirmAnswer(): void {
         this.answerConfirmed = true;
-        this.answerConfirmedNotifier.next();
+        this.player.answerNotifier.next(this.isChecked);
     }
 
     canEditAnswer(): boolean {
         return !this.answerConfirmed && !this.showingAnswer;
-    }
-
-    calculateGrade(): number {
-        const maxGrade: number = this.questionData.points * GOOD_ANSWER_MULTIPLIER;
-        if (!this.questionData.isMCQ) {
-            return maxGrade;
-        }
-
-        let isCorrect = true;
-        this.isChecked.forEach((checked: boolean, index: number) => {
-            isCorrect = checked === this.questionData.correctAnswers.includes(this.questionData.answers[index]);
-        });
-
-        return isCorrect ? maxGrade : 0;
     }
 }
