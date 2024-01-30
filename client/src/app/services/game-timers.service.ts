@@ -5,5 +5,48 @@ import { TimeService } from '@app/services/time.service';
     providedIn: 'root',
 })
 export class GameTimersService {
+    private questionTimerId: number;
+    private answerTimerId: number;
+
     constructor(private timeService: TimeService) {}
+
+    createQuestionTimer(questionTimerCallback: () => void): void {
+        this.questionTimerId = this.timeService.createTimer(questionTimerCallback);
+    }
+
+    createAnswerTimer(answerTimerCallback: () => void): void {
+        this.answerTimerId = this.timeService.createTimer(answerTimerCallback);
+    }
+
+    startQuestionTimer(time: number): void {
+        this.timeService.startTimer(this.questionTimerId, time);
+    }
+
+    startAnswerTimer(time: number): void {
+        this.timeService.startTimer(this.answerTimerId, time);
+    }
+
+    stopQuestionTimer(): void {
+        this.timeService.stopTimer(this.questionTimerId);
+    }
+
+    stopAnswerTimer(): void {
+        this.timeService.stopTimer(this.answerTimerId);
+    }
+
+    getQuestionTime(): number {
+        return this.timeService.getTime(this.questionTimerId);
+    }
+
+    getAnswerTime(): number {
+        return this.timeService.getTime(this.answerTimerId);
+    }
+
+    setQuestionTime(time: number): void {
+        this.timeService.setTime(this.questionTimerId, time);
+    }
+
+    setAnswerTime(time: number): void {
+        this.timeService.setTime(this.answerTimerId, time);
+    }
 }

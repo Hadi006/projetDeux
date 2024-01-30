@@ -3,6 +3,7 @@ import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { GameTimersService } from '@app/services/game-timers.service';
 
 export enum GameState {
     ShowQuestion = 0,
@@ -12,8 +13,6 @@ export enum GameState {
 
 const GOOD_ANSWER_MULTIPLIER = 1.2;
 const SHOW_ANSWER_DELAY = 3;
-const QUESTION_TIMER_INDEX = 0;
-const ANSWER_TIMER_INDEX = 1;
 const QUESTION_DATA: QuestionData[] = [
     {
         id: 0,
@@ -46,7 +45,6 @@ const QUESTION_DATA: QuestionData[] = [
 })
 export class GameHandlerService {
     private gameData: GameData;
-    private timerIds: number[] = new Array(2);
     private currentQuestionIndex: number = 0;
     private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
@@ -55,6 +53,7 @@ export class GameHandlerService {
     private nAnswersConfirmed: number = 0;
 
     constructor(
+        private gameTimersService: GameTimersService,
         private playerHandlerService: PlayerHandlerService,
     ) {
         this.gameStateSubscription = this.gameStateSubject.subscribe((state: GameState) => {
@@ -69,10 +68,10 @@ export class GameHandlerService {
     get time(): number {
         switch (this.gameState) {
             case GameState.ShowQuestion: {
-                return this.timeService.getTime(this.timerIds[QUESTION_TIMER_INDEX]);
+                return this.gameTimersService.getQuestionTime();
             }
             case GameState.ShowAnswer: {
-                return this.timeService.getTime(this.timerIds[ANSWER_TIMER_INDEX]);
+                return this.gameTimersService.getAnswerTime();
             }
             case GameState.GameEnded: {
                 return 0;
@@ -93,8 +92,8 @@ export class GameHandlerService {
 
     startGame(): void {
         this.subscribeToPlayerAnswers();
-        this.timerIds[0] = this.timeService.createTimer(this.showAnswer.bind(this));
-        this.timerIds[1] = this.timeService.createTimer(this.setUpNextQuestion.bind(this));
+        this.gameTimersService.createQuestionTimer(this.showAnswer.bind(this));
+        this.gameTimersService.createAnswerTimer(this.setUpNextQuestion.bind(this));
 
         this.getGameData();
         this.resetGameState();
@@ -108,7 +107,7 @@ export class GameHandlerService {
                 player.score += this.calculateScore(isChecked);
 
                 if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
-                    this.timeService.setTime(this.timerIds[QUESTION_TIMER_INDEX], 0);
+                    this.gameTimersService.setQuestionTime(0);
                 }
             });
 
@@ -133,15 +132,13 @@ export class GameHandlerService {
             this.gameStateSubject.next(GameState.GameEnded);
         } else {
             this.gameStateSubject.next(GameState.ShowQuestion);
-
-            this.timeService.startTimer(this.timerIds[QUESTION_TIMER_INDEX], this.gameData.timePerQuestion);
+            this.gameTimersService.startQuestionTimer(this.gameData.timePerQuestion);
         }
     }
 
     showAnswer(): void {
         this.gameStateSubject.next(GameState.ShowAnswer);
-
-        this.timeService.startTimer(this.timerIds[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
+        this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
     }
 
     setUpNextQuestion(): void {
