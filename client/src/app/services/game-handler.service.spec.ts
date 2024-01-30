@@ -303,8 +303,11 @@ describe('GameHandlerService', () => {
     });
 
     describe('setUpNextQuestion', () => {
-        it('setUpNextQuestion should increment currentQuestionIndex and call resetGameState', () => {
+        beforeEach(() => {
             service['currentQuestionIndex'] = 0;
+        });
+
+        it('setUpNextQuestion should increment currentQuestionIndex and call resetGameState', () => {
             spyOn(service, 'resetGameState');
             service.setUpNextQuestion();
 
