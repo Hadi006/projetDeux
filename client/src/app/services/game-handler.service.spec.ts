@@ -42,7 +42,7 @@ const TEST_GAME = {
     questions: QUESTION_DATA,
     timePerQuestion: 10,
 };
-// const TEST_ANSWER = [false, true, false, false];
+const TEST_ANSWER = [false, true, false, false];
 // const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 describe('GameHandlerService', () => {
@@ -202,6 +202,12 @@ describe('GameHandlerService', () => {
     });
 
     describe('subscribeToPlayerAnswers', () => {
+        let mockPlayers: Map<number, Player>;
+
+        beforeEach(() => {
+mockPlayers = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
+        });
+
         it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
             const testScore = 10;
 
