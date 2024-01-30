@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { TimeService } from '@app/services/time.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class GameTimersService {
-
-  constructor() { }
+    constructor(private timeService: TimeService) {}
 }

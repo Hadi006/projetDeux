@@ -3,7 +3,6 @@ import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { TimeService } from '@app/services/time.service';
 
 export enum GameState {
     ShowQuestion = 0,
@@ -56,7 +55,6 @@ export class GameHandlerService {
     private nAnswersConfirmed: number = 0;
 
     constructor(
-        private timeService: TimeService,
         private playerHandlerService: PlayerHandlerService,
     ) {
         this.gameStateSubscription = this.gameStateSubject.subscribe((state: GameState) => {
