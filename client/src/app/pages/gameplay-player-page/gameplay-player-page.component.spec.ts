@@ -12,7 +12,6 @@ describe('GameplayPlayerPageComponent', () => {
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
     let gameStateSubjectSpy: BehaviorSubject<GameState>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
-    let answerConfirmedNotifierSubjectSpy: BehaviorSubject<void>;
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
@@ -21,10 +20,7 @@ describe('GameplayPlayerPageComponent', () => {
             stateSubject: gameStateSubjectSpy,
         });
 
-        answerConfirmedNotifierSubjectSpy = new BehaviorSubject<void>(undefined);
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers'], {
-            answerConfirmedNotifiers: [answerConfirmedNotifierSubjectSpy],
-        });
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['createPlayer']);
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -48,6 +44,11 @@ describe('GameplayPlayerPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should create a player', () => {
+        expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
+        expect(component.player).toBeTruthy();
     });
 
     it('should set showingAnswer to false when the game state is ShowQuestion', () => {
