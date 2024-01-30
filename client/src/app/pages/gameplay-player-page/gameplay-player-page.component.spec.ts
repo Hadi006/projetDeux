@@ -57,11 +57,15 @@ describe('GameplayPlayerPageComponent', () => {
         expect(component.showingAnswer).toBeFalse();
     });
 
-    it('should set showingAnswer to true when the game state is ShowAnswer', () => {
+    it('should set showingAnswer to true and update score when the game state is ShowAnswer', () => {
+        const score = 100;
+
         component.showingAnswer = false;
+        component.player.score = score;
         component.gameHandlerService.stateSubject.next(GameState.ShowAnswer);
 
         expect(component.showingAnswer).toBeTrue();
+        expect(component.score).toEqual(score);
     });
 
     it('should navigate to the home page when the game state is GameEnded', () => {
