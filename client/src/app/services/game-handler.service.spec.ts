@@ -54,6 +54,35 @@ describe('GameHandlerService', () => {
         expect(service.data).toEqual(TEST_GAME);
     });
 
+    it('get time should call getQuestionTime when the game state is ShowQuestion and return its value', () => {
+        const TIME = 10;
+        gameTimerServiceSpy.getQuestionTime.and.returnValue(TIME);
+        service['gameState'] = GameState.ShowQuestion;
+
+        expect(service.time).toEqual(TIME);
+        expect(gameTimerServiceSpy.getQuestionTime).toHaveBeenCalled();
+    });
+
+    it('get time should call getAnswerTime when the game state is ShowAnswer and return its value', () => {
+        const TIME = 10;
+        gameTimerServiceSpy.getAnswerTime.and.returnValue(TIME);
+        service['gameState'] = GameState.ShowAnswer;
+
+        expect(service.time).toEqual(TIME);
+        expect(gameTimerServiceSpy.getAnswerTime).toHaveBeenCalled();
+    });
+
+    it('get time should return 0 when the game state is GameEnded', () => {
+        service['gameState'] = GameState.GameEnded;
+
+        expect(service.time).toEqual(0);
+    });
+
+    it('get time should return 0 when the game state is not recognized', () => {service['gameState'] = 3;
+
+            expect(service.time).toEqual(0);
+        });
+
     it('get stateSubject should return the correct value', () => {
         service['gameStateSubject'] = new BehaviorSubject<GameState>(GameState.ShowQuestion);
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
