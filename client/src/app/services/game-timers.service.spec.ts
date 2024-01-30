@@ -55,4 +55,11 @@ describe('GameTimersService', () => {
 
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[QUESTION_ID_INDEX], TIME_OUT);
     });
+
+    it('startAnswerTimer should call startTimer with the correct id and time', () => {
+        service['answerTimerId'] = TIMER_IDS[ANSWER_ID_INDEX];
+        service.startAnswerTimer(TIME_OUT);
+
+        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[ANSWER_ID_INDEX], TIME_OUT);
+    });
 });
