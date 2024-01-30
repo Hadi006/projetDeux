@@ -11,7 +11,7 @@ export class Timer {
             return;
         }
 
-        this.time = startValue;
+        this.time = startValue < 0 ? 0 : startValue;
         this.interval = window.setInterval(() => {
             if (this.time > 0) {
                 this.time--;
