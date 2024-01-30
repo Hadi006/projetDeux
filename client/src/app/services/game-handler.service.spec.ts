@@ -151,6 +151,17 @@ describe('GameHandlerService', () => {
     });
 
     describe('startGame', () => {
+        let timerCallback: () => void;
+
+        beforeEach(() => {
+            let timerIdSequence = 0;
+
+            timeServiceSpy.createTimer.and.callFake((callback: () => void) => {
+                timerCallback = callback;
+                return timerIdSequence++;
+            });
+        });
+
         it('should call subscribeToPlayerAnswers', () => {
             spyOn(service, 'subscribeToPlayerAnswers');
             service.startGame();
@@ -160,7 +171,7 @@ describe('GameHandlerService', () => {
         it('should create two timers and assign the correct timerIds', () => {
             service.startGame();
             expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
-            expect(service['timerIds']).toEqual([0, 1]);
+            expect(service['timerIds']).toEqual(TIMER_IDS);
         });
 
         it('should call showAnswer when the first timer is triggered', () => {
