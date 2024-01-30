@@ -5,14 +5,13 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { TimeService } from '@app/services/time.service';
 
-const GOOD_ANSWER_MULTIPLIER = 1.2;
-
 export enum GameState {
     ShowQuestion = 0,
     ShowAnswer = 1,
     GameEnded = 2,
 }
 
+const GOOD_ANSWER_MULTIPLIER = 1.2;
 const SHOW_ANSWER_DELAY = 3;
 const QUESTION_TIMER_INDEX = 0;
 const ANSWER_TIMER_INDEX = 1;
