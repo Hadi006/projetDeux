@@ -25,7 +25,12 @@ describe('GameHandlerService', () => {
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['get players', 'get nPlayers']);
 
-        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['get currentQuestion','setQuestions', 'nextQuestion', 'calculateScore']);
+        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', [
+            'get currentQuestion',
+            'setQuestions',
+            'nextQuestion',
+            'calculateScore',
+        ]);
     });
 
     beforeEach(() => {
@@ -33,6 +38,7 @@ describe('GameHandlerService', () => {
             providers: [
                 { provide: GameTimersService, useValue: gameTimerServiceSpy },
                 { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
             ],
         });
         service = TestBed.inject(GameHandlerService);
@@ -40,5 +46,10 @@ describe('GameHandlerService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('get data should return the correct value', () => {
+        service['gameData'] = TEST_GAME;
+        expect(service.data).toEqual(TEST_GAME);
     });
 });
