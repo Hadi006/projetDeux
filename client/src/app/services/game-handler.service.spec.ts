@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
@@ -50,6 +51,7 @@ describe('GameHandlerService', () => {
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
     let answerConfirmedNotifiersSpy: Subject<void>[];
+    let mockPlayers: Map<number, Player>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
@@ -61,8 +63,10 @@ describe('GameHandlerService', () => {
         });
 
         answerConfirmedNotifiersSpy = [new Subject<void>(), new Subject<void>(), new Subject<void>()];
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers', ['players']], {
+        mockPlayers = new Map<number, Player>();
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers', 'players'], {
             answerConfirmedNotifiers: answerConfirmedNotifiersSpy,
+            players: mockPlayers,
         });
     });
 
@@ -162,18 +166,13 @@ describe('GameHandlerService', () => {
     });
 
     it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
-        const mockPlayers = [
-            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
-            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
-        ];
-
+        mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
+        mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
     });
 
     it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
-        const mockPlayers = [
-            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
-            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
-        ];
+        mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
+        mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
 
         service.subscribeToPlayerAnswers();
         answerConfirmedNotifiersSpy[0].next();
@@ -181,10 +180,8 @@ describe('GameHandlerService', () => {
     });
 
     it('subscription to answerNotifier should set time to 0 when all players have confirmed their answer', () => {
-        const mockPlayers = [
-            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
-            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
-        ];
+        mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
+        mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
 
         service.subscribeToPlayerAnswers();
         answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
