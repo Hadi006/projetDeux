@@ -90,7 +90,11 @@ export class GameHandlerService {
     }
 
     startGame(): void {
-        this.subscribeToPlayerAnswers();
+        this.confirmSubscriptions = [];
+        this.playerHandlerService.players.forEach((player) => {
+            this.createAnswerSubscription(player);
+        });
+
         this.gameTimersService.createQuestionTimer(this.showAnswer.bind(this));
         this.gameTimersService.createAnswerTimer(this.setUpNextQuestion.bind(this));
 
@@ -109,14 +113,6 @@ export class GameHandlerService {
     cleanUp(): void {
         this.confirmSubscriptions.forEach((subscription: Subscription) => {
             subscription.unsubscribe();
-        });
-    }
-
-    private subscribeToPlayerAnswers(): void {
-        this.confirmSubscriptions = [];
-
-        this.playerHandlerService.players.forEach((player) => {
-            this.createAnswerSubscription(player);
         });
     }
 
