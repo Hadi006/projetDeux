@@ -78,10 +78,11 @@ describe('GameHandlerService', () => {
         expect(service.time).toEqual(0);
     });
 
-    it('get time should return 0 when the game state is not recognized', () => {service['gameState'] = 3;
+    it('get time should return 0 when the game state is not recognized', () => {
+        service['gameState'] = 3;
 
-            expect(service.time).toEqual(0);
-        });
+        expect(service.time).toEqual(0);
+    });
 
     it('get stateSubject should return the correct value', () => {
         service['gameStateSubject'] = new BehaviorSubject<GameState>(GameState.ShowQuestion);
