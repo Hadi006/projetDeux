@@ -96,4 +96,11 @@ describe('GameTimersService', () => {
 
         expect(timeServiceSpy.setTime).toHaveBeenCalledWith(QUESTION_ID, TIME_OUT);
     });
+
+    it('setAnswerTime should call setTime with the correct id and time', () => {
+        service['answerTimerId'] = ANSWER_ID;
+        service.setAnswerTime(TIME_OUT);
+
+        expect(timeServiceSpy.setTime).toHaveBeenCalledWith(ANSWER_ID, TIME_OUT);
+    });
 });
