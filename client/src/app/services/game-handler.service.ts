@@ -13,7 +13,7 @@ export enum GameState {
     GameEnded = 2,
 }
 
-const QUESTION_DATA: QuestionData[] = [
+export const QUESTION_DATA: QuestionData[] = [
     {
         id: 0,
         points: 1,
@@ -39,7 +39,7 @@ const QUESTION_DATA: QuestionData[] = [
         isMCQ: true,
     },
 ];
-const SHOW_ANSWER_DELAY = 3;
+export const SHOW_ANSWER_DELAY = 3;
 
 @Injectable({
     providedIn: 'root',
