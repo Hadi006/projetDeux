@@ -141,20 +141,6 @@ describe('GameHandlerService', () => {
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
-    it('should set time to 0 when all players have confirmed their answer', () => {
-        service.startGame();
-        answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
-            subject.next();
-        });
-
-        expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
-    });
-
-    it('should not set time to 0 when not all players have confirmed their answer', () => {
-        answerConfirmedNotifiersSpy[0].next();
-        expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
-    });
-
     it('startGame should call subscribeToPlayerAnswers', () => {
         spyOn(service, 'subscribeToPlayerAnswers');
         service.startGame();
@@ -173,6 +159,20 @@ describe('GameHandlerService', () => {
 
         timerCallback();
         expect(service.showAnswer).toHaveBeenCalled();
+    });
+
+    it('should set time to 0 when all players have confirmed their answer', () => {
+        service.startGame();
+        answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
+            subject.next();
+        });
+
+        expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
+    });
+
+    it('should not set time to 0 when not all players have confirmed their answer', () => {
+        answerConfirmedNotifiersSpy[0].next();
+        expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
     });
 
     it('should call setUpNextQuestion when the second timer is triggered', () => {
