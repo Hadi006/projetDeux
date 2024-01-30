@@ -41,18 +41,18 @@ export class QuestionComponent {
         }
     }
 
-    setQuestion(data: QuestionData) {
+    canEditAnswer(): boolean {
+        return !this.answerConfirmed && !this.showingAnswer;
+    }
+
+    private setQuestion(data: QuestionData) {
         this.questionData = data;
         this.isChecked = new Array(this.questionData.answers.length).fill(false);
         this.answerConfirmed = false;
     }
 
-    confirmAnswer(): void {
+    private confirmAnswer(): void {
         this.answerConfirmed = true;
         this.player.answerNotifier.next(this.isChecked);
-    }
-
-    canEditAnswer(): boolean {
-        return !this.answerConfirmed && !this.showingAnswer;
     }
 }
