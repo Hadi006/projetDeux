@@ -62,6 +62,7 @@ describe('GameplayPlayerPageComponent', () => {
         const score = 100;
 
         component.showingAnswer = false;
+        component.player = { score: 0, answerNotifier: new BehaviorSubject<boolean[]>([])}
         component.player.score = score;
         component.gameHandlerService.stateSubject.next(GameState.ShowAnswer);
 

@@ -222,7 +222,6 @@ describe('GameHandlerService', () => {
     });
 
     it('resetGameState should emit the correct value if currentQuestionIndex is  than or equal to gameData.questions.length', () => {
-
         service['gameData'] = TEST_GAME;
         service['currentQuestionIndex'] = 3;
         spyOn(service['gameStateSubject'], 'next');
@@ -277,16 +276,19 @@ describe('GameHandlerService', () => {
 
     it('calculateScore should return the correct value for a correct answer', () => {
         service['currentQuestionIndex'] = 0;
+        service['gameData'] = TEST_GAME;
         expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 
     it('calculateScore should return the 0 for an incorrect answer', () => {
         service['currentQuestionIndex'] = 2;
+        service['gameData'] = TEST_GAME;
         expect(service.calculateScore(TEST_ANSWER)).toEqual(0);
     });
 
     it('calculateScore should return the correct value for a correct open ended question', () => {
         service['currentQuestionIndex'] = 1;
+        service['gameData'] = TEST_GAME;
         expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
     });
 
