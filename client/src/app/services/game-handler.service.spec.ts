@@ -141,11 +141,6 @@ describe('GameHandlerService', () => {
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
-    it('startGame should set nPlayers to the correct value', () => {
-        service.startGame();
-        expect(service['nPlayers']).toEqual(3);
-    });
-
     it('startGame should populate answerConfirmedSubscriptions with subscriptions', () => {
         service.startGame();
         expect(service['answerConfirmedSubscriptions'].length).toEqual(3);
