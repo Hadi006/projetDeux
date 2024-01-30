@@ -291,15 +291,15 @@ describe('GameHandlerService', () => {
         expect(service['gameStateSubscription'].unsubscribe).toHaveBeenCalled();
     });
 
-    it('cleanUp should unsubscribe from answerConfirmedSubscriptions', () => {
+    it('cleanUp should unsubscribe from confirmSubscription', () => {
         service.startGame();
-        service['answerConfirmedSubscriptions'].forEach((subscription: Subscription) => {
+        service['confirmSubscriptions'].forEach((subscription: Subscription) => {
             spyOn(subscription, 'unsubscribe');
         });
 
         service.cleanUp();
 
-        service['answerConfirmedSubscriptions'].forEach((subscription: Subscription) => {
+        service['confirmSubscriptions'].forEach((subscription: Subscription) => {
             expect(subscription.unsubscribe).toHaveBeenCalled();
         });
     });
