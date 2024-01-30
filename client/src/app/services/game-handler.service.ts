@@ -5,6 +5,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { Player } from '@app/interfaces/player';
 
 export enum GameState {
     ShowQuestion = 0,
@@ -99,16 +100,24 @@ export class GameHandlerService {
         this.confirmSubscriptions = [];
 
         this.playerHandlerService.players.forEach((player) => {
-            const confirmSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
-                player.score += this.questionHandlerService.calculateScore(isChecked);
-
-                if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
-                    this.gameTimersService.setQuestionTime(0);
-                }
-            });
-
-            this.confirmSubscriptions.push(confirmSubscription);
+            this.createAnswerSubscription(player);
         });
+    }
+
+    createAnswerSubscription(player: Player) {
+        const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
+            this.handlePlayerAnswer(player, isChecked);
+        });
+
+        this.confirmSubscriptions.push(answerSubscription);
+    }
+
+    handlePlayerAnswer(player: Player, isChecked: boolean[]): void {
+        player.score += this.questionHandlerService.calculateScore(isChecked);
+
+        if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
+            this.gameTimersService.setQuestionTime(0);
+        }
     }
 
     getGameData(): void {
