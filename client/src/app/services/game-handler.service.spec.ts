@@ -3,6 +3,7 @@ import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { BehaviorSubject } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
 
@@ -51,5 +52,10 @@ describe('GameHandlerService', () => {
     it('get data should return the correct value', () => {
         service['gameData'] = TEST_GAME;
         expect(service.data).toEqual(TEST_GAME);
+    });
+
+    it('get stateSubject should return the correct value', () => {
+        service['gameStateSubject'] = new BehaviorSubject<GameState>(GameState.ShowQuestion);
+        expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 });
