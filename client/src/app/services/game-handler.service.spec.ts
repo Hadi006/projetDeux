@@ -141,9 +141,10 @@ describe('GameHandlerService', () => {
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
-    it('startGame should populate confirmSubscriptions with subscriptions', () => {
+    it('should call subscribeToPlayerAnswers', () => {
+        spyOn(service, 'subscribeToPlayerAnswers');
         service.startGame();
-        expect(service['confirmSubscriptions'].length).toEqual(3);
+        expect(service.subscribeToPlayerAnswers).toHaveBeenCalled();
     });
 
     it('should set time to 0 when all players have confirmed their answer', () => {
