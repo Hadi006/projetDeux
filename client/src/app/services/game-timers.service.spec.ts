@@ -5,9 +5,8 @@ import { TimeService } from './time.service';
 
 describe('GameTimersService', () => {
     const TIME_OUT = 10;
-    const TIMER_IDS = [0, 1];
-    const QUESTION_ID_INDEX = 0;
-    const ANSWER_ID_INDEX = 1;
+    const QUESTION_ID = 0;
+    const ANSWER_ID = 1;
 
     let service: GameTimersService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
@@ -31,35 +30,42 @@ describe('GameTimersService', () => {
         const callback = () => {
             return;
         };
-        timeServiceSpy.createTimer.and.returnValue(0);
+        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
         service.createQuestionTimer(callback);
 
         expect(timeServiceSpy.createTimer).toHaveBeenCalledWith(callback);
-        expect(service['questionTimerId']).toEqual(0);
+        expect(service['questionTimerId']).toEqual(QUESTION_ID);
     });
 
     it('createAnswerTimer should call createTimer with the correct callback and assign an id to answerTimerId', () => {
         const callback = () => {
             return;
         };
-        timeServiceSpy.createTimer.and.returnValue(1);
+        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
         service.createAnswerTimer(callback);
 
         expect(timeServiceSpy.createTimer).toHaveBeenCalledWith(callback);
-        expect(service['answerTimerId']).toEqual(1);
+        expect(service['answerTimerId']).toEqual(ANSWER_ID);
     });
 
     it('startQuestionTimer should call startTimer with the correct id and time', () => {
-        service['questionTimerId'] = TIMER_IDS[QUESTION_ID_INDEX];
+        service['questionTimerId'] = QUESTION_ID;
         service.startQuestionTimer(TIME_OUT);
 
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[QUESTION_ID_INDEX], TIME_OUT);
+        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_ID, TIME_OUT);
     });
 
     it('startAnswerTimer should call startTimer with the correct id and time', () => {
-        service['answerTimerId'] = TIMER_IDS[ANSWER_ID_INDEX];
+        service['answerTimerId'] = ANSWER_ID;
         service.startAnswerTimer(TIME_OUT);
 
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[ANSWER_ID_INDEX], TIME_OUT);
+        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_ID, TIME_OUT);
+    });
+
+    it('stopQuestionTimer should call stopTimer with the correct id', () => {
+        service['questionTimerId'] = QUESTION_ID;
+        service.stopQuestionTimer();
+
+        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_ID);
     });
 });
