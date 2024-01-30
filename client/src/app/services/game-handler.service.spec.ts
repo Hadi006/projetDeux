@@ -1,47 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { Player } from '@app/interfaces/player';
 
-import { GameHandlerService, GameState } from '@app/services/game-handler.service';
+import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { TimeService } from '@app/services/time.service';
 import { Subject, Subscription } from 'rxjs';
-
-const QUESTION_TIMER_INDEX = 0;
-const ANSWER_TIMER_INDEX = 1;
-const TIMER_IDS = [0, 1];
-const QUESTION_DATA = [
-    {
-        id: 0,
-        points: 1,
-        question: '1+1?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['2'],
-        isMCQ: true,
-    },
-    {
-        id: 1,
-        points: 4,
-        question: 'Open ended question',
-        answers: [],
-        correctAnswers: [],
-        isMCQ: false,
-    },
-    {
-        id: 2,
-        points: 2,
-        question: '2+2?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['4'],
-        isMCQ: true,
-    },
-];
-const TEST_GAME = {
-    id: 0,
-    name: 'Math',
-    questions: QUESTION_DATA,
-    timePerQuestion: 10,
-};
-const TEST_ANSWER = [false, true, false, false];
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
