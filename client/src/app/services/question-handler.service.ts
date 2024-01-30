@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { QuestionData } from '@common/question-data';
+import { Subject } from 'rxjs';
 
 const GOOD_ANSWER_MULTIPLIER = 1.2;
 
@@ -8,14 +9,19 @@ const GOOD_ANSWER_MULTIPLIER = 1.2;
 })
 export class QuestionHandlerService {
     private questionData: QuestionData[];
-    private nbQuestions: number;
     private currentQuestionIndex: number = 0;
+    private nbQuestions: number;
+    private questionsSubject: Subject<QuestionData> = new Subject<QuestionData>();
 
     get currentQuestion(): QuestionData {
         return this.questionData[this.currentQuestionIndex];
     }
     get nQuestions(): number {
         return this.nbQuestions;
+    }
+
+    get questions(): Subject<QuestionData> {
+        return this.questionsSubject;
     }
 
     setQuestions(data: QuestionData[]): void {
@@ -25,6 +31,7 @@ export class QuestionHandlerService {
 
     nextQuestion(): void {
         this.currentQuestionIndex++;
+        this.questionsSubject.next(this.questionData[this.currentQuestionIndex]);
     }
 
     isAnswerCorrect(isChecked: boolean[]): boolean {
