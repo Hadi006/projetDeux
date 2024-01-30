@@ -43,6 +43,8 @@ const TEST_GAME = {
     questions: QUESTION_DATA,
     timePerQuestion: 10,
 };
+const MOCK_PLAYERS = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
+const TEST_ANSWER = [true, false, false, false];
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
@@ -51,7 +53,7 @@ describe('GameHandlerService', () => {
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
     let answerConfirmedNotifiersSpy: Subject<void>[];
-    let mockPlayers: Map<number, Player>;
+    let mockPlayers: Map<number, Player> = MOCK_PLAYERS;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
@@ -174,34 +176,25 @@ describe('GameHandlerService', () => {
     });
 
     it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
-        mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
-        mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
-        const testAnswer = [true, false, false, false];
         const testScore = 10;
 
         spyOn(service, 'calculateScore').and.returnValue(testScore);
         service.subscribeToPlayerAnswers();
-        mockPlayers.get(0)?.answerNotifier.next(testAnswer);
+        mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
 
         expect(mockPlayers.get(0)?.score).toEqual(testScore);
     });
 
     it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
-        mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
-        mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
-
         service.subscribeToPlayerAnswers();
-        answerConfirmedNotifiersSpy[0].next();
+        mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
         expect(service['nAnswersConfirmed']).toEqual(1);
     });
 
     it('subscription to answerNotifier should set time to 0 when all players have confirmed their answer', () => {
-        mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
-        mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
-
         service.subscribeToPlayerAnswers();
-        answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
-            subject.next();
+        mockPlayers.forEach((player) => {
+            player.answerNotifier.next(TEST_ANSWER);
         });
 
         expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
@@ -209,7 +202,7 @@ describe('GameHandlerService', () => {
 
     it('subscription to answerNotifier should not set time to 0 when not all players have confirmed their answer', () => {
         service.subscribeToPlayerAnswers();
-        answerConfirmedNotifiersSpy[0].next();
+        mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
         expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
     });
 
