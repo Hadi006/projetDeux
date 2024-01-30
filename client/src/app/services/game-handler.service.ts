@@ -48,7 +48,6 @@ export class GameHandlerService {
     private gameData: GameData;
     private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
-    private gameStateSubscription: Subscription;
     private confirmSubscriptions: Subscription[];
     private nAnswersConfirmed: number = 0;
 
@@ -56,11 +55,7 @@ export class GameHandlerService {
         private gameTimersService: GameTimersService,
         private playerHandlerService: PlayerHandlerService,
         private questionHandlerService: QuestionHandlerService,
-    ) {
-        this.gameStateSubscription = this.gameStateSubject.subscribe((state: GameState) => {
-            this.gameState = state;
-        });
-    }
+    ) {}
 
     get data() {
         return this.gameData;
@@ -97,7 +92,6 @@ export class GameHandlerService {
     }
 
     cleanUp(): void {
-        this.gameStateSubscription.unsubscribe();
         this.confirmSubscriptions.forEach((subscription: Subscription) => {
             subscription.unsubscribe();
         });
@@ -143,14 +137,17 @@ export class GameHandlerService {
     private resetGameState(): void {
         if (!this.questionHandlerService.currentQuestion) {
             this.gameStateSubject.next(GameState.GameEnded);
+            this.gameState = GameState.GameEnded;
         } else {
             this.gameStateSubject.next(GameState.ShowQuestion);
+            this.gameState = GameState.ShowQuestion;
             this.gameTimersService.startQuestionTimer(this.gameData.timePerQuestion);
         }
     }
 
     private showAnswer(): void {
         this.gameStateSubject.next(GameState.ShowAnswer);
+        this.gameState = GameState.ShowAnswer;
         this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
     }
 
