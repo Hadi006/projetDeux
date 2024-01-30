@@ -44,7 +44,8 @@ const TEST_GAME = {
     timePerQuestion: 10,
 };
 const MOCK_PLAYERS = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
-const TEST_ANSWER = [true, false, false, false];
+const TEST_ANSWER = [false, true, false, false];
+const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
@@ -220,7 +221,8 @@ describe('GameHandlerService', () => {
         expect(service['gameData']).toEqual(TEST_GAME);
     });
 
-    it('resetGameState should emit the correct value if currentQuestionIndex is greater than or equal to gameData.questions.length', () => {
+    it('resetGameState should emit the correct value if currentQuestionIndex is  than or equal to gameData.questions.length', () => {
+
         service['gameData'] = TEST_GAME;
         service['currentQuestionIndex'] = 3;
         spyOn(service['gameStateSubject'], 'next');
@@ -271,6 +273,21 @@ describe('GameHandlerService', () => {
 
         expect(service['currentQuestionIndex']).toEqual(1);
         expect(service.resetGameState).toHaveBeenCalled();
+    });
+
+    it('calculateScore should return the correct value for a correct answer', () => {
+        service['currentQuestionIndex'] = 0;
+        expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
+    });
+
+    it('calculateScore should return the 0 for an incorrect answer', () => {
+        service['currentQuestionIndex'] = 2;
+        expect(service.calculateScore(TEST_ANSWER)).toEqual(0);
+    });
+
+    it('calculateScore should return the correct value for a correct open ended question', () => {
+        service['currentQuestionIndex'] = 1;
+        expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
     });
 
     it('cleanUp should unsubscribe from gameStateSubject', () => {
