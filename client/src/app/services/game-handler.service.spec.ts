@@ -9,6 +9,7 @@ import { QuestionHandlerService } from './question-handler.service';
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
     let gameTimerServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
         gameTimerServiceSpy = jasmine.createSpyObj('GameTimersService', [
@@ -20,13 +21,14 @@ describe('GameHandlerService', () => {
             'getAnswerTime',
             'setQuestionTime',
         ]);
+
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['get players', 'get nPlayers']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: GameTimersService, useValue: gameTimerServiceSpy },
-            ],
+            providers: [{ provide: GameTimersService, useValue: gameTimerServiceSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }],
         });
         service = TestBed.inject(GameHandlerService);
     });
