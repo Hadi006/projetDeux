@@ -61,7 +61,7 @@ describe('GameHandlerService', () => {
         });
 
         answerConfirmedNotifiersSpy = [new Subject<void>(), new Subject<void>(), new Subject<void>()];
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers'], {
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers', ['players']], {
             answerConfirmedNotifiers: answerConfirmedNotifiersSpy,
         });
     });
@@ -166,6 +166,7 @@ describe('GameHandlerService', () => {
             { score: 0, answerConfirmedNotifiers: new Subject<void>() },
             { score: 0, answerConfirmedNotifiers: new Subject<void>() },
         ];
+
     });
 
     it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
