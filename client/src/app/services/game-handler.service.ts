@@ -98,6 +98,14 @@ export class GameHandlerService {
         this.setUpNextQuestion();
     }
 
+    createAnswerSubscription(player: Player) {
+        const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
+            this.handlePlayerAnswer(player, isChecked);
+        });
+
+        this.confirmSubscriptions.push(answerSubscription);
+    }
+
     cleanUp(): void {
         this.confirmSubscriptions.forEach((subscription: Subscription) => {
             subscription.unsubscribe();
@@ -110,14 +118,6 @@ export class GameHandlerService {
         this.playerHandlerService.players.forEach((player) => {
             this.createAnswerSubscription(player);
         });
-    }
-
-    private createAnswerSubscription(player: Player) {
-        const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
-            this.handlePlayerAnswer(player, isChecked);
-        });
-
-        this.confirmSubscriptions.push(answerSubscription);
     }
 
     private handlePlayerAnswer(player: Player, isChecked: boolean[]): void {
