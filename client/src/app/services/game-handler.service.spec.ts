@@ -165,6 +165,14 @@ describe('GameHandlerService', () => {
         expect(service.showAnswer).toHaveBeenCalled();
     });
 
+    it('should call setUpNextQuestion when the second timer is triggered', () => {
+        spyOn(service, 'setUpNextQuestion');
+        service['timerIds'][ANSWER_TIMER_INDEX] = service['timeService'].createTimer(service.setUpNextQuestion.bind(service));
+
+        timerCallback();
+        expect(service.setUpNextQuestion).toHaveBeenCalled();
+    });
+
     it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
         mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
         mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
@@ -203,14 +211,6 @@ describe('GameHandlerService', () => {
         service.subscribeToPlayerAnswers();
         answerConfirmedNotifiersSpy[0].next();
         expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
-    });
-
-    it('should call setUpNextQuestion when the second timer is triggered', () => {
-        spyOn(service, 'setUpNextQuestion');
-        service['timerIds'][ANSWER_TIMER_INDEX] = service['timeService'].createTimer(service.setUpNextQuestion.bind(service));
-
-        timerCallback();
-        expect(service.setUpNextQuestion).toHaveBeenCalled();
     });
 
     it('startGame should call getGameData and resetGameState', () => {
