@@ -134,20 +134,22 @@ export class GameHandlerService {
         this.questionHandlerService.setQuestions(testGame.questions);
     }
 
+    private updateGameState(gameState: GameState): void {
+        this.gameStateSubject.next(gameState);
+        this.gameState = gameState;
+    }
+
     private resetGameState(): void {
         if (!this.questionHandlerService.currentQuestion) {
-            this.gameStateSubject.next(GameState.GameEnded);
-            this.gameState = GameState.GameEnded;
+            this.updateGameState(GameState.GameEnded);
         } else {
-            this.gameStateSubject.next(GameState.ShowQuestion);
-            this.gameState = GameState.ShowQuestion;
+            this.updateGameState(GameState.ShowQuestion);
             this.gameTimersService.startQuestionTimer(this.gameData.timePerQuestion);
         }
     }
 
     private showAnswer(): void {
-        this.gameStateSubject.next(GameState.ShowAnswer);
-        this.gameState = GameState.ShowAnswer;
+        this.updateGameState(GameState.ShowAnswer);
         this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
     }
 
