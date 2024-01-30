@@ -32,6 +32,18 @@ describe('Timer', () => {
             discardPeriodicTasks();
         }));
 
+        it('startTimer should set time to the correct value', () => {
+            timerTest.start(TIMEOUT);
+
+            expect(timerTest.time).toEqual(TIMEOUT);
+        });
+
+        it('startTimer should set time to 0 if startValue is negative', () => {
+            timerTest.start(-TIMEOUT);
+
+            expect(timerTest.time).toEqual(0);
+        });
+
         it('interval should reduce time by 1 every second ', fakeAsync(() => {
             timerTest.start(TIMEOUT);
             tick(MS_SECOND);
