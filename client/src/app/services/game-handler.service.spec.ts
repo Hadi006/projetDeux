@@ -168,6 +168,14 @@ describe('GameHandlerService', () => {
     it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
         mockPlayers.set(0, { score: 0, answerNotifier: new Subject<boolean[]>() });
         mockPlayers.set(1, { score: 0, answerNotifier: new Subject<boolean[]>() });
+        const testAnswer = [true, false, false, false];
+        const testScore = 10;
+
+        spyOn(service, 'calculateScore').and.returnValue(testScore);
+        service.subscribeToPlayerAnswers();
+        mockPlayers.get(0)?.answerNotifier.next(testAnswer);
+
+        expect(mockPlayers.get(0)?.score).toEqual(testScore);
     });
 
     it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
