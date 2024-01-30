@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
 import { QuestionData } from '@common/question-data';
+import { Subject } from 'rxjs';
 import { QuestionComponent } from './question.component';
 
 describe('QuestionComponent', () => {
@@ -150,7 +150,8 @@ describe('QuestionComponent', () => {
     });
 
     it('confirmAnswer() should set answerConfirmed to true and call player.answerNotifier.next()', () => {
-        component.player.answerNotifier = jasmine.createSpyObj('Subject<void>', ['next']);
+        component.player = { score: 0, answerNotifier: new Subject<boolean[]>() };
+        component.player.answerNotifier = jasmine.createSpyObj('Subject<boolean[]>', ['next']);
         component.answerConfirmed = false;
         component.confirmAnswer();
 
