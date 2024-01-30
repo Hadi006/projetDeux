@@ -141,12 +141,6 @@ describe('GameHandlerService', () => {
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
-    it('startGame should call subscribeToPlayerAnswers', () => {
-        spyOn(service, 'subscribeToPlayerAnswers');
-        service.startGame();
-        expect(service.subscribeToPlayerAnswers).toHaveBeenCalled();
-    });
-
     it('should set time to 0 when all players have confirmed their answer', () => {
         service.startGame();
         answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
@@ -159,6 +153,12 @@ describe('GameHandlerService', () => {
     it('should not set time to 0 when not all players have confirmed their answer', () => {
         answerConfirmedNotifiersSpy[0].next();
         expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
+    });
+
+    it('startGame should call subscribeToPlayerAnswers', () => {
+        spyOn(service, 'subscribeToPlayerAnswers');
+        service.startGame();
+        expect(service.subscribeToPlayerAnswers).toHaveBeenCalled();
     });
 
     it('startGame should create two timers and assign the correct timerIds', () => {
