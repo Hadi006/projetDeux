@@ -161,7 +161,30 @@ describe('GameHandlerService', () => {
         expect(service.showAnswer).toHaveBeenCalled();
     });
 
+    it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
+        const mockPlayers = [
+            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
+            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
+        ];
+    });
+
+    it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
+        const mockPlayers = [
+            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
+            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
+        ];
+
+        service.subscribeToPlayerAnswers();
+        answerConfirmedNotifiersSpy[0].next();
+        expect(service['nAnswersConfirmed']).toEqual(1);
+    });
+
     it('subscription to answerNotifier should set time to 0 when all players have confirmed their answer', () => {
+        const mockPlayers = [
+            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
+            { score: 0, answerConfirmedNotifiers: new Subject<void>() },
+        ];
+
         service.subscribeToPlayerAnswers();
         answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
             subject.next();
