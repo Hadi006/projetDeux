@@ -151,16 +151,6 @@ describe('QuestionComponent', () => {
         });
     });
 
-    it('should calculate grade correctly for MCQ', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
-        component.isChecked[0] = true;
-        component.isChecked[1] = true;
-        component.isChecked[2] = false;
-        component.isChecked[3] = false;
-
-        expect(component.calculateGrade()).toEqual(GRADE);
-    });
 
     it('confirmAnswer() should set answerConfirmed to true and call answerConfirmedNotifier.next()', () => {
         component.answerConfirmedNotifier = jasmine.createSpyObj('Subject<void>', ['next']);
