@@ -4,6 +4,7 @@ import { QuestionData } from '@common/question-data';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 
 export enum GameState {
     ShowQuestion = 0,
@@ -11,8 +12,6 @@ export enum GameState {
     GameEnded = 2,
 }
 
-const GOOD_ANSWER_MULTIPLIER = 1.2;
-const SHOW_ANSWER_DELAY = 3;
 const QUESTION_DATA: QuestionData[] = [
     {
         id: 0,
@@ -39,13 +38,13 @@ const QUESTION_DATA: QuestionData[] = [
         isMCQ: true,
     },
 ];
+const SHOW_ANSWER_DELAY = 3;
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameHandlerService {
     private gameData: GameData;
-    private currentQuestionIndex: number = 0;
     private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
     private gameStateSubscription: Subscription;
@@ -55,6 +54,7 @@ export class GameHandlerService {
     constructor(
         private gameTimersService: GameTimersService,
         private playerHandlerService: PlayerHandlerService,
+        private questionHandlerService: QuestionHandlerService,
     ) {
         this.gameStateSubscription = this.gameStateSubject.subscribe((state: GameState) => {
             this.gameState = state;
@@ -82,10 +82,6 @@ export class GameHandlerService {
         }
     }
 
-    get currentQuestion(): QuestionData {
-        return this.gameData.questions[this.currentQuestionIndex];
-    }
-
     get stateSubject(): BehaviorSubject<GameState> {
         return this.gameStateSubject;
     }
@@ -104,7 +100,7 @@ export class GameHandlerService {
 
         this.playerHandlerService.players.forEach((player) => {
             const confirmSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
-                player.score += this.calculateScore(isChecked);
+                player.score += this.questionHandlerService.calculateScore(isChecked);
 
                 if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
                     this.gameTimersService.setQuestionTime(0);
@@ -125,10 +121,11 @@ export class GameHandlerService {
         };
 
         this.gameData = testGame;
+        this.questionHandlerService.setQuestions(testGame.questions);
     }
 
     resetGameState(): void {
-        if (this.currentQuestionIndex >= this.gameData.questions.length) {
+        if (!this.questionHandlerService.currentQuestion) {
             this.gameStateSubject.next(GameState.GameEnded);
         } else {
             this.gameStateSubject.next(GameState.ShowQuestion);
@@ -142,26 +139,8 @@ export class GameHandlerService {
     }
 
     setUpNextQuestion(): void {
-        this.currentQuestionIndex++;
+        this.questionHandlerService.nextQuestion();
         this.resetGameState();
-    }
-
-    calculateScore(isChecked: boolean[]): number {
-        const maxGrade: number = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
-        if (!this.currentQuestion.isMCQ) {
-            return maxGrade;
-        }
-
-        let isCorrect = true;
-        isChecked.forEach((checked: boolean, index: number) => {
-            if (checked) {
-                isCorrect = this.currentQuestion.correctAnswers.includes(this.currentQuestion.answers[index]);
-            } else {
-                isCorrect = !this.currentQuestion.correctAnswers.includes(this.currentQuestion.answers[index]);
-            }
-        });
-
-        return isCorrect ? maxGrade : 0;
     }
 
     cleanUp(): void {
