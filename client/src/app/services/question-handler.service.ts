@@ -34,7 +34,13 @@ export class QuestionHandlerService {
         this.questionsSubject.next(this.questionData[this.currentQuestionIndex]);
     }
 
-    isAnswerCorrect(isChecked: boolean[]): boolean {
+    calculateScore(isChecked: boolean[]): number {
+        const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
+
+        return this.isAnswerCorrect(isChecked) ? score : 0;
+    }
+
+    private isAnswerCorrect(isChecked: boolean[]): boolean {
         if (!this.currentQuestion.isMCQ) {
             return true;
         }
@@ -51,11 +57,5 @@ export class QuestionHandlerService {
         });
 
         return allCheckedAreCorrect && allCorrectAreChecked;
-    }
-
-    calculateScore(isChecked: boolean[]): number {
-        const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
-
-        return this.isAnswerCorrect(isChecked) ? score : 0;
     }
 }
