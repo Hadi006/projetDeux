@@ -8,8 +8,6 @@ describe('QuestionComponent', () => {
     let fixture: ComponentFixture<QuestionComponent>;
     let mockQuestionData: QuestionData;
     let mockIsChecked: boolean[];
-    const MAX_GRADE = 100;
-    const GRADE = 50;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
