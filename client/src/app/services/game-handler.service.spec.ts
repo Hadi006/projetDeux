@@ -42,7 +42,6 @@ const TEST_GAME = {
     timePerQuestion: 10,
 };
 const TEST_ANSWER = [false, true, false, false];
-// const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
@@ -317,21 +316,24 @@ describe('GameHandlerService', () => {
     });
 
     describe('calculateScore', () => {
+        const GOOD_ANSWER_MULTIPLIER = 1.2;
+
+        beforeEach(() => {
+            service['gameData'] = TEST_GAME;
+        });
+
         it('calculateScore should return the correct value for a correct answer', () => {
             service['currentQuestionIndex'] = 0;
-            service['gameData'] = TEST_GAME;
             expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
         });
 
         it('calculateScore should return the 0 for an incorrect answer', () => {
             service['currentQuestionIndex'] = 2;
-            service['gameData'] = TEST_GAME;
             expect(service.calculateScore(TEST_ANSWER)).toEqual(0);
         });
 
         it('calculateScore should return the correct value for a correct open ended question', () => {
             service['currentQuestionIndex'] = 1;
-            service['gameData'] = TEST_GAME;
             expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
         });
     });
