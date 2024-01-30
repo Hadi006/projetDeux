@@ -4,6 +4,7 @@ import { GameHandlerService, GameState } from '@app/services/game-handler.servic
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { Subscription } from 'rxjs';
 import { Player } from '@app/interfaces/player';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 
 @Component({
     selector: 'app-gameplay-player-page',
