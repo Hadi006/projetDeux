@@ -39,6 +39,13 @@ export const QUESTION_DATA: QuestionData[] = [
         isMCQ: true,
     },
 ];
+export const TEST_GAME: GameData = {
+    id: 0,
+    name: 'Math',
+    questions: QUESTION_DATA,
+    timePerQuestion: 10,
+};
+
 export const SHOW_ANSWER_DELAY = 3;
 
 @Injectable({
@@ -123,15 +130,8 @@ export class GameHandlerService {
 
     private getGameData(): void {
         // TODO : Replace with a server call
-        const testGame: GameData = {
-            id: 0,
-            name: 'Math',
-            questions: QUESTION_DATA,
-            timePerQuestion: 10,
-        };
-
-        this.gameData = testGame;
-        this.questionHandlerService.setQuestions(testGame.questions);
+        this.gameData = TEST_GAME;
+        this.questionHandlerService.setQuestions(TEST_GAME.questions);
     }
 
     private updateGameState(gameState: GameState): void {
