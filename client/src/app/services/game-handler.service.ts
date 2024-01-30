@@ -96,7 +96,14 @@ export class GameHandlerService {
         this.resetGameState();
     }
 
-    subscribeToPlayerAnswers(): void {
+    cleanUp(): void {
+        this.gameStateSubscription.unsubscribe();
+        this.confirmSubscriptions.forEach((subscription: Subscription) => {
+            subscription.unsubscribe();
+        });
+    }
+
+    private subscribeToPlayerAnswers(): void {
         this.confirmSubscriptions = [];
 
         this.playerHandlerService.players.forEach((player) => {
@@ -104,7 +111,7 @@ export class GameHandlerService {
         });
     }
 
-    createAnswerSubscription(player: Player) {
+    private createAnswerSubscription(player: Player) {
         const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
             this.handlePlayerAnswer(player, isChecked);
         });
@@ -112,7 +119,7 @@ export class GameHandlerService {
         this.confirmSubscriptions.push(answerSubscription);
     }
 
-    handlePlayerAnswer(player: Player, isChecked: boolean[]): void {
+    private handlePlayerAnswer(player: Player, isChecked: boolean[]): void {
         player.score += this.questionHandlerService.calculateScore(isChecked);
 
         if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
@@ -120,7 +127,7 @@ export class GameHandlerService {
         }
     }
 
-    getGameData(): void {
+    private getGameData(): void {
         // TODO : Replace with a server call
         const testGame: GameData = {
             id: 0,
@@ -133,7 +140,7 @@ export class GameHandlerService {
         this.questionHandlerService.setQuestions(testGame.questions);
     }
 
-    resetGameState(): void {
+    private resetGameState(): void {
         if (!this.questionHandlerService.currentQuestion) {
             this.gameStateSubject.next(GameState.GameEnded);
         } else {
@@ -142,20 +149,13 @@ export class GameHandlerService {
         }
     }
 
-    showAnswer(): void {
+    private showAnswer(): void {
         this.gameStateSubject.next(GameState.ShowAnswer);
         this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
     }
 
-    setUpNextQuestion(): void {
+    private setUpNextQuestion(): void {
         this.questionHandlerService.nextQuestion();
         this.resetGameState();
-    }
-
-    cleanUp(): void {
-        this.gameStateSubscription.unsubscribe();
-        this.confirmSubscriptions.forEach((subscription: Subscription) => {
-            subscription.unsubscribe();
-        });
     }
 }
