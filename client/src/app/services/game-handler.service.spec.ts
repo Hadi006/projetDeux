@@ -43,7 +43,6 @@ const TEST_GAME = {
     questions: QUESTION_DATA,
     timePerQuestion: 10,
 };
-const MOCK_PLAYERS = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
 const TEST_ANSWER = [false, true, false, false];
 const GOOD_ANSWER_MULTIPLIER = 1.2;
 
@@ -53,7 +52,7 @@ describe('GameHandlerService', () => {
     let timerCallback: () => void;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
-    let mockPlayers: Map<number, Player> = MOCK_PLAYERS;
+    let mockPlayers: Map<number, Player>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
@@ -64,7 +63,7 @@ describe('GameHandlerService', () => {
             return timerIdSequence++;
         });
 
-        mockPlayers = new Map<number, Player>();
+        mockPlayers = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['players'], {
             players: mockPlayers,
         });
@@ -80,218 +79,237 @@ describe('GameHandlerService', () => {
         service = TestBed.inject(GameHandlerService);
     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-
-    it('should set gameState to the correct value when gameStateSubject is updated', () => {
-        service['gameStateSubject'].next(GameState.ShowQuestion);
-        expect(service['gameState']).toEqual(GameState.ShowQuestion);
-
-        service['gameStateSubject'].next(GameState.ShowAnswer);
-        expect(service['gameState']).toEqual(GameState.ShowAnswer);
-
-        service['gameStateSubject'].next(GameState.GameEnded);
-        expect(service['gameState']).toEqual(GameState.GameEnded);
-    });
-
-    it('data should return the correct value', () => {
-        service['gameData'] = TEST_GAME;
-
-        expect(service.data).toEqual(TEST_GAME);
-    });
-
-    it('time should call timeService.getTime with the correct timerId if gameState is ShowQuestion and show the correct time', () => {
-        service['timerIds'] = TIMER_IDS;
-        service['gameState'] = GameState.ShowQuestion;
-        timeServiceSpy.getTime.and.returnValue(TIME_OUT);
-
-        expect(service.time).toEqual(TIME_OUT);
-        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(service['timerIds'][QUESTION_TIMER_INDEX]);
-    });
-
-    it('time should call timeService.getTime with the correct timerId if gameState is ShowAnswer and show the correct time', () => {
-        service['timerIds'] = TIMER_IDS;
-        service['gameState'] = GameState.ShowAnswer;
-        timeServiceSpy.getTime.and.returnValue(TIME_OUT);
-
-        expect(service.time).toEqual(TIME_OUT);
-        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_TIMER_INDEX);
-    });
-
-    it('time should return 0 if gameState is GameEnded', () => {
-        service['gameState'] = GameState.GameEnded;
-
-        expect(service.time).toEqual(0);
-        expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
-    });
-
-    it('time should return 0 if gameState is not recognized', () => {
-        service['gameState'] = 3;
-
-        expect(service.time).toEqual(0);
-        expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
-    });
-
-    it('currentQuestion should return the correct value', () => {
-        const questionIndex = 1;
-        service['gameData'] = TEST_GAME;
-        service['currentQuestionIndex'] = questionIndex;
-
-        expect(service.currentQuestion).toEqual(TEST_GAME.questions[questionIndex]);
-    });
-
-    it('stateSubject should return the correct value', () => {
-        expect(service.stateSubject).toEqual(service['gameStateSubject']);
-    });
-
-    it('startGame should call subscribeToPlayerAnswers', () => {
-        spyOn(service, 'subscribeToPlayerAnswers');
-        service.startGame();
-        expect(service.subscribeToPlayerAnswers).toHaveBeenCalled();
-    });
-
-    it('startGame should create two timers and assign the correct timerIds', () => {
-        service.startGame();
-        expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
-        expect(service['timerIds']).toEqual([0, 1]);
-    });
-
-    it('should call showAnswer when the first timer is triggered', () => {
-        spyOn(service, 'showAnswer');
-        service['timerIds'][QUESTION_TIMER_INDEX] = service['timeService'].createTimer(service.showAnswer.bind(service));
-
-        timerCallback();
-        expect(service.showAnswer).toHaveBeenCalled();
-    });
-
-    it('should call setUpNextQuestion when the second timer is triggered', () => {
-        spyOn(service, 'setUpNextQuestion');
-        service['timerIds'][ANSWER_TIMER_INDEX] = service['timeService'].createTimer(service.setUpNextQuestion.bind(service));
-
-        timerCallback();
-        expect(service.setUpNextQuestion).toHaveBeenCalled();
-    });
-
-    it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
-        const testScore = 10;
-
-        spyOn(service, 'calculateScore').and.returnValue(testScore);
-        service.subscribeToPlayerAnswers();
-        mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
-
-        expect(mockPlayers.get(0)?.score).toEqual(testScore);
-    });
-
-    it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
-        service.subscribeToPlayerAnswers();
-        mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
-        expect(service['nAnswersConfirmed']).toEqual(1);
-    });
-
-    it('subscription to answerNotifier should set time to 0 when all players have confirmed their answer', () => {
-        service.subscribeToPlayerAnswers();
-        mockPlayers.forEach((player) => {
-            player.answerNotifier.next(TEST_ANSWER);
+    describe('constructor', () => {
+        it('should be created', () => {
+            expect(service).toBeTruthy();
         });
 
-        expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
+        it('should set gameState to the correct value when gameStateSubject is updated', () => {
+            service['gameStateSubject'].next(GameState.ShowQuestion);
+            expect(service['gameState']).toEqual(GameState.ShowQuestion);
+
+            service['gameStateSubject'].next(GameState.ShowAnswer);
+            expect(service['gameState']).toEqual(GameState.ShowAnswer);
+
+            service['gameStateSubject'].next(GameState.GameEnded);
+            expect(service['gameState']).toEqual(GameState.GameEnded);
+        });
     });
 
-    it('subscription to answerNotifier should not set time to 0 when not all players have confirmed their answer', () => {
-        service.subscribeToPlayerAnswers();
-        mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
-        expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
+    describe('getters', () => {
+        it('data should return the correct value', () => {
+            service['gameData'] = TEST_GAME;
+
+            expect(service.data).toEqual(TEST_GAME);
+        });
+
+        it('time should call timeService.getTime with the correct timerId if gameState is ShowQuestion and show the correct time', () => {
+            service['timerIds'] = TIMER_IDS;
+            service['gameState'] = GameState.ShowQuestion;
+            timeServiceSpy.getTime.and.returnValue(TIME_OUT);
+
+            expect(service.time).toEqual(TIME_OUT);
+            expect(timeServiceSpy.getTime).toHaveBeenCalledWith(service['timerIds'][QUESTION_TIMER_INDEX]);
+        });
+
+        it('time should call timeService.getTime with the correct timerId if gameState is ShowAnswer and show the correct time', () => {
+            service['timerIds'] = TIMER_IDS;
+            service['gameState'] = GameState.ShowAnswer;
+            timeServiceSpy.getTime.and.returnValue(TIME_OUT);
+
+            expect(service.time).toEqual(TIME_OUT);
+            expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_TIMER_INDEX);
+        });
+
+        it('time should return 0 if gameState is GameEnded', () => {
+            service['gameState'] = GameState.GameEnded;
+
+            expect(service.time).toEqual(0);
+            expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+        });
+
+        it('time should return 0 if gameState is not recognized', () => {
+            service['gameState'] = 3;
+
+            expect(service.time).toEqual(0);
+            expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+        });
+
+        it('currentQuestion should return the correct value', () => {
+            const questionIndex = 1;
+            service['gameData'] = TEST_GAME;
+            service['currentQuestionIndex'] = questionIndex;
+
+            expect(service.currentQuestion).toEqual(TEST_GAME.questions[questionIndex]);
+        });
+
+        it('stateSubject should return the correct value', () => {
+            expect(service.stateSubject).toEqual(service['gameStateSubject']);
+        });
     });
 
-    it('startGame should call getGameData and resetGameState', () => {
-        spyOn(service, 'getGameData');
-        spyOn(service, 'resetGameState');
+    describe('startGame', () => {
+        it('should call subscribeToPlayerAnswers', () => {
+            spyOn(service, 'subscribeToPlayerAnswers');
+            service.startGame();
+            expect(service.subscribeToPlayerAnswers).toHaveBeenCalled();
+        });
 
-        service.startGame();
+        it('should create two timers and assign the correct timerIds', () => {
+            service.startGame();
+            expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
+            expect(service['timerIds']).toEqual([0, 1]);
+        });
 
-        expect(service.getGameData).toHaveBeenCalled();
-        expect(service.resetGameState).toHaveBeenCalled();
+        it('should call showAnswer when the first timer is triggered', () => {
+            spyOn(service, 'showAnswer');
+            service['timerIds'][QUESTION_TIMER_INDEX] = service['timeService'].createTimer(service.showAnswer.bind(service));
+
+            timerCallback();
+            expect(service.showAnswer).toHaveBeenCalled();
+        });
+
+        it('should call setUpNextQuestion when the second timer is triggered', () => {
+            spyOn(service, 'setUpNextQuestion');
+            service['timerIds'][ANSWER_TIMER_INDEX] = service['timeService'].createTimer(service.setUpNextQuestion.bind(service));
+
+            timerCallback();
+            expect(service.setUpNextQuestion).toHaveBeenCalled();
+        });
+
+        it('startGame should call getGameData and resetGameState', () => {
+            spyOn(service, 'getGameData');
+            spyOn(service, 'resetGameState');
+
+            service.startGame();
+
+            expect(service.getGameData).toHaveBeenCalled();
+            expect(service.resetGameState).toHaveBeenCalled();
+        });
     });
 
-    it('getGameData should set gameData to the correct value', () => {
-        // TODO : Use a mock server call
-        service.getGameData();
+    describe('subscribeToPlayerAnswers', () => {
+        it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
+            const testScore = 10;
 
-        expect(service['gameData']).toEqual(TEST_GAME);
+            spyOn(service, 'calculateScore').and.returnValue(testScore);
+            service.subscribeToPlayerAnswers();
+            mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
+
+            expect(mockPlayers.get(0)?.score).toEqual(testScore);
+        });
+
+        it('subscription to answerNotifier should increment nAnswersConfirmed when an answer is confirmed', () => {
+            service.subscribeToPlayerAnswers();
+            mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
+            expect(service['nAnswersConfirmed']).toEqual(1);
+        });
+
+        it('subscription to answerNotifier should set time to 0 when all players have confirmed their answer', () => {
+            service.subscribeToPlayerAnswers();
+            mockPlayers.forEach((player) => {
+                player.answerNotifier.next(TEST_ANSWER);
+            });
+
+            expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
+        });
+
+        it('subscription to answerNotifier should not set time to 0 when not all players have confirmed their answer', () => {
+            service.subscribeToPlayerAnswers();
+            mockPlayers.get(0)?.answerNotifier.next(TEST_ANSWER);
+            expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
+        });
     });
 
-    it('resetGameState should emit the correct value if currentQuestionIndex is  than or equal to gameData.questions.length', () => {
-        service['gameData'] = TEST_GAME;
-        service['currentQuestionIndex'] = 3;
-        spyOn(service['gameStateSubject'], 'next');
+    describe('getGameData', () => {
+        it('should set gameData to the correct value', () => {
+            // TODO : Use a mock server call
+            service.getGameData();
 
-        service.resetGameState();
-
-        expect(service['gameStateSubject'].next).toHaveBeenCalledWith(GameState.GameEnded);
+            expect(service['gameData']).toEqual(TEST_GAME);
+        });
     });
 
-    it('resetGameState should emit the correct value', () => {
-        service['gameData'] = TEST_GAME;
-        service['currentQuestionIndex'] = 2;
-        spyOn(service['gameStateSubject'], 'next');
+    describe('resetGameState', () => {
+        it('resetGameState should emit the correct value if currentQuestionIndex is  than or equal to gameData.questions.length', () => {
+            service['gameData'] = TEST_GAME;
+            service['currentQuestionIndex'] = 3;
+            spyOn(service['gameStateSubject'], 'next');
 
-        service.resetGameState();
+            service.resetGameState();
 
-        expect(service['gameStateSubject'].next).toHaveBeenCalledWith(GameState.ShowQuestion);
+            expect(service['gameStateSubject'].next).toHaveBeenCalledWith(GameState.GameEnded);
+        });
+
+        it('resetGameState should emit the correct value', () => {
+            service['gameData'] = TEST_GAME;
+            service['currentQuestionIndex'] = 2;
+            spyOn(service['gameStateSubject'], 'next');
+
+            service.resetGameState();
+
+            expect(service['gameStateSubject'].next).toHaveBeenCalledWith(GameState.ShowQuestion);
+        });
+
+        it('resetGameState should call timeService.startTimer with the correct timerId and timePerQuestion', () => {
+            service['timerIds'][QUESTION_TIMER_INDEX] = TIMER_IDS[QUESTION_TIMER_INDEX];
+            service['gameData'] = TEST_GAME;
+            service['currentQuestionIndex'] = 2;
+            service.resetGameState();
+
+            expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], TEST_GAME.timePerQuestion);
+        });
     });
 
-    it('resetGameState should call timeService.startTimer with the correct timerId and timePerQuestion', () => {
-        service['timerIds'][QUESTION_TIMER_INDEX] = TIMER_IDS[QUESTION_TIMER_INDEX];
-        service['gameData'] = TEST_GAME;
-        service['currentQuestionIndex'] = 2;
-        service.resetGameState();
+    describe('showAnswer', () => {
+        it('showAnswer should emit the correct value', () => {
+            spyOn(service['gameStateSubject'], 'next');
 
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], TEST_GAME.timePerQuestion);
+            service.showAnswer();
+
+            expect(service['gameStateSubject'].next).toHaveBeenCalledWith(GameState.ShowAnswer);
+        });
+
+        it('showAnswer should call timeService.startTimer with the correct timerId and SHOW_ANSWER_DELAY', () => {
+            service['timerIds'][ANSWER_TIMER_INDEX] = TIMER_IDS[ANSWER_TIMER_INDEX];
+            service.showAnswer();
+
+            expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
+        });
     });
 
-    it('showAnswer should emit the correct value', () => {
-        spyOn(service['gameStateSubject'], 'next');
+    describe('setUpNextQuestion', () => {
+        it('setUpNextQuestion should increment currentQuestionIndex and call resetGameState', () => {
+            service['currentQuestionIndex'] = 0;
+            spyOn(service, 'resetGameState');
+            service.setUpNextQuestion();
 
-        service.showAnswer();
-
-        expect(service['gameStateSubject'].next).toHaveBeenCalledWith(GameState.ShowAnswer);
+            expect(service['currentQuestionIndex']).toEqual(1);
+            expect(service.resetGameState).toHaveBeenCalled();
+        });
     });
 
-    it('showAnswer should call timeService.startTimer with the correct timerId and SHOW_ANSWER_DELAY', () => {
-        service['timerIds'][ANSWER_TIMER_INDEX] = TIMER_IDS[ANSWER_TIMER_INDEX];
-        service.showAnswer();
+    describe('calculateScore', () => {
+        it('calculateScore should return the correct value for a correct answer', () => {
+            service['currentQuestionIndex'] = 0;
+            service['gameData'] = TEST_GAME;
+            expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
+        });
 
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
+        it('calculateScore should return the 0 for an incorrect answer', () => {
+            service['currentQuestionIndex'] = 2;
+            service['gameData'] = TEST_GAME;
+            expect(service.calculateScore(TEST_ANSWER)).toEqual(0);
+        });
+
+        it('calculateScore should return the correct value for a correct open ended question', () => {
+            service['currentQuestionIndex'] = 1;
+            service['gameData'] = TEST_GAME;
+            expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
+        });
     });
 
-    it('setUpNextQuestion should increment currentQuestionIndex and call resetGameState', () => {
-        service['currentQuestionIndex'] = 0;
-        spyOn(service, 'resetGameState');
-        service.setUpNextQuestion();
-
-        expect(service['currentQuestionIndex']).toEqual(1);
-        expect(service.resetGameState).toHaveBeenCalled();
-    });
-
-    it('calculateScore should return the correct value for a correct answer', () => {
-        service['currentQuestionIndex'] = 0;
-        service['gameData'] = TEST_GAME;
-        expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
-    it('calculateScore should return the 0 for an incorrect answer', () => {
-        service['currentQuestionIndex'] = 2;
-        service['gameData'] = TEST_GAME;
-        expect(service.calculateScore(TEST_ANSWER)).toEqual(0);
-    });
-
-    it('calculateScore should return the correct value for a correct open ended question', () => {
-        service['currentQuestionIndex'] = 1;
-        service['gameData'] = TEST_GAME;
-        expect(service.calculateScore(TEST_ANSWER)).toEqual(QUESTION_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
+    describe('cleanUp', () => {
     it('cleanUp should unsubscribe from gameStateSubject', () => {
         spyOn(service['gameStateSubscription'], 'unsubscribe');
 
@@ -311,5 +329,6 @@ describe('GameHandlerService', () => {
         service['confirmSubscriptions'].forEach((subscription: Subscription) => {
             expect(subscription.unsubscribe).toHaveBeenCalled();
         });
+    });
     });
 });
