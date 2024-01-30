@@ -6,8 +6,7 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { TimeService } from '@app/services/time.service';
 import { Subject, Subscription } from 'rxjs';
 
-const TIME_OUT = 5;
-const SHOW_ANSWER_DELAY = 3;
+// const SHOW_ANSWER_DELAY = 3;
 const QUESTION_TIMER_INDEX = 0;
 const ANSWER_TIMER_INDEX = 1;
 const TIMER_IDS = [0, 1];
@@ -43,30 +42,18 @@ const TEST_GAME = {
     questions: QUESTION_DATA,
     timePerQuestion: 10,
 };
-const TEST_ANSWER = [false, true, false, false];
-const GOOD_ANSWER_MULTIPLIER = 1.2;
+// const TEST_ANSWER = [false, true, false, false];
+// const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
-    let timerIdSequence: number;
-    let timerCallback: () => void;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
-
-    let mockPlayers: Map<number, Player>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'getTime', 'startTimer', 'stopTimer', 'setTime']);
-        timerIdSequence = 0;
-        timeServiceSpy.createTimer.and.callFake((callback: () => void) => {
-            timerCallback = callback;
-            return timerIdSequence++;
-        });
 
-        mockPlayers = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['players'], {
-            players: mockPlayers,
-        });
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['players']);
     });
 
     beforeEach(() => {
@@ -96,13 +83,17 @@ describe('GameHandlerService', () => {
         });
     });
 
-    describe('getters', () => {
+    describe('get data', () => {
+        const TIME_OUT = 5;
+
         it('data should return the correct value', () => {
             service['gameData'] = TEST_GAME;
 
             expect(service.data).toEqual(TEST_GAME);
         });
+    });
 
+    describe('get time', () => {
         it('time should call timeService.getTime with the correct timerId if gameState is ShowQuestion and show the correct time', () => {
             service['timerIds'] = TIMER_IDS;
             service['gameState'] = GameState.ShowQuestion;
@@ -134,7 +125,9 @@ describe('GameHandlerService', () => {
             expect(service.time).toEqual(0);
             expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
         });
+    });
 
+    describe('get currentQuestion', () => {
         it('currentQuestion should return the correct value', () => {
             const questionIndex = 1;
             service['gameData'] = TEST_GAME;
@@ -142,7 +135,9 @@ describe('GameHandlerService', () => {
 
             expect(service.currentQuestion).toEqual(TEST_GAME.questions[questionIndex]);
         });
+    });
 
+    describe('get stateSubject', () => {
         it('stateSubject should return the correct value', () => {
             expect(service.stateSubject).toEqual(service['gameStateSubject']);
         });
@@ -310,25 +305,25 @@ describe('GameHandlerService', () => {
     });
 
     describe('cleanUp', () => {
-    it('cleanUp should unsubscribe from gameStateSubject', () => {
-        spyOn(service['gameStateSubscription'], 'unsubscribe');
+        it('cleanUp should unsubscribe from gameStateSubject', () => {
+            spyOn(service['gameStateSubscription'], 'unsubscribe');
 
-        service.cleanUp();
+            service.cleanUp();
 
-        expect(service['gameStateSubscription'].unsubscribe).toHaveBeenCalled();
-    });
-
-    it('cleanUp should unsubscribe from confirmSubscription', () => {
-        service.startGame();
-        service['confirmSubscriptions'].forEach((subscription: Subscription) => {
-            spyOn(subscription, 'unsubscribe');
+            expect(service['gameStateSubscription'].unsubscribe).toHaveBeenCalled();
         });
 
-        service.cleanUp();
+        it('cleanUp should unsubscribe from confirmSubscription', () => {
+            service.startGame();
+            service['confirmSubscriptions'].forEach((subscription: Subscription) => {
+                spyOn(subscription, 'unsubscribe');
+            });
 
-        service['confirmSubscriptions'].forEach((subscription: Subscription) => {
-            expect(subscription.unsubscribe).toHaveBeenCalled();
+            service.cleanUp();
+
+            service['confirmSubscriptions'].forEach((subscription: Subscription) => {
+                expect(subscription.unsubscribe).toHaveBeenCalled();
+            });
         });
-    });
     });
 });
