@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class QuestionsPageComponent implements OnInit {
   jeu: string | null = null;
   questions: string[]; // Utilisez un type plus spécifique si nécessaire
+  description: string;
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -42,7 +43,7 @@ export class QuestionsPageComponent implements OnInit {
         'Différence entre HTML et CSS',
         'Fonction en programmation',
         'le but principal de SQL',
-        'En programmation orientée objet, que représente une classe',
+        'En programmation orientée objet, que représente une classe',               
 
 
 
@@ -77,7 +78,7 @@ export class QuestionsPageComponent implements OnInit {
     this.router.navigate(['game']);
   }
 
-  confirmQuestions() {
+  startGame() {
     // Implémentez la logique pour confirmer la sélection des questions
   }
 

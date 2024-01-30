@@ -1,22 +1,21 @@
-
-
 <div class="questions-container">
-    <h1>Confirmer les questions</h1>
-    <div class="game-header">
-      <h2>{{ jeu }}</h2>
-
-    </div>
-  
-    <ul class="questions-list">
-      <!-- Supposons que vous ayez un tableau `questions` dans votre composant TypeScript -->
-      <li *ngFor="let question of questions">
-        <span class="question-text">{{ question }}</span>
-      </li>
-    </ul>
-  
-    <div class="navigation-buttons">
-      <button class="back" (click)="goBack()">Back</button>
-      <button class="confirm" (click)="confirmQuestions()">Confirm</button>
-      <button class="test "(click)="testQuestions()">Test</button>
-    </div>
+  <div class="game-header">
+    <h2>{{ jeu }}</h2>
   </div>
+
+  <p class="description">{{ description }}</p>
+
+
+
+  <ul class="questions-list">
+    <li *ngFor="let question of questions">
+      <span class="question-text">{{ question }}</span>
+    </li>
+  </ul>
+
+  <div class="navigation-buttons">
+    <button class="back" (click)="goBack()">Back</button>
+    <button class="startGame" (click)="startGame()">Start Game</button>
+    <button class="test" (click)="testQuestions()">Test</button>
+  </div>
+</div>
