@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { GameHandlerService, GameState } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { Subscription } from 'rxjs';
+import { Player } from '@app/interfaces/player';
 
 @Component({
     selector: 'app-gameplay-player-page',
@@ -12,10 +13,10 @@ import { Subscription } from 'rxjs';
 export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     @Input() gameId: number;
 
+    player: Player;
     showingAnswer: boolean = false;
     gameState = GameState;
-    answerConfirmedSubscription: Subscription;
-    grade: number = 0;
+    score: number = 0;
 
     private gameStateSubscription: Subscription;
 
@@ -24,6 +25,8 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         private router: Router,
         private playerHandlerService: PlayerHandlerService,
     ) {
+        this.player = this.playerHandlerService.createPlayer();
+
         this.gameStateSubscription = this.gameHandlerService.stateSubject.subscribe((state: GameState) => {
             switch (state) {
                 case GameState.ShowQuestion:
@@ -31,15 +34,12 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
                     break;
                 case GameState.ShowAnswer:
                     this.showingAnswer = true;
+                    this.score = this.player.score;
                     break;
                 case GameState.GameEnded:
                     this.router.navigate(['/']);
                     break;
             }
-        });
-
-        this.answerConfirmedSubscription = this.playerHandlerService.createAnswerConfirmedNotifier().subscribe((grade: number) => {
-            this.grade = grade;
         });
     }
 
@@ -49,6 +49,5 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.gameStateSubscription.unsubscribe();
-        this.answerConfirmedSubscription.unsubscribe();
     }
 }
