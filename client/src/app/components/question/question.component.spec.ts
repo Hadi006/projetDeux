@@ -151,14 +151,13 @@ describe('QuestionComponent', () => {
         });
     });
 
-
-    it('confirmAnswer() should set answerConfirmed to true and call answerConfirmedNotifier.next()', () => {
-        component.answerConfirmedNotifier = jasmine.createSpyObj('Subject<void>', ['next']);
+    it('confirmAnswer() should set answerConfirmed to true and call player.answerNotifier.next()', () => {
+        component.player.answerNotifier = jasmine.createSpyObj('Subject<void>', ['next']);
         component.answerConfirmed = false;
         component.confirmAnswer();
 
         expect(component.answerConfirmed).toBeTrue();
-        expect(component.answerConfirmedNotifier.next).toHaveBeenCalled();
+        expect(component.player.answerNotifier.next).toHaveBeenCalled();
     });
 
     it('canEditAnswer() should return true if answerConfirmed and showingAnswer are false', () => {
