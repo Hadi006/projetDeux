@@ -95,7 +95,7 @@ export class GameHandlerService {
         this.gameTimersService.createAnswerTimer(this.setUpNextQuestion.bind(this));
 
         this.getGameData();
-        this.resetGameState();
+        this.setUpNextQuestion();
     }
 
     cleanUp(): void {
