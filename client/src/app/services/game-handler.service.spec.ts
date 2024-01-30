@@ -162,7 +162,7 @@ describe('GameHandlerService', () => {
     });
 
     it('confirmSubscriptions should set time to 0 when all players have confirmed their answer', () => {
-        service.startGame();
+        service.subscribeToPlayerAnswers();
         answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
             subject.next();
         });
@@ -171,6 +171,7 @@ describe('GameHandlerService', () => {
     });
 
     it('confirmSubscription should not set time to 0 when not all players have confirmed their answer', () => {
+        service.subscribeToPlayerAnswers();
         answerConfirmedNotifiersSpy[0].next();
         expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
     });
