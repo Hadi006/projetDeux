@@ -249,8 +249,12 @@ describe('GameHandlerService', () => {
     });
 
     describe('resetGameState', () => {
-        it('resetGameState should emit the correct value if currentQuestionIndex is  than or equal to gameData.questions.length', () => {
+        beforeEach(() => {
             service['gameData'] = TEST_GAME;
+            service['timerIds'] = TIMER_IDS;
+        });
+
+        it('resetGameState should emit the correct value if currentQuestionIndex is  than or equal to gameData.questions.length', () => {
             service['currentQuestionIndex'] = 3;
             spyOn(service['gameStateSubject'], 'next');
 
@@ -260,7 +264,6 @@ describe('GameHandlerService', () => {
         });
 
         it('resetGameState should emit the correct value', () => {
-            service['gameData'] = TEST_GAME;
             service['currentQuestionIndex'] = 2;
             spyOn(service['gameStateSubject'], 'next');
 
@@ -270,8 +273,6 @@ describe('GameHandlerService', () => {
         });
 
         it('resetGameState should call timeService.startTimer with the correct timerId and timePerQuestion', () => {
-            service['timerIds'][QUESTION_TIMER_INDEX] = TIMER_IDS[QUESTION_TIMER_INDEX];
-            service['gameData'] = TEST_GAME;
             service['currentQuestionIndex'] = 2;
             service.resetGameState();
 
@@ -280,7 +281,7 @@ describe('GameHandlerService', () => {
     });
 
     describe('showAnswer', () => {
-const SHOW_ANSWER_DELAY = 3;
+        const SHOW_ANSWER_DELAY = 3;
 
         it('showAnswer should emit the correct value', () => {
             spyOn(service['gameStateSubject'], 'next');
