@@ -10,6 +10,7 @@ describe('GameHandlerService', () => {
     let service: GameHandlerService;
     let gameTimerServiceSpy: jasmine.SpyObj<GameTimersService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
 
     beforeEach(() => {
         gameTimerServiceSpy = jasmine.createSpyObj('GameTimersService', [
@@ -23,12 +24,16 @@ describe('GameHandlerService', () => {
         ]);
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['get players', 'get nPlayers']);
+
+        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['get currentQuestion','setQuestions', 'nextQuestion', 'calculateScore']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: GameTimersService, useValue: gameTimerServiceSpy },
-                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }],
+            providers: [
+                { provide: GameTimersService, useValue: gameTimerServiceSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+            ],
         });
         service = TestBed.inject(GameHandlerService);
     });
