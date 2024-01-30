@@ -161,7 +161,7 @@ describe('GameHandlerService', () => {
         expect(service.showAnswer).toHaveBeenCalled();
     });
 
-    it('should set time to 0 when all players have confirmed their answer', () => {
+    it('confirmSubscriptions should set time to 0 when all players have confirmed their answer', () => {
         service.startGame();
         answerConfirmedNotifiersSpy.forEach((subject: Subject<void>) => {
             subject.next();
@@ -170,7 +170,7 @@ describe('GameHandlerService', () => {
         expect(timeServiceSpy.setTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX], 0);
     });
 
-    it('should not set time to 0 when not all players have confirmed their answer', () => {
+    it('confirmSubscription should not set time to 0 when not all players have confirmed their answer', () => {
         answerConfirmedNotifiersSpy[0].next();
         expect(timeServiceSpy.setTime).not.toHaveBeenCalled();
     });
