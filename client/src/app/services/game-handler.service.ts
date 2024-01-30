@@ -52,7 +52,7 @@ export class GameHandlerService {
     private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
     private gameStateSubscription: Subscription;
-    private confirmSubscriptions: Subscription[] = [];
+    private confirmSubscriptions: Subscription[];
     private nAnswersConfirmed: number = 0;
 
     constructor(
@@ -103,6 +103,8 @@ export class GameHandlerService {
     }
 
     subscribeToPlayerAnswers(): void {
+        this.confirmSubscriptions = [];
+
         this.playerHandlerService.players.forEach((player) => {
             const confirmSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
                 player.score += this.calculateScore(isChecked);
