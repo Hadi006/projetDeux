@@ -30,8 +30,7 @@ export class QuestionHandlerService {
     }
 
     nextQuestion(): void {
-        this.currentQuestionIndex++;
-        this.questionsSubject.next(this.questionData[this.currentQuestionIndex]);
+        this.questionsSubject.next(this.questionData[this.currentQuestionIndex++]);
     }
 
     calculateScore(isChecked: boolean[]): number {

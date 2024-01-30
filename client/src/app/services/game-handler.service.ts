@@ -139,6 +139,11 @@ export class GameHandlerService {
         this.gameState = gameState;
     }
 
+    private setUpNextQuestion(): void {
+        this.questionHandlerService.nextQuestion();
+        this.resetGameState();
+    }
+
     private resetGameState(): void {
         if (!this.questionHandlerService.currentQuestion) {
             this.updateGameState(GameState.GameEnded);
@@ -151,10 +156,5 @@ export class GameHandlerService {
     private showAnswer(): void {
         this.updateGameState(GameState.ShowAnswer);
         this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
-    }
-
-    private setUpNextQuestion(): void {
-        this.questionHandlerService.nextQuestion();
-        this.resetGameState();
     }
 }
