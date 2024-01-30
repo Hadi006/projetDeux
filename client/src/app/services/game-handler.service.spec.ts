@@ -141,7 +141,7 @@ describe('GameHandlerService', () => {
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
-    it('should call subscribeToPlayerAnswers', () => {
+    it('startGame should call subscribeToPlayerAnswers', () => {
         spyOn(service, 'subscribeToPlayerAnswers');
         service.startGame();
         expect(service.subscribeToPlayerAnswers).toHaveBeenCalled();
