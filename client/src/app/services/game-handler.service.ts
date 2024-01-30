@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { TimeService } from './time.service';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { TimeService } from '@app/services/time.service';
+
+const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 export enum GameState {
     ShowQuestion = 0,
@@ -51,8 +53,7 @@ export class GameHandlerService {
     private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
     private gameStateSubscription: Subscription;
-    private answerConfirmedSubscriptions: Subscription[] = [];
-    private nPlayers: number;
+    private confirmSubscriptions: Subscription[] = [];
     private nAnswersConfirmed: number = 0;
 
     constructor(
@@ -94,21 +95,26 @@ export class GameHandlerService {
     }
 
     startGame(): void {
-        this.nPlayers = this.playerHandlerService.answerConfirmedNotifiers.length;
-        this.playerHandlerService.answerConfirmedNotifiers.forEach((subject: Subject<void>) => {
-            const answerConfirmedSubscription: Subscription = subject.subscribe(() => {
-                if (++this.nAnswersConfirmed >= this.nPlayers) {
-                    this.timeService.setTime(this.timerIds[QUESTION_TIMER_INDEX], 0);
-                }
-            });
-            this.answerConfirmedSubscriptions.push(answerConfirmedSubscription);
-        });
-
+        this.subscribeToPlayerAnswers();
         this.timerIds[0] = this.timeService.createTimer(this.showAnswer.bind(this));
         this.timerIds[1] = this.timeService.createTimer(this.setUpNextQuestion.bind(this));
 
         this.getGameData();
         this.resetGameState();
+    }
+
+    subscribeToPlayerAnswers(): void {
+        this.playerHandlerService.players.forEach((player) => {
+            const confirmSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
+                player.score += this.calculateScore(isChecked);
+
+                if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
+                    this.timeService.setTime(this.timerIds[QUESTION_TIMER_INDEX], 0);
+                }
+            });
+
+            this.confirmSubscriptions.push(confirmSubscription);
+        });
     }
 
     getGameData(): void {
@@ -144,9 +150,23 @@ export class GameHandlerService {
         this.resetGameState();
     }
 
+    calculateScore(isChecked: boolean[]): number {
+        const maxGrade: number = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
+        if (!this.currentQuestion.isMCQ) {
+            return maxGrade;
+        }
+
+        let isCorrect = true;
+        isChecked.forEach((checked: boolean, index: number) => {
+            isCorrect = checked === this.currentQuestion.correctAnswers.includes(this.currentQuestion.answers[index]);
+        });
+
+        return isCorrect ? maxGrade : 0;
+    }
+
     cleanUp(): void {
         this.gameStateSubscription.unsubscribe();
-        this.answerConfirmedSubscriptions.forEach((subscription: Subscription) => {
+        this.confirmSubscriptions.forEach((subscription: Subscription) => {
             subscription.unsubscribe();
         });
     }
