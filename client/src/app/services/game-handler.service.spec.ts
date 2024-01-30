@@ -52,7 +52,6 @@ describe('GameHandlerService', () => {
     let timerCallback: () => void;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
-    let answerConfirmedNotifiersSpy: Subject<void>[];
     let mockPlayers: Map<number, Player> = MOCK_PLAYERS;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
@@ -64,10 +63,8 @@ describe('GameHandlerService', () => {
             return timerIdSequence++;
         });
 
-        answerConfirmedNotifiersSpy = [new Subject<void>(), new Subject<void>(), new Subject<void>()];
         mockPlayers = new Map<number, Player>();
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['answerConfirmedNotifiers', 'players'], {
-            answerConfirmedNotifiers: answerConfirmedNotifiersSpy,
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['players'], {
             players: mockPlayers,
         });
     });
