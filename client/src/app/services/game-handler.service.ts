@@ -13,7 +13,7 @@ export enum GameState {
     GameEnded = 2,
 }
 
-export const QUESTION_DATA: QuestionData[] = [
+const QUESTION_DATA: QuestionData[] = [
     {
         id: 0,
         points: 1,
