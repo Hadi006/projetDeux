@@ -348,7 +348,6 @@ describe('GameHandlerService', () => {
         });
 
         it('cleanUp should unsubscribe from confirmSubscription', () => {
-            service.startGame();
             service['confirmSubscriptions'].forEach((subscription: Subscription) => {
                 spyOn(subscription, 'unsubscribe');
             });
