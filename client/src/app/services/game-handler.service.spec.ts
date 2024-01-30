@@ -84,27 +84,31 @@ describe('GameHandlerService', () => {
     });
 
     describe('get data', () => {
-        const TIME_OUT = 5;
+        beforeEach(() => {
+            service['gameData'] = TEST_GAME;
+        });
 
         it('data should return the correct value', () => {
-            service['gameData'] = TEST_GAME;
-
             expect(service.data).toEqual(TEST_GAME);
         });
     });
 
     describe('get time', () => {
-        it('time should call timeService.getTime with the correct timerId if gameState is ShowQuestion and show the correct time', () => {
+        const TIME_OUT = 5;
+
+        beforeEach(() => {
             service['timerIds'] = TIMER_IDS;
+        });
+
+        it('time should call timeService.getTime with the correct timerId if gameState is ShowQuestion and show the correct time', () => {
             service['gameState'] = GameState.ShowQuestion;
             timeServiceSpy.getTime.and.returnValue(TIME_OUT);
 
             expect(service.time).toEqual(TIME_OUT);
-            expect(timeServiceSpy.getTime).toHaveBeenCalledWith(service['timerIds'][QUESTION_TIMER_INDEX]);
+            expect(timeServiceSpy.getTime).toHaveBeenCalledWith(TIMER_IDS[QUESTION_TIMER_INDEX]);
         });
 
         it('time should call timeService.getTime with the correct timerId if gameState is ShowAnswer and show the correct time', () => {
-            service['timerIds'] = TIMER_IDS;
             service['gameState'] = GameState.ShowAnswer;
             timeServiceSpy.getTime.and.returnValue(TIME_OUT);
 
@@ -128,12 +132,15 @@ describe('GameHandlerService', () => {
     });
 
     describe('get currentQuestion', () => {
-        it('currentQuestion should return the correct value', () => {
-            const questionIndex = 1;
-            service['gameData'] = TEST_GAME;
-            service['currentQuestionIndex'] = questionIndex;
+        const QUESTION_INDEX = 1;
 
-            expect(service.currentQuestion).toEqual(TEST_GAME.questions[questionIndex]);
+        beforeEach(() => {
+            service['gameData'] = TEST_GAME;
+            service['currentQuestionIndex'] = QUESTION_INDEX;
+        });
+
+        it('currentQuestion should return the correct value', () => {
+            expect(service.currentQuestion).toEqual(TEST_GAME.questions[QUESTION_INDEX]);
         });
     });
 
