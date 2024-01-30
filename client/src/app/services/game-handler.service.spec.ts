@@ -6,7 +6,6 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { TimeService } from '@app/services/time.service';
 import { Subject, Subscription } from 'rxjs';
 
-// const SHOW_ANSWER_DELAY = 3;
 const QUESTION_TIMER_INDEX = 0;
 const ANSWER_TIMER_INDEX = 1;
 const TIMER_IDS = [0, 1];
@@ -205,7 +204,7 @@ describe('GameHandlerService', () => {
         let mockPlayers: Map<number, Player>;
 
         beforeEach(() => {
-mockPlayers = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
+            mockPlayers = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]));
         });
 
         it('subscription to answerNotifier should increase player score when an answer is confirmed', () => {
@@ -281,6 +280,8 @@ mockPlayers = new Map<number, Player>([0, 1, 2].map((id) => [id, { score: 0, ans
     });
 
     describe('showAnswer', () => {
+const SHOW_ANSWER_DELAY = 3;
+
         it('showAnswer should emit the correct value', () => {
             spyOn(service['gameStateSubject'], 'next');
 
