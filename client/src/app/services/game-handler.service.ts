@@ -64,7 +64,7 @@ export class GameHandlerService {
         private questionHandlerService: QuestionHandlerService,
     ) {}
 
-    get data() {
+    get data(): GameData {
         return this.gameData;
     }
 
