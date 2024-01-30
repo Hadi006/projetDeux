@@ -283,6 +283,10 @@ describe('GameHandlerService', () => {
     describe('showAnswer', () => {
         const SHOW_ANSWER_DELAY = 3;
 
+        beforeEach(() => {
+            service['timerIds'] = TIMER_IDS;
+        });
+
         it('showAnswer should emit the correct value', () => {
             spyOn(service['gameStateSubject'], 'next');
 
@@ -292,7 +296,6 @@ describe('GameHandlerService', () => {
         });
 
         it('showAnswer should call timeService.startTimer with the correct timerId and SHOW_ANSWER_DELAY', () => {
-            service['timerIds'][ANSWER_TIMER_INDEX] = TIMER_IDS[ANSWER_TIMER_INDEX];
             service.showAnswer();
 
             expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(TIMER_IDS[ANSWER_TIMER_INDEX], SHOW_ANSWER_DELAY);
