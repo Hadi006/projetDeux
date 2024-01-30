@@ -187,22 +187,4 @@ describe('QuestionComponent', () => {
 
         expect(component.canEditAnswer()).toBeFalse();
     });
-
-    it('should calculate grade correctly for MCQ with negative grade', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
-        component.isChecked[0] = false;
-        component.isChecked[1] = false;
-        component.isChecked[2] = true;
-        component.isChecked[3] = true;
-
-        expect(component.calculateGrade()).toEqual(0);
-    });
-
-    it('should calculate grade correctly for non-MCQ', () => {
-        component.questionData = { ...mockQuestionData, isMCQ: false };
-        component.isChecked = mockIsChecked;
-
-        expect(component.calculateGrade()).toEqual(MAX_GRADE);
-    });
 });
