@@ -54,7 +54,7 @@ export const SHOW_ANSWER_DELAY = 3;
 export class GameHandlerService {
     private internalGameData: GameData;
     private internalGameState: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
-    private gameState: GameState = GameState.ShowQuestion;
+    private gameState: GameState;
     private confirmSubscriptions: Subscription[];
     private nAnswersConfirmed: number = 0;
 
@@ -68,7 +68,7 @@ export class GameHandlerService {
         return this.internalGameData;
     }
 
-    get time(): number {
+    get time(): number | undefined {
         switch (this.gameState) {
             case GameState.ShowQuestion: {
                 return this.gameTimersService.getQuestionTime();
@@ -80,7 +80,7 @@ export class GameHandlerService {
                 return 0;
             }
             default: {
-                return 0;
+                return undefined;
             }
         }
     }
