@@ -88,9 +88,9 @@ describe('GameHandlerService', () => {
             tick(TEST_GAME.timePerQuestion);
         }));
 
-        it('should call createQuestionTimer', () => {
+        it('should call createQuestionTimer', fakeAsync(() => {
             expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalled();
-        });
+        }));
 
         it('should notify subscribers of the correct GameState', fakeAsync(() => {
             expect(observedState).toEqual(GameState.ShowAnswer);
@@ -117,13 +117,13 @@ describe('GameHandlerService', () => {
             tick(SHOW_ANSWER_DELAY);
         }));
 
-        it('should call createAnswerTimer', () => {
+        it('should call createAnswerTimer', fakeAsync(() => {
             expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
-        });
+        }));
 
-        it('should call questionHandlerService.nextQuestion', () => {
+        it('should call questionHandlerService.nextQuestion', fakeAsync(() => {
             expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
-        });
+        }));
 
         afterEach(fakeAsync(() => {
             discardPeriodicTasks();
