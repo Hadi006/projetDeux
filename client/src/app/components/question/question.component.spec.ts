@@ -18,11 +18,7 @@ describe('QuestionComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [
-                {
-                    provide: QuestionHandlerService,
-                    useValue: questionHandlerService,
-                },
+            providers: [{provide: QuestionHandlerService,useValue: questionHandlerService,},
             ],
         }).compileComponents();
     }));
