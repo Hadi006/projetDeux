@@ -13,10 +13,9 @@ import { Player } from '@app/interfaces/player';
 export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     @Input() gameId: number;
 
-    player: Player;
-    showingAnswer: boolean = false;
-    gameState = GameState;
-    score: number = 0;
+    private internalPlayer: Player;
+    private internalShowingAnswer: boolean = false;
+    private internalScore: number = 0;
 
     private gameStateSubscription: Subscription;
 
@@ -25,22 +24,34 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         private router: Router,
         private playerHandlerService: PlayerHandlerService,
     ) {
-        this.player = this.playerHandlerService.createPlayer();
+        this.internalPlayer = this.playerHandlerService.createPlayer();
 
         this.gameStateSubscription = this.gameHandlerService.stateSubject.subscribe((state: GameState) => {
             switch (state) {
                 case GameState.ShowQuestion:
-                    this.showingAnswer = false;
+                    this.internalShowingAnswer = false;
                     break;
                 case GameState.ShowAnswer:
-                    this.showingAnswer = true;
-                    this.score = this.player.score;
+                    this.internalShowingAnswer = true;
+                    this.internalScore = this.player.score;
                     break;
                 case GameState.GameEnded:
                     this.router.navigate(['/']);
                     break;
             }
         });
+    }
+
+    get player(): Player {
+        return this.internalPlayer;
+    }
+
+    get showingAnswer(): boolean {
+        return this.internalShowingAnswer;
+    }
+
+get score(): number {
+        return this.internalScore;
     }
 
     ngOnInit(): void {
