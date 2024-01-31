@@ -32,7 +32,7 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
                     break;
                 case GameState.ShowAnswer:
                     this.internalShowingAnswer = true;
-                    this.internalScore = this.player.score;
+                    this.internalScore = this.internalPlayer.score;
                     break;
                 case GameState.GameEnded:
                     this.router.navigate(['/']);
