@@ -43,7 +43,7 @@ describe('QuestionComponent', () => {
     it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
         questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
-        expect(component.question).toEqual(MOCK_QUESTION_DATA);
+        expect(component.questionData).toEqual(MOCK_QUESTION_DATA);
         expect(component.isChecked).toBeInstanceOf(Array);
         expect(component.isChecked.length).toEqual(MOCK_QUESTION_DATA.answers.length);
         expect(component.isChecked.every((value) => value === false)).toBeTrue();
@@ -53,7 +53,7 @@ describe('QuestionComponent', () => {
     it('should do nothing if question is undefined', () => {
         questionHandlerService.questions.next(undefined);
 
-        expect(component.question).toBeFalsy();
+        expect(component.questionData).toBeFalsy();
         expect(component.isChecked).toBeFalsy();
         expect(component.answerConfirmed).toBeFalsy();
     });
@@ -227,6 +227,6 @@ describe('QuestionComponent', () => {
         component.ngOnDestroy();
         questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
-        expect(component.question).toBeFalsy();
+        expect(component.questionData).toBeFalsy();
     });
 });
