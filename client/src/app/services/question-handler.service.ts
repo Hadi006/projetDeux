@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Subject } from 'rxjs';
 
-const GOOD_ANSWER_MULTIPLIER = 1.2;
+export const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
