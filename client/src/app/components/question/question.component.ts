@@ -53,6 +53,11 @@ export class QuestionComponent implements OnDestroy {
         }
     }
 
+    confirmAnswer(): void {
+        this.answerConfirmed = true;
+        this.player.answerNotifier.next(this.isCheckedArray);
+    }
+
     canEditAnswer(): boolean {
         return !this.answerConfirmed && !this.showingAnswer;
     }
@@ -65,10 +70,5 @@ export class QuestionComponent implements OnDestroy {
         this.questionData = data;
         this.isCheckedArray = new Array(this.questionData.answers.length).fill(false);
         this.answerConfirmed = false;
-    }
-
-    private confirmAnswer(): void {
-        this.answerConfirmed = true;
-        this.player.answerNotifier.next(this.isCheckedArray);
     }
 }
