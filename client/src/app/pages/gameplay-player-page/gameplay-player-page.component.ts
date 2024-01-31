@@ -14,8 +14,8 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     @Input() gameId: number;
 
     private internalPlayer: Player;
-    private internalShowingAnswer: boolean = false;
-    private internalScore: number = 0;
+    private internalShowingAnswer: boolean;
+    private internalScore: number;
     private gameStateSubscription: Subscription;
 
     constructor(
