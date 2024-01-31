@@ -93,17 +93,11 @@ describe('GameHandlerService', () => {
         });
 
         it('should notify subscribers of the correct GameState', fakeAsync(() => {
-            service.startGame();
-
             expect(observedState).toEqual(GameState.ShowAnswer);
-            gameStateSubscriber.unsubscribe();
         }));
 
         it('should cause time to return answer time', fakeAsync(() => {
-            tick(TEST_GAME.timePerQuestion);
-
             expect(service.time).toEqual(ANSWER_TIME);
-            discardPeriodicTasks();
         }));
 
         it('should call startAnswerTimer with SHOW_ANSWER_DELAY', fakeAsync(() => {}));
