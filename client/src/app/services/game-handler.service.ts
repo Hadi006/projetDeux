@@ -6,6 +6,7 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Player } from '@app/interfaces/player';
+import { GameStateService, GameState } from './game-state.service';
 
 export const QUESTIONS_DATA: QuestionData[] = [
     {
@@ -54,10 +55,22 @@ export class GameHandlerService {
         private gameTimersService: GameTimersService,
         private playerHandlerService: PlayerHandlerService,
         private questionHandlerService: QuestionHandlerService,
+        private gameStateService: GameStateService,
     ) {}
 
     get gameData(): GameData {
         return this.internalGameData;
+    }
+
+    get time(): number {
+        switch (this.gameStateService.gameState) {
+            case GameState.ShowQuestion:
+                return this.gameTimersService.questionTime;
+            case GameState.ShowAnswer:
+                return this.gameTimersService.answerTime;
+            default:
+                return 0;
+        }
     }
 
     startGame(): void {
