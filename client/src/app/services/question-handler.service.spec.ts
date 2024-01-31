@@ -19,4 +19,14 @@ describe('QuestionHandlerService', () => {
         service.setQuestions(QUESTIONS_DATA);
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
+
+    it('setQuestions should set the questionData and the number of questions', () => {
+        service.setQuestions(QUESTIONS_DATA);
+        QUESTIONS_DATA.forEach((questionData) => {
+            expect(service.currentQuestion).toEqual(questionData);
+            service.nextQuestion();
+        });
+
+        expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
+    });
 });
