@@ -30,8 +30,6 @@ export class QuestionHandlerService {
     }
 
     nextQuestion(): void {
-        console.log(this.currentQuestionIndex);
-        console.log(this.questionData[this.currentQuestionIndex]);
         this.internalQuestionsSubject.next(this.questionData[this.currentQuestionIndex++]);
     }
 
