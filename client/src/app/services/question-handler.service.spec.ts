@@ -51,4 +51,12 @@ describe('QuestionHandlerService', () => {
 
         expect(service.calculateScore(isChecked)).toEqual(0);
     });
+
+    it('calculateScore should return 0 if the answer is incorrect', () => {
+        const isChecked = [true, true, false, false];
+        service.setQuestions(QUESTIONS_DATA);
+        const score = service.calculateScore(isChecked);
+
+        expect(score).toEqual(0);
+    });
 });
