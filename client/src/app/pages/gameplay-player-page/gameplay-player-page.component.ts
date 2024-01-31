@@ -41,15 +41,15 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    get player(): Player {
+    get player(): Player | undefined {
         return this.internalPlayer;
     }
 
-    get showingAnswer(): boolean {
+    get showingAnswer(): boolean | undefined {
         return this.internalShowingAnswer;
     }
 
-    get score(): number {
+    get score(): number | undefined{
         return this.internalScore;
     }
 
