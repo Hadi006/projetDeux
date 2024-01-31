@@ -7,13 +7,13 @@ describe('Timer', () => {
     const MS_SECOND = 1000;
 
     describe('without callback', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             timerTest = new Timer();
-        });
+        }));
 
-        it('should be created', () => {
+        it('should be created', fakeAsync(() => {
             expect(timerTest).toBeTruthy();
-        });
+        }));
 
         it('startTimer should start an interval', fakeAsync(() => {
             timerTest.start(TIMEOUT);
@@ -44,11 +44,11 @@ describe('Timer', () => {
 
         it('interval should reduce time by 1 every second ', fakeAsync(() => {
             timerTest.start(TIMEOUT);
-            tick(MS_SECOND);
 
+            tick(MS_SECOND);
             expect(timerTest.time).toEqual(TIMEOUT - 1);
-            tick(MS_SECOND);
 
+            tick(MS_SECOND);
             expect(timerTest.time).toEqual(TIMEOUT - 2);
         }));
 
@@ -157,8 +157,8 @@ describe('Timer', () => {
             expect(timerTest['interval']).toBeFalsy();
         }));
 
-        afterEach(() => {
+        afterEach(fakeAsync(() => {
             discardPeriodicTasks();
-        });
+        }));
     });
 });
