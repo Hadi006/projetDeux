@@ -3,6 +3,7 @@ import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { Subject } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
 
@@ -35,7 +36,7 @@ describe('GameHandlerService', () => {
             configurable: true,
         });
 
-        playerHandlerServiceSpy = playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [], {
+        playerHandlerServiceSpy = playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer'], {
             players: new Map<number, Player>(),
             nPlayers: 0,
         });
@@ -96,5 +97,22 @@ describe('GameHandlerService', () => {
 
     it('get time should return undefined when the game state is not recognized', () => {
         expect(service.time).toBeUndefined();
+    });
+
+    it('startGame should create a subscription for each players answerNotifier', () => {
+        const N_PLAYERS = 3;
+        for (let i = 0; i < N_PLAYERS; i++) {
+            const player: Player = {
+                score: 0,
+                answerNotifier: new Subject<boolean[]>(),
+            };
+            spyOn(player.answerNotifier, 'subscribe')
+            playerHandlerServiceSpy.players.set(i, player);
+        }
+        service.startGame();
+
+        playerHandlerServiceSpy.players.forEach((player: Player) => {
+            expect(player.answerNotifier.subscribe).toHaveBeenCalled();
+        });
     });
 });
