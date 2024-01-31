@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -60,27 +60,6 @@ export class GameHandlerService {
         return this.internalGameData;
     }
 
-    get time(): number | undefined {
-        switch (this.gameState) {
-            case GameState.ShowQuestion: {
-                return this.gameTimersService.questionTime;
-            }
-            case GameState.ShowAnswer: {
-                return this.gameTimersService.answerTime;
-            }
-            case GameState.GameEnded: {
-                return 0;
-            }
-            default: {
-                return undefined;
-            }
-        }
-    }
-
-    get stateSubject(): BehaviorSubject<GameState> {
-        return this.internalGameState;
-    }
-
     startGame(): void {
         this.confirmSubscriptions = [];
         this.playerHandlerService.players.forEach((player) => {
@@ -122,24 +101,11 @@ export class GameHandlerService {
         this.questionHandlerService.setQuestions(TEST_GAME.questions);
     }
 
-    private updateGameState(gameState: GameState): void {
-        this.internalGameState.next(gameState);
-        this.gameState = gameState;
-    }
-
     private setUpNextQuestion(): void {
         this.questionHandlerService.nextQuestion();
-
-        if (!this.questionHandlerService.currentQuestion) {
-            this.updateGameState(GameState.GameEnded);
-        } else {
-            this.updateGameState(GameState.ShowQuestion);
-            this.gameTimersService.startQuestionTimer(this.gameData.timePerQuestion);
-        }
     }
 
     private showAnswer(): void {
-        this.updateGameState(GameState.ShowAnswer);
         this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
     }
 }
