@@ -54,8 +54,12 @@ export class QuestionComponent implements OnDestroy {
     }
 
     confirmAnswer(): void {
+        if (!this.player) {
+            return;
+        }
+
         this.answerConfirmed = true;
-        this.player?.answerNotifier.next(this.internalIsChecked);
+        this.player.answerNotifier.next(this.internalIsChecked);
     }
 
     canEditAnswer(): boolean {
