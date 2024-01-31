@@ -19,7 +19,11 @@ export class QuestionComponent {
     isChecked: boolean[];
 
     constructor(private questionHandlerService: QuestionHandlerService) {
-        this.questionsSubscription = this.questionHandlerService.questions.subscribe((questionData: QuestionData) => {
+        this.questionsSubscription = this.questionHandlerService.questions.subscribe((questionData: QuestionData | undefined) => {
+            if (!questionData) {
+                return;
+            }
+
             this.setQuestion(questionData);
         });
     }
