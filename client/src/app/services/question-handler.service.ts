@@ -34,12 +34,20 @@ export class QuestionHandlerService {
     }
 
     calculateScore(isChecked: boolean[]): number {
+        if (!this.currentQuestion) {
+            return 0;
+        }
+
         const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
 
         return this.isAnswerCorrect(isChecked) ? score : 0;
     }
 
     private isAnswerCorrect(isChecked: boolean[]): boolean {
+        if (!this.currentQuestion) {
+            return false;
+        }
+
         if (!this.currentQuestion.isMCQ) {
             return true;
         }
