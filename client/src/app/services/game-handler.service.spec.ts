@@ -111,8 +111,16 @@ describe('GameHandlerService', () => {
     });
 
     describe('createAnswerTimer within startGame', () => {
+        const QUESTION_TIME = 5;
+
+        let observedState: GameState | undefined;
+        let gameStateSubscriber: Subscription;
+
         beforeEach(fakeAsync(() => {
             service.startGame();
+            gameStateSubscriber = service.stateSubject.subscribe((state) => {
+                observedState = state;
+            });
             tick(TEST_GAME.timePerQuestion);
             tick(SHOW_ANSWER_DELAY);
         }));
@@ -125,8 +133,13 @@ describe('GameHandlerService', () => {
             expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
         }));
 
+        it('should notify subscribers of the correct GameState if there are more questions', fakeAsync(() => {
+            expect(observedState).toEqual(GameState.ShowQuestion);
+        }));
+
         afterEach(fakeAsync(() => {
             discardPeriodicTasks();
+            gameStateSubscriber.unsubscribe();
         }));
     });
 
