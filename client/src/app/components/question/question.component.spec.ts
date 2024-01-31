@@ -5,14 +5,22 @@ import { Subject } from 'rxjs';
 import { QuestionComponent } from './question.component';
 
 describe('QuestionComponent', () => {
+    const MOCK_QUESTION_DATA: QuestionData = {
+        id: 0,
+        points: 10,
+        question: 'question',
+        answers: ['answer1', 'answer2', 'answer3', 'answer4'],
+        correctAnswers: ['answer1'],
+        isMCQ: true,
+    };
+
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerService: jasmine.SpyObj<QuestionHandlerService>;
-    let MOCK_QUESTION_DATA: QuestionData;
-
     beforeEach(() => {
-        questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', ['questions']);
-        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData | undefined>());
+        questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', [], {
+            questions: new Subject<QuestionData | undefined>(),
+        });
     });
 
     beforeEach(waitForAsync(() => {
