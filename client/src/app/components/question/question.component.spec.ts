@@ -185,7 +185,7 @@ describe('QuestionComponent', () => {
         expect(mockF.stopPropagation).toHaveBeenCalled();
     });
 
-    it('confirmAnswer() should set answerConfirmed to true and call player.answerNotifier.next() with the correct value', () => {
+    it('confirmAnswer() should set answerConfirmed to true and call player.answerNotifier.next() with the correct value if player is defined', () => {
         component.player = { score: 0, answerNotifier: new Subject<boolean[]>() };
         component.player.answerNotifier = jasmine.createSpyObj('Subject<boolean[]>', ['next']);
         component.answerConfirmed = false;
@@ -193,6 +193,14 @@ describe('QuestionComponent', () => {
 
         expect(component.answerConfirmed).toBeTrue();
         expect(component.player.answerNotifier.next).toHaveBeenCalledWith(component.isChecked);
+    });
+
+    it('confirmAnswer() should do nothing if player is undefined', () => {
+        component.player = undefined;
+        component.answerConfirmed = false;
+        component.confirmAnswer();
+
+        expect(component.answerConfirmed).toBeFalse();
     });
 
     it('canEditAnswer() should return true if answerConfirmed and showingAnswer are false', () => {
