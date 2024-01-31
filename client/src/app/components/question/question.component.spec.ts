@@ -47,7 +47,8 @@ describe('QuestionComponent', () => {
     });
 
     it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
-        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData>());
+        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData | undefined>());
+        questionHandlerService.questions.next(mockQuestionData);
 
         expect(component.questionData).toEqual(mockQuestionData);
         expect(component.isChecked).toBeInstanceOf(Array);
@@ -56,13 +57,13 @@ describe('QuestionComponent', () => {
         expect(component.answerConfirmed).toBeFalse();
     });
 
-    it('should not assign questionData, isChecked and answerConfirmed if question does not exist', () => {
-        component.question = undefined;
-        component.answerConfirmed = true;
+    it('should do nothing if question is undefined', () => {
+        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData | undefined>());
+        questionHandlerService.questions.next(undefined);
 
         expect(component.questionData).toBeFalsy();
         expect(component.isChecked).toBeFalsy();
-        expect(component.answerConfirmed).toBeTrue();
+        expect(component.answerConfirmed).toBeFalse();
     });
 
     it('should do nothing if questionData is not defined', () => {
