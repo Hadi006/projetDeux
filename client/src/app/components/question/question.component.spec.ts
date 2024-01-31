@@ -84,16 +84,23 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if questionData is not MCQ', () => {
-        component.questionData = { ...mockQuestionData, isMCQ: false };
-        component.isChecked = mockIsChecked;
-        component.answerConfirmed = false;
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        component.handleKeyUp(mockEvent);
+        questionHandlerService.questions.next({ ...mockQuestionData, isMCQ: false });
 
-        expect(component.answerConfirmed).toBeFalse();
-        component.isChecked.forEach((value) => {
-            expect(value).toBeFalse();
-        });
+        const mockOne = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockOne, 'stopPropagation');
+        component.handleKeyUp(mockOne);
+
+        const mockEnter = new KeyboardEvent('keyup', { key: 'Enter' });
+        spyOn(mockEnter, 'stopPropagation');
+        component.handleKeyUp(mockEnter);
+
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(component, 'isChecked', 'get').and.callThrough();
+
+        expect(mockOne.stopPropagation).not.toHaveBeenCalled();
+        expect(mockEnter.stopPropagation).not.toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toEqual([]);
     });
 
     it('should do nothing if canEditAnswer() returns false', () => {
