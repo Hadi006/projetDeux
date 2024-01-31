@@ -32,7 +32,8 @@ describe('PlayerHandlerService', () => {
     });
 
     it('cleanUp should unsubscribe all players', () => {
-        for (let i = 0; i < 5; i++) {
+        const nPlayers = 5;
+        for (let i = 0; i < nPlayers; i++) {
             service.createPlayer();
         }
 
@@ -46,5 +47,4 @@ describe('PlayerHandlerService', () => {
             expect(player.answerNotifier.unsubscribe).toHaveBeenCalled();
         });
     });
-
 });
