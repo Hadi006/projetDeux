@@ -102,18 +102,18 @@ export class GameHandlerService {
         this.setUpNextQuestion();
     }
 
-    createAnswerSubscription(player: Player) {
+    cleanUp(): void {
+        this.confirmSubscriptions.forEach((subscription: Subscription) => {
+            subscription.unsubscribe();
+        });
+    }
+
+    private createAnswerSubscription(player: Player) {
         const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
             this.handlePlayerAnswer(player, isChecked);
         });
 
         this.confirmSubscriptions.push(answerSubscription);
-    }
-
-    cleanUp(): void {
-        this.confirmSubscriptions.forEach((subscription: Subscription) => {
-            subscription.unsubscribe();
-        });
     }
 
     private handlePlayerAnswer(player: Player, isChecked: boolean[]): void {
@@ -137,10 +137,7 @@ export class GameHandlerService {
 
     private setUpNextQuestion(): void {
         this.questionHandlerService.nextQuestion();
-        this.resetGameState();
-    }
 
-    private resetGameState(): void {
         if (!this.questionHandlerService.currentQuestion) {
             this.updateGameState(GameState.GameEnded);
         } else {
