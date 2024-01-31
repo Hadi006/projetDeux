@@ -7,6 +7,8 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { BehaviorSubject } from 'rxjs';
 
 describe('GameplayPlayerPageComponent', () => {
+    const SCORE = 10;
+
     let component: GameplayPlayerPageComponent;
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
@@ -19,6 +21,7 @@ describe('GameplayPlayerPageComponent', () => {
         });
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['createPlayer']);
+        playerHandlerServiceSpy.createPlayer.and.returnValue({ score: SCORE, answerNotifier: new BehaviorSubject<boolean[]>([]) });
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -45,8 +48,6 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('should create a player', () => {
-        playerHandlerServiceSpy.createPlayer.and.returnValue({ score: 0, answerNotifier: new BehaviorSubject<boolean[]>([]) });
-
         expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
         expect(component.player).toBeTruthy();
     });
@@ -57,13 +58,10 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('should set showingAnswer to true and update score when the game state is ShowAnswer', () => {
-        const score = 100;
-
-        component.player.score = score;
         component.gameHandlerService.stateSubject.next(GameState.ShowAnswer);
 
         expect(component.showingAnswer).toBeTrue();
-        expect(component.score).toEqual(score);
+        expect(component.score).toEqual(SCORE);
     });
 
     it('should navigate to the home page when the game state is GameEnded', () => {
