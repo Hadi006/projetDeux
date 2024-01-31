@@ -14,9 +14,9 @@ export class QuestionComponent {
     @Input() showingAnswer: boolean;
     @Input() player: Player;
 
-    questionsSubscription: Subscription;
-    questionData: QuestionData;
-    isChecked: boolean[];
+    private questionsSubscription: Subscription;
+    private questionData: QuestionData;
+    private isChecked: boolean[];
 
     constructor(private questionHandlerService: QuestionHandlerService) {
         this.questionsSubscription = this.questionHandlerService.questions.subscribe((questionData: QuestionData | undefined) => {
