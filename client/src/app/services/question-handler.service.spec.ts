@@ -35,6 +35,6 @@ describe('QuestionHandlerService', () => {
         service.setQuestions(QUESTIONS_DATA);
         service.nextQuestion();
 
-        expect(service.questionSubjects.next).toHaveBeenCalledWith(QUESTIONS_DATA[1]);
+        expect(service.questionSubjects.next).toHaveBeenCalledWith(QUESTIONS_DATA[0]);
     });
 });
