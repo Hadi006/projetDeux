@@ -29,4 +29,12 @@ describe('QuestionHandlerService', () => {
 
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
+
+    it('nextQuestion should notify subscribers with the next question', () => {
+        spyOn(service.questionSubjects, 'next').and.callThrough();
+        service.setQuestions(QUESTIONS_DATA);
+        service.nextQuestion();
+
+        expect(service.questionSubjects.next).toHaveBeenCalledWith(QUESTIONS_DATA[1]);
+    });
 });
