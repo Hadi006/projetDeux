@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './question.component.html',
     styleUrls: ['./question.component.scss'],
 })
-export class QuestionComponent {
+export class QuestionComponent implements OnDestroy {
     @Input() answerConfirmed: boolean;
     @Input() showingAnswer: boolean;
     @Input() player: Player;
@@ -47,6 +47,10 @@ export class QuestionComponent {
 
     canEditAnswer(): boolean {
         return !this.answerConfirmed && !this.showingAnswer;
+    }
+
+    ngOnDestroy(): void {
+        this.questionsSubscription.unsubscribe();
     }
 
     private setQuestion(data: QuestionData) {
