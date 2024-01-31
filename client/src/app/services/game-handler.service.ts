@@ -47,8 +47,6 @@ export const SHOW_ANSWER_DELAY = 3;
 })
 export class GameHandlerService {
     private internalGameData: GameData;
-    private internalGameState: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
-    private gameState: GameState;
     private confirmSubscriptions: Subscription[];
     private nAnswersConfirmed: number = 0;
 
