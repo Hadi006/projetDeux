@@ -1,9 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameHandlerService, GameState } from '@app/services/game-handler.service';
+import { GameHandlerService } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { Subscription } from 'rxjs';
 import { Player } from '@app/interfaces/player';
+import { GameStateService, GameState } from '@app/services/game-state.service';
+import { GameTimersService } from '@app/services/game-timers.service';
 
 @Component({
     selector: 'app-gameplay-player-page',
@@ -23,6 +25,8 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         public gameHandlerService: GameHandlerService,
         private router: Router,
         private playerHandlerService: PlayerHandlerService,
+        private gameStateService: GameStateService,
+        private gameTimersService: GameTimersService,
     ) {
         this.internalPlayer = this.playerHandlerService.createPlayer();
 
@@ -42,8 +46,15 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    get time(): number | undefined {
-        return this.internalTime;
+    get time(): number {
+        switch (this.gameStateService.gameState) {
+            case GameState.ShowQuestion:
+                return this.gameTimersService.questionTime;
+            case GameState.ShowAnswer:
+                return this.gameTimersService.answerTime;
+            default:
+                return 0;
+        }
     }
 
     get player(): Player | undefined {
