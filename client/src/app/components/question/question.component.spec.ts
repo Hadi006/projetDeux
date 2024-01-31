@@ -55,7 +55,7 @@ describe('QuestionComponent', () => {
 
         expect(component.question).toBeFalsy();
         expect(component.isChecked).toBeFalsy();
-        expect(component.answerConfirmed).toBeFalsy();
+        expect(component.answerConfirmed).toBeFalse();
     });
 
     it('keyboardEvent should do nothing if questionData is not defined', () => {
@@ -77,7 +77,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if questionData is not MCQ', () => {
-        questionHandlerService.questions.next({ ...MOCK_QUESTION_DATA, answers: [], correctAnswers: [], isMCQ: false });
+        questionHandlerService.questions.next({ ...MOCK_QUESTION_DATA, isMCQ: false });
 
         spyOn(component, 'confirmAnswer');
         spyOnProperty(component, 'isChecked', 'get').and.callThrough();
