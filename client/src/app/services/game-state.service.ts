@@ -10,5 +10,10 @@ export enum GameState {
     providedIn: 'root',
 })
 export class GameStateService {
+    private internalGameState: GameState;
     constructor() {}
+
+    get gameState(): GameState {
+        return this.internalGameState;
+    }
 }
