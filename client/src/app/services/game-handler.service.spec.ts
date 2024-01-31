@@ -32,14 +32,17 @@ describe('GameHandlerService', () => {
             nPlayers: 0,
         });
 
-        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>(
-            'QuestionHandlerService',
-            ['setQuestions', 'nextQuestion', 'calculateScore'],
-            {
-                currentQuestion: undefined,
-                nQuestions: 0,
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', [
+            'setQuestions',
+            'nextQuestion',
+            'calculateScore',
+        ]);
+        Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
+            get: () => {
+                return undefined;
             },
-        );
+            configurable: true,
+        });
 
         timeServiceSpy = jasmine.createSpyObj<TimeService>('TimeService', ['createTimer', 'startTimer', 'setTime']);
     });
@@ -62,6 +65,7 @@ describe('GameHandlerService', () => {
     it('get time should call getQuestionTime when the game state is ShowQuestion and return its value', () => {
         const TIME = 10;
         gameTimerServiceSpy.getQuestionTime.and.returnValue(TIME);
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
         service.startGame();
 
         expect(service.time).toEqual(TIME);
@@ -72,6 +76,7 @@ describe('GameHandlerService', () => {
         const TIME = 10;
         const TIME_MS = 1000;
         gameTimerServiceSpy.getAnswerTime.and.returnValue(TIME);
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
         gameTimerServiceSpy.createQuestionTimer.and.callThrough();
         gameTimerServiceSpy.startQuestionTimer.and.callThrough();
         timeServiceSpy.createTimer.and.callThrough();
