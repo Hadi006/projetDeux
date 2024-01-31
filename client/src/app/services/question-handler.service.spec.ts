@@ -37,4 +37,11 @@ describe('QuestionHandlerService', () => {
 
         expect(service.questionSubjects.next).toHaveBeenCalledWith(QUESTIONS_DATA[0]);
     });
+
+    it('nextQuestion should increment the current question index', () => {
+        service.setQuestions(QUESTIONS_DATA);
+        service.nextQuestion();
+
+        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
+    });
 });
