@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { QuestionData } from '@common/question-data';
 import { Subject } from 'rxjs';
 import { QuestionComponent } from './question.component';
@@ -6,12 +7,23 @@ import { QuestionComponent } from './question.component';
 describe('QuestionComponent', () => {
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
+    let questionHandlerService: jasmine.SpyObj<QuestionHandlerService>;
     let mockQuestionData: QuestionData;
     let mockIsChecked: boolean[];
+
+    beforeEach(() => {
+        questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', ['questions']);
+    });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
+            providers: [
+                {
+                    provide: QuestionHandlerService,
+                    useValue: questionHandlerService,
+                },
+            ],
         }).compileComponents();
     }));
 
@@ -35,7 +47,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
-        component.question = mockQuestionData;
+        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData>());
 
         expect(component.questionData).toEqual(mockQuestionData);
         expect(component.isChecked).toBeInstanceOf(Array);
