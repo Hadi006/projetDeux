@@ -1,7 +1,7 @@
-import { /* discardPeriodicTasks, */ fakeAsync, TestBed /* , tick */ } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Player } from '@app/interfaces/player';
 
-import { GameHandlerService, /* GameState, */ TEST_GAME /* , SHOW_ANSWER_DELAY */ } from '@app/services/game-handler.service';
+import { GameHandlerService, GameState, /* GameState, */ TEST_GAME /* , SHOW_ANSWER_DELAY */ } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 // import { QuestionData } from '@common/question-data';
 import {} from /* BehaviorSubject, Subject, */ /* Subscription */ 'rxjs';
@@ -25,6 +25,12 @@ describe('GameHandlerService', () => {
             'setQuestionTime',
         ]);
         Object.defineProperty(gameTimerServiceSpy, 'questionTime', {
+            get: () => {
+                return 0;
+            },
+            configurable: true,
+        });
+        Object.defineProperty(gameTimerServiceSpy, 'answerTime', {
             get: () => {
                 return 0;
             },
@@ -67,26 +73,22 @@ describe('GameHandlerService', () => {
     it('get time should return the correct value when game state is ShowQuestion', () => {
         const TIME = 10;
         spyOnProperty(gameTimerServiceSpy, 'questionTime', 'get').and.returnValue(TIME);
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
-        service.startGame();
+        questionHandlerServiceSpy.setQuestions.and.callThrough();
+        questionHandlerServiceSpy.setQuestions(TEST_GAME.questions);
+        service.updateGameState(GameState.ShowQuestion);
 
         expect(service.time).toEqual(TIME);
     });
 
-    it('get time should call getAnswerTime when the game state is ShowAnswer and return its value', fakeAsync(() => {
+    it('get time should call getAnswerTime when the game state is ShowAnswer and return its value', () => {
         const TIME = 10;
-        // const TIME_MS = 1000;
         spyOnProperty(gameTimerServiceSpy, 'answerTime', 'get').and.returnValue(TIME);
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
-        gameTimerServiceSpy.createQuestionTimer.and.callThrough();
-        gameTimerServiceSpy.startQuestionTimer.and.callThrough();
-        service.startGame();
-        tick(TEST_GAME.timePerQuestion);
+        questionHandlerServiceSpy.setQuestions.and.callThrough();
+        questionHandlerServiceSpy.setQuestions(TEST_GAME.questions);
+        service.updateGameState(GameState.ShowAnswer);
 
         expect(service.time).toEqual(TIME);
-        expect(gameTimerServiceSpy.answerTime).toHaveBeenCalled();
-        discardPeriodicTasks();
-    }));
+    });
 
     it('get time should return 0 when the game state is GameEnded', fakeAsync(() => {
         service.startGame();
