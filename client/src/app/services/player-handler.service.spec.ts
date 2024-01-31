@@ -18,11 +18,11 @@ describe('PlayerHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('createPlayer should return a player and increment nPlayers', () => {
+    it('createPlayer should return a new player and increment nPlayers', () => {
         const nPlayers = service.nPlayers;
         const player = service.createPlayer();
 
-        expect(player).toBeTruthy();
+        expect(player).toEqual({ score: 0, answerNotifier: new Subject<boolean[]>() });
         expect(service.nPlayers).toEqual(nPlayers);
     });
 });
