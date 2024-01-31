@@ -79,38 +79,39 @@ describe('GameHandlerService', () => {
         let observedState: GameState | undefined;
         let gameStateSubscriber: Subscription;
 
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             gameTimerServiceSpy.getAnswerTime.and.returnValue(ANSWER_TIME);
             gameStateSubscriber = service.stateSubject.subscribe((state) => {
                 observedState = state;
             });
             service.startGame();
             tick(TEST_GAME.timePerQuestion);
-        });
+        }));
 
         it('should call createQuestionTimer', () => {
             expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalled();
         });
 
-        it('callback should notify subscribers of the correct GameState', fakeAsync(() => {
+        it('should notify subscribers of the correct GameState', fakeAsync(() => {
             service.startGame();
 
             expect(observedState).toEqual(GameState.ShowAnswer);
             gameStateSubscriber.unsubscribe();
         }));
 
-        it('callback should cause time to return answer time', fakeAsync(() => {
+        it('should cause time to return answer time', fakeAsync(() => {
             tick(TEST_GAME.timePerQuestion);
 
             expect(service.time).toEqual(ANSWER_TIME);
             discardPeriodicTasks();
         }));
 
-        it('callback should call startAnswerTimer with SHOW_ANSWER_DELAY', fakeAsync(() => {}));
+        it('should call startAnswerTimer with SHOW_ANSWER_DELAY', fakeAsync(() => {}));
 
-        afterEach(() => {
+        afterEach(fakeAsync(() => {
             gameStateSubscriber.unsubscribe();
-        });
+            discardPeriodicTasks();
+        }));
     });
 
     it('should call createAnswerTimer', () => {
