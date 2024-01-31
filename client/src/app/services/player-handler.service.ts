@@ -6,15 +6,15 @@ import { Player } from '@app/interfaces/player';
     providedIn: 'root',
 })
 export class PlayerHandlerService {
-    private playersMap: Map<number, Player> = new Map<number, Player>();
-    private nbPlayers: number = 0;
+    private internalPlayers: Map<number, Player> = new Map<number, Player>();
+    private internalNPlayers: number = 0;
 
     get players(): Map<number, Player> {
-        return this.playersMap;
+        return this.internalPlayers;
     }
 
     get nPlayers(): number {
-        return this.nbPlayers;
+        return this.internalNPlayers;
     }
 
     createPlayer(): Player {
@@ -22,13 +22,13 @@ export class PlayerHandlerService {
             score: 0,
             answerNotifier: new Subject<boolean[]>(),
         };
-        this.playersMap.set(this.nbPlayers++, player);
+        this.internalPlayers.set(this.internalNPlayers++, player);
 
         return player;
     }
 
     cleanUp(): void {
-        this.playersMap.forEach((player: Player) => {
+        this.internalPlayers.forEach((player: Player) => {
             player.answerNotifier.unsubscribe();
         });
     }
