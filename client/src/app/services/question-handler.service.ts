@@ -13,7 +13,7 @@ export class QuestionHandlerService {
     private nbQuestions: number;
     private questionsSubject: Subject<QuestionData> = new Subject<QuestionData>();
 
-    get currentQuestion(): QuestionData {
+    get currentQuestion(): QuestionData | undefined {
         return this.questionData[this.currentQuestionIndex];
     }
     get nQuestions(): number {
