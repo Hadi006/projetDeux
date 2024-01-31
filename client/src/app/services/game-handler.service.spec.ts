@@ -7,14 +7,12 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { /* BehaviorSubject, Subject, */ Subscription } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
-import { TimeService } from './time.service';
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
     let gameTimerServiceSpy: jasmine.SpyObj<GameTimersService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
-    let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
     beforeEach(() => {
         gameTimerServiceSpy = jasmine.createSpyObj('GameTimersService', [
@@ -43,8 +41,6 @@ describe('GameHandlerService', () => {
             },
             configurable: true,
         });
-
-        timeServiceSpy = jasmine.createSpyObj<TimeService>('TimeService', ['createTimer', 'startTimer', 'setTime']);
     });
 
     beforeEach(() => {
@@ -79,10 +75,8 @@ describe('GameHandlerService', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
         gameTimerServiceSpy.createQuestionTimer.and.callThrough();
         gameTimerServiceSpy.startQuestionTimer.and.callThrough();
-        timeServiceSpy.createTimer.and.callThrough();
-        timeServiceSpy.startTimer.and.callThrough();
         service.startGame();
-        tick(TEST_GAME.timePerQuestion * TIME_MS);
+        tick((TEST_GAME.timePerQuestion + 1) * TIME_MS);
 
         expect(service.time).toEqual(TIME);
         expect(gameTimerServiceSpy.getAnswerTime).toHaveBeenCalled();
@@ -95,8 +89,8 @@ describe('GameHandlerService', () => {
         expect(service.time).toEqual(0);
     });
 
-    it('get time should return 0 when the game state is not recognized', () => {
-        expect(service.time).toEqual(0);
+    it('get time should return undefined when the game state is not recognized', () => {
+        expect(service.time).toBeUndefined();
     });
 
     describe('createQuestionTimer within startGame', () => {
