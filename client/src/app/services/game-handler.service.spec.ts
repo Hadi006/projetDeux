@@ -3,7 +3,7 @@ import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
 
@@ -73,49 +73,55 @@ describe('GameHandlerService', () => {
         expect(service.time).toEqual(0);
     });
 
-    describe('startGame', () => {
+    describe('createQuestionTime within startGame', () => {
+        const ANSWER_TIME = 10;
+
+        let observedState: GameState | undefined;
+        let gameStateSubscriber: Subscription;
+
         beforeEach(() => {
+            gameTimerServiceSpy.getAnswerTime.and.returnValue(ANSWER_TIME);
+            gameStateSubscriber = service.stateSubject.subscribe((state) => {
+                observedState = state;
+            });
             service.startGame();
+            tick(TEST_GAME.timePerQuestion);
         });
 
         it('should call createQuestionTimer', () => {
             expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalled();
         });
 
-        it('callback of createQuestionTimer should notify subscribers of the correct GameState', fakeAsync(() => {
-            let observedState: GameState | undefined;
-            const gameStateSubscriber = service.stateSubject.subscribe((state) => {
-                observedState = state;
-            });
-            const answerTime = 10;
-            gameTimerServiceSpy.getAnswerTime.and.returnValue(answerTime);
+        it('callback should notify subscribers of the correct GameState', fakeAsync(() => {
             service.startGame();
-            tick(TEST_GAME.timePerQuestion);
 
             expect(observedState).toEqual(GameState.ShowAnswer);
             gameStateSubscriber.unsubscribe();
         }));
 
-        it('callback of createQuestionTimer should cause time to return answer time', fakeAsync(() => {
-            const answerTime = 10;
-            gameTimerServiceSpy.getAnswerTime.and.returnValue(answerTime);
-            service.startGame();
+        it('callback should cause time to return answer time', fakeAsync(() => {
             tick(TEST_GAME.timePerQuestion);
 
-            expect(service.time).toEqual(answerTime);
+            expect(service.time).toEqual(ANSWER_TIME);
             discardPeriodicTasks();
         }));
 
-        it('should call createAnswerTimer', () => {
-            expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
-        });
+        it('callback should call startAnswerTimer with SHOW_ANSWER_DELAY', fakeAsync(() => {}));
 
-        it('should call getGameData', () => {
-            expect(service['gameData']).toEqual(TEST_GAME);
+        afterEach(() => {
+            gameStateSubscriber.unsubscribe();
         });
+    });
 
-        it('should call setUpNextQuestion', () => {
-            expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
-        });
+    it('should call createAnswerTimer', () => {
+        expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
+    });
+
+    it('should call getGameData', () => {
+        expect(service['gameData']).toEqual(TEST_GAME);
+    });
+
+    it('should call setUpNextQuestion', () => {
+        expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
     });
 });
