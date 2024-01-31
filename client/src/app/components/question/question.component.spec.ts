@@ -86,6 +86,9 @@ describe('QuestionComponent', () => {
     it('should do nothing if questionData is not MCQ', () => {
         questionHandlerService.questions.next({ ...mockQuestionData, isMCQ: false });
 
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(component, 'isChecked', 'get').and.callThrough();
+
         const mockOne = new KeyboardEvent('keyup', { key: '1' });
         spyOn(mockOne, 'stopPropagation');
         component.handleKeyUp(mockOne);
@@ -93,9 +96,6 @@ describe('QuestionComponent', () => {
         const mockEnter = new KeyboardEvent('keyup', { key: 'Enter' });
         spyOn(mockEnter, 'stopPropagation');
         component.handleKeyUp(mockEnter);
-
-        spyOn(component, 'confirmAnswer');
-        spyOnProperty(component, 'isChecked', 'get').and.callThrough();
 
         expect(mockOne.stopPropagation).not.toHaveBeenCalled();
         expect(mockEnter.stopPropagation).not.toHaveBeenCalled();
