@@ -18,6 +18,14 @@ describe('PlayerHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('createPlayer should add a player to the map with the correct id', () => {
+        const nPlayers = service.nPlayers;
+        spyOn(service.players, 'set').and.callThrough();
+        const player = service.createPlayer();
+
+        expect(service.players.set).toHaveBeenCalledWith(nPlayers, player);
+    });
+
     it('createPlayer should return a new player and increment nPlayers', () => {
         const nPlayers = service.nPlayers;
         const player = service.createPlayer();
