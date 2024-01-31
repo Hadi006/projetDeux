@@ -46,7 +46,7 @@ describe('QuestionHandlerService', () => {
     });
 
     it('calculateScore should return 0 if currentQuestion is undefined', () => {
-        const isChecked = [true, false, false, false];
+        const isChecked = [false, true, false, false];
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
 
         expect(service.calculateScore(isChecked)).toEqual(0);
