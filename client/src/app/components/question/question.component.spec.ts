@@ -141,20 +141,20 @@ describe('QuestionComponent', () => {
         questionHandlerService.questions.next(mockQuestionData);
 
         spyOn(component, 'confirmAnswer');
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        spyOn(mockEvent, 'stopPropagation');
-        component.handleKeyUp(mockEvent);
+        const mockOne = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockOne, 'stopPropagation');
+        component.handleKeyUp(mockOne);
 
         expect(component.confirmAnswer).not.toHaveBeenCalled();
-        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        expect(mockOne.stopPropagation).toHaveBeenCalled();
     });
 
     it('should toggle isChecked for a valid key press', () => {
         questionHandlerService.questions.next(mockQuestionData);
 
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        spyOn(mockEvent, 'stopPropagation');
-        component.handleKeyUp(mockEvent);
+        const mockOne = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockOne, 'stopPropagation');
+        component.handleKeyUp(mockOne);
 
         component.isChecked.forEach((value, index) => {
             if (index === 0) {
@@ -163,17 +163,20 @@ describe('QuestionComponent', () => {
                 expect(value).toBeFalse();
             }
         });
+        expect(mockOne.stopPropagation).toHaveBeenCalled();
     });
 
     it('should not toggle isChecked if key press is greater than the number of answers', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
-        const mockEvent = new KeyboardEvent('keyup', { key: '5' });
-        component.handleKeyUp(mockEvent);
+        questionHandlerService.questions.next(mockQuestionData);
+
+        const mockFive = new KeyboardEvent('keyup', { key: '5' });
+        spyOn(mockFive, 'stopPropagation');
+        component.handleKeyUp(mockFive);
 
         component.isChecked.forEach((value) => {
             expect(value).toBeFalse();
         });
+        expect(mockFive.stopPropagation).toHaveBeenCalled();
     });
 
     it('should not toggle isChecked for an invalid key press', () => {
