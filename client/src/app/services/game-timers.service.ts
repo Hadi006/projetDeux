@@ -10,6 +10,14 @@ export class GameTimersService {
 
     constructor(private timeService: TimeService) {}
 
+    get questionTime(): number {
+        return this.timeService.getTime(this.questionTimerId);
+    }
+
+    get answerTime(): number {
+        return this.timeService.getTime(this.answerTimerId);
+    }
+
     createQuestionTimer(questionTimerCallback: () => void): void {
         this.questionTimerId = this.timeService.createTimer(questionTimerCallback);
     }
@@ -32,14 +40,6 @@ export class GameTimersService {
 
     stopAnswerTimer(): void {
         this.timeService.stopTimer(this.answerTimerId);
-    }
-
-    getQuestionTime(): number {
-        return this.timeService.getTime(this.questionTimerId);
-    }
-
-    getAnswerTime(): number {
-        return this.timeService.getTime(this.answerTimerId);
     }
 
     setQuestionTime(time: number): void {
