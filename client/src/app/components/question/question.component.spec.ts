@@ -13,6 +13,7 @@ describe('QuestionComponent', () => {
 
     beforeEach(() => {
         questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', ['questions']);
+        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData | undefined>());
     });
 
     beforeEach(waitForAsync(() => {
@@ -47,10 +48,9 @@ describe('QuestionComponent', () => {
     });
 
     it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
-        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData | undefined>());
         questionHandlerService.questions.next(mockQuestionData);
 
-        expect(component.questionData).toEqual(mockQuestionData);
+        expect(component.question).toEqual(mockQuestionData);
         expect(component.isChecked).toBeInstanceOf(Array);
         expect(component.isChecked.length).toEqual(mockQuestionData.answers.length);
         expect(component.isChecked.every((value) => value === false)).toBeTrue();
@@ -58,10 +58,9 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if question is undefined', () => {
-        spyOnProperty(questionHandlerService, 'questions', 'get').and.returnValue(new Subject<QuestionData | undefined>());
         questionHandlerService.questions.next(undefined);
 
-        expect(component.questionData).toBeFalsy();
+        expect(component.question).toBeFalsy();
         expect(component.isChecked).toBeFalsy();
         expect(component.answerConfirmed).toBeFalse();
     });
