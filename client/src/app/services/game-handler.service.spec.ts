@@ -100,7 +100,9 @@ describe('GameHandlerService', () => {
             expect(service.time).toEqual(ANSWER_TIME);
         }));
 
-        it('should call startAnswerTimer with SHOW_ANSWER_DELAY', fakeAsync(() => {}));
+        it('should call startAnswerTimer with SHOW_ANSWER_DELAY', fakeAsync(() => {
+            expect(gameTimerServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
+        }));
 
         afterEach(fakeAsync(() => {
             gameStateSubscriber.unsubscribe();
