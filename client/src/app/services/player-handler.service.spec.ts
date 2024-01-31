@@ -31,6 +31,6 @@ describe('PlayerHandlerService', () => {
         const player = service.createPlayer();
 
         expect(player).toEqual({ score: 0, answerNotifier: new Subject<boolean[]>() });
-        expect(service.nPlayers).toEqual(nPlayers);
+        expect(service.nPlayers).toEqual(nPlayers + 1);
     });
 });
