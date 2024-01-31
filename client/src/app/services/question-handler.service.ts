@@ -44,11 +44,7 @@ export class QuestionHandlerService {
     }
 
     private isAnswerCorrect(isChecked: boolean[]): boolean {
-        if (!this.currentQuestion) {
-            return false;
-        }
-
-        if (!this.currentQuestion.isMCQ) {
+        if (!this.currentQuestion?.isMCQ) {
             return true;
         }
 
