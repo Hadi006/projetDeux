@@ -13,6 +13,7 @@ import { Player } from '@app/interfaces/player';
 export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     @Input() gameId: number;
 
+    private internalTime: number;
     private internalPlayer: Player;
     private internalShowingAnswer: boolean;
     private internalScore: number;
@@ -39,6 +40,10 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
                     break;
             }
         });
+    }
+
+    get time(): number | undefined {
+        return this.internalTime;
     }
 
     get player(): Player | undefined {
