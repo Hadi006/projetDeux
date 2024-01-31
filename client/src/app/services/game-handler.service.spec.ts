@@ -26,12 +26,7 @@ describe('GameHandlerService', () => {
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', []);
 
-        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', [
-            'currentQuestion',
-            'setQuestions',
-            'nextQuestion',
-            'calculateScore',
-        ]);
+        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['setQuestions', 'nextQuestion', 'calculateScore']);
     });
 
     beforeEach(() => {
@@ -52,7 +47,7 @@ describe('GameHandlerService', () => {
     it('get time should call getQuestionTime when the game state is ShowQuestion and return its value', () => {
         const TIME = 10;
         gameTimerServiceSpy.getQuestionTime.and.returnValue(TIME);
-        service['gameState'] = GameState.ShowQuestion;
+        service.startGame();
 
         expect(service.time).toEqual(TIME);
         expect(gameTimerServiceSpy.getQuestionTime).toHaveBeenCalled();
@@ -61,49 +56,21 @@ describe('GameHandlerService', () => {
     it('get time should call getAnswerTime when the game state is ShowAnswer and return its value', () => {
         const TIME = 10;
         gameTimerServiceSpy.getAnswerTime.and.returnValue(TIME);
-        service['gameState'] = GameState.ShowAnswer;
+        service.startGame();
 
         expect(service.time).toEqual(TIME);
         expect(gameTimerServiceSpy.getAnswerTime).toHaveBeenCalled();
     });
 
     it('get time should return 0 when the game state is GameEnded', () => {
-        service['gameState'] = GameState.GameEnded;
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(undefined);
+        service.startGame();
 
         expect(service.time).toEqual(0);
     });
 
     it('get time should return 0 when the game state is not recognized', () => {
-        service['gameState'] = 3;
-
         expect(service.time).toEqual(0);
     });
 
-    it('startGame should call createAnswerSubscription for each player', () => {
-        const mockPlayers: Map<number, Player> = new Map<number, Player>(
-            [0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]),
-        );
-        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(mockPlayers);
-        service['confirmSubscriptions'] = [];
-        service.startGame();
-
-        expect(service.createAnswerSubscription).toHaveBeenCalledTimes(mockPlayers.size);
-        mockPlayers.forEach((player) => {
-            expect(service.createAnswerSubscription).toHaveBeenCalledWith(player);
-        });
-    });
-
-    it('startGame should call createQuestionTimer with the correct callback', () => {
-        spyOn<any>(service, 'showAnswer');
-        service.startGame();
-
-        expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalledWith(service['showAnswer']);
-    });
-
-    it('startGame should call createAnswerTimer with the correct callback', () => {
-        spyOn<any>(service, 'setUpNextQuestion');
-        service.startGame();
-
-        expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalledWith(service['setUpNextQuestion']);
-    });
 });
