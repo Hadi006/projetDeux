@@ -1,10 +1,10 @@
-<div *ngIf="question">
-    <h2>{{ question.question }}</h2>
+<div *ngIf="questionData">
+    <h2>{{ questionData.question }}</h2>
 
-    <p>Question value: {{ question.points }} points</p>
+    <p>Question value: {{ questionData.points }} points</p>
 
-    <div *ngIf="question.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
-        <div *ngFor="let answer of question.answers; let i = index">
+    <div *ngIf="questionData.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
+        <div *ngFor="let answer of questionData.answers; let i = index">
             <label>
                 <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="isChecked[i]" />
                 {{ i + 1 }} ) {{ answer }}
@@ -12,12 +12,12 @@
         </div>
     </div>
 
-    <div *ngIf="!question.isMCQ" id="question-container">
+    <div *ngIf="!questionData.isMCQ" id="question-container">
         <textarea [disabled]="showingAnswer" placeholder="Type your answer here..."></textarea>
     </div>
 
     <div *ngIf="showingAnswer" id="grade-container">
-        <span *ngFor="let correctAnswer of question.correctAnswers; let i = index">
+        <span *ngFor="let correctAnswer of questionData.correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer }}</p>
         </span>
     </div>
