@@ -10,27 +10,27 @@ const GOOD_ANSWER_MULTIPLIER = 1.2;
 export class QuestionHandlerService {
     private questionData: QuestionData[];
     private currentQuestionIndex: number = 0;
-    private nbQuestions: number;
-    private questionsSubject: Subject<QuestionData | undefined> = new Subject<QuestionData | undefined>();
+    private internalNQuestions: number;
+    private internalQuestionSubjects: Subject<QuestionData | undefined> = new Subject<QuestionData | undefined>();
 
     get currentQuestion(): QuestionData | undefined {
         return this.questionData[this.currentQuestionIndex];
     }
     get nQuestions(): number | undefined {
-        return this.nbQuestions;
+        return this.internalNQuestions;
     }
 
-    get questions(): Subject<QuestionData | undefined> {
-        return this.questionsSubject;
+    get questionSubjects(): Subject<QuestionData | undefined> {
+        return this.internalQuestionSubjects;
     }
 
     setQuestions(data: QuestionData[]): void {
         this.questionData = data;
-        this.nbQuestions = data.length;
+        this.internalNQuestions = data.length;
     }
 
     nextQuestion(): void {
-        this.questionsSubject.next(this.questionData[this.currentQuestionIndex++]);
+        this.internalQuestionSubjects.next(this.questionData[this.currentQuestionIndex++]);
     }
 
     calculateScore(isChecked: boolean[]): number {
