@@ -3,15 +3,18 @@ import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+// import { QuestionData } from '@common/question-data';
 import { /* BehaviorSubject, Subject, */ Subscription } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
+import { TimeService } from './time.service';
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
     let gameTimerServiceSpy: jasmine.SpyObj<GameTimersService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
+    let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
     beforeEach(() => {
         gameTimerServiceSpy = jasmine.createSpyObj('GameTimersService', [
@@ -29,10 +32,16 @@ describe('GameHandlerService', () => {
             nPlayers: 0,
         });
 
-        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['setQuestions', 'nextQuestion', 'calculateScore'], {
-            currentQuestion: undefined,
-            nQuestions: 0,
-        });
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>(
+            'QuestionHandlerService',
+            ['setQuestions', 'nextQuestion', 'calculateScore'],
+            {
+                currentQuestion: undefined,
+                nQuestions: 0,
+            },
+        );
+
+        timeServiceSpy = jasmine.createSpyObj<TimeService>('TimeService', ['createTimer', 'startTimer', 'setTime']);
     });
 
     beforeEach(() => {
@@ -59,17 +68,23 @@ describe('GameHandlerService', () => {
         expect(gameTimerServiceSpy.getQuestionTime).toHaveBeenCalled();
     });
 
-    it('get time should call getAnswerTime when the game state is ShowAnswer and return its value', () => {
+    it('get time should call getAnswerTime when the game state is ShowAnswer and return its value', fakeAsync(() => {
         const TIME = 10;
+        const TIME_MS = 1000;
         gameTimerServiceSpy.getAnswerTime.and.returnValue(TIME);
+        gameTimerServiceSpy.createQuestionTimer.and.callThrough();
+        gameTimerServiceSpy.startQuestionTimer.and.callThrough();
+        timeServiceSpy.createTimer.and.callThrough();
+        timeServiceSpy.startTimer.and.callThrough();
         service.startGame();
+        tick(TEST_GAME.timePerQuestion * TIME_MS);
 
         expect(service.time).toEqual(TIME);
         expect(gameTimerServiceSpy.getAnswerTime).toHaveBeenCalled();
-    });
+        discardPeriodicTasks();
+    }));
 
     it('get time should return 0 when the game state is GameEnded', () => {
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(undefined);
         service.startGame();
 
         expect(service.time).toEqual(0);

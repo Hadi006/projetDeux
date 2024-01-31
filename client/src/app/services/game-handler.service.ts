@@ -147,6 +147,7 @@ export class GameHandlerService {
     }
 
     private showAnswer(): void {
+            console.log('ok');
         this.updateGameState(GameState.ShowAnswer);
         this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
     }
