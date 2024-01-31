@@ -71,10 +71,10 @@ export class GameHandlerService {
     get time(): number | undefined {
         switch (this.gameState) {
             case GameState.ShowQuestion: {
-                return this.gameTimersService.getQuestionTime();
+                return this.gameTimersService.questionTime;
             }
             case GameState.ShowAnswer: {
-                return this.gameTimersService.getAnswerTime();
+                return this.gameTimersService.answerTime;
             }
             case GameState.GameEnded: {
                 return 0;
