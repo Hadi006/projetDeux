@@ -15,8 +15,8 @@ export class QuestionComponent implements OnDestroy {
     @Input() player: Player;
 
     private questionsSubscription: Subscription;
-    private questionData: QuestionData;
-    private isCheckedArray: boolean[];
+    private internalQuestionData: QuestionData;
+    private internalIsChecked: boolean[];
 
     constructor(private questionHandlerService: QuestionHandlerService) {
         this.questionsSubscription = this.questionHandlerService.questions.subscribe((questionData: QuestionData | undefined) => {
@@ -28,12 +28,12 @@ export class QuestionComponent implements OnDestroy {
         });
     }
 
-    get question(): QuestionData {
-        return this.questionData;
+    get questionData(): QuestionData {
+        return this.internalQuestionData;
     }
 
     get isChecked(): boolean[] {
-        return this.isCheckedArray;
+        return this.internalIsChecked;
     }
 
     @HostListener('window:keyup', ['$event'])
@@ -49,13 +49,13 @@ export class QuestionComponent implements OnDestroy {
 
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.questionData.answers.length) {
-            this.isCheckedArray[key] = !this.isCheckedArray[key];
+            this.internalIsChecked[key] = !this.internalIsChecked[key];
         }
     }
 
     confirmAnswer(): void {
         this.answerConfirmed = true;
-        this.player.answerNotifier.next(this.isCheckedArray);
+        this.player.answerNotifier.next(this.internalIsChecked);
     }
 
     canEditAnswer(): boolean {
@@ -67,8 +67,8 @@ export class QuestionComponent implements OnDestroy {
     }
 
     private setQuestion(data: QuestionData) {
-        this.questionData = data;
-        this.isCheckedArray = new Array(this.questionData.answers.length).fill(false);
+        this.internalQuestionData = data;
+        this.internalIsChecked = new Array(this.questionData.answers.length).fill(false);
         this.answerConfirmed = false;
     }
 }
