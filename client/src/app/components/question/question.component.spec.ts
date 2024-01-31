@@ -180,24 +180,26 @@ describe('QuestionComponent', () => {
     });
 
     it('should not toggle isChecked for an invalid key press', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
-        const mockEvent = new KeyboardEvent('keyup', { key: 'f' });
-        component.handleKeyUp(mockEvent);
+        questionHandlerService.questions.next(mockQuestionData);
+
+        const mockF = new KeyboardEvent('keyup', { key: 'f' });
+        spyOn(mockF, 'stopPropagation');
+        component.handleKeyUp(mockF);
 
         component.isChecked.forEach((value) => {
             expect(value).toBeFalse();
         });
+        expect(mockF.stopPropagation).toHaveBeenCalled();
     });
 
-    it('confirmAnswer() should set answerConfirmed to true and call player.answerNotifier.next()', () => {
+    it('confirmAnswer() should set answerConfirmed to true and call player.answerNotifier.next() with the correct value', () => {
         component.player = { score: 0, answerNotifier: new Subject<boolean[]>() };
         component.player.answerNotifier = jasmine.createSpyObj('Subject<boolean[]>', ['next']);
         component.answerConfirmed = false;
         component.confirmAnswer();
 
         expect(component.answerConfirmed).toBeTrue();
-        expect(component.player.answerNotifier.next).toHaveBeenCalled();
+        expect(component.player.answerNotifier.next).toHaveBeenCalledWith(component.isChecked);
     });
 
     it('canEditAnswer() should return true if answerConfirmed and showingAnswer are false', () => {
