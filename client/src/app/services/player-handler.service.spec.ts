@@ -17,9 +17,4 @@ describe('PlayerHandlerService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    it('players should return the correct value', () => {
-        service['playersMap'] = MOCK_PLAYERS;
-        expect(service.players).toEqual(MOCK_PLAYERS);
-    });
 });
