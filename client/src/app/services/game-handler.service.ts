@@ -7,12 +7,6 @@ import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Player } from '@app/interfaces/player';
 
-export enum GameState {
-    ShowQuestion = 0,
-    ShowAnswer = 1,
-    GameEnded = 2,
-}
-
 export const QUESTIONS_DATA: QuestionData[] = [
     {
         id: 0,
