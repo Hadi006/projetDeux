@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
@@ -73,4 +73,37 @@ describe('GameHandlerService', () => {
         expect(service.time).toEqual(0);
     });
 
+    describe('startGame', () => {
+        beforeEach(() => {
+            service.startGame();
+        });
+
+        it('should call createQuestionTimer', () => {
+            expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalled();
+        });
+
+        it('callback of createQuestionTimer should cause time to return answer time', fakeAsync(() => {
+            const questionTime = 5;
+            const answerTime = 10;
+            gameTimerServiceSpy.getQuestionTime.and.returnValue(questionTime);
+            gameTimerServiceSpy.getAnswerTime.and.returnValue(answerTime);
+            service.startGame();
+            tick(1);
+
+            expect(service.time).toEqual(answerTime);
+            discardPeriodicTasks();
+        }));
+
+        it('should call createAnswerTimer', () => {
+            expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
+        });
+
+        it('should call getGameData', () => {
+            expect(service['gameData']).toEqual(TEST_GAME);
+        });
+
+        it('should call setUpNextQuestion', () => {
+            expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
+        });
+    });
 });
