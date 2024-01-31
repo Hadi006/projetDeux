@@ -3,7 +3,7 @@ import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
 
@@ -24,10 +24,10 @@ describe('GameHandlerService', () => {
             'setQuestionTime',
         ]);
 
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['get players', 'get nPlayers']);
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', []);
 
         questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', [
-            'get currentQuestion',
+            'currentQuestion',
             'setQuestions',
             'nextQuestion',
             'calculateScore',
@@ -87,5 +87,33 @@ describe('GameHandlerService', () => {
     it('get stateSubject should return the correct value', () => {
         service['gameStateSubject'] = new BehaviorSubject<GameState>(GameState.ShowQuestion);
         expect(service.stateSubject).toEqual(service['gameStateSubject']);
+    });
+
+    it('startGame should call createAnswerSubscription for each player', () => {
+        const mockPlayers: Map<number, Player> = new Map<number, Player>(
+            [0, 1, 2].map((id) => [id, { score: 0, answerNotifier: new Subject<boolean[]>() }]),
+        );
+        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(mockPlayers);
+        service['confirmSubscriptions'] = [];
+        service.startGame();
+
+        expect(service.createAnswerSubscription).toHaveBeenCalledTimes(mockPlayers.size);
+        mockPlayers.forEach((player) => {
+            expect(service.createAnswerSubscription).toHaveBeenCalledWith(player);
+        });
+    });
+
+    it('startGame should call createQuestionTimer with the correct callback', () => {
+        spyOn<any>(service, 'showAnswer');
+        service.startGame();
+
+        expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalledWith(service['showAnswer']);
+    });
+
+    it('startGame should call createAnswerTimer with the correct callback', () => {
+        spyOn<any>(service, 'setUpNextQuestion');
+        service.startGame();
+
+        expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalledWith(service['setUpNextQuestion']);
     });
 });
