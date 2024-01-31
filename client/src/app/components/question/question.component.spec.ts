@@ -66,7 +66,7 @@ describe('QuestionComponent', () => {
         expect(component.answerConfirmed).toBeFalse();
     });
 
-    it('should do nothing if questionData is not defined', () => {
+    it('keyboardEvent should do nothing if questionData is not defined', () => {
         component.isChecked = mockIsChecked;
         component.answerConfirmed = false;
         const mockEvent = new KeyboardEvent('keyup', { key: '1' });
