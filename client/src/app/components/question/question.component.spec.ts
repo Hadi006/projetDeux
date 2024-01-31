@@ -138,19 +138,22 @@ describe('QuestionComponent', () => {
     });
 
     it('should not call confirmAnswer() if key press is not Enter', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
+        questionHandlerService.questions.next(mockQuestionData);
+
         spyOn(component, 'confirmAnswer');
         const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockEvent, 'stopPropagation');
         component.handleKeyUp(mockEvent);
 
         expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
     it('should toggle isChecked for a valid key press', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
+        questionHandlerService.questions.next(mockQuestionData);
+
         const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockEvent, 'stopPropagation');
         component.handleKeyUp(mockEvent);
 
         component.isChecked.forEach((value, index) => {
