@@ -26,6 +26,28 @@ describe('GameTimersService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('get questionTime should call timeService.getTime with the correct id', () => {
+        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
+        timeServiceSpy.getTime.and.returnValue(TIME_OUT);
+        service.createQuestionTimer(() => {
+            return;
+        });
+
+        expect(service.questionTime).toEqual(TIME_OUT);
+        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(QUESTION_ID);
+    });
+
+    it('get answerTime should call timeService.getTime with the correct id', () => {
+        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
+        timeServiceSpy.getTime.and.returnValue(TIME_OUT);
+        service.createAnswerTimer(() => {
+            return;
+        });
+
+        expect(service.answerTime).toEqual(TIME_OUT);
+        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_ID);
+    });
+
     it('createQuestionTimer should call createTimer with the correct callback and assign an id to questionTimerId', () => {
         const callback = () => {
             return;
@@ -86,26 +108,6 @@ describe('GameTimersService', () => {
         service.stopAnswerTimer();
 
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_ID);
-    });
-
-    it('getQuestionTime should call getTime with the correct id', () => {
-        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
-        service.createQuestionTimer(() => {
-            return;
-        });
-        service.getQuestionTime();
-
-        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(QUESTION_ID);
-    });
-
-    it('getAnswerTime should call getTime with the correct id', () => {
-        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
-        service.createAnswerTimer(() => {
-            return;
-        });
-        service.getAnswerTime();
-
-        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_ID);
     });
 
     it('setQuestionTime should call setTime with the correct id and time', () => {
