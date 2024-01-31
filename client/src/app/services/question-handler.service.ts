@@ -11,7 +11,7 @@ export class QuestionHandlerService {
     private questionData: QuestionData[];
     private currentQuestionIndex: number = 0;
     private nbQuestions: number;
-    private questionsSubject: Subject<QuestionData> = new Subject<QuestionData>();
+    private questionsSubject: Subject<QuestionData | undefined> = new Subject<QuestionData | undefined>();
 
     get currentQuestion(): QuestionData | undefined {
         return this.questionData[this.currentQuestionIndex];
@@ -20,7 +20,7 @@ export class QuestionHandlerService {
         return this.nbQuestions;
     }
 
-    get questions(): Subject<QuestionData> {
+    get questions(): Subject<QuestionData | undefined> {
         return this.questionsSubject;
     }
 
