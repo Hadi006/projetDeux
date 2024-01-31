@@ -110,6 +110,14 @@ describe('GameHandlerService', () => {
         }));
     });
 
+    describe('createAnswerTimer within startGame', () => {
+        beforeEach(fakeAsync(() => {
+            service.startGame();
+            tick(TEST_GAME.timePerQuestion);
+            tick(SHOW_ANSWER_DELAY);
+        }));
+    });
+
     it('should call createAnswerTimer', () => {
         expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
     });
