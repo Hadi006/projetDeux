@@ -82,13 +82,25 @@ describe('GameHandlerService', () => {
             expect(gameTimerServiceSpy.createQuestionTimer).toHaveBeenCalled();
         });
 
-        it('callback of createQuestionTimer should cause time to return answer time', fakeAsync(() => {
-            const questionTime = 5;
+        it('callback of createQuestionTimer should notify subscribers of the correct GameState', fakeAsync(() => {
+            let observedState: GameState | undefined;
+            const gameStateSubscriber = service.stateSubject.subscribe((state) => {
+                observedState = state;
+            });
             const answerTime = 10;
-            gameTimerServiceSpy.getQuestionTime.and.returnValue(questionTime);
             gameTimerServiceSpy.getAnswerTime.and.returnValue(answerTime);
             service.startGame();
-            tick(1);
+            tick(TEST_GAME.timePerQuestion);
+
+            expect(observedState).toEqual(GameState.ShowAnswer);
+            gameStateSubscriber.unsubscribe();
+        }));
+
+        it('callback of createQuestionTimer should cause time to return answer time', fakeAsync(() => {
+            const answerTime = 10;
+            gameTimerServiceSpy.getAnswerTime.and.returnValue(answerTime);
+            service.startGame();
+            tick(TEST_GAME.timePerQuestion);
 
             expect(service.time).toEqual(answerTime);
             discardPeriodicTasks();
