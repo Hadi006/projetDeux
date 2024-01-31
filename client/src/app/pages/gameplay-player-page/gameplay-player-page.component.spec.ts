@@ -19,6 +19,8 @@ describe('GameplayPlayerPageComponent', () => {
         });
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['createPlayer']);
+        playerHandlerServiceSpy.createPlayer.and.returnValue({ score: 0, answerNotifier: new BehaviorSubject<boolean[]>([]) });
+
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -45,16 +47,12 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('should create a player', () => {
-        playerHandlerServiceSpy.createPlayer.and.returnValue({ score: 0, answerNotifier: new BehaviorSubject<boolean[]>([]) });
-
         expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
         expect(component.player).toBeTruthy();
     });
 
     it('should set showingAnswer to false when the game state is ShowQuestion', () => {
-        component.showingAnswer = true;
         component.gameHandlerService.stateSubject.next(GameState.ShowQuestion);
-
         expect(component.showingAnswer).toBeFalse();
     });
 
