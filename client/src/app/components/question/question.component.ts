@@ -19,7 +19,7 @@ export class QuestionComponent implements OnDestroy {
     private internalIsChecked: boolean[];
 
     constructor(private questionHandlerService: QuestionHandlerService) {
-        this.questionsSubscription = this.questionHandlerService.questions.subscribe((questionData: QuestionData | undefined) => {
+        this.questionsSubscription = this.questionHandlerService.questionSubjects.subscribe((questionData: QuestionData | undefined) => {
             if (!questionData) {
                 return;
             }

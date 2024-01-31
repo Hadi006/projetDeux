@@ -19,7 +19,7 @@ describe('QuestionComponent', () => {
     let questionHandlerService: jasmine.SpyObj<QuestionHandlerService>;
     beforeEach(() => {
         questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', [], {
-            questions: new Subject<QuestionData | undefined>(),
+            questionSubjects: new Subject<QuestionData | undefined>(),
         });
     });
 
@@ -41,7 +41,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         expect(component.questionData).toEqual(MOCK_QUESTION_DATA);
         expect(component.isChecked).toBeInstanceOf(Array);
@@ -51,7 +51,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if question is undefined', () => {
-        questionHandlerService.questions.next(undefined);
+        questionHandlerService.questionSubjects.next(undefined);
 
         expect(component.questionData).toBeFalsy();
         expect(component.isChecked).toBeFalsy();
@@ -77,7 +77,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if questionData is not MCQ', () => {
-        questionHandlerService.questions.next({ ...MOCK_QUESTION_DATA, answers: [], correctAnswers: [], isMCQ: false });
+        questionHandlerService.questionSubjects.next({ ...MOCK_QUESTION_DATA, answers: [], correctAnswers: [], isMCQ: false });
 
         spyOn(component, 'confirmAnswer');
         spyOnProperty(component, 'isChecked', 'get').and.callThrough();
@@ -97,7 +97,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if canEditAnswer() returns false', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         spyOn(component, 'canEditAnswer').and.returnValue(false);
         component.answerConfirmed = false;
@@ -119,7 +119,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should call confirmAnswer() and stopPropagation if key press is Enter', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         spyOn(component, 'confirmAnswer');
         const mockEnter = new KeyboardEvent('keyup', { key: 'Enter' });
@@ -131,7 +131,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should not call confirmAnswer() if key press is not Enter', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         spyOn(component, 'confirmAnswer');
         const mockOne = new KeyboardEvent('keyup', { key: '1' });
@@ -143,7 +143,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should toggle isChecked for a valid key press', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         const mockOne = new KeyboardEvent('keyup', { key: '1' });
         spyOn(mockOne, 'stopPropagation');
@@ -160,7 +160,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should not toggle isChecked if key press is greater than the number of answers', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         const mockFive = new KeyboardEvent('keyup', { key: '5' });
         spyOn(mockFive, 'stopPropagation');
@@ -173,7 +173,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should not toggle isChecked for an invalid key press', () => {
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         const mockF = new KeyboardEvent('keyup', { key: 'f' });
         spyOn(mockF, 'stopPropagation');
@@ -225,7 +225,7 @@ describe('QuestionComponent', () => {
 
     it('ngOnDestroy() should unsubscribe from questionsSubscription', () => {
         component.ngOnDestroy();
-        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+        questionHandlerService.questionSubjects.next(MOCK_QUESTION_DATA);
 
         expect(component.questionData).toBeFalsy();
     });
