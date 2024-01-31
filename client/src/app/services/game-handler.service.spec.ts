@@ -120,6 +120,14 @@ describe('GameHandlerService', () => {
         it('should call createAnswerTimer', () => {
             expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
         });
+
+        it('should call questionHandlerService.nextQuestion', () => {
+            expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
+        });
+
+        afterEach(fakeAsync(() => {
+            discardPeriodicTasks();
+        }));
     });
 
     it('should call createAnswerTimer', () => {
