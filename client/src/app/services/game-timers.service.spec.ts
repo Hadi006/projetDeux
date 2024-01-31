@@ -49,56 +49,80 @@ describe('GameTimersService', () => {
     });
 
     it('startQuestionTimer should call startTimer with the correct id and time', () => {
-        service['questionTimerId'] = QUESTION_ID;
+        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
+        service.createQuestionTimer(() => {
+            return;
+        });
         service.startQuestionTimer(TIME_OUT);
 
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_ID, TIME_OUT);
     });
 
     it('startAnswerTimer should call startTimer with the correct id and time', () => {
-        service['answerTimerId'] = ANSWER_ID;
+        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
+        service.createAnswerTimer(() => {
+            return;
+        });
         service.startAnswerTimer(TIME_OUT);
 
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_ID, TIME_OUT);
     });
 
     it('stopQuestionTimer should call stopTimer with the correct id', () => {
-        service['questionTimerId'] = QUESTION_ID;
+        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
+        service.createQuestionTimer(() => {
+            return;
+        });
         service.stopQuestionTimer();
 
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_ID);
     });
 
     it('stopAnswerTimer should call stopTimer with the correct id', () => {
-        service['answerTimerId'] = ANSWER_ID;
+        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
+        service.createAnswerTimer(() => {
+            return;
+        });
         service.stopAnswerTimer();
 
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_ID);
     });
 
     it('getQuestionTime should call getTime with the correct id', () => {
-        service['questionTimerId'] = QUESTION_ID;
+        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
+        service.createQuestionTimer(() => {
+            return;
+        });
         service.getQuestionTime();
 
         expect(timeServiceSpy.getTime).toHaveBeenCalledWith(QUESTION_ID);
     });
 
     it('getAnswerTime should call getTime with the correct id', () => {
-        service['answerTimerId'] = ANSWER_ID;
+        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
+        service.createAnswerTimer(() => {
+            return;
+        });
         service.getAnswerTime();
 
         expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_ID);
     });
 
     it('setQuestionTime should call setTime with the correct id and time', () => {
-        service['questionTimerId'] = QUESTION_ID;
+        timeServiceSpy.createTimer.and.returnValue(QUESTION_ID);
+        service.createQuestionTimer(() => {
+            return;
+        });
         service.setQuestionTime(TIME_OUT);
 
         expect(timeServiceSpy.setTime).toHaveBeenCalledWith(QUESTION_ID, TIME_OUT);
     });
 
     it('setAnswerTime should call setTime with the correct id and time', () => {
-        service['answerTimerId'] = ANSWER_ID;
+        timeServiceSpy.createTimer.and.returnValue(ANSWER_ID);
+        service.createAnswerTimer(() => {
+            return;
+        });
         service.setAnswerTime(TIME_OUT);
 
         expect(timeServiceSpy.setTime).toHaveBeenCalledWith(ANSWER_ID, TIME_OUT);
