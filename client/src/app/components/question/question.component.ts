@@ -11,8 +11,8 @@ import { Subscription } from 'rxjs';
 })
 export class QuestionComponent implements OnDestroy {
     @Input() answerConfirmed: boolean;
-    @Input() showingAnswer: boolean;
-    @Input() player: Player;
+    @Input() showingAnswer: boolean | undefined;
+    @Input() player: Player | undefined;
 
     private questionsSubscription: Subscription;
     private internalQuestionData: QuestionData;
@@ -55,7 +55,7 @@ export class QuestionComponent implements OnDestroy {
 
     confirmAnswer(): void {
         this.answerConfirmed = true;
-        this.player.answerNotifier.next(this.internalIsChecked);
+        this.player?.answerNotifier.next(this.internalIsChecked);
     }
 
     canEditAnswer(): boolean {
