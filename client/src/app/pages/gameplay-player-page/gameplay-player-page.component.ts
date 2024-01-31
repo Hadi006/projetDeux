@@ -49,7 +49,7 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         return this.internalShowingAnswer;
     }
 
-    get score(): number | undefined{
+    get score(): number | undefined {
         return this.internalScore;
     }
 
