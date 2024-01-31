@@ -16,7 +16,7 @@ export class QuestionHandlerService {
     get currentQuestion(): QuestionData | undefined {
         return this.questionData[this.currentQuestionIndex];
     }
-    get nQuestions(): number {
+    get nQuestions(): number | undefined {
         return this.nbQuestions;
     }
 
