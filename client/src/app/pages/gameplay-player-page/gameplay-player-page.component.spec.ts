@@ -46,6 +46,7 @@ describe('GameplayPlayerPageComponent', () => {
 
     it('should create a player', () => {
         playerHandlerServiceSpy.createPlayer.and.returnValue({ score: 0, answerNotifier: new BehaviorSubject<boolean[]>([]) });
+
         expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
         expect(component.player).toBeTruthy();
     });
