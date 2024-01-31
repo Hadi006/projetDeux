@@ -3,7 +3,7 @@ import { Player } from '@app/interfaces/player';
 
 import { GameHandlerService, GameState, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { /* BehaviorSubject, Subject, */ Subscription } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
 
@@ -24,7 +24,10 @@ describe('GameHandlerService', () => {
             'setQuestionTime',
         ]);
 
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', []);
+        playerHandlerServiceSpy = playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [], {
+            players: new Map<number, Player>(),
+            nPlayers: 0,
+        });
 
         questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['setQuestions', 'nextQuestion', 'calculateScore']);
     });
@@ -111,7 +114,7 @@ describe('GameHandlerService', () => {
     });
 
     describe('createAnswerTimer within startGame', () => {
-        const QUESTION_TIME = 5;
+        // const QUESTION_TIME = 5;
 
         let observedState: GameState | undefined;
         let gameStateSubscriber: Subscription;
