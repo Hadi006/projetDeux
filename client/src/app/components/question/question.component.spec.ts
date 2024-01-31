@@ -66,15 +66,21 @@ describe('QuestionComponent', () => {
     });
 
     it('keyboardEvent should do nothing if questionData is not defined', () => {
-        component.isChecked = mockIsChecked;
-        component.answerConfirmed = false;
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        component.handleKeyUp(mockEvent);
+        const mockOne = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockOne, 'stopPropagation');
+        component.handleKeyUp(mockOne);
 
-        expect(component.answerConfirmed).toBeFalse();
-        component.isChecked.forEach((value) => {
-            expect(value).toBeFalse();
-        });
+        const mockEnter = new KeyboardEvent('keyup', { key: 'Enter' });
+        spyOn(mockEnter, 'stopPropagation');
+        component.handleKeyUp(mockEnter);
+
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(component, 'isChecked', 'get').and.callThrough();
+
+        expect(mockOne.stopPropagation).not.toHaveBeenCalled();
+        expect(mockEnter.stopPropagation).not.toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toBeFalsy();
     });
 
     it('should do nothing if questionData is not MCQ', () => {
