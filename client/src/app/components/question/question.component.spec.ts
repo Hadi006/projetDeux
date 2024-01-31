@@ -125,14 +125,16 @@ describe('QuestionComponent', () => {
         });
     });
 
-    it('should call confirmAnswer() if key press is Enter', () => {
-        component.questionData = mockQuestionData;
-        component.isChecked = mockIsChecked;
+    it('should call confirmAnswer() and stopPropagation if key press is Enter', () => {
+        questionHandlerService.questions.next(mockQuestionData);
+
         spyOn(component, 'confirmAnswer');
-        const mockEvent = new KeyboardEvent('keyup', { key: 'Enter' });
-        component.handleKeyUp(mockEvent);
+        const mockEnter = new KeyboardEvent('keyup', { key: 'Enter' });
+        spyOn(mockEnter, 'stopPropagation');
+        component.handleKeyUp(mockEnter);
 
         expect(component.confirmAnswer).toHaveBeenCalled();
+        expect(mockEnter.stopPropagation).toHaveBeenCalled();
     });
 
     it('should not call confirmAnswer() if key press is not Enter', () => {
