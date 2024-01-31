@@ -73,7 +73,7 @@ describe('GameHandlerService', () => {
         expect(service.time).toEqual(0);
     });
 
-    describe('createQuestionTime within startGame', () => {
+    describe('createQuestionTimer within startGame', () => {
         const ANSWER_TIME = 10;
 
         let observedState: GameState | undefined;
