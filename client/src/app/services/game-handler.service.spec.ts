@@ -29,7 +29,10 @@ describe('GameHandlerService', () => {
             nPlayers: 0,
         });
 
-        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['setQuestions', 'nextQuestion', 'calculateScore']);
+        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['setQuestions', 'nextQuestion', 'calculateScore'], {
+            currentQuestion: undefined,
+            nQuestions: 0,
+        });
     });
 
     beforeEach(() => {
