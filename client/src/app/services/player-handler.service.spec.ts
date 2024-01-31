@@ -30,4 +30,21 @@ describe('PlayerHandlerService', () => {
         expect(player).toEqual({ score: 0, answerNotifier: new Subject<boolean[]>() });
         expect(service.nPlayers).toEqual(nPlayers + 1);
     });
+
+    it('cleanUp should unsubscribe all players', () => {
+        for (let i = 0; i < 5; i++) {
+            service.createPlayer();
+        }
+
+        service.players.forEach((player) => {
+            spyOn(player.answerNotifier, 'unsubscribe').and.callThrough();
+        });
+
+        service.cleanUp();
+
+        service.players.forEach((player) => {
+            expect(player.answerNotifier.unsubscribe).toHaveBeenCalled();
+        });
+    });
+
 });
