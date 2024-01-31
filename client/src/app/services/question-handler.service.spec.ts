@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { QuestionHandlerService } from './question-handler.service';
+import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from './question-handler.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 describe('QuestionHandlerService', () => {
@@ -58,5 +58,21 @@ describe('QuestionHandlerService', () => {
         const score = service.calculateScore(isChecked);
 
         expect(score).toEqual(0);
+    });
+
+    it('calculateScore should return the correct score if the answer is correct', () => {
+        const isChecked = [false, true, false, false];
+        service.setQuestions(QUESTIONS_DATA);
+        const score = service.calculateScore(isChecked);
+
+        expect(score).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
+    });
+
+    it('calculateScore should return the correct score if currentQuestion is not MCQ', () => {
+        const isChecked = [false, true, false, false];
+        service.setQuestions([{ ...QUESTIONS_DATA[0], isMCQ: false }]);
+        const score = service.calculateScore(isChecked);
+
+        expect(score).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 });
