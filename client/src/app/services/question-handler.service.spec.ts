@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { QuestionHandlerService } from './question-handler.service';
-import { QUESTION_DATA } from '@app/services/game-handler.service';
+import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
@@ -16,7 +16,7 @@ describe('QuestionHandlerService', () => {
     });
 
     it('currentQuestion should return the current question', () => {
-        service.setQuestions(QUESTION_DATA);
-        expect(service.currentQuestion).toEqual(QUESTION_DATA[0]);
+        service.setQuestions(QUESTIONS_DATA);
+        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 });

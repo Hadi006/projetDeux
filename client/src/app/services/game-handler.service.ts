@@ -13,7 +13,7 @@ export enum GameState {
     GameEnded = 2,
 }
 
-export const QUESTION_DATA: QuestionData[] = [
+export const QUESTIONS_DATA: QuestionData[] = [
     {
         id: 0,
         points: 1,
@@ -42,7 +42,7 @@ export const QUESTION_DATA: QuestionData[] = [
 export const TEST_GAME: GameData = {
     id: 0,
     name: 'Math',
-    questions: QUESTION_DATA,
+    questions: QUESTIONS_DATA,
     timePerQuestion: 10,
 };
 
