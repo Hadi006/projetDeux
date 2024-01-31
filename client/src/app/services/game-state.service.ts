@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { QuestionHandlerService } from './question-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 
 export enum GameState {
     ShowQuestion = 0,
@@ -13,9 +13,24 @@ export enum GameState {
 export class GameStateService {
     private internalGameState: GameState;
 
-    constructor(questionHandlerService: QuestionHandlerService) {}
+    constructor(private questionHandlerService: QuestionHandlerService) {}
 
     get gameState(): GameState {
         return this.internalGameState;
+    }
+
+    nextState(): void {
+        if (!this.questionHandlerService.currentQuestion) {
+            this.internalGameState = GameState.GameEnded;
+        } else {
+            switch (this.internalGameState) {
+                case GameState.ShowQuestion:
+                    this.internalGameState = GameState.ShowAnswer;
+                    break;
+                case GameState.ShowAnswer:
+                    this.internalGameState = GameState.ShowQuestion;
+                    break;
+            }
+        }
     }
 }
