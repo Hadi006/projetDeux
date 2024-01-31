@@ -10,14 +10,12 @@ describe('GameplayPlayerPageComponent', () => {
     let component: GameplayPlayerPageComponent;
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
-    let gameStateSubjectSpy: BehaviorSubject<GameState>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        gameStateSubjectSpy = new BehaviorSubject<GameState>(GameState.ShowQuestion);
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['stateSubject', 'startGame'], {
-            stateSubject: gameStateSubjectSpy,
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['startGame'], {
+            stateSubject: new BehaviorSubject<GameState>(GameState.ShowQuestion),
         });
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['createPlayer']);
@@ -30,8 +28,8 @@ describe('GameplayPlayerPageComponent', () => {
             declarations: [GameplayPlayerPageComponent],
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
-                { provide: Router, useValue: routerSpy },
                 { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         }).compileComponents();
     }));
@@ -62,7 +60,7 @@ describe('GameplayPlayerPageComponent', () => {
         const score = 100;
 
         component.showingAnswer = false;
-        component.player = { score: 0, answerNotifier: new BehaviorSubject<boolean[]>([])}
+        component.player = { score: 0, answerNotifier: new BehaviorSubject<boolean[]>([]) };
         component.player.score = score;
         component.gameHandlerService.stateSubject.next(GameState.ShowAnswer);
 
