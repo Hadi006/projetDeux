@@ -8,7 +8,7 @@ describe('QuestionComponent', () => {
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerService: jasmine.SpyObj<QuestionHandlerService>;
-    let mockQuestionData: QuestionData;
+    let MOCK_QUESTION_DATA: QuestionData;
 
     beforeEach(() => {
         questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', ['questions']);
@@ -18,8 +18,7 @@ describe('QuestionComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [{provide: QuestionHandlerService,useValue: questionHandlerService,},
-            ],
+            providers: [{ provide: QuestionHandlerService, useValue: questionHandlerService }],
         }).compileComponents();
     }));
 
@@ -27,14 +26,6 @@ describe('QuestionComponent', () => {
         fixture = TestBed.createComponent(QuestionComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        mockQuestionData = {
-            id: 0,
-            points: 10,
-            question: 'question',
-            answers: ['answer1', 'answer2', 'answer3', 'answer4'],
-            correctAnswers: ['answer1'],
-            isMCQ: true,
-        };
     });
 
     it('should create', () => {
@@ -42,11 +33,11 @@ describe('QuestionComponent', () => {
     });
 
     it('should correctly assign questionData, isChecked and answerConfirmed if question exists', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
-        expect(component.question).toEqual(mockQuestionData);
+        expect(component.question).toEqual(MOCK_QUESTION_DATA);
         expect(component.isChecked).toBeInstanceOf(Array);
-        expect(component.isChecked.length).toEqual(mockQuestionData.answers.length);
+        expect(component.isChecked.length).toEqual(MOCK_QUESTION_DATA.answers.length);
         expect(component.isChecked.every((value) => value === false)).toBeTrue();
         expect(component.answerConfirmed).toBeFalse();
     });
@@ -78,7 +69,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if questionData is not MCQ', () => {
-        questionHandlerService.questions.next({ ...mockQuestionData, isMCQ: false });
+        questionHandlerService.questions.next({ ...MOCK_QUESTION_DATA, isMCQ: false });
 
         spyOn(component, 'confirmAnswer');
         spyOnProperty(component, 'isChecked', 'get').and.callThrough();
@@ -98,7 +89,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should do nothing if canEditAnswer() returns false', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
         spyOn(component, 'canEditAnswer').and.returnValue(false);
         component.answerConfirmed = false;
@@ -120,7 +111,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should call confirmAnswer() and stopPropagation if key press is Enter', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
         spyOn(component, 'confirmAnswer');
         const mockEnter = new KeyboardEvent('keyup', { key: 'Enter' });
@@ -132,7 +123,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should not call confirmAnswer() if key press is not Enter', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
         spyOn(component, 'confirmAnswer');
         const mockOne = new KeyboardEvent('keyup', { key: '1' });
@@ -144,7 +135,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should toggle isChecked for a valid key press', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
         const mockOne = new KeyboardEvent('keyup', { key: '1' });
         spyOn(mockOne, 'stopPropagation');
@@ -161,7 +152,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should not toggle isChecked if key press is greater than the number of answers', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
         const mockFive = new KeyboardEvent('keyup', { key: '5' });
         spyOn(mockFive, 'stopPropagation');
@@ -174,7 +165,7 @@ describe('QuestionComponent', () => {
     });
 
     it('should not toggle isChecked for an invalid key press', () => {
-        questionHandlerService.questions.next(mockQuestionData);
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
 
         const mockF = new KeyboardEvent('keyup', { key: 'f' });
         spyOn(mockF, 'stopPropagation');
@@ -222,5 +213,12 @@ describe('QuestionComponent', () => {
         component.showingAnswer = true;
 
         expect(component.canEditAnswer()).toBeFalse();
+    });
+
+    it('ngOnDestroy() should unsubscribe from questionsSubscription', () => {
+        component.ngOnDestroy();
+        questionHandlerService.questions.next(MOCK_QUESTION_DATA);
+
+        expect(component.question).toBeFalsy();
     });
 });
