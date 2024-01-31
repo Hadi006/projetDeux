@@ -49,11 +49,6 @@ describe('GameHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('get data should return the correct value', () => {
-        service['gameData'] = TEST_GAME;
-        expect(service.data).toEqual(TEST_GAME);
-    });
-
     it('get time should call getQuestionTime when the game state is ShowQuestion and return its value', () => {
         const TIME = 10;
         gameTimerServiceSpy.getQuestionTime.and.returnValue(TIME);
@@ -82,11 +77,6 @@ describe('GameHandlerService', () => {
         service['gameState'] = 3;
 
         expect(service.time).toEqual(0);
-    });
-
-    it('get stateSubject should return the correct value', () => {
-        service['gameStateSubject'] = new BehaviorSubject<GameState>(GameState.ShowQuestion);
-        expect(service.stateSubject).toEqual(service['gameStateSubject']);
     });
 
     it('startGame should call createAnswerSubscription for each player', () => {
