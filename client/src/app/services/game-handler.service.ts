@@ -108,11 +108,6 @@ export class GameHandlerService {
         });
     }
 
-    updateGameState(gameState: GameState): void {
-        this.internalGameState.next(gameState);
-        this.gameState = gameState;
-    }
-
     private createAnswerSubscription(player: Player) {
         const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
             this.handlePlayerAnswer(player, isChecked);
@@ -133,6 +128,11 @@ export class GameHandlerService {
         // TODO : Replace with a server call
         this.internalGameData = TEST_GAME;
         this.questionHandlerService.setQuestions(TEST_GAME.questions);
+    }
+
+    private updateGameState(gameState: GameState): void {
+        this.internalGameState.next(gameState);
+        this.gameState = gameState;
     }
 
     private setUpNextQuestion(): void {
