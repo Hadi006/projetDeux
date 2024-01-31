@@ -116,6 +116,10 @@ describe('GameHandlerService', () => {
             tick(TEST_GAME.timePerQuestion);
             tick(SHOW_ANSWER_DELAY);
         }));
+
+        it('should call createAnswerTimer', () => {
+            expect(gameTimerServiceSpy.createAnswerTimer).toHaveBeenCalled();
+        });
     });
 
     it('should call createAnswerTimer', () => {
