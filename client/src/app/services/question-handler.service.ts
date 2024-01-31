@@ -11,7 +11,7 @@ export class QuestionHandlerService {
     private questionData: QuestionData[];
     private currentQuestionIndex: number = 0;
     private internalNQuestions: number;
-    private internalQuestionSubjects: Subject<QuestionData | undefined> = new Subject<QuestionData | undefined>();
+    private internalQuestionsSubject: Subject<QuestionData | undefined> = new Subject<QuestionData | undefined>();
 
     get currentQuestion(): QuestionData | undefined {
         return this.questionData[this.currentQuestionIndex];
@@ -21,7 +21,7 @@ export class QuestionHandlerService {
     }
 
     get questionSubjects(): Subject<QuestionData | undefined> {
-        return this.internalQuestionSubjects;
+        return this.internalQuestionsSubject;
     }
 
     setQuestions(data: QuestionData[]): void {
@@ -30,7 +30,9 @@ export class QuestionHandlerService {
     }
 
     nextQuestion(): void {
-        this.internalQuestionSubjects.next(this.questionData[this.currentQuestionIndex++]);
+        console.log(this.currentQuestionIndex);
+        console.log(this.questionData[this.currentQuestionIndex]);
+        this.internalQuestionsSubject.next(this.questionData[this.currentQuestionIndex++]);
     }
 
     calculateScore(isChecked: boolean[]): number {
