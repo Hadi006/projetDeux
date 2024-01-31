@@ -9,7 +9,6 @@ describe('QuestionComponent', () => {
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerService: jasmine.SpyObj<QuestionHandlerService>;
     let mockQuestionData: QuestionData;
-    let mockIsChecked: boolean[];
 
     beforeEach(() => {
         questionHandlerService = jasmine.createSpyObj('QuestionHandlerService', ['questions']);
@@ -40,7 +39,6 @@ describe('QuestionComponent', () => {
             correctAnswers: ['answer1'],
             isMCQ: true,
         };
-        mockIsChecked = new Array(mockQuestionData.answers.length).fill(false);
     });
 
     it('should create', () => {
