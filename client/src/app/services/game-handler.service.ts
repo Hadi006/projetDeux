@@ -52,8 +52,8 @@ export const SHOW_ANSWER_DELAY = 3;
     providedIn: 'root',
 })
 export class GameHandlerService {
-    private gameData: GameData;
-    private gameStateSubject: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
+    private internalGameData: GameData;
+    private internalGameState: BehaviorSubject<GameState> = new BehaviorSubject<GameState>(GameState.ShowQuestion);
     private gameState: GameState = GameState.ShowQuestion;
     private confirmSubscriptions: Subscription[];
     private nAnswersConfirmed: number = 0;
@@ -64,8 +64,8 @@ export class GameHandlerService {
         private questionHandlerService: QuestionHandlerService,
     ) {}
 
-    get data(): GameData {
-        return this.gameData;
+    get gameData(): GameData {
+        return this.internalGameData;
     }
 
     get time(): number {
@@ -86,7 +86,7 @@ export class GameHandlerService {
     }
 
     get stateSubject(): BehaviorSubject<GameState> {
-        return this.gameStateSubject;
+        return this.internalGameState;
     }
 
     startGame(): void {
@@ -126,12 +126,12 @@ export class GameHandlerService {
 
     private getGameData(): void {
         // TODO : Replace with a server call
-        this.gameData = TEST_GAME;
+        this.internalGameData = TEST_GAME;
         this.questionHandlerService.setQuestions(TEST_GAME.questions);
     }
 
     private updateGameState(gameState: GameState): void {
-        this.gameStateSubject.next(gameState);
+        this.internalGameState.next(gameState);
         this.gameState = gameState;
     }
 
