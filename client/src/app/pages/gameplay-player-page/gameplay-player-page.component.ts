@@ -16,7 +16,6 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     private internalPlayer: Player;
     private internalShowingAnswer: boolean = false;
     private internalScore: number = 0;
-
     private gameStateSubscription: Subscription;
 
     constructor(
@@ -50,7 +49,7 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         return this.internalShowingAnswer;
     }
 
-get score(): number {
+    get score(): number {
         return this.internalScore;
     }
 
