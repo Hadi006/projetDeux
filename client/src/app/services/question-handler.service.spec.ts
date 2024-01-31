@@ -44,4 +44,11 @@ describe('QuestionHandlerService', () => {
 
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
     });
+
+    it('calculateScore should return 0 if currentQuestion is undefined', () => {
+        const isChecked = [true, false, false, false];
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+
+        expect(service.calculateScore(isChecked)).toEqual(0);
+    });
 });
