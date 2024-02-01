@@ -25,4 +25,10 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
+
+    it('nextQuestion should load the next question', () => {
+        service.questionsData = QUESTIONS_DATA;
+        service.nextQuestion();
+        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
+    });
 });
