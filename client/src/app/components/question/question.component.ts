@@ -44,9 +44,4 @@ export class QuestionComponent {
     canEditAnswer(): boolean {
         return !this.player.answerConfirmed && !this.showingAnswer;
     }
-
-    confirmAnswer(): void {
-        this.player.confirmAnswer();
-        this.player.answerConfirmed = true;
-    }
 }

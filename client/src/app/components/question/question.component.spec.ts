@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionComponent } from './question.component';
 import { Player } from '@app/interfaces/player';
 
@@ -18,6 +19,7 @@ describe('QuestionComponent', () => {
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let gameStateService: GameStateService;
 
     beforeEach(() => {
@@ -28,12 +30,18 @@ describe('QuestionComponent', () => {
             },
             configurable: true,
         });
+
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['handleKeyUp']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [{ provide: QuestionHandlerService, useValue: questionHandlerServiceSpy }, GameStateService],
+            providers: [
+                { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                GameStateService,
+            ],
         }).compileComponents();
         gameStateService = TestBed.inject(GameStateService);
     }));
@@ -66,67 +74,29 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should do nothing if there is no question data', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'confirmAnswer');
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
-        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should do nothing if question is open ended', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'confirmAnswer');
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
-        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should do nothing if answer cant be edited', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'confirmAnswer');
         spyOn(component, 'canEditAnswer').and.returnValue(false);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
-        expect(component.confirmAnswer).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
-    });
-
-    it('handleKeyUp should call confirmAnswer if enter key is pressed', () => {
-        const mockEvent = new KeyboardEvent('keyup', { key: 'Enter' });
-        spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'confirmAnswer');
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(component, 'canEditAnswer').and.returnValue(true);
-        component.handleKeyUp(mockEvent);
-        expect(mockEvent.stopPropagation).toHaveBeenCalled();
-        expect(component.confirmAnswer).toHaveBeenCalled();
-    });
-
-    it('handleKeyUp should toggle answer if a valid number key is pressed', () => {
-        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
-        spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'confirmAnswer');
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(component, 'canEditAnswer').and.returnValue(true);
-        component.handleKeyUp(mockEvent);
-        expect(mockEvent.stopPropagation).toHaveBeenCalled();
-        expect(component.confirmAnswer).not.toHaveBeenCalled();
-        expect(component.isChecked).toEqual([true, true, false, false]);
-    });
-
-    it('handleKeyUp should do nothing if an invalid number key is pressed', () => {
-        const mockEvent = new KeyboardEvent('keyup', { key: '5' });
-        spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'confirmAnswer');
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(component, 'canEditAnswer').and.returnValue(true);
-        component.handleKeyUp(mockEvent);
-        expect(mockEvent.stopPropagation).toHaveBeenCalled();
-        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
@@ -150,12 +120,5 @@ describe('QuestionComponent', () => {
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         component.player.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
-    });
-
-    it('confirmAnswer should call confirmAnswer on player and set answerConfirmed to true', () => {
-        spyOn(component.player, 'confirmAnswer');
-        component.confirmAnswer();
-        expect(component.player.confirmAnswer).toHaveBeenCalled();
-        expect(component.player.answerConfirmed).toBeTrue();
     });
 });
