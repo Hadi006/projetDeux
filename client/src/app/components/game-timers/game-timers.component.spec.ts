@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { GameTimersService } from '@app/services/game-timers.service';
+import { GameTimersService, QUESTION_DELAY } from '@app/services/game-timers.service';
 
 import { GameTimersComponent } from './game-timers.component';
 
@@ -9,7 +9,7 @@ describe('GameTimersComponent', () => {
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
 
     beforeEach(() => {
-        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['createQuestionTimer']);
+        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer']);
         Object.defineProperty(gameTimersServiceSpy, 'time', { get: () => 0, configurable: true });
     });
 
@@ -34,5 +34,10 @@ describe('GameTimersComponent', () => {
         const time = 10;
         spyOnProperty(gameTimersServiceSpy, 'time', 'get').and.returnValue(time);
         expect(component.time).toBe(time);
+    });
+
+    it('ngOnInit should call startQuestionTimer with correct time', () => {
+        component.ngOnInit();
+        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(QUESTION_DELAY);
     });
 });
