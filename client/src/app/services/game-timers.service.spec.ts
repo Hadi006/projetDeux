@@ -113,6 +113,6 @@ describe('GameTimersService', () => {
         spyOn(service, 'stopQuestionTimer');
         service.cleanUp();
         playerHandlerServiceSpy.allAnsweredSubject.next();
-expect(service.stopQuestionTimer).not.toHaveBeenCalled();
+        expect(service.stopQuestionTimer).not.toHaveBeenCalled();
     });
 });
