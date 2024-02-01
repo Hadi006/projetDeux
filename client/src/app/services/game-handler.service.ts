@@ -45,6 +45,11 @@ export class GameHandlerService {
         return this.internalGameData;
     }
 
+    loadGameData(/* TODO id: number */): void {
+        // TODO: Load game data from server using id
+        this.internalGameData = TEST_GAME;
+    }
+
     startGame(): void {
         return;
     }
