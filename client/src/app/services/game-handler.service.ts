@@ -3,6 +3,12 @@ import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 import { QuestionHandlerService } from './question-handler.service';
 
+export enum GameState {
+    ShowQuestion = 0,
+    ShowAnswer = 1,
+    GameEnded = 2,
+}
+
 export const QUESTIONS_DATA: QuestionData[] = [
     {
         id: 0,
@@ -41,11 +47,37 @@ export const TEST_GAME: GameData = {
 })
 export class GameHandlerService {
     private internalGameData: GameData;
+    private internalGameState: GameState;
 
     constructor(private questionHandlerService: QuestionHandlerService) {}
 
+    get gameState(): GameState {
+        return this.internalGameState;
+    }
+
     get gameData(): GameData {
         return this.internalGameData;
+    }
+
+    nextState(): void {
+        if (!this.questionHandlerService.currentQuestion) {
+            this.internalGameState = GameState.GameEnded;
+        } else {
+            switch (this.internalGameState) {
+                case GameState.ShowQuestion:
+                    this.internalGameState = GameState.ShowAnswer;
+                    break;
+                case GameState.ShowAnswer:
+                    this.internalGameState = GameState.ShowQuestion;
+                    break;
+                case GameState.GameEnded:
+                    this.internalGameState = GameState.GameEnded;
+                    break;
+                default:
+                    this.internalGameState = GameState.ShowQuestion;
+                    break;
+            }
+        }
     }
 
     loadGameData(/* TODO id: number */): void {
