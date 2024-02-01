@@ -63,12 +63,12 @@ describe('PlayerHandlerService', () => {
         for (let i = 0; i < nPlayers; i++) {
             service.createPlayer();
         }
-        spyOn(service.allAnswerdSubject, 'next');
+        spyOn(service.allAnsweredSubject, 'next');
         for (let i = 0; i < nPlayers; i++) {
             service.confirmPlayerAnswer(service.players.get(i));
             expect(service.players.get(i)?.answerConfirmed).toBeTrue();
         }
-        expect(service.allAnswerdSubject.next).toHaveBeenCalled();
+        expect(service.allAnsweredSubject.next).toHaveBeenCalled();
     });
 
     it('confirmPlayerAnswer should increment nAnswered and reset it if all players confirmed', () => {
@@ -76,14 +76,14 @@ describe('PlayerHandlerService', () => {
         for (let i = 0; i < nPlayers; i++) {
             service.createPlayer();
         }
-        spyOn(service.allAnswerdSubject, 'next');
+        spyOn(service.allAnsweredSubject, 'next');
         for (let i = 0; i < nPlayers; i++) {
             service.confirmPlayerAnswer(service.players.get(i));
         }
-        expect(service.allAnswerdSubject.next).toHaveBeenCalledTimes(1);
+        expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(1);
         for (let i = 0; i < nPlayers; i++) {
             service.confirmPlayerAnswer(service.players.get(i));
         }
-        expect(service.allAnswerdSubject.next).toHaveBeenCalledTimes(2);
+        expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(2);
     });
 });
