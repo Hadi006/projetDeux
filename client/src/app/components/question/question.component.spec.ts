@@ -1,6 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { QuestionComponent } from './question.component';
+import { Player } from '@app/interfaces/player';
+
+const TEST_PLAYER: Player = {
+    score: 0,
+    answer: [],
+    answerConfirmed: false,
+    confirmAnswer: () => {
+        return;
+    },
+};
 
 describe('QuestionComponent', () => {
     let component: QuestionComponent;
@@ -20,7 +30,7 @@ describe('QuestionComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [],
+            providers: [{ provide: QuestionHandlerService, useValue: questionHandlerServiceSpy }],
         }).compileComponents();
     }));
 
