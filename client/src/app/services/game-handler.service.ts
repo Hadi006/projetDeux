@@ -53,8 +53,9 @@ export class GameHandlerService {
         private playerHandlerService: PlayerHandlerService,
     ) {
         this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe(() => {
-            if (++this.nAnsweredPlayers <= this.playerHandlerService.nPlayers) {
+            if (++this.nAnsweredPlayers >= this.playerHandlerService.nPlayers) {
                 this.gameTimersService.stopQuestionTimer();
+                this.nAnsweredPlayers = 0;
             }
         });
     }
