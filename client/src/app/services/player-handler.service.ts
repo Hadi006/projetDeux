@@ -45,7 +45,11 @@ export class PlayerHandlerService {
         }
     }
 
-    confirmPlayerAnswer(player: Player): void {
+    confirmPlayerAnswer(player: Player | undefined): void {
+        if (!player) {
+            return;
+        }
+
         player.answerConfirmed = true;
 
         if (++this.internalNAnswered >= this.internalNPlayers) {
