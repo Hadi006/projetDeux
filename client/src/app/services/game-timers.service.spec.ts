@@ -77,15 +77,17 @@ describe('GameTimersService', () => {
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
     });
 
-    it('stopQuestionTimer should call nextState and startAnswerTimer', () => {
+    it('stopQuestionTimer should call nextState and startAnswerTimer and stop its timer', () => {
         service.stopQuestionTimer();
         expect(gameStateServiceSpy.nextState).toHaveBeenCalled();
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
+        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID);
     });
 
-    it('stopAnswerTimer should call nextState and startQuestionTimer', () => {
+    it('stopAnswerTimer should call nextState and startQuestionTimer and stop its timer', () => {
         service.stopAnswerTimer();
         expect(gameStateServiceSpy.nextState).toHaveBeenCalled();
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY);
+        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
 });
