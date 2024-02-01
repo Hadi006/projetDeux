@@ -93,4 +93,14 @@ describe('GameHandlerService', () => {
         expect(questionHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalled();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
     });
+
+    it('cleanup should unsubscribe from the answerConfirmedSubject', () => {
+        service.cleanup();
+        const nPlayers = 2;
+        spyOnProperty(playerHandlerServiceSpy, 'nPlayers', 'get').and.returnValue(nPlayers);
+        for (let i = 0; i < nPlayers; i++) {
+            playerHandlerServiceSpy.answerConfirmedSubject.next();
+        }
+        expect(gameTimersServiceSpy.stopQuestionTimer).not.toHaveBeenCalled();
+    });
 });
