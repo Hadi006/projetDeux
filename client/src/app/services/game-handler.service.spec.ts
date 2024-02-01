@@ -75,10 +75,9 @@ describe('GameHandlerService', () => {
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
     });
 
-    it('cleanup should unsubscribe from the answerConfirmedSubject', () => {
+    it('cleanup should unsubscribe from timer ended', () => {
+        spyOn(mockSubject, 'unsubscribe');
         service.cleanup();
-        const nPlayers = 2;
-        for (let i = 0; i < nPlayers; i++) {}
-        expect(gameTimersServiceSpy.stopQuestionTimer).not.toHaveBeenCalled();
+        expect(mockSubject.unsubscribe).toHaveBeenCalled();
     });
 });
