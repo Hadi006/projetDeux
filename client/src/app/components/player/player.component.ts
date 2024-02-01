@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Player } from '@app/interfaces/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 
 @Component({
@@ -8,13 +7,9 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
     styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent {
-    private internalPlayer: Player;
+    player;
 
     constructor(private playerHandlerService: PlayerHandlerService) {
-        this.internalPlayer = this.playerHandlerService.createPlayer();
-    }
-
-    get player(): Player {
-        return this.internalPlayer;
+        this.player = this.playerHandlerService.createPlayer();
     }
 }
