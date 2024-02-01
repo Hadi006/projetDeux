@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 describe('QuestionHandlerService', () => {
@@ -30,5 +30,11 @@ describe('QuestionHandlerService', () => {
         service.questionsData = QUESTIONS_DATA;
         service.nextQuestion();
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
+    });
+
+    it('calculateScore should return the correct value for a correct answer', () => {
+        service.questionsData = QUESTIONS_DATA;
+        const answer = [false, true, false, false];
+        expect(service.calculateScore(answer)).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 });
