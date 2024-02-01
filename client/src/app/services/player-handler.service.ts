@@ -29,4 +29,16 @@ export class PlayerHandlerService {
 
         return player;
     }
+
+    handleKeyUp(event: KeyboardEvent, player: Player): void {
+        if (event.key === 'Enter') {
+            player.confirmAnswer();
+            player.answerConfirmed = true;
+        }
+
+        const key = parseInt(event.key, 10) - 1;
+        if (key >= 0 && key < player.answer.length) {
+            player.answer[key] = !player.answer[key];
+        }
+    }
 }

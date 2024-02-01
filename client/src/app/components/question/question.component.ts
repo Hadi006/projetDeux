@@ -3,6 +3,7 @@ import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
 
 @Component({
     selector: 'app-question',
@@ -15,6 +16,7 @@ export class QuestionComponent {
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private gameStateService: GameStateService,
+        private playerHandlerService: PlayerHandlerService,
     ) {}
 
     get questionData(): QuestionData | undefined {
@@ -36,14 +38,7 @@ export class QuestionComponent {
         }
 
         event.stopPropagation();
-        if (event.key === 'Enter') {
-            this.confirmAnswer();
-        }
-
-        const key = parseInt(event.key, 10) - 1;
-        if (key >= 0 && key < this.questionData.answers.length) {
-            this.player.answer[key] = !this.player.answer[key];
-        }
+        this.playerHandlerService.handleKeyUp(event, this.player);
     }
 
     canEditAnswer(): boolean {
