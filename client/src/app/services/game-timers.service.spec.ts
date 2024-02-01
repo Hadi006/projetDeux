@@ -1,12 +1,13 @@
-import { TestBed } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { GameStateService, GameState } from './game-state.service';
 
-import { GameTimersService } from './game-timers.service';
+import { GameTimersService, QUESTION_DELAY, ANSWER_DELAY } from './game-timers.service';
 import { TimeService } from './time.service';
 
 describe('GameTimersService', () => {
     const QUESTION_TIMER_ID = 0;
     const ANSWER_TIMER_ID = 1;
+    const S_TO_MS = 1000;
 
     let service: GameTimersService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
@@ -65,5 +66,10 @@ describe('GameTimersService', () => {
         spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(unrecognizedState);
         expect(service.time).toBe(0);
         expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+    });
+
+    it('startQuestionTimer should start the timer with the correct id', () => {
+        service.startQuestionTimer(QUESTION_DELAY);
+        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY * S_TO_MS);
     });
 });
