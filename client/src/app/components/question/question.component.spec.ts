@@ -114,4 +114,15 @@ describe('QuestionComponent', () => {
         expect(mockEvent.stopPropagation).toHaveBeenCalled();
         expect(component.confirmAnswer).toHaveBeenCalled();
     });
+
+    it('handleKeyUp should toggle answer if a valid number key is pressed', () => {
+        const mockEvent = new KeyboardEvent('keyup', { key: '1' });
+        spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toEqual([true, true, false, false]);
+    });
 });
