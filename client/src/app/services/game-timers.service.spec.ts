@@ -25,7 +25,7 @@ describe('GameTimersService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: TimeService, useValue: timeServiceSpy },
-                { provide: QuestionHandlerService, useValue: playerHandlerServiceSpy },
+                { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 GameStateService,
             ],
         });
