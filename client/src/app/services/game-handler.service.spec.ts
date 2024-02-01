@@ -24,9 +24,19 @@ describe('GameHandlerService', () => {
             configurable: true,
         });
 
-        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['startQuestionTimer', 'stopQuestionTimer']);
-
         mockSubject = new Subject();
+        spyOn(mockSubject, 'next').and.callThrough();
+        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', [
+            'startQuestionTimer',
+            'stopQuestionTimer',
+            'timerEndedSubject',
+        ]);
+        Object.defineProperty(gameTimersServiceSpy, 'timerEndedSubject', {
+            get: () => {
+                return mockSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(() => {
@@ -45,23 +55,9 @@ describe('GameHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call stop question timer when all players have answered', () => {
-        const nPlayers = 2;
-        for (let i = 0; i < nPlayers; i++) {
-            mockSubject.next();
-        }
-
-        expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalled();
-    });
-
-    it('should increment number of answered players and reset the count when all players have answered', () => {
-        const nPlayers = 2;
-        for (let i = 0; i < nPlayers; i++) {
-        }
-        expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalledTimes(1);
-        for (let i = 0; i < nPlayers; i++) {
-        }
-        expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalledTimes(2);
+    it('should call setUpNextState when time has ended', () => {
+        mockSubject.next();
+        expect(service.setUpNextState).toHaveBeenCalled();
     });
 
     it('loadGameData should load the correct game', () => {
@@ -82,8 +78,7 @@ describe('GameHandlerService', () => {
     it('cleanup should unsubscribe from the answerConfirmedSubject', () => {
         service.cleanup();
         const nPlayers = 2;
-        for (let i = 0; i < nPlayers; i++) {
-        }
+        for (let i = 0; i < nPlayers; i++) {}
         expect(gameTimersServiceSpy.stopQuestionTimer).not.toHaveBeenCalled();
     });
 });
