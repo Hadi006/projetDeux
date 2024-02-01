@@ -90,6 +90,13 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
     });
 
+    it('setUpNextState should set the game correctly if state is show answer and the next question does not exist', () => {
+        gameStateService.gameState = GameState.ShowAnswer;
+        questionHandlerServiceSpy.questionsData = [];
+        service.setUpNextState();
+        expect(gameStateService.gameState).toBe(GameState.GameEnded);
+    });
+
     it('cleanup should unsubscribe from timer ended', () => {
         spyOn(mockSubject, 'unsubscribe');
         service.cleanup();
