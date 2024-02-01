@@ -27,4 +27,9 @@ describe('GameplayPlayerPageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('ngOnInit should call startGame', () => {
+        component.ngOnInit();
+        expect(gameHandlerServiceSpy.startGame).toHaveBeenCalled();
+    });
 });
