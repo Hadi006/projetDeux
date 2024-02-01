@@ -75,12 +75,19 @@ describe('GameHandlerService', () => {
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
     });
 
-    it('setUpNextState should start the answer timer with the correct value and set state to show answer if state is show question', () => {
+    it('setUpNextState should set the game correctly if state is show question', () => {
         gameStateService.gameState = GameState.ShowQuestion;
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
         service.setUpNextState();
         expect(gameTimersServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
         expect(gameStateService.gameState).toBe(GameState.ShowAnswer);
+    });
+
+    it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
+        gameStateService.gameState = GameState.ShowAnswer;
+        questionHandlerServiceSpy.questionsData = TEST_GAME.questions;
+        service.setUpNextState();
+        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
     });
 
     it('cleanup should unsubscribe from timer ended', () => {
