@@ -20,10 +20,17 @@ describe('GameHandlerService', () => {
             'nextQuestion',
             'resetPlayerAnswers',
             'questionsData',
+            'currentQuestion',
         ]);
         Object.defineProperty(questionHandlerServiceSpy, 'questionsData', {
             set: (data) => {
                 questionsData = data;
+            },
+            configurable: true,
+        });
+        Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
+            get: () => {
+                return questionsData[0];
             },
             configurable: true,
         });
@@ -85,12 +92,12 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
         service.setUpNextState();
         expect(gameTimersServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
-        // expect(gameStateService.gameState).toBe(GameState.ShowAnswer);
+        expect(gameStateService.gameState).toBe(GameState.ShowAnswer);
     });
 
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
         gameStateService.gameState = GameState.ShowAnswer;
-        questionHandlerServiceSpy.questionsData = TEST_GAME.questions;
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
         service.setUpNextState();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
         // expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
@@ -98,7 +105,7 @@ describe('GameHandlerService', () => {
 
     it('setUpNextState should set the game correctly if state is show answer and the next question does not exist', () => {
         gameStateService.gameState = GameState.ShowAnswer;
-        questionHandlerServiceSpy.questionsData = [];
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(undefined);
         service.setUpNextState();
         // expect(gameStateService.gameState).toBe(GameState.GameEnded);
     });
