@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { GameHandlerService, GameState } from './game-handler.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 
 import { GameTimersService, QUESTION_DELAY, ANSWER_DELAY } from './game-timers.service';
 import { TimeService } from './time.service';
@@ -10,21 +10,21 @@ describe('GameTimersService', () => {
 
     let service: GameTimersService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
-    let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let gameStateServiceSpy: jasmine.SpyObj<GameStateService>;
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
         timeServiceSpy.createTimer.and.returnValues(QUESTION_TIMER_ID, ANSWER_TIMER_ID);
 
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameStateService', ['nextState']);
-        Object.defineProperty(gameHandlerServiceSpy, 'gameState', { get: () => 0, configurable: true });
+        gameStateServiceSpy = jasmine.createSpyObj('GameStateService', ['nextState']);
+        Object.defineProperty(gameStateServiceSpy, 'gameState', { get: () => 0, configurable: true });
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: TimeService, useValue: timeServiceSpy },
-                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
+                { provide: GameStateService, useValue: gameStateServiceSpy },
             ],
         });
         service = TestBed.inject(GameTimersService);
@@ -40,7 +40,7 @@ describe('GameTimersService', () => {
 
     it('time getter should return the correct value when game state is ShowQuestion', () => {
         const time = 10;
-        spyOnProperty(gameHandlerServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowQuestion);
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowQuestion);
         timeServiceSpy.getTime.and.returnValue(time);
         expect(service.time).toBe(time);
         expect(timeServiceSpy.getTime).toHaveBeenCalledWith(QUESTION_TIMER_ID);
@@ -48,21 +48,21 @@ describe('GameTimersService', () => {
 
     it('time getter should return the correct value when game state is ShowAnswer', () => {
         const time = 10;
-        spyOnProperty(gameHandlerServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
         timeServiceSpy.getTime.and.returnValue(time);
         expect(service.time).toBe(time);
         expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
 
     it('time getter should return 0 when game state is GameEnded', () => {
-        spyOnProperty(gameHandlerServiceSpy, 'gameState', 'get').and.returnValue(GameState.GameEnded);
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.GameEnded);
         expect(service.time).toBe(0);
         expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
     });
 
     it('time getter should return 0 when game state is not recognized', () => {
         const unrecognizedState = 100;
-        spyOnProperty(gameHandlerServiceSpy, 'gameState', 'get').and.returnValue(unrecognizedState);
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(unrecognizedState);
         expect(service.time).toBe(0);
         expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
     });
@@ -77,16 +77,16 @@ describe('GameTimersService', () => {
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
     });
 
-    it('stopQuestionTimer should call nextState and startAnswerTimer and stop its timer', () => {
+    it('stopQuestionTimer should set state and startAnswerTimer and stop its timer', () => {
         service.stopQuestionTimer();
-        expect(gameHandlerServiceSpy.nextState).toHaveBeenCalled();
+        expect(gameStateServiceSpy.gameState).toBe(GameState.ShowAnswer);
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID);
     });
 
-    it('stopAnswerTimer should call nextState and startQuestionTimer and stop its timer', () => {
+    it('stopAnswerTimer should set state and startQuestionTimer and stop its timer', () => {
         service.stopAnswerTimer();
-        expect(gameHandlerServiceSpy.nextState).toHaveBeenCalled();
+        expect(gameStateServiceSpy.gameState).toBe(GameState.ShowQuestion);
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY);
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
