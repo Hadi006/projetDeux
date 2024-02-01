@@ -1,11 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 
 import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.service';
+import { QuestionData } from '@common/question-data';
+import { QuestionHandlerService } from './question-handler.service';
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
+    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
+    let questionsData: QuestionData[];
 
-    beforeEach(() => {});
+    beforeEach(() => {
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['questionsData']);
+        Object.defineProperty(questionHandlerServiceSpy, 'questionsData', {
+            set: (data) => {
+                questionsData = data;
+            },
+            configurable: true,
+        });
+    });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
