@@ -9,7 +9,7 @@ describe('ScoreService', () => {
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
 
     beforeEach(() => {
-        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion', 'isAnswerCorrect']);
         Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
             get: () => {
                 return undefined;
@@ -36,18 +36,13 @@ describe('ScoreService', () => {
 
     it('calculateScore should return the correct value for a correct answer', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        const answer = [false, true, false, false];
-        expect(service.calculateScore(answer)).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
+        questionHandlerServiceSpy.isAnswerCorrect.and.returnValue(true);
+        expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 
     it('calculateScore should return 0 for an incorrect answer', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        const answer = [true, false, false, false];
-        expect(service.calculateScore(answer)).toEqual(0);
-    });
-
-    it('calculateScore should return the correct value for an open ended question', () => {
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
-        expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
+        questionHandlerServiceSpy.isAnswerCorrect.and.returnValue(false);
+        expect(service.calculateScore([])).toEqual(0);
     });
 });
