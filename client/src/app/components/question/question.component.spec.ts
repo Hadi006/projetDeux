@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { QuestionComponent } from './question.component';
 import { Player } from '@app/interfaces/player';
+import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 const TEST_PLAYER: Player = {
     score: 0,
@@ -43,5 +44,10 @@ describe('QuestionComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('questionData getter should return currentQuestion', () => {
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        expect(component.questionData).toBe(QUESTIONS_DATA[0]);
     });
 });
