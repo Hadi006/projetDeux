@@ -38,4 +38,9 @@ describe('GameStateService', () => {
         service.nextState();
         expect(service.gameState).toBe(GameState.ShowQuestion);
     });
+
+    it('nextState should set state to GameEnded if currentQuestion is undefined', () => {
+        service.nextState();
+        expect(service.gameState).toBe(GameState.GameEnded);
+    });
 });
