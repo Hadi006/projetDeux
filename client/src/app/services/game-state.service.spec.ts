@@ -29,6 +29,11 @@ describe('GameStateService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('nextState should set state to GameEnded if currentQuestion is undefined', () => {
+        service.nextState();
+        expect(service.gameState).toBe(GameState.GameEnded);
+    });
+
     it('nextState should set the states in the correct order if currentQuestion is defined', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         service.nextState();
@@ -42,11 +47,6 @@ describe('GameStateService', () => {
     it('nextState should set state to GameEnded if current state is GameEnded', () => {
         service.nextState();
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        service.nextState();
-        expect(service.gameState).toBe(GameState.GameEnded);
-    });
-
-    it('nextState should set state to GameEnded if currentQuestion is undefined', () => {
         service.nextState();
         expect(service.gameState).toBe(GameState.GameEnded);
     });
