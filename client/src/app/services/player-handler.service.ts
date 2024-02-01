@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
 import { Player } from '@app/interfaces/player';
 
 @Injectable({
@@ -20,16 +19,14 @@ export class PlayerHandlerService {
     createPlayer(): Player {
         const player: Player = {
             score: 0,
-            answerNotifier: new Subject<boolean[]>(),
+            answer: [],
+            answerConfirmed: false,
+            confirmAnswer: () => {
+                return;
+            },
         };
         this.internalPlayers.set(this.internalNPlayers++, player);
 
         return player;
-    }
-
-    cleanUp(): void {
-        this.internalPlayers.forEach((player: Player) => {
-            player.answerNotifier.unsubscribe();
-        });
     }
 }
