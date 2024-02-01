@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
+import { Subscription } from 'rxjs';
 import { GameTimersService } from './game-timers.service';
+import { PlayerHandlerService } from './player-handler.service';
 import { QuestionHandlerService } from './question-handler.service';
 
 export const QUESTIONS_DATA: QuestionData[] = [
@@ -42,10 +44,13 @@ export const TEST_GAME: GameData = {
 })
 export class GameHandlerService {
     private internalGameData: GameData;
+    private answerConfirmedSubscription: Subscription;
+    private nAnsweredPlayers = 0;
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private gameTimersService: GameTimersService,
+        private playerHandlerService: PlayerHandlerService,
     ) {}
 
     get gameData(): GameData {
