@@ -125,4 +125,15 @@ describe('QuestionComponent', () => {
         expect(component.confirmAnswer).not.toHaveBeenCalled();
         expect(component.isChecked).toEqual([true, true, false, false]);
     });
+
+    it('handleKeyUp should do nothing if an invalid number key is pressed', () => {
+        const mockEvent = new KeyboardEvent('keyup', { key: '5' });
+        spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toBe(TEST_PLAYER.answer);
+    });
 });
