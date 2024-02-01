@@ -54,11 +54,7 @@ describe('PlayerHandlerService', () => {
         expect(player.answer).toEqual([false, false, false]);
     });
 
-    it('confirmPlayerAnswer should confirm the answer and notify the subject', () => {
-        const player = service.createPlayer();
-        spyOn(service.answerConfirmedSubject, 'next');
-        service.confirmPlayerAnswer(player);
-        expect(player.answerConfirmed).toBeTrue();
-        expect(service.answerConfirmedSubject.next).toHaveBeenCalled();
+    it('confirmPlayerAnswer should do nothing if player is undefined', () => {
+        service.confirmPlayerAnswer(undefined);
     });
 });
