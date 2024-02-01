@@ -19,7 +19,7 @@ export class PlayerHandlerService {
         return this.internalNPlayers;
     }
 
-    get allAnswerdSubject(): Subject<void> {
+    get allAnsweredSubject(): Subject<void> {
         return this.internalAllAnsweredSubject;
     }
 

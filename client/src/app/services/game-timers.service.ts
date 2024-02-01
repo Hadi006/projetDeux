@@ -20,7 +20,7 @@ export class GameTimersService {
     ) {
         this.questionTimerId = this.timeService.createTimer(this.stopQuestionTimer.bind(this));
         this.answerTimerId = this.timeService.createTimer(this.stopAnswerTimer.bind(this));
-        this.internalAllAnsweredSubscription = this.playerHandlerService.allAnswerdSubject.subscribe(() => {
+        this.internalAllAnsweredSubscription = this.playerHandlerService.allAnsweredSubject.subscribe(() => {
             this.stopQuestionTimer();
         });
     }
