@@ -6,7 +6,7 @@
     <div *ngIf="questionData.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let answer of questionData.answers; let i = index">
             <label>
-                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="isChecked[i]" />
+                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="player.answer[i]" />
                 {{ i + 1 }} ) {{ answer }}
             </label>
         </div>
@@ -22,4 +22,4 @@
         </span>
     </div>
 </div>
-<button [disabled]="!canEditAnswer()" (click)="confirmAnswer()">Confirm</button>
+<button [disabled]="!canEditAnswer()" (click)="player.answerConfirmed = true">Confirm</button>
