@@ -8,7 +8,8 @@ import { Subject } from 'rxjs';
 export class PlayerHandlerService {
     private internalPlayers: Map<number, Player> = new Map<number, Player>();
     private internalNPlayers: number = 0;
-    private internalAnswerConfirmedSubject: Subject<void> = new Subject<void>();
+    private internalNAnswered: number = 0;
+    private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
     get players(): Map<number, Player> {
         return this.internalPlayers;
@@ -18,8 +19,8 @@ export class PlayerHandlerService {
         return this.internalNPlayers;
     }
 
-    get answerConfirmedSubject(): Subject<void> {
-        return this.internalAnswerConfirmedSubject;
+    get allAnswerdSubject(): Subject<void> {
+        return this.internalAllAnsweredSubject;
     }
 
     createPlayer(): Player {
@@ -45,7 +46,10 @@ export class PlayerHandlerService {
     }
 
     confirmPlayerAnswer(player: Player): void {
-        this.internalAnswerConfirmedSubject.next();
         player.answerConfirmed = true;
+
+        if (++this.internalNAnswered >= this.internalNPlayers) {
+            this.internalAllAnsweredSubject.next();
+        }
     }
 }
