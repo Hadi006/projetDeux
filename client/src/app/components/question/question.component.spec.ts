@@ -139,9 +139,9 @@ describe('QuestionComponent', () => {
 
     it('canEditAnswer should return false if answer is confirmed', () => {
         component.player.answerConfirmed = true;
-        spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
+        const showingAnswerSpy = spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         expect(component.canEditAnswer()).toBeFalse();
-        spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(true);
+        showingAnswerSpy.and.returnValue(true);
         expect(component.canEditAnswer()).toBeFalse();
     });
 });
