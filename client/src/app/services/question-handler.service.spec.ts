@@ -1,13 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 
 import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players']);
+        Object.defineProperty(playerHandlerServiceSpy, 'players', {
+            get: () => {
+                return [];
+            },
+            configurable: true,
+        });
+    });
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [{ provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }],
+        });
         service = TestBed.inject(QuestionHandlerService);
     });
 
