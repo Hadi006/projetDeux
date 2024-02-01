@@ -110,4 +110,11 @@ describe('ScoreService', () => {
         questionHandlerServiceSpy.isAnswerCorrect.and.returnValue(false);
         expect(service.calculateScore([])).toEqual(0);
     });
+
+    it('cleanUp should unsubscribe from the timerEndedSubject', () => {
+        spyOn(service, 'updateScores');
+        service.cleanUp();
+        gameTimersServiceSpy.timerEndedSubject.next();
+        expect(service.updateScores).not.toHaveBeenCalled();
+    });
 });
