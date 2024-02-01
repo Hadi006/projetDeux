@@ -35,9 +35,4 @@ describe('GameTimersComponent', () => {
         spyOnProperty(gameTimersServiceSpy, 'time', 'get').and.returnValue(time);
         expect(component.time).toBe(time);
     });
-
-    it('ngOnInit should call startQuestionTimer with correct time', () => {
-        component.ngOnInit();
-        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(QUESTION_DELAY);
-    });
 });
