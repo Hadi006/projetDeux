@@ -3,13 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { ScoreService, GOOD_ANSWER_MULTIPLIER } from '@app/services/score.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { GameTimersService } from '@app/services/game-timers.service';
 import { Player } from '@app/interfaces/player';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
+import { Subject } from 'rxjs';
 
 describe('ScoreService', () => {
-    let service: ScoreService;
-    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
-    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     const PLAYERS = new Map<number, Player>([
         [
             0,
@@ -29,6 +28,13 @@ describe('ScoreService', () => {
         ],
     ]);
 
+    let service: ScoreService;
+    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let mockSubject: Subject<void>;
+    let mockPlayers: Map<number, Player>;
+
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion', 'isAnswerCorrect']);
         Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
@@ -39,13 +45,23 @@ describe('ScoreService', () => {
         });
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players']);
+        mockPlayers = PLAYERS;
         Object.defineProperty(playerHandlerServiceSpy, 'players', {
             get: () => {
-                return [];
+                return mockPlayers;
             },
             configurable: true,
         });
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
+
+        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['timerEndedSubject']);
+        mockSubject = new Subject<void>();
+        Object.defineProperty(gameTimersServiceSpy, 'timerEndedSubject', {
+            get: () => {
+                return mockSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(() => {
@@ -53,6 +69,7 @@ describe('ScoreService', () => {
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                { provide: GameTimersService, useValue: gameTimersServiceSpy },
             ],
         });
         service = TestBed.inject(ScoreService);
@@ -60,6 +77,12 @@ describe('ScoreService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should update scores when timer ends', () => {
+        spyOn(service, 'updateScores');
+        gameTimersServiceSpy.timerEndedSubject.next();
+        expect(service.updateScores).toHaveBeenCalled();
     });
 
     it('updateScores should update the scores of the players', () => {
