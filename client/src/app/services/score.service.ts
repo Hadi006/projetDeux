@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { PlayerHandlerService } from './player-handler.service';
 import { QuestionHandlerService } from './question-handler.service';
 
 export const GOOD_ANSWER_MULTIPLIER = 1.2;
@@ -7,7 +8,16 @@ export const GOOD_ANSWER_MULTIPLIER = 1.2;
     providedIn: 'root',
 })
 export class ScoreService {
-    constructor(private questionHandlerService: QuestionHandlerService) {}
+    constructor(
+        private questionHandlerService: QuestionHandlerService,
+        private playerHandlerService: PlayerHandlerService,
+    ) {}
+
+    updateScores(): void {
+        this.playerHandlerService.players.forEach((player) => {
+            player.score += this.calculateScore(player.answer);
+        });
+    }
 
     calculateScore(isChecked: boolean[]): number {
         if (!this.questionHandlerService.currentQuestion) {
