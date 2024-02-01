@@ -14,9 +14,9 @@ export class QuestionComponent {
     @Input() player: Player;
 
     constructor(
+        public playerHandlerService: PlayerHandlerService,
         private questionHandlerService: QuestionHandlerService,
         private gameStateService: GameStateService,
-        private playerHandlerService: PlayerHandlerService,
     ) {}
 
     get questionData(): QuestionData | undefined {

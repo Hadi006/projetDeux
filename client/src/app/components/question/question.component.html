@@ -22,4 +22,4 @@
         </span>
     </div>
 </div>
-<button [disabled]="!canEditAnswer()" (click)="player.answerConfirmed = true">Confirm</button>
+<button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirm</button>
