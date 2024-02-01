@@ -93,4 +93,15 @@ describe('QuestionComponent', () => {
         expect(component.confirmAnswer).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
+
+    it('handleKeyUp should do nothing if answer cant be edited', () => {
+        const mockEvent = new KeyboardEvent('keyup');
+        spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'confirmAnswer');
+        spyOn(component, 'canEditAnswer').and.returnValue(false);
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toBe(TEST_PLAYER.answer);
+    });
 });
