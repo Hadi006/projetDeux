@@ -7,7 +7,9 @@ import { GameStateService, GameState } from './game-state.service';
 })
 export class GameTimersService {
     private questionTimerId: number;
+    private internalQuestionTimerCallback: () => void;
     private answerTimerId: number;
+    private internalAnswerTimerCallback: () => void;
 
     constructor(
         private timeService: TimeService,
@@ -26,6 +28,14 @@ export class GameTimersService {
             default:
                 return 0;
         }
+    }
+
+    set questionTimerCallback(callback: () => void) {
+        this.internalQuestionTimerCallback = callback;
+    }
+
+    set answerTimerCallback(callback: () => void) {
+        this.internalAnswerTimerCallback = callback;
     }
 
     startQuestionTimer(time: number): void {
