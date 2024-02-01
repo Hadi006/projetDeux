@@ -73,4 +73,8 @@ export class GameHandlerService {
         this.questionHandlerService.resetPlayerAnswers();
         this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
     }
+
+    cleanup(): void {
+        this.answerConfirmedSubscription.unsubscribe();
+    }
 }
