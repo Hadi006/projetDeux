@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
-import { GameStateService, GameState } from './game-state.service';
+import { GameHandlerService, GameState } from '@app/services/game-handler.service';
 
 export const QUESTION_DELAY = 5;
 export const ANSWER_DELAY = 3;
@@ -14,14 +14,14 @@ export class GameTimersService {
 
     constructor(
         private timeService: TimeService,
-        private gameStateService: GameStateService,
+        private gameHandlerService: GameHandlerService,
     ) {
         this.questionTimerId = this.timeService.createTimer(this.stopQuestionTimer.bind(this));
         this.answerTimerId = this.timeService.createTimer(this.stopAnswerTimer.bind(this));
     }
 
     get time(): number {
-        switch (this.gameStateService.gameState) {
+        switch (this.gameHandlerService.gameState) {
             case GameState.ShowQuestion:
                 return this.timeService.getTime(this.questionTimerId);
             case GameState.ShowAnswer:
@@ -40,13 +40,13 @@ export class GameTimersService {
 
     stopQuestionTimer(): void {
         this.timeService.stopTimer(this.questionTimerId);
-        this.gameStateService.nextState();
+        this.gameHandlerService.nextState();
         this.startAnswerTimer(ANSWER_DELAY);
     }
 
     stopAnswerTimer(): void {
         this.timeService.stopTimer(this.answerTimerId);
-        this.gameStateService.nextState();
+        this.gameHandlerService.nextState();
         this.startQuestionTimer(QUESTION_DELAY);
     }
 }
