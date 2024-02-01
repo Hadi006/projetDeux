@@ -13,8 +13,8 @@ export class GameTimersService {
         private timeService: TimeService,
         private gameStateService: GameStateService,
     ) {
-        this.questionTimerId = this.timeService.createTimer();
-        this.answerTimerId = this.timeService.createTimer();
+        this.questionTimerId = this.timeService.createTimer(this.internalQuestionTimerCallback.bind(this));
+        this.answerTimerId = this.timeService.createTimer(this.internalAnswerTimerCallback.bind(this));
     }
 
     get time(): number {
