@@ -72,4 +72,14 @@ describe('QuestionComponent', () => {
         spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
         expect(component.showingAnswer).toBeTrue();
     });
+
+    it('handleKeyUp should do nothing if there is no question data', () => {
+        const mockEvent = new KeyboardEvent('keyup');
+        spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'confirmAnswer');
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toBe(TEST_PLAYER.answer);
+    });
 });
