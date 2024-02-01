@@ -67,4 +67,9 @@ describe('QuestionComponent', () => {
     it('isChecked getter should return the players answer', () => {
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
+
+    it('showingAnswer getter should return true when game state is ShowAnswer', () => {
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
+        expect(component.showingAnswer).toBeTrue();
+    });
 });
