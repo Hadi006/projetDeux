@@ -24,9 +24,9 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
         const player = service.createPlayer();
-        spyOn(player, 'confirmAnswer');
+        spyOn(service, 'confirmPlayerAnswer');
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'Enter' }), player);
-        expect(player.confirmAnswer).toHaveBeenCalled();
+        expect(service.confirmPlayerAnswer).toHaveBeenCalled();
     });
 
     it('handleKeyUp should toggle the answer if a number key is pressed', () => {
