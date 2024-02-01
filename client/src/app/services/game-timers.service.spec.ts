@@ -18,9 +18,6 @@ describe('GameTimersService', () => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
         timeServiceSpy.createTimer.and.returnValues(QUESTION_TIMER_ID, ANSWER_TIMER_ID);
 
-        gameStateService = jasmine.createSpyObj('GameStateService', ['nextState']);
-        Object.defineProperty(gameStateService, 'gameState', { get: () => 0, configurable: true });
-
         questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['nextQuestion']);
     });
 
