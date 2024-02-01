@@ -2,7 +2,7 @@ import { Component, HostListener, Input } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { GameHandlerService, GameState } from '@app/services/game-handler.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 
 @Component({
     selector: 'app-question',
@@ -14,7 +14,7 @@ export class QuestionComponent {
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
-        private gameHandlerService: GameHandlerService,
+        private gameStateService: GameStateService,
     ) {}
 
     get questionData(): QuestionData | undefined {
@@ -26,7 +26,7 @@ export class QuestionComponent {
     }
 
     get showingAnswer(): boolean {
-        return this.gameHandlerService.gameState === GameState.ShowAnswer;
+        return this.gameStateService.gameState === GameState.ShowAnswer;
     }
 
     @HostListener('window:keyup', ['$event'])
