@@ -59,4 +59,11 @@ describe('GameTimersService', () => {
         expect(service.time).toBe(0);
         expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
     });
+
+    it('time getter should return 0 when game state is not recognized', () => {
+        const unrecognizedState = 100;
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(unrecognizedState);
+        expect(service.time).toBe(0);
+        expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+    });
 });
