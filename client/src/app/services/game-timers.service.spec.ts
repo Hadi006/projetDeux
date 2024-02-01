@@ -18,13 +18,19 @@ describe('GameTimersService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: TimeService, useValue: timeServiceSpy },
-                { provide: GameStateService, useValue: gameStateServiceSpy }],
+            providers: [
+                { provide: TimeService, useValue: timeServiceSpy },
+                { provide: GameStateService, useValue: gameStateServiceSpy },
+            ],
         });
         service = TestBed.inject(GameTimersService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should create 2 timers', () => {
+        expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
     });
 });
