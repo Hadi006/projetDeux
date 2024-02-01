@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { QuestionHandlerService } from './question-handler.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class ScoreService {
-
-  constructor() { }
+    constructor(private questionHandlerService: QuestionHandlerService) {}
 }

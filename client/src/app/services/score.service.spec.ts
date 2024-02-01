@@ -1,16 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ScoreService } from './score.service';
+import { ScoreService } from '@app/services/score.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 
 describe('ScoreService', () => {
-  let service: ScoreService;
+    let service: ScoreService;
+    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ScoreService);
-  });
+    beforeEach(() => {
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', [
+            'questionsData',
+            'currentQuestion',
+        ]);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [{ provide: QuestionHandlerService, useValue: questionHandlerServiceSpy }],
+        });
+        service = TestBed.inject(ScoreService);
+    });
+
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });
