@@ -71,6 +71,11 @@ export class GameHandlerService {
         this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
     }
 
+    cleanup(): void {
+        this.timerEndedSubscription.unsubscribe();
+    }
+
+
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
             switch (this.gameStateService.gameState) {
