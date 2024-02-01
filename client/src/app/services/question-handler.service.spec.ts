@@ -19,4 +19,10 @@ describe('QuestionHandlerService', () => {
         service.questionsData = QUESTIONS_DATA;
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
+
+    it('questionsData setter should set the questionsData and nQuestions', () => {
+        service.questionsData = QUESTIONS_DATA;
+        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
+        expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
+    });
 });
