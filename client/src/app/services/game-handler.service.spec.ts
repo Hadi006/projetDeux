@@ -66,6 +66,19 @@ describe('GameHandlerService', () => {
         expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalled();
     });
 
+    it('should increment number of answered players and reset the count when all players have answered', () => {
+        const nPlayers = 2;
+        spyOnProperty(playerHandlerServiceSpy, 'nPlayers', 'get').and.returnValue(nPlayers);
+        for (let i = 0; i < nPlayers; i++) {
+            playerHandlerServiceSpy.answerConfirmedSubject.next();
+        }
+        expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalledTimes(1);
+        for (let i = 0; i < nPlayers; i++) {
+            playerHandlerServiceSpy.answerConfirmedSubject.next();
+        }
+        expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalledTimes(2);
+    });
+
     it('loadGameData should load the correct game', () => {
         // TODO - mock the server response
         service.loadGameData();
