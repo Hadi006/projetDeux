@@ -45,4 +45,12 @@ describe('GameTimersService', () => {
         expect(service.time).toBe(time);
         expect(timeServiceSpy.getTime).toHaveBeenCalledWith(QUESTION_TIMER_ID);
     });
+
+    it('time getter should return the correct value when game state is ShowAnswer', () => {
+        const time = 10;
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
+        timeServiceSpy.getTime.and.returnValue(time);
+        expect(service.time).toBe(time);
+        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_TIMER_ID);
+    });
 });
