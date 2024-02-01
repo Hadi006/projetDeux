@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { GameStateService } from './game-state.service';
 
 import { GameTimersService } from './game-timers.service';
 import { TimeService } from './time.service';
@@ -6,6 +7,7 @@ import { TimeService } from './time.service';
 describe('GameTimersService', () => {
     let service: GameTimersService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
+    let gameStateServiceSpy: jasmine.SpyObj<GameStateService>;
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
