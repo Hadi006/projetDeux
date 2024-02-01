@@ -80,18 +80,22 @@ describe('GameTimersService', () => {
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
     });
 
-    it('stopQuestionTimer should set state and startAnswerTimer and stop its timer', () => {
+    it('stopQuestionTimer should stop the timer, notify subscribers, set the game state and start the answer timer', () => {
+        spyOn(service.timerEndedSubject, 'next');
         service.stopQuestionTimer();
+        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID);
+        expect(service.timerEndedSubject.next).toHaveBeenCalled();
         expect(gameStateService.gameState).toBe(GameState.ShowAnswer);
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
-        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID);
     });
 
-    it('stopAnswerTimer should load next question, set state, startQuestionTimer and stop its timer', () => {
+    it('stopAnswerTimer should stop the timer, notify subscribers, set question, set the game state and start the question timer', () => {
+        spyOn(service.timerEndedSubject, 'next');
         service.stopAnswerTimer();
+        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
+        expect(service.timerEndedSubject.next).toHaveBeenCalled();
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
         expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY);
-        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
 });
