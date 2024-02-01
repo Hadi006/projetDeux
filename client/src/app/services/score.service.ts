@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { GameTimersService } from './game-timers.service';
 import { PlayerHandlerService } from './player-handler.service';
 import { QuestionHandlerService } from './question-handler.service';
 
@@ -8,10 +10,17 @@ export const GOOD_ANSWER_MULTIPLIER = 1.2;
     providedIn: 'root',
 })
 export class ScoreService {
+    private timerEndedSubscription: Subscription;
+
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private playerHandlerService: PlayerHandlerService,
-    ) {}
+        private gameTimersService: GameTimersService,
+    ) {
+        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
+            this.updateScores();
+        });
+    }
 
     updateScores(): void {
         this.playerHandlerService.players.forEach((player) => {
@@ -27,5 +36,11 @@ export class ScoreService {
         const score = this.questionHandlerService.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
 
         return this.questionHandlerService.isAnswerCorrect(isChecked) ? score : 0;
+    }
+
+    clearScores(): void {
+        this.playerHandlerService.players.forEach((player) => {
+            player.score = 0;
+        });
     }
 }
