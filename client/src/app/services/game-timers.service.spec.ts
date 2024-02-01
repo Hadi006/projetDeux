@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 
 import { GameTimersService } from '@app/services/game-timers.service';
+import { Subject } from 'rxjs';
+import { PlayerHandlerService } from './player-handler.service';
 import { TimeService } from './time.service';
 
 describe('GameTimersService', () => {
@@ -12,15 +14,28 @@ describe('GameTimersService', () => {
     let service: GameTimersService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
     let gameStateService: GameStateService;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let mockSubject: Subject<void>;
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
         timeServiceSpy.createTimer.and.returnValues(QUESTION_TIMER_ID, ANSWER_TIMER_ID);
+
+        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['allAnsweredSubject']);
+        mockSubject = new Subject<void>();
+        spyOn(mockSubject, 'next').and.callThrough();
+        Object.defineProperty(playerHandlerServiceSpy, 'allAnsweredSubject', {
+            get: () => {
+                return mockSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: TimeService, useValue: timeServiceSpy }, GameStateService],
+            providers: [{ provide: TimeService, useValue: timeServiceSpy }, { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy
+            }, GameStateService],
         });
         service = TestBed.inject(GameTimersService);
         gameStateService = TestBed.inject(GameStateService);
