@@ -13,6 +13,7 @@ describe('GameHandlerService', () => {
     let questionsData: QuestionData[];
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let mockSubject: Subject<void>;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['resetPlayerAnswers', 'questionsData']);
@@ -23,16 +24,18 @@ describe('GameHandlerService', () => {
             configurable: true,
         });
 
-        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['startQuestionTimer']);
+        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['startQuestionTimer', 'stopQuestionTimer']);
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['nPlayers', 'answerConfirmedSubject']);
         Object.defineProperty(playerHandlerServiceSpy, 'nPlayers', {
             get: () => 0,
             configurable: true,
         });
+        mockSubject = new Subject();
+        spyOn(mockSubject, 'next').and.callThrough();
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmedSubject', {
             get: () => {
-                return new Subject();
+                return mockSubject;
             },
             configurable: true,
         });
@@ -43,7 +46,7 @@ describe('GameHandlerService', () => {
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 { provide: GameTimersService, useValue: gameTimersServiceSpy },
-                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy}
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
             ],
         });
         service = TestBed.inject(GameHandlerService);
@@ -51,6 +54,16 @@ describe('GameHandlerService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should call stop question timer when all players have answered', () => {
+        const nPlayers = 2;
+        spyOnProperty(playerHandlerServiceSpy, 'nPlayers', 'get').and.returnValue(nPlayers);
+        for (let i = 0; i < nPlayers; i++) {
+            mockSubject.next();
+        }
+
+        expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalled();
     });
 
     it('loadGameData should load the correct game', () => {
