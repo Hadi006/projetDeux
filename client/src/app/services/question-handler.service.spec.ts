@@ -75,4 +75,20 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
     });
 
+    it('isAnswerCorrect should return true if the question is not MCQ', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
+        expect(service.isAnswerCorrect([false, false, false, false])).toEqual(true);
+    });
+
+    it('isAnswerCorrect should return true if the answer is correct', () => {
+        const answers = [false, true, false, false];
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        expect(service.isAnswerCorrect(answers)).toEqual(true);
+    });
+
+    it('isAnswerCorrect should return false if the answer is incorrect', () => {
+        const answers = [true, false, false, false];
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        expect(service.isAnswerCorrect(answers)).toEqual(false);
+    });
 });
