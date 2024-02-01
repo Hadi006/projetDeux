@@ -17,9 +17,7 @@ export class ScoreService {
         private playerHandlerService: PlayerHandlerService,
         private gameTimersService: GameTimersService,
     ) {
-        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
-            this.updateScores();
-        });
+        this.subscribeToTimerEnded();
     }
 
     updateScores(): void {
@@ -40,5 +38,11 @@ export class ScoreService {
 
     cleanUp(): void {
         this.timerEndedSubscription.unsubscribe();
+    }
+
+    private subscribeToTimerEnded(): void {
+        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
+            this.updateScores();
+        });
     }
 }
