@@ -49,9 +49,6 @@ describe('QuestionHandlerService', () => {
                     score: 0,
                     answer: [true, false],
                     answerConfirmed: true,
-                    confirmAnswer: () => {
-                        return;
-                    },
                 },
             ],
             [
@@ -60,9 +57,6 @@ describe('QuestionHandlerService', () => {
                     score: 0,
                     answer: [false, true],
                     answerConfirmed: true,
-                    confirmAnswer: () => {
-                        return;
-                    },
                 },
             ],
         ]);
