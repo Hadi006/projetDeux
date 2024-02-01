@@ -6,7 +6,7 @@ import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 const TEST_PLAYER: Player = {
     score: 0,
-    answer: [],
+    answer: [false, true, false, false],
     answerConfirmed: false,
     confirmAnswer: () => {
         return;
@@ -49,5 +49,9 @@ describe('QuestionComponent', () => {
     it('questionData getter should return currentQuestion', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         expect(component.questionData).toBe(QUESTIONS_DATA[0]);
+    });
+
+    it('isChecked getter should return the players answer', () => {
+expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 });
