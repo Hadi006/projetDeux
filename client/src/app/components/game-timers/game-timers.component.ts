@@ -7,9 +7,7 @@ import { GameTimersService } from '@app/services/game-timers.service';
     styleUrls: ['./game-timers.component.scss'],
 })
 export class GameTimersComponent {
-    constructor(
-        private gameTimersService: GameTimersService,
-    ) {}
+    constructor(private gameTimersService: GameTimersService) {}
 
     get time(): number {
         return this.gameTimersService.time;
