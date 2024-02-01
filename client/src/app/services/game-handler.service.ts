@@ -52,27 +52,6 @@ export class GameHandlerService {
         return this.internalGameData;
     }
 
-    nextState(): void {
-        if (!this.questionHandlerService.currentQuestion) {
-            this.gameStateService.gameState = GameState.GameEnded;
-        } else {
-            switch (this.gameStateService.gameState) {
-                case GameState.ShowQuestion:
-                    this.gameStateService.gameState = GameState.ShowAnswer;
-                    break;
-                case GameState.ShowAnswer:
-                    this.gameStateService.gameState = GameState.ShowQuestion;
-                    break;
-                case GameState.GameEnded:
-                    this.gameStateService.gameState = GameState.GameEnded;
-                    break;
-                default:
-                    this.gameStateService.gameState = GameState.ShowQuestion;
-                    break;
-            }
-        }
-    }
-
     loadGameData(/* TODO id: number */): void {
         // TODO: Load game data from server using id
         this.internalGameData = TEST_GAME;
