@@ -57,4 +57,17 @@ describe('PlayerHandlerService', () => {
     it('confirmPlayerAnswer should do nothing if player is undefined', () => {
         service.confirmPlayerAnswer(undefined);
     });
+
+    it('confirmPlayerAnswer should confirm the answer and notify the subscribers if all players confirmed', () => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            service.createPlayer();
+        }
+        spyOn(service.allAnswerdSubject, 'next');
+        for (let i = 0; i < nPlayers; i++) {
+            service.confirmPlayerAnswer(service.players.get(i));
+            expect(service.players.get(i)?.answerConfirmed).toBeTrue();
+        }
+        expect(service.allAnswerdSubject.next).toHaveBeenCalled();
+    });
 });
