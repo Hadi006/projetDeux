@@ -32,6 +32,11 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
     });
 
+    it('calculateScore should return 0 if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        expect(service.calculateScore([])).toEqual(0);
+    });
+
     it('calculateScore should return the correct value for a correct answer', () => {
         service.questionsData = QUESTIONS_DATA;
         const answer = [false, true, false, false];
