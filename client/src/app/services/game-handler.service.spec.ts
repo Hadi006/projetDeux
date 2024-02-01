@@ -21,7 +21,7 @@ describe('GameHandlerService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [],
+            providers: [{ provide: QuestionHandlerService, useValue: questionHandlerServiceSpy }],
         });
         service = TestBed.inject(GameHandlerService);
     });
@@ -34,5 +34,11 @@ describe('GameHandlerService', () => {
         // TODO - mock the http request
         service.loadGameData();
         expect(service.gameData).toEqual(TEST_GAME);
+    });
+
+    it('startGame should set questionsData', () => {
+        service.loadGameData();
+        service.startGame();
+        expect(questionsData).toEqual(TEST_GAME.questions);
     });
 });
