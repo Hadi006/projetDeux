@@ -4,12 +4,15 @@ import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.servic
 import { QuestionData } from '@common/question-data';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
+import { PlayerHandlerService } from './player-handler.service';
+import { Subject } from 'rxjs';
 
 describe('GameHandlerService', () => {
     let service: GameHandlerService;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let questionsData: QuestionData[];
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['resetPlayerAnswers', 'questionsData']);
@@ -21,6 +24,18 @@ describe('GameHandlerService', () => {
         });
 
         gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['startQuestionTimer']);
+
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['nPlayers', 'answerConfirmedSubject']);
+        Object.defineProperty(playerHandlerServiceSpy, 'nPlayers', {
+            get: () => 0,
+            configurable: true,
+        });
+        Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmedSubject', {
+            get: () => {
+                return new Subject();
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(() => {
@@ -28,6 +43,7 @@ describe('GameHandlerService', () => {
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 { provide: GameTimersService, useValue: gameTimersServiceSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy}
             ],
         });
         service = TestBed.inject(GameHandlerService);
