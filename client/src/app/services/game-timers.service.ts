@@ -12,7 +12,10 @@ export class GameTimersService {
     constructor(
         private timeService: TimeService,
         private gameStateService: GameStateService,
-    ) {}
+    ) {
+        this.questionTimerId = this.timeService.createTimer();
+        this.answerTimerId = this.timeService.createTimer();
+    }
 
     get time(): number {
         switch (this.gameStateService.gameState) {
