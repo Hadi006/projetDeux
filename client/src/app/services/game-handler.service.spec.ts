@@ -4,7 +4,7 @@ import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.servic
 import { QuestionData } from '@common/question-data';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
-import { PlayerHandlerService } from './player-handler.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 import { Subject } from 'rxjs';
 
 describe('GameHandlerService', () => {
@@ -12,7 +12,7 @@ describe('GameHandlerService', () => {
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let questionsData: QuestionData[];
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
-    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let gameStateService: GameStateService;
     let mockSubject: Subject<void>;
 
     beforeEach(() => {
@@ -26,19 +26,7 @@ describe('GameHandlerService', () => {
 
         gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['startQuestionTimer', 'stopQuestionTimer']);
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['nPlayers', 'answerConfirmedSubject']);
-        Object.defineProperty(playerHandlerServiceSpy, 'nPlayers', {
-            get: () => 0,
-            configurable: true,
-        });
         mockSubject = new Subject();
-        spyOn(mockSubject, 'next').and.callThrough();
-        Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmedSubject', {
-            get: () => {
-                return mockSubject;
-            },
-            configurable: true,
-        });
     });
 
     beforeEach(() => {
@@ -46,10 +34,11 @@ describe('GameHandlerService', () => {
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 { provide: GameTimersService, useValue: gameTimersServiceSpy },
-                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                GameStateService,
             ],
         });
         service = TestBed.inject(GameHandlerService);
+        gameStateService = TestBed.inject(GameStateService);
     });
 
     it('should be created', () => {
@@ -58,7 +47,6 @@ describe('GameHandlerService', () => {
 
     it('should call stop question timer when all players have answered', () => {
         const nPlayers = 2;
-        spyOnProperty(playerHandlerServiceSpy, 'nPlayers', 'get').and.returnValue(nPlayers);
         for (let i = 0; i < nPlayers; i++) {
             mockSubject.next();
         }
@@ -68,13 +56,10 @@ describe('GameHandlerService', () => {
 
     it('should increment number of answered players and reset the count when all players have answered', () => {
         const nPlayers = 2;
-        spyOnProperty(playerHandlerServiceSpy, 'nPlayers', 'get').and.returnValue(nPlayers);
         for (let i = 0; i < nPlayers; i++) {
-            playerHandlerServiceSpy.answerConfirmedSubject.next();
         }
         expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalledTimes(1);
         for (let i = 0; i < nPlayers; i++) {
-            playerHandlerServiceSpy.answerConfirmedSubject.next();
         }
         expect(gameTimersServiceSpy.stopQuestionTimer).toHaveBeenCalledTimes(2);
     });
@@ -97,9 +82,7 @@ describe('GameHandlerService', () => {
     it('cleanup should unsubscribe from the answerConfirmedSubject', () => {
         service.cleanup();
         const nPlayers = 2;
-        spyOnProperty(playerHandlerServiceSpy, 'nPlayers', 'get').and.returnValue(nPlayers);
         for (let i = 0; i < nPlayers; i++) {
-            playerHandlerServiceSpy.answerConfirmedSubject.next();
         }
         expect(gameTimersServiceSpy.stopQuestionTimer).not.toHaveBeenCalled();
     });
