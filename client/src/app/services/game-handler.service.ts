@@ -54,6 +54,6 @@ export class GameHandlerService {
     }
 
     startGame(): void {
-        return;
+        this.questionHandlerService.questionsData = this.internalGameData.questions;
     }
 }
