@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 import { Subscription } from 'rxjs';
-import { GameTimersService } from './game-timers.service';
-import { PlayerHandlerService } from './player-handler.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
+import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
+
+const SHOW_ANSWER_DELAY = 3;
 
 export const QUESTIONS_DATA: QuestionData[] = [
     {
@@ -44,11 +46,15 @@ export const TEST_GAME: GameData = {
 })
 export class GameHandlerService {
     private internalGameData: GameData;
+    private timerEndedSubscription: Subscription;
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private gameTimersService: GameTimersService,
-    ) {}
+        private gameStateService: GameStateService,
+    ) {
+        this.subscribeToTimerEnded();
+    }
 
     get gameData(): GameData {
         return this.internalGameData;
@@ -63,5 +69,25 @@ export class GameHandlerService {
         this.questionHandlerService.questionsData = this.internalGameData.questions;
         this.questionHandlerService.resetPlayerAnswers();
         this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
+    }
+
+    private subscribeToTimerEnded(): void {
+        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
+            switch (this.gameStateService.gameState) {
+                case GameState.ShowQuestion:
+                    this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
+                    this.gameStateService.gameState = GameState.ShowAnswer;
+                    break;
+                case GameState.ShowAnswer:
+                    this.questionHandlerService.nextQuestion();
+                    if (!this.questionHandlerService.currentQuestion) {
+                        this.gameStateService.gameState = GameState.GameEnded;
+                    } else {
+                        this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
+                        this.gameStateService.gameState = GameState.ShowQuestion;
+                    }
+                    break;
+            }
+        });
     }
 }

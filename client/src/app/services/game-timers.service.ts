@@ -50,15 +50,10 @@ export class GameTimersService {
     stopQuestionTimer(): void {
         this.timeService.stopTimer(this.questionTimerId);
         this.timerEndedSubject.next();
-        this.gameStateService.gameState = GameState.ShowAnswer;
-        this.startAnswerTimer(ANSWER_DELAY);
     }
 
     stopAnswerTimer(): void {
         this.timeService.stopTimer(this.answerTimerId);
         this.timerEndedSubject.next();
-        this.questionHandlerService.nextQuestion();
-        this.gameStateService.gameState = GameState.ShowQuestion;
-        this.startQuestionTimer(QUESTION_DELAY);
     }
 }
