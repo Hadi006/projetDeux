@@ -52,7 +52,7 @@ describe('QuestionHandlerService', () => {
                 },
             ],
             [
-                0,
+                1,
                 {
                     score: 0,
                     answer: [false, true],
