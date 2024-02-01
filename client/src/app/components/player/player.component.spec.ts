@@ -1,8 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Player } from '@app/interfaces/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 
 import { PlayerComponent } from './player.component';
 
+const TEST_PLAYER: Player = {
+    score: 0,
+    answer: [false, true, false, false],
+    answerConfirmed: false,
+    confirmAnswer: () => {
+        return;
+    },
+};
 describe('PlayerComponent', () => {
     let component: PlayerComponent;
     let fixture: ComponentFixture<PlayerComponent>;
@@ -10,6 +19,7 @@ describe('PlayerComponent', () => {
 
     beforeEach(() => {
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer']);
+        playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
     });
 
     beforeEach(waitForAsync(() => {
@@ -28,4 +38,6 @@ describe('PlayerComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should create a player', () => {});
 });
