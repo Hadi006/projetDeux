@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 
-import { GameTimersService, QUESTION_DELAY, ANSWER_DELAY } from './game-timers.service';
+import { GameTimersService, QUESTION_DELAY, ANSWER_DELAY } from '@app/services/game-timers.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { TimeService } from './time.service';
 
 describe('GameTimersService', () => {
@@ -11,6 +12,7 @@ describe('GameTimersService', () => {
     let service: GameTimersService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
     let gameStateService: GameStateService;
+    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
@@ -18,11 +20,17 @@ describe('GameTimersService', () => {
 
         gameStateService = jasmine.createSpyObj('GameStateService', ['nextState']);
         Object.defineProperty(gameStateService, 'gameState', { get: () => 0, configurable: true });
+
+        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['nextQuestion']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: TimeService, useValue: timeServiceSpy }, GameStateService],
+            providers: [
+                { provide: TimeService, useValue: timeServiceSpy },
+                { provide: QuestionHandlerService, useValue: playerHandlerServiceSpy },
+                GameStateService,
+            ],
         });
         service = TestBed.inject(GameTimersService);
         gameStateService = TestBed.inject(GameStateService);
@@ -82,9 +90,10 @@ describe('GameTimersService', () => {
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID);
     });
 
-    it('stopAnswerTimer should set state and startQuestionTimer and stop its timer', () => {
+    it('stopAnswerTimer should load next question, set state, startQuestionTimer and stop its timer', () => {
         service.stopAnswerTimer();
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+        expect(questionHandlerServiceSpy.nextQuestion).toHaveBeenCalled();
         expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY);
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
