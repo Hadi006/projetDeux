@@ -38,20 +38,19 @@ describe('QuestionHandlerService', () => {
     });
 
     it('calculateScore should return the correct value for a correct answer', () => {
-        service.questionsData = QUESTIONS_DATA;
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         const answer = [false, true, false, false];
         expect(service.calculateScore(answer)).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 
     it('calculateScore should return 0 for an incorrect answer', () => {
-        service.questionsData = QUESTIONS_DATA;
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         const answer = [true, false, false, false];
         expect(service.calculateScore(answer)).toEqual(0);
     });
 
     it('calculateScore should return the correct value for an open ended question', () => {
-        service.questionsData = QUESTIONS_DATA;
-        service.nextQuestion();
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
         expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
     });
 });
