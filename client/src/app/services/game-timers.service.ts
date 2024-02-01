@@ -50,12 +50,12 @@ export class GameTimersService {
 
     stopQuestionTimer(): void {
         this.timeService.stopTimer(this.questionTimerId);
-        this.timerEndedSubject.next();
+        this.internalTimerEndedSubject.next();
     }
 
     stopAnswerTimer(): void {
         this.timeService.stopTimer(this.answerTimerId);
-        this.timerEndedSubject.next();
+        this.internalTimerEndedSubject.next();
     }
 
     cleanUp(): void {
