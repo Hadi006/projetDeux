@@ -70,11 +70,11 @@ describe('GameTimersService', () => {
 
     it('startQuestionTimer should start the timer with the correct id', () => {
         service.startQuestionTimer(QUESTION_DELAY);
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY * S_TO_MS);
+        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, QUESTION_DELAY);
     });
 
     it('startAnswerTimer should start the timer with the correct id', () => {
         service.startAnswerTimer(ANSWER_DELAY);
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY * S_TO_MS);
+        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, ANSWER_DELAY);
     });
 });
