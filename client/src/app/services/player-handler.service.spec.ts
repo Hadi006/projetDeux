@@ -53,4 +53,12 @@ describe('PlayerHandlerService', () => {
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'a' }), player);
         expect(player.answer).toEqual([false, false, false]);
     });
+
+    it('confirmPlayerAnswer should confirm the answer and notify the subject', () => {
+        const player = service.createPlayer();
+        spyOn(service.answerConfirmedSubject, 'next');
+        service.confirmPlayerAnswer(player);
+        expect(player.answerConfirmed).toBeTrue();
+        expect(service.answerConfirmedSubject.next).toHaveBeenCalled();
+    });
 });
