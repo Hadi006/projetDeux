@@ -104,4 +104,14 @@ describe('QuestionComponent', () => {
         expect(component.confirmAnswer).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
+
+    it('handleKeyUp should call confirmAnswer if enter key is pressed', () => {
+        const mockEvent = new KeyboardEvent('keyup', { key: 'Enter' });
+        spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        expect(component.confirmAnswer).toHaveBeenCalled();
+    });
 });
