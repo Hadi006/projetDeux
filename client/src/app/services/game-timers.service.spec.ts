@@ -108,4 +108,11 @@ describe('GameTimersService', () => {
         expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
         expect(service.timerEndedSubject.next).toHaveBeenCalled();
     });
+
+    it('cleanUp should unsubscribe from allAnsweredSubject', () => {
+        spyOn(service, 'stopQuestionTimer');
+        service.cleanUp();
+        playerHandlerServiceSpy.allAnsweredSubject.next();
+expect(service.stopQuestionTimer).not.toHaveBeenCalled();
+    });
 });
