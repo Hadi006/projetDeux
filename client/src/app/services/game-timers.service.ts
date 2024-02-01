@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
-import { GameStateService } from './game-state.service';
+import { GameStateService, GameState } from './game-state.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,9 +19,9 @@ export class GameTimersService {
 
     get time(): number {
         switch (this.gameStateService.gameState) {
-            case 0:
+            case GameState.ShowQuestion:
                 return this.timeService.getTime(this.questionTimerId);
-            case 1:
+            case GameState.ShowAnswer:
                 return this.timeService.getTime(this.answerTimerId);
             default:
                 return 0;
