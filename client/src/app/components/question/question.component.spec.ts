@@ -160,4 +160,11 @@ describe('QuestionComponent', () => {
         component.player.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
     });
+
+    it('confirmAnswer should call confirmAnswer on player and set answerConfirmed to true', () => {
+        spyOn(component.player, 'confirmAnswer');
+        component.confirmAnswer();
+        expect(component.player.confirmAnswer).toHaveBeenCalled();
+        expect(component.player.answerConfirmed).toBeTrue();
+    });
 });
