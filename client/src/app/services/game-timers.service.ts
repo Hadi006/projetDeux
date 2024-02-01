@@ -16,8 +16,8 @@ export class GameTimersService {
         private timeService: TimeService,
         private gameStateService: GameStateService,
     ) {
-        this.questionTimerId = this.timeService.createTimer(this.internalQuestionTimerCallback.bind(this));
-        this.answerTimerId = this.timeService.createTimer(this.internalAnswerTimerCallback.bind(this));
+        this.questionTimerId = this.timeService.createTimer(this.questionTimerCallback.bind(this));
+        this.answerTimerId = this.timeService.createTimer(this.answerTimerCallback.bind(this));
     }
 
     get time(): number {
@@ -38,12 +38,12 @@ export class GameTimersService {
         this.timeService.startTimer(this.answerTimerId, time);
     }
 
-    internalQuestionTimerCallback(): void {
+    questionTimerCallback(): void {
         this.gameStateService.nextState();
         this.startAnswerTimer(ANSWER_DELAY);
     }
 
-    internalAnswerTimerCallback(): void {
+    answerTimerCallback(): void {
         this.gameStateService.nextState();
         this.startQuestionTimer(QUESTION_DELAY);
     }
