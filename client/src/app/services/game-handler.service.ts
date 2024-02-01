@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 import { QuestionHandlerService } from './question-handler.service';
-
-export enum GameState {
-    ShowQuestion = 0,
-    ShowAnswer = 1,
-    GameEnded = 2,
-}
+import { GameStateService, GameState } from '@app/services/game-state.service';
 
 export const QUESTIONS_DATA: QuestionData[] = [
     {
@@ -47,13 +42,11 @@ export const TEST_GAME: GameData = {
 })
 export class GameHandlerService {
     private internalGameData: GameData;
-    private internalGameState: GameState;
 
-    constructor(private questionHandlerService: QuestionHandlerService) {}
-
-    get gameState(): GameState {
-        return this.internalGameState;
-    }
+    constructor(
+        private questionHandlerService: QuestionHandlerService,
+        private gameStateService: GameStateService,
+    ) {}
 
     get gameData(): GameData {
         return this.internalGameData;
@@ -61,20 +54,20 @@ export class GameHandlerService {
 
     nextState(): void {
         if (!this.questionHandlerService.currentQuestion) {
-            this.internalGameState = GameState.GameEnded;
+            this.gameStateService.gameState = GameState.GameEnded;
         } else {
-            switch (this.internalGameState) {
+            switch (this.gameStateService.gameState) {
                 case GameState.ShowQuestion:
-                    this.internalGameState = GameState.ShowAnswer;
+                    this.gameStateService.gameState = GameState.ShowAnswer;
                     break;
                 case GameState.ShowAnswer:
-                    this.internalGameState = GameState.ShowQuestion;
+                    this.gameStateService.gameState = GameState.ShowQuestion;
                     break;
                 case GameState.GameEnded:
-                    this.internalGameState = GameState.GameEnded;
+                    this.gameStateService.gameState = GameState.GameEnded;
                     break;
                 default:
-                    this.internalGameState = GameState.ShowQuestion;
+                    this.gameStateService.gameState = GameState.ShowQuestion;
                     break;
             }
         }
