@@ -100,6 +100,16 @@ describe('QuestionComponent', () => {
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
+    it('handleKeyUp should call playerHandlerService.handleKeyUp', () => {
+        const mockEvent = new KeyboardEvent('keyup');
+        spyOn(mockEvent, 'stopPropagation');
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        spyOn(component, 'canEditAnswer').and.returnValue(true);
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        expect(playerHandlerServiceSpy.handleKeyUp).toHaveBeenCalledWith(mockEvent, TEST_PLAYER);
+    });
+
     it('canEditAnswer should return false if answer is confirmed', () => {
         component.player.answerConfirmed = true;
         const showingAnswerSpy = spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
