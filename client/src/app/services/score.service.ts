@@ -38,9 +38,7 @@ export class ScoreService {
         return this.questionHandlerService.isAnswerCorrect(isChecked) ? score : 0;
     }
 
-    clearScores(): void {
-        this.playerHandlerService.players.forEach((player) => {
-            player.score = 0;
-        });
+    cleanUp(): void {
+        this.timerEndedSubscription.unsubscribe();
     }
 }
