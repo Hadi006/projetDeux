@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
-import { QuestionHandlerService } from './question-handler.service';
 import { Subject } from 'rxjs';
-
-export const QUESTION_DELAY = 5;
-export const ANSWER_DELAY = 3;
 
 @Injectable({
     providedIn: 'root',
@@ -18,7 +14,6 @@ export class GameTimersService {
     constructor(
         private timeService: TimeService,
         private gameStateService: GameStateService,
-        private questionHandlerService: QuestionHandlerService,
     ) {
         this.questionTimerId = this.timeService.createTimer(this.stopQuestionTimer.bind(this));
         this.answerTimerId = this.timeService.createTimer(this.stopAnswerTimer.bind(this));
