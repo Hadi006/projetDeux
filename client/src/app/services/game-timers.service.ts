@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { GameStateService, GameState } from './game-state.service';
 
+export const QUESTION_DELAY = 5;
+export const ANSWER_DELAY = 3;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -37,11 +40,11 @@ export class GameTimersService {
 
     private internalQuestionTimerCallback(): void {
         this.gameStateService.nextState();
-        this.startAnswerTimer(0);
+        this.startAnswerTimer(ANSWER_DELAY);
     }
 
     private internalAnswerTimerCallback(): void {
         this.gameStateService.nextState();
-        this.startQuestionTimer(0);
+        this.startQuestionTimer(QUESTION_DELAY);
     }
 }
