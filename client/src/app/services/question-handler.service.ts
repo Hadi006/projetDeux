@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { QuestionData } from '@common/question-data';
+import { PlayerHandlerService } from './player-handler.service';
 
 export const GOOD_ANSWER_MULTIPLIER = 1.2;
 
@@ -11,7 +12,7 @@ export class QuestionHandlerService {
     private currentQuestionIndex = 0;
     private internalNQuestions: number;
 
-    // constructor(private playerHandlerService: PlayerHandlerService) {}
+    constructor(private playerHandlerService: PlayerHandlerService) {}
 
     get currentQuestion(): QuestionData | undefined {
         return this.internalQuestionsData[this.currentQuestionIndex];
@@ -25,8 +26,16 @@ export class QuestionHandlerService {
         this.internalNQuestions = data.length;
     }
 
+    resetPlayerAnswers(): void {
+        this.playerHandlerService.players.forEach((player) => {
+            player.answer = new Array(this.currentQuestion?.answers.length).fill(false);
+            player.answerConfirmed = false;
+        });
+    };
+
     nextQuestion(): void {
         this.currentQuestionIndex++;
+        this.resetPlayerAnswers();
     }
 
     calculateScore(isChecked: boolean[]): number {
