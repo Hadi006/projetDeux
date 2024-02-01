@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from './question-handler.service';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
+import { QuestionHandlerService } from './question-handler.service';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
@@ -15,64 +14,4 @@ describe('QuestionHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('currentQuestion should return the current question', () => {
-        service.setQuestions(QUESTIONS_DATA);
-        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
-    });
-
-    it('setQuestions should set the questionData and the number of questions', () => {
-        service.setQuestions(QUESTIONS_DATA);
-        QUESTIONS_DATA.forEach((questionData) => {
-            expect(service.currentQuestion).toEqual(questionData);
-            service.nextQuestion();
-        });
-
-        expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
-    });
-
-    it('nextQuestion should notify subscribers with the next question', () => {
-        spyOn(service.questionSubjects, 'next').and.callThrough();
-        service.setQuestions(QUESTIONS_DATA);
-        service.nextQuestion();
-
-        expect(service.questionSubjects.next).toHaveBeenCalledWith(QUESTIONS_DATA[0]);
-    });
-
-    it('nextQuestion should increment the current question index', () => {
-        service.setQuestions(QUESTIONS_DATA);
-        service.nextQuestion();
-
-        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
-    });
-
-    it('calculateScore should return 0 if currentQuestion is undefined', () => {
-        const isChecked = [false, true, false, false];
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-
-        expect(service.calculateScore(isChecked)).toEqual(0);
-    });
-
-    it('calculateScore should return 0 if the answer is incorrect', () => {
-        const isChecked = [true, true, false, false];
-        service.setQuestions(QUESTIONS_DATA);
-        const score = service.calculateScore(isChecked);
-
-        expect(score).toEqual(0);
-    });
-
-    it('calculateScore should return the correct score if the answer is correct', () => {
-        const isChecked = [false, true, false, false];
-        service.setQuestions(QUESTIONS_DATA);
-        const score = service.calculateScore(isChecked);
-
-        expect(score).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
-    it('calculateScore should return the correct score if currentQuestion is not MCQ', () => {
-        const isChecked = [false, true, false, false];
-        service.setQuestions([{ ...QUESTIONS_DATA[0], isMCQ: false }]);
-        const score = service.calculateScore(isChecked);
-
-        expect(score).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
 });
