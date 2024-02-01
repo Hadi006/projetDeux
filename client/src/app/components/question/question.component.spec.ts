@@ -10,9 +10,6 @@ const TEST_PLAYER: Player = {
     score: 0,
     answer: [false, true, false, false],
     answerConfirmed: false,
-    confirmAnswer: () => {
-        return;
-    },
 };
 
 describe('QuestionComponent', () => {
