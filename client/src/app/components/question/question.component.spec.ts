@@ -37,6 +37,7 @@ describe('QuestionComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(QuestionComponent);
         component = fixture.componentInstance;
+        component.player = TEST_PLAYER;
         fixture.detectChanges();
     });
 
