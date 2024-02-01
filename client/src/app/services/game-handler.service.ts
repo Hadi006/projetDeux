@@ -88,11 +88,11 @@ export class GameHandlerService {
                 break;
             default:
                 this.gameStateService.gameState = GameState.GameEnded;
-            break;
+                break;
         }
     }
 
-    cleanup(): void {
+    cleanUp(): void {
         this.timerEndedSubscription.unsubscribe();
     }
 
