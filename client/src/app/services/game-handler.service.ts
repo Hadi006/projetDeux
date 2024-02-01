@@ -43,7 +43,10 @@ export const TEST_GAME: GameData = {
 export class GameHandlerService {
     private internalGameData: GameData;
 
-    constructor(private questionHandlerService: QuestionHandlerService, private gameTimersService: GameTimersService) {}
+    constructor(
+        private questionHandlerService: QuestionHandlerService,
+        private gameTimersService: GameTimersService,
+    ) {}
 
     get gameData(): GameData {
         return this.internalGameData;
@@ -57,5 +60,6 @@ export class GameHandlerService {
     startGame(): void {
         this.questionHandlerService.questionsData = this.internalGameData.questions;
         this.questionHandlerService.resetPlayerAnswers();
+        this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
     }
 }
