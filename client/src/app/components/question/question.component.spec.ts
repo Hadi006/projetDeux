@@ -82,4 +82,15 @@ describe('QuestionComponent', () => {
         expect(component.confirmAnswer).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
+
+    it('handleKeyUp should do nothing if question is open ended', () => {
+        const mockEvent = new KeyboardEvent('keyup');
+        spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'confirmAnswer');
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
+        component.handleKeyUp(mockEvent);
+        expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+        expect(component.confirmAnswer).not.toHaveBeenCalled();
+        expect(component.isChecked).toBe(TEST_PLAYER.answer);
+    });
 });
