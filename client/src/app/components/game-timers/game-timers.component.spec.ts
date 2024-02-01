@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { GameTimersService, QUESTION_DELAY } from '@app/services/game-timers.service';
+import { GameTimersService } from '@app/services/game-timers.service';
 
 import { GameTimersComponent } from './game-timers.component';
 
