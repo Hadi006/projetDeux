@@ -39,5 +39,8 @@ describe('PlayerComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should create a player', () => {});
+    it('should create a player', () => {
+        expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
+        expect(component.player).toBe(TEST_PLAYER);
+    });
 });
