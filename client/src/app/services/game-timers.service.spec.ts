@@ -53,4 +53,10 @@ describe('GameTimersService', () => {
         expect(service.time).toBe(time);
         expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
+
+    it('time getter should return 0 when game state is GameEnded', () => {
+        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.GameEnded);
+        expect(service.time).toBe(0);
+        expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+    });
 });
