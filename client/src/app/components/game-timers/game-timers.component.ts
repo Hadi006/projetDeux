@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { GameStateService, GameState } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 
 @Component({
@@ -10,6 +9,9 @@ import { GameTimersService } from '@app/services/game-timers.service';
 export class GameTimersComponent {
     constructor(
         private gameTimersService: GameTimersService,
-        private gameStateService: GameStateService,
     ) {}
+
+    get time(): number {
+        return this.gameTimersService.time;
+    }
 }
