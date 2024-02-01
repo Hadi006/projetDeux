@@ -8,10 +8,8 @@ const TEST_PLAYER: Player = {
     score: 0,
     answer: [false, true, false, false],
     answerConfirmed: false,
-    confirmAnswer: () => {
-        return;
-    },
 };
+
 describe('PlayerComponent', () => {
     let component: PlayerComponent;
     let fixture: ComponentFixture<PlayerComponent>;
