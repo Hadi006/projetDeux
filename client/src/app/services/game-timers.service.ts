@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 import { QuestionHandlerService } from './question-handler.service';
+import { Subject } from 'rxjs';
 
 export const QUESTION_DELAY = 5;
 export const ANSWER_DELAY = 3;
@@ -12,6 +13,7 @@ export const ANSWER_DELAY = 3;
 export class GameTimersService {
     private questionTimerId: number;
     private answerTimerId: number;
+    private internalTimerEndedSubject: Subject<void> = new Subject<void>();
 
     constructor(
         private timeService: TimeService,
@@ -32,6 +34,11 @@ export class GameTimersService {
                 return 0;
         }
     }
+
+    get timerEndedSubject(): Subject<void> {
+        return this.internalTimerEndedSubject;
+    }
+
     startQuestionTimer(time: number): void {
         this.timeService.startTimer(this.questionTimerId, time);
     }
@@ -42,12 +49,14 @@ export class GameTimersService {
 
     stopQuestionTimer(): void {
         this.timeService.stopTimer(this.questionTimerId);
+        this.timerEndedSubject.next();
         this.gameStateService.gameState = GameState.ShowAnswer;
         this.startAnswerTimer(ANSWER_DELAY);
     }
 
     stopAnswerTimer(): void {
         this.timeService.stopTimer(this.answerTimerId);
+        this.timerEndedSubject.next();
         this.questionHandlerService.nextQuestion();
         this.gameStateService.gameState = GameState.ShowQuestion;
         this.startQuestionTimer(QUESTION_DELAY);
