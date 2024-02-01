@@ -6,7 +6,7 @@ import { GameStateService, GameState } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
 
-const SHOW_ANSWER_DELAY = 3;
+export const SHOW_ANSWER_DELAY = 3;
 
 export const QUESTIONS_DATA: QuestionData[] = [
     {
