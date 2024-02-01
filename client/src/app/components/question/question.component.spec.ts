@@ -136,4 +136,12 @@ describe('QuestionComponent', () => {
         expect(component.confirmAnswer).not.toHaveBeenCalled();
         expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
+
+    it('canEditAnswer should return false if answer is confirmed', () => {
+        component.player.answerConfirmed = true;
+        spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
+        expect(component.canEditAnswer()).toBeFalse();
+        spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(true);
+        expect(component.canEditAnswer()).toBeFalse();
+    });
 });
