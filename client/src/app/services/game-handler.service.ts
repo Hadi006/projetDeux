@@ -52,12 +52,7 @@ export class GameHandlerService {
         private gameTimersService: GameTimersService,
         private playerHandlerService: PlayerHandlerService,
     ) {
-        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe(() => {
-            if (++this.nAnsweredPlayers >= this.playerHandlerService.nPlayers) {
-                this.gameTimersService.stopQuestionTimer();
-                this.nAnsweredPlayers = 0;
-            }
-        });
+        this.subscribeToAnswerConfirmed();
     }
 
     get gameData(): GameData {
@@ -77,5 +72,14 @@ export class GameHandlerService {
 
     cleanup(): void {
         this.answerConfirmedSubscription.unsubscribe();
+    }
+
+    private subscribeToAnswerConfirmed(): void {
+        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe(() => {
+            if (++this.nAnsweredPlayers >= this.playerHandlerService.nPlayers) {
+                this.gameTimersService.stopQuestionTimer();
+                this.nAnsweredPlayers = 0;
+            }
+        });
     }
 }
