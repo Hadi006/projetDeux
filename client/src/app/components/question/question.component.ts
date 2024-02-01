@@ -1,39 +1,32 @@
-import { Component, HostListener, Input, OnDestroy } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { Subscription } from 'rxjs';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 
 @Component({
     selector: 'app-question',
     templateUrl: './question.component.html',
     styleUrls: ['./question.component.scss'],
 })
-export class QuestionComponent implements OnDestroy {
-    @Input() answerConfirmed: boolean;
-    @Input() showingAnswer: boolean | undefined;
-    @Input() player: Player | undefined;
+export class QuestionComponent {
+    @Input() player: Player;
 
-    private questionsSubscription: Subscription;
-    private internalQuestionData: QuestionData;
-    private internalIsChecked: boolean[];
+    constructor(
+        private questionHandlerService: QuestionHandlerService,
+        private gameStateService: GameStateService,
+    ) {}
 
-    constructor(private questionHandlerService: QuestionHandlerService) {
-        this.questionsSubscription = this.questionHandlerService.questionSubjects.subscribe((questionData: QuestionData | undefined) => {
-            if (!questionData) {
-                return;
-            }
-
-            this.setQuestion(questionData);
-        });
-    }
-
-    get questionData(): QuestionData {
-        return this.internalQuestionData;
+    get questionData(): QuestionData | undefined {
+        return this.questionHandlerService.currentQuestion;
     }
 
     get isChecked(): boolean[] {
-        return this.internalIsChecked;
+        return this.player.answer;
+    }
+
+    get showingAnswer(): boolean {
+        return this.gameStateService.gameState === GameState.ShowAnswer;
     }
 
     @HostListener('window:keyup', ['$event'])
@@ -49,30 +42,16 @@ export class QuestionComponent implements OnDestroy {
 
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.questionData.answers.length) {
-            this.internalIsChecked[key] = !this.internalIsChecked[key];
+            this.player.answer[key] = !this.player.answer[key];
         }
-    }
-
-    confirmAnswer(): void {
-        if (!this.player) {
-            return;
-        }
-
-        this.answerConfirmed = true;
-        this.player.answerNotifier.next(this.internalIsChecked);
     }
 
     canEditAnswer(): boolean {
-        return !this.answerConfirmed && !this.showingAnswer;
+        return !this.player.answerConfirmed && !this.showingAnswer;
     }
 
-    ngOnDestroy(): void {
-        this.questionsSubscription.unsubscribe();
-    }
-
-    private setQuestion(data: QuestionData) {
-        this.internalQuestionData = data;
-        this.internalIsChecked = new Array(this.questionData.answers.length).fill(false);
-        this.answerConfirmed = false;
+    confirmAnswer(): void {
+        this.player.confirmAnswer();
+        this.player.answerConfirmed = true;
     }
 }
