@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { PlayerHandlerService } from './player-handler.service';
 
-export const GOOD_ANSWER_MULTIPLIER = 1.2;
-
 @Injectable({
     providedIn: 'root',
 })
@@ -31,24 +29,14 @@ export class QuestionHandlerService {
             player.answer = new Array(this.currentQuestion?.answers.length).fill(false);
             player.answerConfirmed = false;
         });
-    };
+    }
 
     nextQuestion(): void {
         this.currentQuestionIndex++;
         this.resetPlayerAnswers();
     }
 
-    calculateScore(isChecked: boolean[]): number {
-        if (!this.currentQuestion) {
-            return 0;
-        }
-
-        const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
-
-        return this.isAnswerCorrect(isChecked) ? score : 0;
-    }
-
-    private isAnswerCorrect(isChecked: boolean[]): boolean {
+    isAnswerCorrect(isChecked: boolean[]): boolean {
         if (!this.currentQuestion?.isMCQ) {
             return true;
         }
