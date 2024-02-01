@@ -23,7 +23,6 @@ describe('GameTimersService', () => {
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['allAnsweredSubject']);
         mockSubject = new Subject<void>();
-        spyOn(mockSubject, 'next').and.callThrough();
         Object.defineProperty(playerHandlerServiceSpy, 'allAnsweredSubject', {
             get: () => {
                 return mockSubject;
@@ -34,8 +33,11 @@ describe('GameTimersService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: TimeService, useValue: timeServiceSpy }, { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy
-            }, GameStateService],
+            providers: [
+                { provide: TimeService, useValue: timeServiceSpy },
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                GameStateService,
+            ],
         });
         service = TestBed.inject(GameTimersService);
         gameStateService = TestBed.inject(GameStateService);
@@ -47,6 +49,12 @@ describe('GameTimersService', () => {
 
     it('should create 2 timers', () => {
         expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
+    });
+
+    it('should stop question timer when all players have answered', () => {
+        spyOn(service, 'stopQuestionTimer');
+        playerHandlerServiceSpy.allAnsweredSubject.next();
+        expect(service.stopQuestionTimer).toHaveBeenCalled();
     });
 
     it('time getter should return the correct value when game state is ShowQuestion', () => {
