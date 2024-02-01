@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -7,6 +8,7 @@ import { Player } from '@app/interfaces/player';
 export class PlayerHandlerService {
     private internalPlayers: Map<number, Player> = new Map<number, Player>();
     private internalNPlayers: number = 0;
+    private internalAnswerConfirmedSubject: Subject<void> = new Subject<void>();
 
     get players(): Map<number, Player> {
         return this.internalPlayers;
@@ -14,6 +16,10 @@ export class PlayerHandlerService {
 
     get nPlayers(): number {
         return this.internalNPlayers;
+    }
+
+    get answerConfirmedSubject(): Subject<void> {
+        return this.internalAnswerConfirmedSubject;
     }
 
     createPlayer(): Player {
@@ -39,6 +45,7 @@ export class PlayerHandlerService {
     }
 
     confirmPlayerAnswer(player: Player): void {
+        this.internalAnswerConfirmedSubject.next();
         player.answerConfirmed = true;
     }
 }
