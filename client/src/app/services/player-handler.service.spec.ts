@@ -13,4 +13,12 @@ describe('PlayerHandlerService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    it('createPlayer should create a player and increment nPlayers', () => {
+        const nPlayers = service.nPlayers;
+        const player = service.createPlayer();
+        expect(player).toBeTruthy();
+        expect(service.nPlayers).toBe(nPlayers + 1);
+        expect(service.players.get(nPlayers)).toEqual(player);
+    });
 });
