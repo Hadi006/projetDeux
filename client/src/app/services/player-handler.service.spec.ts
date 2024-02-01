@@ -21,4 +21,36 @@ describe('PlayerHandlerService', () => {
         expect(service.nPlayers).toBe(nPlayers + 1);
         expect(service.players.get(nPlayers)).toEqual(player);
     });
+
+    it('handleKeyUp should confirm the answer if Enter is pressed', () => {
+        const player = service.createPlayer();
+        spyOn(player, 'confirmAnswer');
+        service.handleKeyUp(new KeyboardEvent('keyup', { key: 'Enter' }), player);
+        expect(player.confirmAnswer).toHaveBeenCalled();
+    });
+
+    it('handleKeyUp should toggle the answer if a number key is pressed', () => {
+        const player = service.createPlayer();
+        player.answer = [false, false, false];
+        service.handleKeyUp(new KeyboardEvent('keyup', { key: '1' }), player);
+        expect(player.answer).toEqual([true, false, false]);
+        service.handleKeyUp(new KeyboardEvent('keyup', { key: '1' }), player);
+        expect(player.answer).toEqual([false, false, false]);
+    });
+
+    it('handleKeyUp should not toggle the answer if a number key is pressed out of range', () => {
+        const player = service.createPlayer();
+        player.answer = [false, false, false];
+        service.handleKeyUp(new KeyboardEvent('keyup', { key: '0' }), player);
+        expect(player.answer).toEqual([false, false, false]);
+        service.handleKeyUp(new KeyboardEvent('keyup', { key: '4' }), player);
+        expect(player.answer).toEqual([false, false, false]);
+    });
+
+    it('handleKeyUp should not toggle the answer if a non-number key is pressed', () => {
+        const player = service.createPlayer();
+        player.answer = [false, false, false];
+        service.handleKeyUp(new KeyboardEvent('keyup', { key: 'a' }), player);
+        expect(player.answer).toEqual([false, false, false]);
+    });
 });

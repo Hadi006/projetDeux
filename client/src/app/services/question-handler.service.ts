@@ -11,6 +11,8 @@ export class QuestionHandlerService {
     private currentQuestionIndex = 0;
     private internalNQuestions: number;
 
+    // constructor(private playerHandlerService: PlayerHandlerService) {}
+
     get currentQuestion(): QuestionData | undefined {
         return this.internalQuestionsData[this.currentQuestionIndex];
     }
