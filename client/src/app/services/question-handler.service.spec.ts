@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
+import { Player } from '@app/interfaces/player';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
@@ -38,6 +39,40 @@ describe('QuestionHandlerService', () => {
         service.questionsData = QUESTIONS_DATA;
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
+    });
+
+    it('resetPlayerAnswers should reset the player answers', () => {
+        const players = new Map<number, Player>([
+            [
+                0,
+                {
+                    score: 0,
+                    answer: [true, false],
+                    answerConfirmed: true,
+                    confirmAnswer: () => {
+                        return;
+                    },
+                },
+            ],
+            [
+                0,
+                {
+                    score: 0,
+                    answer: [false, true],
+                    answerConfirmed: true,
+                    confirmAnswer: () => {
+                        return;
+                    },
+                },
+            ],
+        ]);
+        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(players);
+        service.questionsData = QUESTIONS_DATA;
+        service.resetPlayerAnswers();
+        players.forEach((player) => {
+            expect(player.answer).toEqual([false, false, false, false]);
+            expect(player.answerConfirmed).toEqual(false);
+        });
     });
 
     it('nextQuestion should load the next question', () => {
