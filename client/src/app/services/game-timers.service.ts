@@ -6,6 +6,9 @@ import { GameStateService } from './game-state.service';
     providedIn: 'root',
 })
 export class GameTimersService {
+    private questionTimerId: number;
+    private answerTimerId: number;
+
     constructor(
         private timeService: TimeService,
         private gameStateService: GameStateService,
