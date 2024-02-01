@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GameStateService } from '@app/services/game-state.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 
 @Component({
@@ -8,5 +8,8 @@ import { GameTimersService } from '@app/services/game-timers.service';
     styleUrls: ['./game-timers.component.scss'],
 })
 export class GameTimersComponent {
-    constructor(private gameTimersService: GameTimersService, private gameStateService: GameStateService) {}
+    constructor(
+        private gameTimersService: GameTimersService,
+        private gameStateService: GameStateService,
+    ) {}
 }

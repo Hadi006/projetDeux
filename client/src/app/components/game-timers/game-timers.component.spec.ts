@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { GameStateService } from '@app/services/game-state.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 
 import { GameTimersComponent } from './game-timers.component';
@@ -18,8 +18,10 @@ describe('GameTimersComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [GameTimersComponent],
-            providers: [{ provide: GameTimersService, useValue: gameTimersServiceSpy },
-                { provide: GameStateService, useValue: gameStateServiceSpy }],
+            providers: [
+                { provide: GameTimersService, useValue: gameTimersServiceSpy },
+                { provide: GameStateService, useValue: gameStateServiceSpy },
+            ],
         }).compileComponents();
     }));
 
