@@ -55,5 +55,6 @@ export class GameHandlerService {
 
     startGame(): void {
         this.questionHandlerService.questionsData = this.internalGameData.questions;
+        this.questionHandlerService.resetPlayerAnswers();
     }
 }
