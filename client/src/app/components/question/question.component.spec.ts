@@ -133,6 +133,7 @@ describe('QuestionComponent', () => {
         spyOn(mockEvent, 'stopPropagation');
         spyOn(component, 'confirmAnswer');
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        spyOn(component, 'canEditAnswer').and.returnValue(true);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).toHaveBeenCalled();
         expect(component.confirmAnswer).not.toHaveBeenCalled();
