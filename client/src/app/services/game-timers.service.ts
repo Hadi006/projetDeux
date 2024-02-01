@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { PlayerHandlerService } from './player-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -10,13 +11,18 @@ export class GameTimersService {
     private questionTimerId: number;
     private answerTimerId: number;
     private internalTimerEndedSubject: Subject<void> = new Subject<void>();
+    private internalAllAnsweredSubscription: Subscription;
 
     constructor(
         private timeService: TimeService,
         private gameStateService: GameStateService,
+        private playerHandlerService: PlayerHandlerService,
     ) {
         this.questionTimerId = this.timeService.createTimer(this.stopQuestionTimer.bind(this));
         this.answerTimerId = this.timeService.createTimer(this.stopAnswerTimer.bind(this));
+        this.internalAllAnsweredSubscription = this.playerHandlerService.allAnswerdSubject.subscribe(() => {
+            this.stopQuestionTimer();
+        });
     }
 
     get time(): number {
@@ -50,5 +56,9 @@ export class GameTimersService {
     stopAnswerTimer(): void {
         this.timeService.stopTimer(this.answerTimerId);
         this.timerEndedSubject.next();
+    }
+
+    cleanUp(): void {
+        this.internalAllAnsweredSubscription.unsubscribe();
     }
 }
