@@ -97,6 +97,15 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.GameEnded);
     });
 
+    it('setUpNextState should set the game correctly if the state is not show answer or show question', () => {
+        gameStateService.gameState = GameState.GameEnded;
+        service.setUpNextState();
+        expect(gameStateService.gameState).toBe(GameState.GameEnded);
+        const unrecognizedState = 100;
+        gameStateService.gameState = unrecognizedState;
+        expect(gameStateService.gameState).toBe(GameState.GameEnded);
+    });
+
     it('cleanup should unsubscribe from timer ended', () => {
         spyOn(mockSubject, 'unsubscribe');
         service.cleanup();
