@@ -21,9 +21,6 @@ export class PlayerHandlerService {
             score: 0,
             answer: [],
             answerConfirmed: false,
-            confirmAnswer: () => {
-                return;
-            },
         };
         this.internalPlayers.set(this.internalNPlayers++, player);
 
@@ -32,13 +29,16 @@ export class PlayerHandlerService {
 
     handleKeyUp(event: KeyboardEvent, player: Player): void {
         if (event.key === 'Enter') {
-            player.confirmAnswer();
-            player.answerConfirmed = true;
+            this.confirmPlayerAnswer(player);
         }
 
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < player.answer.length) {
             player.answer[key] = !player.answer[key];
         }
+    }
+
+    confirmPlayerAnswer(player: Player): void {
+        player.answerConfirmed = true;
     }
 }
