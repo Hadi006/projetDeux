@@ -152,4 +152,10 @@ describe('QuestionComponent', () => {
         component.player.answerConfirmed = true;
         expect(component.canEditAnswer()).toBeFalse();
     });
+
+    it('canEditAnswer should return true if answer is not confirmed and showingAnswer is false', () => {
+        spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
+        component.player.answerConfirmed = false;
+        expect(component.canEditAnswer()).toBeTrue();
+    });
 });
