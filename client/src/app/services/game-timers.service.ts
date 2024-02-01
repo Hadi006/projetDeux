@@ -27,4 +27,12 @@ export class GameTimersService {
                 return 0;
         }
     }
+
+    startQuestionTimer(time: number): void {
+        this.timeService.startTimer(this.questionTimerId, time);
+    }
+
+    startAnswerTimer(time: number): void {
+        this.timeService.startTimer(this.answerTimerId, time);
+    }
 }
