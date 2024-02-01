@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.service';
+import { GameHandlerService, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { QuestionData } from '@common/question-data';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
@@ -73,6 +73,14 @@ describe('GameHandlerService', () => {
         expect(questionsData).toEqual(TEST_GAME.questions);
         expect(questionHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalled();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
+    });
+
+    it('setUpNextState should start the answer timer with the correct value and set state to show answer if state is show question', () => {
+        gameStateService.gameState = GameState.ShowQuestion;
+        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+        service.setUpNextState();
+        expect(gameTimersServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
+        expect(gameStateService.gameState).toBe(GameState.ShowAnswer);
     });
 
     it('cleanup should unsubscribe from timer ended', () => {
