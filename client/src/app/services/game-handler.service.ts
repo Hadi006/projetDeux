@@ -45,7 +45,6 @@ export class GameHandlerService {
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
-        private gameStateService: GameStateService,
     ) {}
 
     get gameData(): GameData {
