@@ -39,11 +39,13 @@ export class GameTimersService {
     }
 
     questionTimerCallback(): void {
+        this.timeService.stopTimer(this.questionTimerId);
         this.gameStateService.nextState();
         this.startAnswerTimer(ANSWER_DELAY);
     }
 
     answerTimerCallback(): void {
+        this.timeService.stopTimer(this.answerTimerId);
         this.gameStateService.nextState();
         this.startQuestionTimer(QUESTION_DELAY);
     }
