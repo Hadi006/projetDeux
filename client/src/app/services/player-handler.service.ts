@@ -50,6 +50,7 @@ export class PlayerHandlerService {
 
         if (++this.internalNAnswered >= this.internalNPlayers) {
             this.internalAllAnsweredSubject.next();
+            this.internalNAnswered = 0;
         }
     }
 }
