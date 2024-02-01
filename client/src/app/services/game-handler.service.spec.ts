@@ -24,7 +24,7 @@ describe('GameHandlerService', () => {
             configurable: true,
         });
 
-        mockSubject = new Subject();
+        mockSubject = new Subject<void>();
         spyOn(mockSubject, 'next').and.callThrough();
         gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', [
             'startQuestionTimer',
