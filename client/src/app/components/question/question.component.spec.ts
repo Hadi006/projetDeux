@@ -18,7 +18,7 @@ describe('QuestionComponent', () => {
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
-    let gameStateServiceSpy: jasmine.SpyObj<GameStateService>;
+    let gameStateService: GameStateService;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
@@ -28,23 +28,14 @@ describe('QuestionComponent', () => {
             },
             configurable: true,
         });
-
-        gameStateServiceSpy = jasmine.createSpyObj<GameStateService>('GameStateService', ['gameState']);
-        Object.defineProperty(gameStateServiceSpy, 'gameState', {
-            get: () => {
-                return GameState.ShowQuestion;
-            },
-            configurable: true,
-        });
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [
-                { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
-            ],
+            providers: [{ provide: QuestionHandlerService, useValue: questionHandlerServiceSpy }, GameStateService],
         }).compileComponents();
+        gameStateService = TestBed.inject(GameStateService);
     }));
 
     beforeEach(() => {
@@ -68,7 +59,7 @@ describe('QuestionComponent', () => {
     });
 
     it('showingAnswer getter should return true when game state is ShowAnswer', () => {
-        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
+        gameStateService.gameState = GameState.ShowAnswer;
         expect(component.showingAnswer).toBeTrue();
     });
 
