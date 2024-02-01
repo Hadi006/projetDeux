@@ -8,7 +8,7 @@ describe('GameplayPlayerPageComponent', () => {
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
 
     beforeEach(() => {
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['startGame']);
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData', 'startGame']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -28,8 +28,9 @@ describe('GameplayPlayerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('ngOnInit should call startGame', () => {
+    it('ngOnInit should call loadGameData and startGame', () => {
         component.ngOnInit();
+        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.startGame).toHaveBeenCalled();
     });
 });

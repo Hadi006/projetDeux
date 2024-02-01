@@ -11,6 +11,7 @@ export class GameplayPlayerPageComponent implements OnInit {
 
     constructor(public gameHandlerService: GameHandlerService) {}
     ngOnInit(): void {
+        this.gameHandlerService.loadGameData();
         this.gameHandlerService.startGame();
     }
 }
