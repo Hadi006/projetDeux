@@ -44,16 +44,11 @@ export const TEST_GAME: GameData = {
 })
 export class GameHandlerService {
     private internalGameData: GameData;
-    private answerConfirmedSubscription: Subscription;
-    private nAnsweredPlayers = 0;
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private gameTimersService: GameTimersService,
-        private playerHandlerService: PlayerHandlerService,
-    ) {
-        this.subscribeToAnswerConfirmed();
-    }
+    ) {}
 
     get gameData(): GameData {
         return this.internalGameData;
@@ -68,18 +63,5 @@ export class GameHandlerService {
         this.questionHandlerService.questionsData = this.internalGameData.questions;
         this.questionHandlerService.resetPlayerAnswers();
         this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
-    }
-
-    cleanup(): void {
-        this.answerConfirmedSubscription.unsubscribe();
-    }
-
-    private subscribeToAnswerConfirmed(): void {
-        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe(() => {
-            if (++this.nAnsweredPlayers >= this.playerHandlerService.nPlayers) {
-                this.gameTimersService.stopQuestionTimer();
-                this.nAnsweredPlayers = 0;
-            }
-        });
     }
 }
