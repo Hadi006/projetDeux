@@ -9,7 +9,9 @@ describe('GameTimersComponent', () => {
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
 
     beforeEach(() => {
-        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', []);
+        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['createQuestionTimer']);
+        Object.defineProperty(gameTimersServiceSpy, 'time', { get: () => 0,
+        configurable: true });
     });
 
     beforeEach(waitForAsync(() => {
@@ -27,5 +29,11 @@ describe('GameTimersComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should get time from service', () => {
+        const time = 10;
+        spyOnProperty(gameTimersServiceSpy, 'time', 'get').and.returnValue(time);
+        expect(component.time).toBe(time);
     });
 });
