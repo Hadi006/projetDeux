@@ -1,6 +1,5 @@
-import { Subject } from 'rxjs';
-
 export interface Player {
     score: number;
-    answerNotifier: Subject<boolean[]>;
+    answer: boolean[];
+    answerConfirmed: boolean;
 }
