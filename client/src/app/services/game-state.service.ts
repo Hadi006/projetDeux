@@ -30,9 +30,12 @@ export class GameStateService {
                 case GameState.ShowAnswer:
                     this.internalGameState = GameState.ShowQuestion;
                     break;
-                default:
+                    case GameState.GameEnded:
                     this.internalGameState = GameState.GameEnded;
-                break;
+                    break;
+                default:
+                    this.internalGameState = GameState.ShowQuestion;
+                    break;
             }
         }
     }
