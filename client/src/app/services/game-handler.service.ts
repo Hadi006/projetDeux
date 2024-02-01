@@ -1,12 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
-import { Subscription } from 'rxjs';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { GameTimersService } from '@app/services/game-timers.service';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { Player } from '@app/interfaces/player';
-import { GameStateService, GameState } from './game-state.service';
 
 export const QUESTIONS_DATA: QuestionData[] = [
     {
@@ -41,84 +35,17 @@ export const TEST_GAME: GameData = {
     timePerQuestion: 10,
 };
 
-export const SHOW_ANSWER_DELAY = 3;
-
 @Injectable({
     providedIn: 'root',
 })
 export class GameHandlerService {
     private internalGameData: GameData;
-    private confirmSubscriptions: Subscription[];
-    private nAnswersConfirmed: number = 0;
-
-    constructor(
-        private gameTimersService: GameTimersService,
-        private playerHandlerService: PlayerHandlerService,
-        private questionHandlerService: QuestionHandlerService,
-        private gameStateService: GameStateService,
-    ) {}
 
     get gameData(): GameData {
         return this.internalGameData;
     }
 
-    get time(): number {
-        switch (this.gameStateService.gameState) {
-            case GameState.ShowQuestion:
-                return this.gameTimersService.questionTime;
-            case GameState.ShowAnswer:
-                return this.gameTimersService.answerTime;
-            default:
-                return 0;
-        }
-    }
-
     startGame(): void {
-        this.confirmSubscriptions = [];
-        this.playerHandlerService.players.forEach((player) => {
-            this.createAnswerSubscription(player);
-        });
-
-        this.gameTimersService.createQuestionTimer(this.showAnswer.bind(this));
-        this.gameTimersService.createAnswerTimer(this.setUpNextQuestion.bind(this));
-
-        this.getGameData();
-        this.setUpNextQuestion();
-    }
-
-    cleanUp(): void {
-        this.confirmSubscriptions.forEach((subscription: Subscription) => {
-            subscription.unsubscribe();
-        });
-    }
-
-    private createAnswerSubscription(player: Player) {
-        const answerSubscription: Subscription = player.answerNotifier.subscribe((isChecked) => {
-            this.handlePlayerAnswer(player, isChecked);
-        });
-
-        this.confirmSubscriptions.push(answerSubscription);
-    }
-
-    private handlePlayerAnswer(player: Player, isChecked: boolean[]): void {
-        player.score += this.questionHandlerService.calculateScore(isChecked);
-
-        if (++this.nAnswersConfirmed >= this.playerHandlerService.nPlayers) {
-            this.gameTimersService.setQuestionTime(0);
-        }
-    }
-
-    private getGameData(): void {
-        // TODO : Replace with a server call
-        this.internalGameData = TEST_GAME;
-        this.questionHandlerService.setQuestions(TEST_GAME.questions);
-    }
-
-    private setUpNextQuestion(): void {
-        this.questionHandlerService.nextQuestion();
-    }
-
-    private showAnswer(): void {
-        this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
+        return;
     }
 }
