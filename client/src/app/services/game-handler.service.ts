@@ -51,7 +51,13 @@ export class GameHandlerService {
         private questionHandlerService: QuestionHandlerService,
         private gameTimersService: GameTimersService,
         private playerHandlerService: PlayerHandlerService,
-    ) {}
+    ) {
+        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe(() => {
+            if (++this.nAnsweredPlayers <= this.playerHandlerService.nPlayers) {
+                this.gameTimersService.stopQuestionTimer();
+            }
+        });
+    }
 
     get gameData(): GameData {
         return this.internalGameData;
