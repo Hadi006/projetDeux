@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
+import { QuestionHandlerService } from './question-handler.service';
 
 export const QUESTIONS_DATA: QuestionData[] = [
     {
@@ -40,6 +41,8 @@ export const TEST_GAME: GameData = {
 })
 export class GameHandlerService {
     private internalGameData: GameData;
+
+    constructor(private questionHandlerService: QuestionHandlerService) {}
 
     get gameData(): GameData {
         return this.internalGameData;
