@@ -38,12 +38,12 @@ export class GameTimersService {
         this.timeService.startTimer(this.answerTimerId, time);
     }
 
-    private internalQuestionTimerCallback(): void {
+    internalQuestionTimerCallback(): void {
         this.gameStateService.nextState();
         this.startAnswerTimer(ANSWER_DELAY);
     }
 
-    private internalAnswerTimerCallback(): void {
+    internalAnswerTimerCallback(): void {
         this.gameStateService.nextState();
         this.startQuestionTimer(QUESTION_DELAY);
     }
