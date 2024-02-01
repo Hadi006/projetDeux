@@ -86,6 +86,9 @@ export class GameHandlerService {
                     this.gameStateService.gameState = GameState.ShowQuestion;
                 }
                 break;
+            default:
+                this.gameStateService.gameState = GameState.GameEnded;
+            break;
         }
     }
 
