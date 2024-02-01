@@ -11,11 +11,15 @@ describe('GameTimersService', () => {
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
+
+        gameStateServiceSpy = jasmine.createSpyObj('GameStateService', ['nextState']);
+        Object.defineProperty(gameStateServiceSpy, 'state', { get: () => 0, configurable: true });
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: TimeService, useValue: timeServiceSpy }],
+            providers: [{ provide: TimeService, useValue: timeServiceSpy },
+                { provide: GameStateService, useValue: gameStateServiceSpy }],
         });
         service = TestBed.inject(GameTimersService);
     });
