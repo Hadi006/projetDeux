@@ -10,7 +10,7 @@ describe('GameHandlerService', () => {
     let questionsData: QuestionData[];
 
     beforeEach(() => {
-        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['resetPlayerAnswers', 'questionsData']);
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['questionsData']);
         Object.defineProperty(questionHandlerServiceSpy, 'questionsData', {
             set: (data) => {
                 questionsData = data;
@@ -36,10 +36,9 @@ describe('GameHandlerService', () => {
         expect(service.gameData).toEqual(TEST_GAME);
     });
 
-    it('startGame should set questionsData and call resetPlayerAnswers', () => {
+    it('startGame should set questionsData', () => {
         service.loadGameData();
         service.startGame();
         expect(questionsData).toEqual(TEST_GAME.questions);
-        expect(questionHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalled();
     });
 });
