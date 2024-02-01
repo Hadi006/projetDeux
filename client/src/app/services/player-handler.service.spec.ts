@@ -70,4 +70,20 @@ describe('PlayerHandlerService', () => {
         }
         expect(service.allAnswerdSubject.next).toHaveBeenCalled();
     });
+
+    it('confirmPlayerAnswer should increment nAnswered and reset it if all players confirmed', () => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            service.createPlayer();
+        }
+        spyOn(service.allAnswerdSubject, 'next');
+        for (let i = 0; i < nPlayers; i++) {
+            service.confirmPlayerAnswer(service.players.get(i));
+        }
+        expect(service.allAnswerdSubject.next).toHaveBeenCalledTimes(1);
+        for (let i = 0; i < nPlayers; i++) {
+            service.confirmPlayerAnswer(service.players.get(i));
+        }
+        expect(service.allAnswerdSubject.next).toHaveBeenCalledTimes(2);
+    });
 });
