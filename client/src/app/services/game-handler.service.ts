@@ -71,28 +71,31 @@ export class GameHandlerService {
         this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
     }
 
+    setUpNextState(): void {
+        switch (this.gameStateService.gameState) {
+            case GameState.ShowQuestion:
+                this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
+                this.gameStateService.gameState = GameState.ShowAnswer;
+                break;
+            case GameState.ShowAnswer:
+                this.questionHandlerService.nextQuestion();
+                if (!this.questionHandlerService.currentQuestion) {
+                    this.gameStateService.gameState = GameState.GameEnded;
+                } else {
+                    this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
+                    this.gameStateService.gameState = GameState.ShowQuestion;
+                }
+                break;
+        }
+    }
+
     cleanup(): void {
         this.timerEndedSubscription.unsubscribe();
     }
 
-
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
-            switch (this.gameStateService.gameState) {
-                case GameState.ShowQuestion:
-                    this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
-                    this.gameStateService.gameState = GameState.ShowAnswer;
-                    break;
-                case GameState.ShowAnswer:
-                    this.questionHandlerService.nextQuestion();
-                    if (!this.questionHandlerService.currentQuestion) {
-                        this.gameStateService.gameState = GameState.GameEnded;
-                    } else {
-                        this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
-                        this.gameStateService.gameState = GameState.ShowQuestion;
-                    }
-                    break;
-            }
+            this.setUpNextState();
         });
     }
 }
