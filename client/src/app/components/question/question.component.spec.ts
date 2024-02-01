@@ -1,9 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { GameStateService, GameState } from '@app/services/game-state.service';
+import { GameHandlerService, GameState, QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { QuestionComponent } from './question.component';
 import { Player } from '@app/interfaces/player';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 
 const TEST_PLAYER: Player = {
     score: 0,
@@ -18,7 +17,7 @@ describe('QuestionComponent', () => {
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
-    let gameStateServiceSpy: jasmine.SpyObj<GameStateService>;
+    let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
@@ -29,8 +28,8 @@ describe('QuestionComponent', () => {
             configurable: true,
         });
 
-        gameStateServiceSpy = jasmine.createSpyObj<GameStateService>('GameStateService', ['gameState']);
-        Object.defineProperty(gameStateServiceSpy, 'gameState', {
+        gameHandlerServiceSpy = jasmine.createSpyObj<GameHandlerService>('GameHandlerService', ['gameState']);
+        Object.defineProperty(gameHandlerServiceSpy, 'gameState', {
             get: () => {
                 return GameState.ShowQuestion;
             },
@@ -43,7 +42,7 @@ describe('QuestionComponent', () => {
             declarations: [QuestionComponent],
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
-                { provide: GameStateService, useValue: gameStateServiceSpy },
+                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
             ],
         }).compileComponents();
     }));
@@ -69,7 +68,7 @@ describe('QuestionComponent', () => {
     });
 
     it('showingAnswer getter should return true when game state is ShowAnswer', () => {
-        spyOnProperty(gameStateServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
+        spyOnProperty(gameHandlerServiceSpy, 'gameState', 'get').and.returnValue(GameState.ShowAnswer);
         expect(component.showingAnswer).toBeTrue();
     });
 
