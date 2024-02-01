@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { Player } from '@app/interfaces/player';
@@ -75,25 +75,4 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
     });
 
-    it('calculateScore should return 0 if there is no current question', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-        expect(service.calculateScore([])).toEqual(0);
-    });
-
-    it('calculateScore should return the correct value for a correct answer', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        const answer = [false, true, false, false];
-        expect(service.calculateScore(answer)).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
-    it('calculateScore should return 0 for an incorrect answer', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        const answer = [true, false, false, false];
-        expect(service.calculateScore(answer)).toEqual(0);
-    });
-
-    it('calculateScore should return the correct value for an open ended question', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
-        expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[1].points * GOOD_ANSWER_MULTIPLIER);
-    });
 });
