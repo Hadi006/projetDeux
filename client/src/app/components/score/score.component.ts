@@ -8,5 +8,4 @@ import { Player } from '@app/interfaces/player';
 })
 export class ScoreComponent {
     @Input() player: Player;
-    score = 0;
 }
