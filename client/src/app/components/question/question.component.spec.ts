@@ -144,4 +144,12 @@ describe('QuestionComponent', () => {
         showingAnswerSpy.and.returnValue(true);
         expect(component.canEditAnswer()).toBeFalse();
     });
+
+    it('canEditAnswer should return false if showingAnswer is true', () => {
+        spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(true);
+        component.player.answerConfirmed = false;
+        expect(component.canEditAnswer()).toBeFalse();
+        component.player.answerConfirmed = true;
+        expect(component.canEditAnswer()).toBeFalse();
+    });
 });
