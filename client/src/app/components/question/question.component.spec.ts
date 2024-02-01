@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 import { QuestionComponent } from './question.component';
 import { Player } from '@app/interfaces/player';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
@@ -17,12 +18,21 @@ describe('QuestionComponent', () => {
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
+    let gameStateServiceSpy: jasmine.SpyObj<GameStateService>;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
         Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
             get: () => {
                 return undefined;
+            },
+            configurable: true,
+        });
+
+        gameStateServiceSpy = jasmine.createSpyObj<GameStateService>('GameStateService', ['gameState']);
+        Object.defineProperty(gameStateServiceSpy, 'gameState', {
+            get: () => {
+                return GameState.ShowQuestion;
             },
             configurable: true,
         });
@@ -52,6 +62,6 @@ describe('QuestionComponent', () => {
     });
 
     it('isChecked getter should return the players answer', () => {
-expect(component.isChecked).toBe(TEST_PLAYER.answer);
+        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 });
