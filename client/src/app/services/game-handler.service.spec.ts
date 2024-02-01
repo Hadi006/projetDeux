@@ -10,13 +10,7 @@ describe('GameHandlerService', () => {
     let questionsData: QuestionData[];
 
     beforeEach(() => {
-        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion', 'questionsData']);
-        Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['questionsData']);
         Object.defineProperty(questionHandlerServiceSpy, 'questionsData', {
             set: (data) => {
                 questionsData = data;
