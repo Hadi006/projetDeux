@@ -41,7 +41,6 @@ export class QuestionComponent {
         }
 
         const key = parseInt(event.key, 10) - 1;
-        console.log(key, this.questionData.answers.length);
         if (key >= 0 && key < this.questionData.answers.length) {
             this.player.answer[key] = !this.player.answer[key];
         }
