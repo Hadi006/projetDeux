@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { QuestionData } from '@common/question-data';
+import { Subscription } from 'rxjs';
+import { GameTimersService } from './game-timers.service';
 import { PlayerHandlerService } from './player-handler.service';
+
+export const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',
@@ -9,8 +13,14 @@ export class QuestionHandlerService {
     private internalQuestionsData: QuestionData[];
     private currentQuestionIndex = 0;
     private internalNQuestions: number;
+    private timerEndedSubscription: Subscription;
 
-    constructor(private playerHandlerService: PlayerHandlerService) {}
+    constructor(
+        private playerHandlerService: PlayerHandlerService,
+        private gameTimersService: GameTimersService,
+    ) {
+        this.subscribeToTimerEnded();
+    }
 
     get currentQuestion(): QuestionData | undefined {
         return this.internalQuestionsData[this.currentQuestionIndex];
@@ -36,6 +46,22 @@ export class QuestionHandlerService {
         this.resetAnswers();
     }
 
+    updateScores(): void {
+        this.playerHandlerService.players.forEach((player) => {
+            player.score += this.calculateScore(player.answer);
+        });
+    }
+
+    calculateScore(isChecked: boolean[]): number {
+        if (!this.currentQuestion) {
+            return 0;
+        }
+
+        const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
+
+        return this.isAnswerCorrect(isChecked) ? score : 0;
+    }
+
     isAnswerCorrect(isChecked: boolean[]): boolean {
         if (!this.currentQuestion?.isMCQ) {
             return true;
@@ -53,5 +79,15 @@ export class QuestionHandlerService {
         });
 
         return allCheckedAreCorrect && allCorrectAreChecked;
+    }
+
+    cleanUp(): void {
+        this.timerEndedSubscription.unsubscribe();
+    }
+
+    private subscribeToTimerEnded(): void {
+        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
+            this.updateScores();
+        });
     }
 }
