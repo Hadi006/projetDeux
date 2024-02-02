@@ -70,6 +70,34 @@ describe('QuestionHandlerService', () => {
         });
     });
 
+    it('updateScores should update the scores of the players', () => {
+    const PLAYERS = new Map<number, Player>([
+        [
+            0,
+            {
+                score: 0,
+                answer: [true, false],
+                answerConfirmed: true,
+            },
+        ],
+        [
+            1,
+            {
+                score: 0,
+                answer: [false, true],
+                answerConfirmed: true,
+            },
+        ],
+    ]);
+
+        const score = 10;
+        spyOn(service, 'calculateScore').and.returnValue(score);
+        service.updateScores();
+        PLAYERS.forEach((player) => {
+            expect(player.score).toBe(score);
+        });
+    });
+
     it('nextQuestion should load the next question', () => {
         service.questionsData = QUESTIONS_DATA;
         service.nextQuestion();
