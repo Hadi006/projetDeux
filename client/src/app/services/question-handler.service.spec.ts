@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
-import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { GameTimersService } from '@app/services/game-timers.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { Player } from '@app/interfaces/player';
 
@@ -73,6 +74,23 @@ describe('QuestionHandlerService', () => {
         service.questionsData = QUESTIONS_DATA;
         service.nextQuestion();
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
+    });
+
+    it('calculateScore should return 0 if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        expect(service.calculateScore([])).toEqual(0);
+    });
+
+    it('calculateScore should return the correct value for a correct answer', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        spyOn(service, 'isAnswerCorrect').and.returnValue(false);
+        expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
+    });
+
+    it('calculateScore should return 0 for an incorrect answer', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        spyOn(service, 'isAnswerCorrect').and.returnValue(false);
+        expect(service.calculateScore([])).toEqual(0);
     });
 
     it('isAnswerCorrect should return true if the question is not MCQ', () => {
