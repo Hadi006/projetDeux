@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Subscription } from 'rxjs';
+import { GameStateService, GameState } from './game-state.service';
 import { GameTimersService } from './game-timers.service';
 import { PlayerHandlerService } from './player-handler.service';
 
@@ -18,6 +19,7 @@ export class QuestionHandlerService {
     constructor(
         private playerHandlerService: PlayerHandlerService,
         private gameTimersService: GameTimersService,
+        private gameStateService: GameStateService,
     ) {
         this.subscribeToTimerEnded();
     }
@@ -87,7 +89,9 @@ export class QuestionHandlerService {
 
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
-            this.updateScores();
+            if (this.gameStateService.gameState === GameState.ShowQuestion) {
+                this.updateScores();
+            }
         });
     }
 }
