@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ChatMessage } from '@app/interfaces/chat-message';
 
 @Component({
     selector: 'app-chatbox',
@@ -7,14 +8,14 @@ import { Component } from '@angular/core';
 })
 export class ChatboxComponent {
     showChat = true;
-    messages: { text: string; timestamp: Date }[] = [];
+    messages: ChatMessage[] = [];
     newMessage = '';
 
     sendMessage() {
         if (this.newMessage.trim() === '') {
             return;
         }
-        const newMessage = {
+        const newMessage: ChatMessage = {
             text: this.newMessage,
             timestamp: new Date(),
         };
