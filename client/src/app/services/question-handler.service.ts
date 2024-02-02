@@ -24,7 +24,7 @@ export class QuestionHandlerService {
         this.internalNQuestions = data.length;
     }
 
-    resetPlayerAnswers(): void {
+    resetAnswers(): void {
         this.playerHandlerService.players.forEach((player) => {
             player.answer = new Array(this.currentQuestion?.answers.length).fill(false);
             player.answerConfirmed = false;
@@ -33,7 +33,7 @@ export class QuestionHandlerService {
 
     nextQuestion(): void {
         this.currentQuestionIndex++;
-        this.resetPlayerAnswers();
+        this.resetAnswers();
     }
 
     isAnswerCorrect(isChecked: boolean[]): boolean {

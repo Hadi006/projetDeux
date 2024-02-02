@@ -41,7 +41,7 @@ describe('QuestionHandlerService', () => {
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
 
-    it('resetPlayerAnswers should reset the player answers', () => {
+    it('resetAnswers should reset the player answers', () => {
         const players = new Map<number, Player>([
             [
                 0,
@@ -62,7 +62,7 @@ describe('QuestionHandlerService', () => {
         ]);
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(players);
         service.questionsData = QUESTIONS_DATA;
-        service.resetPlayerAnswers();
+        service.resetAnswers();
         players.forEach((player) => {
             expect(player.answer).toEqual([false, false, false, false]);
             expect(player.answerConfirmed).toEqual(false);

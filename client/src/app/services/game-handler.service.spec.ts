@@ -18,7 +18,7 @@ describe('GameHandlerService', () => {
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', [
             'nextQuestion',
-            'resetPlayerAnswers',
+            'resetAnswers',
             'questionsData',
             'currentQuestion',
         ]);
@@ -83,7 +83,7 @@ describe('GameHandlerService', () => {
         service.loadGameData();
         service.startGame();
         expect(questionsData).toEqual(TEST_GAME.questions);
-        expect(questionHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalled();
+        expect(questionHandlerServiceSpy.resetAnswers).toHaveBeenCalled();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
     });
 
