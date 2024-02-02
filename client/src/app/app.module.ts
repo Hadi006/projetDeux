@@ -14,7 +14,6 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
-import { JoinGamePageComponent } from '@app/pages/join-game-page/join-game-page.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 
 /**
@@ -34,7 +33,6 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
         QuestionComponent,
         GameplayPlayerPageComponent,
         GameTimersComponent,
-        JoinGamePageComponent,
         ChatboxComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
