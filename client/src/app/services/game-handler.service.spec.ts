@@ -98,6 +98,7 @@ describe('GameHandlerService', () => {
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
         gameStateService.gameState = GameState.ShowAnswer;
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
+        service.loadGameData();
         service.setUpNextState();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
         // expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
