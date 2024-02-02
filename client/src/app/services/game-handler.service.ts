@@ -68,7 +68,7 @@ export class GameHandlerService implements OnDestroy {
     startGame(): void {
         this.questionHandlerService.questionsData = this.internalGameData.questions;
         this.questionHandlerService.resetAnswers();
-        this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
+        this.gameTimersService.startQuestionTimer(this.internalGameData.timePerQuestion);
     }
 
     setUpNextState(): void {
@@ -82,7 +82,7 @@ export class GameHandlerService implements OnDestroy {
                 if (!this.questionHandlerService.currentQuestion) {
                     this.gameStateService.gameState = GameState.GameEnded;
                 } else {
-                    this.gameTimersService.startQuestionTimer(TEST_GAME.timePerQuestion);
+                    this.gameTimersService.startQuestionTimer(this.internalGameData.timePerQuestion);
                     this.gameStateService.gameState = GameState.ShowQuestion;
                 }
                 break;
