@@ -8,6 +8,25 @@ import { Player } from '@app/interfaces/player';
 import { Subject } from 'rxjs';
 
 describe('QuestionHandlerService', () => {
+    const PLAYERS = new Map<number, Player>([
+        [
+            0,
+            {
+                score: 0,
+                answer: [true, false],
+                answerConfirmed: true,
+            },
+        ],
+        [
+            1,
+            {
+                score: 0,
+                answer: [false, true],
+                answerConfirmed: true,
+            },
+        ],
+    ]);
+
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
@@ -67,54 +86,18 @@ describe('QuestionHandlerService', () => {
     });
 
     it('resetAnswers should reset the player answers', () => {
-        const players = new Map<number, Player>([
-            [
-                0,
-                {
-                    score: 0,
-                    answer: [true, false],
-                    answerConfirmed: true,
-                },
-            ],
-            [
-                1,
-                {
-                    score: 0,
-                    answer: [false, true],
-                    answerConfirmed: true,
-                },
-            ],
-        ]);
-        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(players);
+        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
         service.questionsData = QUESTIONS_DATA;
         service.resetAnswers();
-        players.forEach((player) => {
+        PLAYERS.forEach((player) => {
             expect(player.answer).toEqual([false, false, false, false]);
             expect(player.answerConfirmed).toEqual(false);
         });
     });
 
     it('updateScores should update the scores of the players', () => {
-        const PLAYERS = new Map<number, Player>([
-            [
-                0,
-                {
-                    score: 0,
-                    answer: [true, false],
-                    answerConfirmed: true,
-                },
-            ],
-            [
-                1,
-                {
-                    score: 0,
-                    answer: [false, true],
-                    answerConfirmed: true,
-                },
-            ],
-        ]);
-
         const score = 10;
+        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
         spyOn(service, 'calculateScore').and.returnValue(score);
         service.updateScores();
         PLAYERS.forEach((player) => {
@@ -135,7 +118,7 @@ describe('QuestionHandlerService', () => {
 
     it('calculateScore should return the correct value for a correct answer', () => {
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(service, 'isAnswerCorrect').and.returnValue(false);
+        spyOn(service, 'isAnswerCorrect').and.returnValue(true);
         expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 
