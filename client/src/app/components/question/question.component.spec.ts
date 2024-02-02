@@ -28,7 +28,8 @@ describe('QuestionComponent', () => {
             configurable: true,
         });
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['handleKeyUp']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp']);
+        playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
     });
 
     beforeEach(waitForAsync(() => {
@@ -46,12 +47,16 @@ describe('QuestionComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(QuestionComponent);
         component = fixture.componentInstance;
-        component.player = TEST_PLAYER;
         fixture.detectChanges();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('player should be created', () => {
+        expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
+        expect(component.player).toEqual(TEST_PLAYER);
     });
 
     it('questionData getter should return currentQuestion', () => {
