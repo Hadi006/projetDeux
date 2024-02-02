@@ -5,10 +5,13 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { Player } from '@app/interfaces/player';
+import { Subject } from 'rxjs';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let mockSubject: Subject<void>;
 
     beforeEach(() => {
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players']);
@@ -18,11 +21,22 @@ describe('QuestionHandlerService', () => {
             },
             configurable: true,
         });
+
+        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['timerEndedSubject']);
+        mockSubject = new Subject<void>();
+        Object.defineProperty(gameTimersServiceSpy, 'timerEndedSubject', {
+            get: () => {
+                return mockSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }],
+            providers: [{ provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }, {
+                provide: GameTimersService, useValue: gameTimersServiceSpy
+            }],
         });
         service = TestBed.inject(QuestionHandlerService);
     });
@@ -71,24 +85,24 @@ describe('QuestionHandlerService', () => {
     });
 
     it('updateScores should update the scores of the players', () => {
-    const PLAYERS = new Map<number, Player>([
-        [
-            0,
-            {
-                score: 0,
-                answer: [true, false],
-                answerConfirmed: true,
-            },
-        ],
-        [
-            1,
-            {
-                score: 0,
-                answer: [false, true],
-                answerConfirmed: true,
-            },
-        ],
-    ]);
+        const PLAYERS = new Map<number, Player>([
+            [
+                0,
+                {
+                    score: 0,
+                    answer: [true, false],
+                    answerConfirmed: true,
+                },
+            ],
+            [
+                1,
+                {
+                    score: 0,
+                    answer: [false, true],
+                    answerConfirmed: true,
+                },
+            ],
+        ]);
 
         const score = 10;
         spyOn(service, 'calculateScore').and.returnValue(score);
@@ -136,5 +150,12 @@ describe('QuestionHandlerService', () => {
         const answers = [true, false, false, false];
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         expect(service.isAnswerCorrect(answers)).toEqual(false);
+    });
+
+    it('cleanUp should unsubscribe from the timerEndedSubject', () => {
+        spyOn(service, 'updateScores');
+        service.cleanUp();
+        gameTimersServiceSpy.timerEndedSubject.next();
+        expect(service.updateScores).not.toHaveBeenCalled();
     });
 });
