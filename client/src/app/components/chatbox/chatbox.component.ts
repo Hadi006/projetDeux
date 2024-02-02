@@ -11,13 +11,14 @@ export class ChatboxComponent {
     newMessage = '';
 
     sendMessage() {
-        if (this.newMessage.trim() !== '') {
-            const newMessage = {
-                text: this.newMessage,
-                timestamp: new Date(),
-            };
-            this.messages.push(newMessage);
-            this.newMessage = '';
+        if (this.newMessage.trim() === '') {
+            return;
         }
+        const newMessage = {
+            text: this.newMessage,
+            timestamp: new Date(),
+        };
+        this.messages.push(newMessage);
+        this.newMessage = '';
     }
 }
