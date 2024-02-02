@@ -16,6 +16,8 @@
         <textarea [disabled]="showingAnswer" placeholder="Type your answer here..."></textarea>
     </div>
 
+    <div> Score: {{ player.score }}</div>
+
     <div *ngIf="showingAnswer" id="grade-container">
         <span *ngFor="let correctAnswer of questionData.correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer }}</p>
