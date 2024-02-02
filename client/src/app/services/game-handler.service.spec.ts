@@ -92,7 +92,7 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
         service.setUpNextState();
         expect(gameTimersServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
-        // expect(gameStateService.gameState).toBe(GameState.ShowAnswer);
+        expect(gameStateService.gameState.valueOf()).toBe(GameState.ShowAnswer.valueOf());
     });
 
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
@@ -101,14 +101,14 @@ describe('GameHandlerService', () => {
         service.loadGameData();
         service.setUpNextState();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
-        // expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+        expect(gameStateService.gameState.valueOf()).toBe(GameState.ShowQuestion.valueOf());
     });
 
     it('setUpNextState should set the game correctly if state is show answer and the next question does not exist', () => {
         gameStateService.gameState = GameState.ShowAnswer;
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(undefined);
         service.setUpNextState();
-        // expect(gameStateService.gameState).toBe(GameState.GameEnded);
+        expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
     });
 
     it('setUpNextState should set the game correctly if the state is not show answer or show question', () => {
@@ -117,7 +117,8 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.GameEnded);
         const unrecognizedState = 100;
         gameStateService.gameState = unrecognizedState;
-        expect(gameStateService.gameState).toBe(GameState.GameEnded);
+        service.setUpNextState();
+        expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
     });
 
     it('ngOnDestroy should unsubscribe from timer ended', () => {
