@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Subscription } from 'rxjs';
 import { GameStateService, GameState } from './game-state.service';
@@ -10,7 +10,7 @@ export const GOOD_ANSWER_MULTIPLIER = 1.2;
 @Injectable({
     providedIn: 'root',
 })
-export class QuestionHandlerService {
+export class QuestionHandlerService implements OnDestroy {
     private internalQuestionsData: QuestionData[];
     private currentQuestionIndex = 0;
     private internalNQuestions: number;
@@ -83,7 +83,7 @@ export class QuestionHandlerService {
         return allCheckedAreCorrect && allCorrectAreChecked;
     }
 
-    cleanUp(): void {
+    ngOnDestroy(): void {
         this.timerEndedSubscription.unsubscribe();
     }
 

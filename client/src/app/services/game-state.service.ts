@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-export enum GameState {
+export const enum GameState {
     ShowQuestion = 0,
     ShowAnswer = 1,
     GameEnded = 2,

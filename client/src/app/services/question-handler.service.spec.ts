@@ -145,9 +145,9 @@ describe('QuestionHandlerService', () => {
         expect(service.isAnswerCorrect(answers)).toEqual(false);
     });
 
-    it('cleanUp should unsubscribe from the timerEndedSubject', () => {
+    it('ngOnDestroy should unsubscribe from the timerEndedSubject', () => {
         spyOn(service, 'updateScores');
-        service.cleanUp();
+        service.ngOnDestroy();
         gameTimersServiceSpy.timerEndedSubject.next();
         expect(service.updateScores).not.toHaveBeenCalled();
     });

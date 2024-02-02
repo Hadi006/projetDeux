@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
 import { Subscription } from 'rxjs';
@@ -44,7 +44,7 @@ export const TEST_GAME: GameData = {
 @Injectable({
     providedIn: 'root',
 })
-export class GameHandlerService {
+export class GameHandlerService implements OnDestroy {
     private internalGameData: GameData;
     private timerEndedSubscription: Subscription;
 
@@ -92,7 +92,7 @@ export class GameHandlerService {
         }
     }
 
-    cleanUp(): void {
+    ngOnDestroy(): void {
         this.timerEndedSubscription.unsubscribe();
     }
 

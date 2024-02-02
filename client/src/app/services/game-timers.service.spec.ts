@@ -109,9 +109,9 @@ describe('GameTimersService', () => {
         expect(service.timerEndedSubject.next).toHaveBeenCalled();
     });
 
-    it('cleanUp should unsubscribe from allAnsweredSubject', () => {
+    it('ngOnDestroy should unsubscribe from allAnsweredSubject', () => {
         spyOn(service, 'stopQuestionTimer');
-        service.cleanUp();
+        service.ngOnDestroy();
         playerHandlerServiceSpy.allAnsweredSubject.next();
         expect(service.stopQuestionTimer).not.toHaveBeenCalled();
     });

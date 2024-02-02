@@ -119,9 +119,9 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.GameEnded);
     });
 
-    it('cleanUp should unsubscribe from timer ended', () => {
+    it('ngOnDestroy should unsubscribe from timer ended', () => {
         spyOn(service, 'setUpNextState');
-        service.cleanUp();
+        service.ngOnDestroy();
         gameTimersServiceSpy.timerEndedSubject.next();
         expect(service.setUpNextState).not.toHaveBeenCalled();
     });

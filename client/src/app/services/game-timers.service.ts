@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 import { Subject, Subscription } from 'rxjs';
@@ -7,7 +7,7 @@ import { PlayerHandlerService } from './player-handler.service';
 @Injectable({
     providedIn: 'root',
 })
-export class GameTimersService {
+export class GameTimersService implements OnDestroy {
     private questionTimerId: number;
     private answerTimerId: number;
     private internalTimerEndedSubject: Subject<void> = new Subject<void>();
@@ -58,7 +58,7 @@ export class GameTimersService {
         this.internalTimerEndedSubject.next();
     }
 
-    cleanUp(): void {
+    ngOnDestroy(): void {
         this.internalAllAnsweredSubscription.unsubscribe();
     }
 }
