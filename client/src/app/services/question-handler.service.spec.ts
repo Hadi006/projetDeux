@@ -34,15 +34,25 @@ describe('QuestionHandlerService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }, {
-                provide: GameTimersService, useValue: gameTimersServiceSpy
-            }],
+            providers: [
+                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                {
+                    provide: GameTimersService,
+                    useValue: gameTimersServiceSpy,
+                },
+            ],
         });
         service = TestBed.inject(QuestionHandlerService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should update scores when timer ends', () => {
+        spyOn(service, 'updateScores');
+        gameTimersServiceSpy.timerEndedSubject.next();
+        expect(service.updateScores).toHaveBeenCalled();
     });
 
     it('currentQuestion getter should return the current question', () => {
