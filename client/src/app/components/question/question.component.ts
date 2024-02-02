@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -11,13 +11,15 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent {
-    @Input() player: Player;
+    player: Player;
 
     constructor(
         public playerHandlerService: PlayerHandlerService,
         private questionHandlerService: QuestionHandlerService,
         private gameStateService: GameStateService,
-    ) {}
+    ) {
+        this.player = this.playerHandlerService.createPlayer();
+    }
 
     get questionData(): QuestionData | undefined {
         return this.questionHandlerService.currentQuestion;

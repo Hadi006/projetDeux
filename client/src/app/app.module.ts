@@ -13,9 +13,7 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
-import { ScoreComponent } from './components/score/score.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
-import { PlayerComponent } from './components/player/player.component';
 
 /**
  * Main module that is used in main.ts.
@@ -33,9 +31,7 @@ import { PlayerComponent } from './components/player/player.component';
         SidebarComponent,
         QuestionComponent,
         GameplayPlayerPageComponent,
-        ScoreComponent,
         GameTimersComponent,
-        PlayerComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
