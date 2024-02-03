@@ -28,6 +28,14 @@ describe('ChatboxComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should toggle showChat when toggleChat is called', () => {
+        component.showChat = false;
+        component.toggleChat();
+        expect(component.showChat).toBe(true);
+        component.toggleChat();
+        expect(component.showChat).toBe(false);
+    });
+
     it('should call chatService.sendMessage when sendMessage is called', () => {
         component.newMessage = 'test message';
         component.sendMessage();
