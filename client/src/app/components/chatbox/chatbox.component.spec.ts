@@ -33,4 +33,10 @@ describe('ChatboxComponent', () => {
         component.sendMessage();
         expect(chatServiceSpy.sendMessage).toHaveBeenCalledWith('test message');
     });
+
+    it('should reset newMessage to an empty string after sendMessage is called', () => {
+        component.newMessage = 'test message';
+        component.sendMessage();
+        expect(component.newMessage).toBe('');
+    });
 });
