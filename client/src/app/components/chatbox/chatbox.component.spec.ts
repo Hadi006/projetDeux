@@ -50,4 +50,13 @@ describe('ChatComponent', () => {
 
         expect(component.messages.length).toBe(initialMessageCount);
     });
+
+    it('should not add a new message to the messages array if the message is only whitespace', () => {
+        const initialMessageCount = component.messages.length;
+
+        component.newMessage = '    ';
+        component.sendMessage();
+
+        expect(component.messages.length).toBe(initialMessageCount);
+    });
 });
