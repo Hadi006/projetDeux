@@ -1,4 +1,5 @@
 <div *ngIf="showChat" class="chat-container">
+    <button (click)="toggleChat()">Close</button>
     <div class="messages">
         <div *ngFor="let message of chatService.messages" class="message">
             <span>{{ message.text }}</span>

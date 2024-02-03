@@ -12,6 +12,10 @@ export class ChatboxComponent {
 
     constructor(public chatService: ChatService) {}
 
+    toggleChat() {
+        this.showChat = !this.showChat;
+    }
+
     sendMessage() {
         this.chatService.sendMessage(this.newMessage);
         this.newMessage = '';
