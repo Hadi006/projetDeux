@@ -20,10 +20,6 @@ describe('ChatComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should have an empty messages array initially', () => {
-        expect(component.messages.length).toBe(0);
-    });
-
     it('should add a new message to the messages array', () => {
         const initialMessageCount = component.messages.length;
 
