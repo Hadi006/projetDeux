@@ -23,4 +23,9 @@ describe('ChatService', () => {
         service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1));
         expect(service.messages.length).toBe(0);
     });
+
+    it('should do nothing when sendMessage is called with a string that is only whitespace', () => {
+        service.sendMessage('   ');
+        expect(service.messages.length).toBe(0);
+    });
 });
