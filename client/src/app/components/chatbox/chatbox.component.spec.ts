@@ -27,4 +27,10 @@ describe('ChatComponent', () => {
     it('should create the component', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should call chatService.sendMessage when sendMessage is called', () => {
+        component.newMessage = 'test message';
+        component.sendMessage();
+        expect(chatServiceSpy.sendMessage).toHaveBeenCalledWith('test message');
+    });
 });
