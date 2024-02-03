@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatboxComponent } from './chatbox.component';
 import { ChatService } from '@app/services/chat.service';
 
-describe('ChatComponent', () => {
+describe('ChatboxComponent', () => {
     let component: ChatboxComponent;
     let fixture: ComponentFixture<ChatboxComponent>;
     let chatServiceSpy: jasmine.SpyObj<ChatService>;
