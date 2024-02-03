@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ChatMessage } from '@app/interfaces/chat-message';
 
-const maxMessageLength = 200;
+export const MAX_MESSAGE_LENGTH = 200;
 
 @Component({
     selector: 'app-chatbox',
@@ -14,7 +14,7 @@ export class ChatboxComponent {
     newMessage = '';
 
     sendMessage() {
-        const isValidMessage = this.newMessage.trim() !== '' && this.newMessage.length <= maxMessageLength;
+        const isValidMessage = this.newMessage.trim() !== '' && this.newMessage.length <= MAX_MESSAGE_LENGTH;
         if (!isValidMessage) {
             return;
         }
