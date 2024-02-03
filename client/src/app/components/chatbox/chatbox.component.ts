@@ -7,7 +7,7 @@ import { ChatService } from '@app/services/chat.service';
     styleUrls: ['./chatbox.component.scss'],
 })
 export class ChatboxComponent {
-    showChat = true;
+    showChat = false;
     newMessage = '';
 
     constructor(public chatService: ChatService) {}
