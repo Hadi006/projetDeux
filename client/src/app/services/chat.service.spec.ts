@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ChatService } from './chat.service';
+import { ChatService, MAX_MESSAGE_LENGTH } from './chat.service';
 
 describe('ChatService', () => {
     let service: ChatService;
@@ -16,6 +16,11 @@ describe('ChatService', () => {
 
     it('should do nothing when sendMessage is called with an empty string', () => {
         service.sendMessage('');
+        expect(service.messages.length).toBe(0);
+    });
+
+    it('should do nothing when sendMessage is called with a string longer than 200 characters', () => {
+        service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1));
         expect(service.messages.length).toBe(0);
     });
 });
