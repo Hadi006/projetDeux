@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ChatMessage } from '@app/interfaces/chat-message';
 import { ChatService, MAX_MESSAGE_LENGTH } from '@app/services/chat.service';
 
 @Component({
@@ -9,7 +8,6 @@ import { ChatService, MAX_MESSAGE_LENGTH } from '@app/services/chat.service';
 })
 export class ChatboxComponent {
     showChat = true;
-    messages: ChatMessage[] = [];
     newMessage = '';
 
     constructor(public chatService: ChatService) {}
@@ -24,7 +22,7 @@ export class ChatboxComponent {
             text: this.newMessage,
             timestamp: new Date(),
         };
-        this.messages.push(newMessage);
+        this.chatService.messages.push(newMessage);
         this.newMessage = '';
     }
 }
