@@ -12,4 +12,17 @@ export class ChatService {
     get messages(): ChatMessage[] {
         return this.internalMessages;
     }
+
+    sendMessage(newMessage: string) {
+        const isValidMessage = newMessage.trim() !== '' && newMessage.length <= MAX_MESSAGE_LENGTH;
+        if (!isValidMessage) {
+            return;
+        }
+
+        const newChatMessage: ChatMessage = {
+            text: newMessage,
+            timestamp: new Date(),
+        };
+        this.messages.push(newChatMessage);
+    }
 }
