@@ -28,4 +28,9 @@ describe('ChatService', () => {
         service.sendMessage('   ');
         expect(service.messages.length).toBe(0);
     });
+
+    it('should add a message to the messages array when sendMessage is called with a valid message', () => {
+        service.sendMessage('test message');
+        expect(service.messages.length).toBe(1);
+    });
 });
