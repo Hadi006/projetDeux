@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { ChatboxComponent } from './chatbox.component';
+import { ChatboxComponent, MAX_MESSAGE_LENGTH } from './chatbox.component';
 
 describe('ChatComponent', () => {
     let component: ChatboxComponent;
@@ -31,5 +31,23 @@ describe('ChatComponent', () => {
         component.sendMessage();
 
         expect(component.messages.length).toBe(initialMessageCount + 1);
+    });
+
+    it('should not add a new message to the messages array if the message is empty', () => {
+        const initialMessageCount = component.messages.length;
+
+        component.newMessage = '';
+        component.sendMessage();
+
+        expect(component.messages.length).toBe(initialMessageCount);
+    });
+
+    it('should not add a new message to the messages array if the message is too long', () => {
+        const initialMessageCount = component.messages.length;
+
+        component.newMessage = 'a'.repeat(MAX_MESSAGE_LENGTH + 1);
+        component.sendMessage();
+
+        expect(component.messages.length).toBe(initialMessageCount);
     });
 });
