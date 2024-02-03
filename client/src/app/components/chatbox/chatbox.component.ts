@@ -12,7 +12,7 @@ export class ChatboxComponent {
     messages: ChatMessage[] = [];
     newMessage = '';
 
-    constructor(private chatService: ChatService) {}
+    constructor(public chatService: ChatService) {}
 
     sendMessage() {
         const isValidMessage = this.newMessage.trim() !== '' && this.newMessage.length <= MAX_MESSAGE_LENGTH;
