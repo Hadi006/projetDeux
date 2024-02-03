@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ChatService  } from '@app/services/chat.service';
+import { ChatService } from '@app/services/chat.service';
 
 @Component({
     selector: 'app-chatbox',
@@ -11,4 +11,9 @@ export class ChatboxComponent {
     newMessage = '';
 
     constructor(public chatService: ChatService) {}
+
+    sendMessage() {
+        this.chatService.sendMessage(this.newMessage);
+        this.newMessage = '';
+    }
 }

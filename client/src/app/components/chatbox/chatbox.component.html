@@ -1,6 +1,6 @@
 <div *ngIf="showChat" class="chat-container">
     <div class="messages">
-        <div *ngFor="let message of messages" class="message">
+        <div *ngFor="let message of chatService.messages" class="message">
             <span>{{ message.text }}</span>
             <span class="timestamp"> {{ message.timestamp | date: 'mediumTime' }}</span>
         </div>
