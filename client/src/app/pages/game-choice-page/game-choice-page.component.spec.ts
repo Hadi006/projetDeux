@@ -10,13 +10,13 @@ describe('GameChoicePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule], // Importer RouterTestingModule pour simuler la navigation
+            imports: [RouterTestingModule],
             declarations: [GameChoicePageComponent],
         }).compileComponents();
 
         fixture = TestBed.createComponent(GameChoicePageComponent);
         component = fixture.componentInstance;
-        router = TestBed.inject(Router); // Injecter le service Router pour vérifier la navigation
+        router = TestBed.inject(Router);
         fixture.detectChanges();
     });
 

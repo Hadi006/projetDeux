@@ -15,7 +15,6 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 
-
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -23,7 +22,17 @@ import { DescriptionPanelComponent } from './components/description-panel/descri
  * Otherwise Angular Cli will not know in which module to put new component
  */
 @NgModule({
-    declarations: [AppComponent, GamePageComponent, MainPageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent, GameChoicePageComponent, QuestionsPageComponent, DescriptionPanelComponent],
+    declarations: [
+        AppComponent,
+        GamePageComponent,
+        MainPageComponent,
+        MaterialPageComponent,
+        PlayAreaComponent,
+        SidebarComponent,
+        GameChoicePageComponent,
+        QuestionsPageComponent,
+        DescriptionPanelComponent,
+    ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
