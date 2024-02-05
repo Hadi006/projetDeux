@@ -85,6 +85,20 @@ describe('QuestionHandlerService', () => {
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
 
+    it('resetAnswers should reset the answers of the players', () => {
+        const testQuestion = {
+            id: 0,
+            points: 1,
+            question: '1+1?',
+            answers: ['1', '2', '3'],
+            correctAnswers: ['2'],
+            isMCQ: true,
+        };
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(testQuestion);
+        service.resetAnswers();
+        expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(3);
+    });
+
     it('updateScores should update the scores of the players', () => {
         const score = 10;
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
