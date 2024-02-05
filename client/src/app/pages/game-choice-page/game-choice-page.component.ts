@@ -1,5 +1,3 @@
-
-
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -15,7 +13,7 @@ export class GameChoicePageComponent {
   // Jeu sélectionné
   chosenGame: string | null = null;
 
-  constructor(private router: Router)  {}
+  constructor(private router: Router) {}
 
   // Méthode pour gérer la sélection d'un jeu
   choisirJeu(jeu: string) {
@@ -23,20 +21,20 @@ export class GameChoicePageComponent {
     console.log(`Jeu choisi: ${jeu}`);
   }
 
-  goBack() {
-    
-    console.log('Retour');
-    this.router.navigate(['']);
-
-    
-  }
-
-  goNext() {
+  createGame() {
     if (this.chosenGame) {
+      // Navigue vers la page de création du jeu sélectionné
       this.router.navigate(['/questions', this.chosenGame]);
+      console.log('Création d\'un nouveau jeu');
     }
   }
-    
-  }
 
-  
+  testGame() {
+    if (this.chosenGame) {
+      // Navigue vers la page de test du jeu sélectionné
+      // Assurez-vous que la route 'test/:jeu' est configurée dans votre module de routage
+      this.router.navigate(['/test', this.chosenGame]);
+      console.log(`Test du jeu sélectionné: ${this.chosenGame}`);
+    }
+  }
+}

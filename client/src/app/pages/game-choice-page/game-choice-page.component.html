@@ -7,15 +7,13 @@
     </button>
   </div>
   <p *ngIf="chosenGame">Jeu sélectionné: {{ chosenGame }}</p>
+  <app-description-panel [selectedGame]="chosenGame"></app-description-panel>
 </div>
-  <div class="button-navigation">
-    <button class="back" (click)="goBack()">
-      Back
-    </button>
-    <button class="next" (click)="goNext()" [disabled]="!chosenGame">
-      Next
-    </button>
-  </div>
-
-
-  
+<div class="button-navigation">
+  <button class="CreateGame" [disabled]="!chosenGame" (click)="createGame()">
+    Create Game
+  </button>
+  <button class="testGame" [disabled]="!chosenGame" (click)="testGame()">
+    Test Game
+  </button>
+</div>

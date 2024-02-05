@@ -8,7 +8,7 @@
 
 
   <ul class="questions-list">
-    <li *ngFor="let question of questions">
+    <li *ngFor="let question of questions" (click)="selectQuestion(question, $event)">
       <span class="question-text">{{ question }}</span>
     </li>
   </ul>
@@ -16,6 +16,9 @@
   <div class="navigation-buttons">
     <button class="back" (click)="goBack()">Back</button>
     <button class="startGame" (click)="startGame()">Start Game</button>
-    <button class="test" (click)="testQuestions()">Test</button>
   </div>
+</div>
+
+<div *ngIf="selectedQuestion" class="selected-question">
+  Question sélectionnée: {{ selectedQuestion }}
 </div>

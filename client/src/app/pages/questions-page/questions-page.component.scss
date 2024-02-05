@@ -41,7 +41,7 @@
     text-align: center;
   }
   
-  .back, .startGame, .test{
+  .back, .startGame{
     padding: 10px 20px;
     margin: 5px;
     border: none;
@@ -60,12 +60,16 @@
     color: white;
   }
 
-  .test {
-    background-color: #dc1212;
-    color: white;
-    float: right;
-    
-    
+ 
+  .questions-list li {
+    cursor: pointer;
   }
   
+  questions-list li.selected {
+    background-color: #e90b0b; /* Couleur de fond pour l'élément sélectionné */
+  }
 
+  // .questions-list li:hover {
+  //   background-color: #e0e0e0; /* Couleur de fond lors du survol */
+  //   cursor: pointer;
+  // }

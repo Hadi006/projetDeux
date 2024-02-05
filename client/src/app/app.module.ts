@@ -13,6 +13,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page.component';
+import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 
 
 /**
@@ -22,7 +23,7 @@ import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page
  * Otherwise Angular Cli will not know in which module to put new component
  */
 @NgModule({
-    declarations: [AppComponent, GamePageComponent, MainPageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent, GameChoicePageComponent, QuestionsPageComponent],
+    declarations: [AppComponent, GamePageComponent, MainPageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent, GameChoicePageComponent, QuestionsPageComponent, DescriptionPanelComponent],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
