@@ -85,16 +85,6 @@ describe('QuestionHandlerService', () => {
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
 
-    it('resetAnswers should reset the player answers', () => {
-        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
-        service.questionsData = QUESTIONS_DATA;
-        service.resetAnswers();
-        PLAYERS.forEach((player) => {
-            expect(player.answer).toEqual([false, false, false, false]);
-            expect(player.answerConfirmed).toEqual(false);
-        });
-    });
-
     it('updateScores should update the scores of the players', () => {
         const score = 10;
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);

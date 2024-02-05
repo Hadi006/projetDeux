@@ -91,4 +91,19 @@ describe('PlayerHandlerService', () => {
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(2);
     });
+
+    it('resetPlayerAnswers should reset all players answers and answerConfirmed', () => {
+        const nPlayers = 3;
+        const nAnswers = 4;
+        for (let i = 0; i < nPlayers; i++) {
+            const player = service.createPlayer();
+            player.answer = new Array(nAnswers).fill(true);
+            player.answerConfirmed = true;
+        }
+        service.resetPlayerAnswers(nAnswers);
+        service.players.forEach((player) => {
+            expect(player.answer).toEqual(new Array(nAnswers).fill(false));
+            expect(player.answerConfirmed).toBeFalse();
+        });
+    });
 });
