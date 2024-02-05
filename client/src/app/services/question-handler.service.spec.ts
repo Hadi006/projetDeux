@@ -99,6 +99,12 @@ describe('QuestionHandlerService', () => {
         expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(3);
     });
 
+    it('resetAnswers should call resetPlayerAnswers with 0 if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        service.resetAnswers();
+        expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(0);
+    });
+
     it('updateScores should update the scores of the players', () => {
         const score = 10;
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
