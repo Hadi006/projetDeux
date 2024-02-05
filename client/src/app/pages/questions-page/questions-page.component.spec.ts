@@ -11,7 +11,7 @@ describe('QuestionsPageComponent', () => {
 
     beforeEach(async () => {
         activatedRouteMock = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['snapshot']);
-        Object.defineProperty(activatedRouteMock.snapshot, 'paramMap', { value: { get: () => null} });
+        Object.defineProperty(activatedRouteMock.snapshot, 'paramMap', { value: { get: () => null } });
 
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
@@ -66,5 +66,11 @@ describe('QuestionsPageComponent', () => {
         const navigateSpy = spyOn(router, 'navigate');
         component.goBack();
         expect(navigateSpy).toHaveBeenCalledWith(['game']);
+    });
+
+    it('should navigate to game-start on startGame', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.startGame();
+        expect(navigateSpy).toHaveBeenCalledWith(['game-start']);
     });
 });
