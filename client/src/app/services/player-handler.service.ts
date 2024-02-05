@@ -63,5 +63,5 @@ export class PlayerHandlerService {
             player.answer = new Array(newAnswersLength).fill(false);
             player.answerConfirmed = false;
         });
-    };
+    }
 }
