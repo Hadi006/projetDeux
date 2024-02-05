@@ -57,4 +57,11 @@ export class PlayerHandlerService {
             this.internalNAnswered = 0;
         }
     }
+
+    resetPlayerAnswers(newAnswersLength: number): void {
+        this.internalPlayers.forEach((player) => {
+            player.answer = new Array(newAnswersLength).fill(false);
+            player.answerConfirmed = false;
+        });
+    };
 }
