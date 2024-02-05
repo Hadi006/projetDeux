@@ -30,7 +30,7 @@ describe('DescriptionPanelComponent', () => {
     });
 
     it('should update game info when a valid game is selected', () => {
-        component.selectedGame = 'Math';
+        component.selectedGame = 'math';
         component.ngOnChanges({
             selectedGame: new SimpleChange(null, component.selectedGame, true),
         });
