@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { QuestionsPageComponent } from './questions-page.component';
 
@@ -11,6 +11,7 @@ describe('QuestionsPageComponent', () => {
 
     beforeEach(async () => {
         activatedRouteMock = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['snapshot']);
+        Object.defineProperty(activatedRouteMock.snapshot, 'paramMap', { value: { get: () => null} });
 
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
@@ -28,9 +29,19 @@ describe('QuestionsPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should initialize questions for Math game by default', () => {
-        expect(component.jeu).toEqual('Math');
-        expect(component.questions.length).toBeGreaterThan(0);
+    it('should initialize questions to be empty', () => {
+        expect(component.jeu).toEqual(null);
+        expect(component.questions.length).toEqual(0);
+    });
+
+    it('should set selectedQuestion on selectQuestion call', () => {
+        const question = 'question';
+        const mockElement = document.createElement('div');
+        const mockEvent = new MouseEvent('click');
+        Object.defineProperty(mockEvent, 'currentTarget', { value: mockElement });
+        component.selectQuestion(question, mockEvent);
+        expect(component.selectedQuestion).toEqual(question);
+        expect(mockElement.classList.contains('selected')).toBeTrue();
     });
 
     const games = [
@@ -43,22 +54,12 @@ describe('QuestionsPageComponent', () => {
 
     games.forEach((game) => {
         it(`should initialize questions for ${game.type} game`, () => {
-            activatedRouteMock.snapshot.paramMap = convertToParamMap({ jeu: game.type });
+            spyOn(activatedRouteMock.snapshot.paramMap, 'get').and.returnValue(game.type);
+            component.ngOnInit();
 
-            fixture = TestBed.createComponent(QuestionsPageComponent);
-            component = fixture.componentInstance;
-            fixture.detectChanges();
             expect(component.jeu).toEqual(game.type);
             expect(component.questions).toContain(game.expectedQuestion);
         });
-    });
-
-    it('should set selectedQuestion on selectQuestion call', () => {
-        const question = '1+1';
-        const mockEvent = { currentTarget: { classList: { add: jasmine.createSpy('add') } } };
-        component.selectQuestion(question, mockEvent);
-        expect(component.selectedQuestion).toEqual(question);
-        expect(mockEvent.currentTarget.classList.add).toHaveBeenCalledWith('selected');
     });
 
     it('should navigate to game on goBack', () => {
