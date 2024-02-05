@@ -33,7 +33,7 @@ describe('QuestionHandlerService', () => {
     let mockSubject: Subject<void>;
 
     beforeEach(() => {
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players', 'resetPlayerAnswers']);
         Object.defineProperty(playerHandlerServiceSpy, 'players', {
             get: () => {
                 return [];
