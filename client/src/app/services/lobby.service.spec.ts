@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 
 import { LobbyService } from '@app/services/lobby.service';
 import { SocketService } from '@app/services/socket.service';
+import { LobbyData } from '@common/lobby-data';
+import { of } from 'rxjs';
 
 describe('LobbyService', () => {
     let service: LobbyService;
@@ -20,5 +22,14 @@ describe('LobbyService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should update lobbyData when data is received', () => {
+        const lobbyData: LobbyData = { id: 1, players: [], game: { id: 1, name: 'Math' }, started: false };
+        const newData: LobbyData = { id: 1, players: [{ id: 1, name: 'Player 1' }], game: { id: 1, name: 'Math' }, started: false };
+        socketServiceSpy.filteredDataByType.and.returnValue(of(newData));
+        service.subscribeLobbyToServer(lobbyData);
+        expect(socketServiceSpy.filteredDataByType).toHaveBeenCalledWith('lobbyData');
+        expect(lobbyData).toEqual(newData);
     });
 });
