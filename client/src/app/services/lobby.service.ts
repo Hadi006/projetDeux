@@ -19,17 +19,12 @@ const testLobbyData: LobbyData = {
     providedIn: 'root',
 })
 export class LobbyService {
-    lobbyData: LobbyData;
+    constructor(private readonly socketService: SocketService) {}
 
-    constructor(
-        private readonly socketService: SocketService,
-    ) {
-    }
-
-    subscribeToLobbyDataById(id: number) {
-        this.socketService.filteredDataByType<LobbyData>('lobbyData').subscribe((lobbyData) => {
+    subscribeToLobbyDataById(id: number, lobbyData: LobbyData) {
+        this.socketService.filteredDataByType<LobbyData>('lobbyData').subscribe((data) => {
             if (id === lobbyData.id) {
-                this.lobbyData = lobbyData;
+                lobbyData = data;
             }
         });
     }
