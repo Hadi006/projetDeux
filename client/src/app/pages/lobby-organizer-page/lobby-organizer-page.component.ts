@@ -3,15 +3,15 @@ import { ActivatedRoute } from '@angular/router';
 import { LobbyService } from '@app/services/lobby.service';
 import { LobbyData } from '@common/lobby-data';
 
-const testPlayersData = [
+const TEST_PLAYER_DATA = [
     { id: 1, name: 'Player 1' },
     { id: 2, name: 'Player 2' },
 ];
-const testGameData = { id: 1, name: 'Math' };
-const testLobbyData: LobbyData = {
+const TEST_GAME_DATA = { id: 1, name: 'Math' };
+const TEST_LOBBY_DATA: LobbyData = {
     id: 1,
-    players: testPlayersData,
-    game: testGameData,
+    players: TEST_PLAYER_DATA,
+    game: TEST_GAME_DATA,
     started: false,
 };
 
@@ -31,7 +31,7 @@ export class LobbyOrganizerPageComponent {
         this.lobbyId = this.route.snapshot.params.id;
         this.lobbyService.subscribeToLobbyDataById(this.lobbyId, this.lobbyData);
         // TODO hard coded data for the moment
-        this.lobbyData = testLobbyData;
+        this.lobbyData = TEST_LOBBY_DATA;
     }
 
     startGame() {
