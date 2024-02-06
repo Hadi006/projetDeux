@@ -19,4 +19,8 @@ export class LobbyOrganizerPageComponent {
         this.lobbyId = this.route.snapshot.params.id;
         this.lobbyService.subscribeToLobbyDataById(this.lobbyId, this.lobbyData);
     }
+
+    startGame() {
+        this.lobbyData.started = true;
+    }
 }
