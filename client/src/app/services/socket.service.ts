@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
+import { ServerData } from '@common/message';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class SocketService {
+    private readonly socketUrl: string = 'ws://localhost:3000';
+    private readonly webSocket: WebSocket;
 
-  constructor() { }
+    constructor() {
+        this.webSocket = new WebSocket(this.socketUrl);
+    }
 }
