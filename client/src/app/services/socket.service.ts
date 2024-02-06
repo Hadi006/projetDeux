@@ -9,7 +9,7 @@ import { filter, map } from 'rxjs/operators';
 })
 export class SocketService {
     private readonly socketUrl: string = 'ws://localhost:3000';
-    private readonly webSocket: WebSocketSubject<ServerData>;
+    private webSocket: WebSocketSubject<ServerData>;
 
     constructor() {
         this.webSocket = new WebSocketSubject(this.socketUrl);
