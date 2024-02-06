@@ -36,4 +36,9 @@ describe('LobbyOrganizerPageComponent', () => {
     it('should call lobbyService.subscribeToLobbyDataById', () => {
         expect(lobbyServiceSpy.subscribeLobbyToServer).toHaveBeenCalledWith(component.lobbyData);
     });
+
+    it('should set lobbyData.started to true', () => {
+        component.startGame();
+        expect(component.lobbyData.started).toBeTrue();
+    });
 });
