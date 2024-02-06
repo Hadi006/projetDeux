@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LobbyService } from '@app/services/lobby.service';
 import { LobbyData } from '@common/lobby-data';
@@ -21,7 +21,7 @@ const TEST_LOBBY_DATA: LobbyData = {
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    lobbyId: number;
+    @Input() lobbyId: number;
     lobbyData: LobbyData;
 
     constructor(
