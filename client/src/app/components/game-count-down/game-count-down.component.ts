@@ -11,13 +11,17 @@ const COUNTDOWN_TIME = 5;
 export class GameCountDownComponent implements OnInit {
     @Input() gameName: string;
 
-    constructor(private timeService: TimeService) {}
+    private timerId: number;
+
+    constructor(private timeService: TimeService) {
+        this.timerId = this.timeService.createTimerById();
+    }
 
     get time() {
-        return this.timeService.time;
+        return this.timeService.getTimeById(this.timerId);
     }
 
     ngOnInit(): void {
-        this.timeService.startTimer(COUNTDOWN_TIME);
+        this.timeService.startTimerById(this.timerId, COUNTDOWN_TIME);
     }
 }
