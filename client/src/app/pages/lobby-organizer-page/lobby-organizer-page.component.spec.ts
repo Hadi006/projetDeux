@@ -1,28 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { ActivatedRoute } from '@angular/router';
+import { LobbyOrganizerPageComponent, TEST_LOBBY_DATA } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
 import { LobbyService } from '@app/services/lobby.service';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
-    let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
     let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
 
     beforeEach(() => {
-        activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
-        activatedRouteSpy.snapshot.params = { id: 1 };
-        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeToLobbyDataById']);
+        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeLobbyToServer']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent],
-            providers: [
-                { provide: ActivatedRoute, useValue: activatedRouteSpy },
-                { provide: LobbyService, useValue: lobbyServiceSpy },
-            ],
+            providers: [{ provide: LobbyService, useValue: lobbyServiceSpy }],
         }).compileComponents();
     }));
 
@@ -36,11 +29,11 @@ describe('LobbyOrganizerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('lobbyId should be set from route', () => {
-        expect(component.lobbyId).toBe(activatedRouteSpy.snapshot.params.id);
+    it('lobbyId should be set lobbyData', () => {
+        expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
     });
 
     it('should call lobbyService.subscribeToLobbyDataById', () => {
-        expect(lobbyServiceSpy.subscribeToLobbyDataById).toHaveBeenCalledWith(component.lobbyId, component.lobbyData);
+        expect(lobbyServiceSpy.subscribeLobbyToServer).toHaveBeenCalledWith(component.lobbyData);
     });
 });
