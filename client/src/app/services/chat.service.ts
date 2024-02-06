@@ -14,7 +14,7 @@ export class ChatService {
     }
 
     sendMessage(newMessage: string) {
-        const isValidMessage = newMessage.trim() !== '' && newMessage.length <= MAX_MESSAGE_LENGTH;
+        const isValidMessage = newMessage.trim() !== '' && newMessage.trim().length <= MAX_MESSAGE_LENGTH;
         if (!isValidMessage) {
             return;
         }
