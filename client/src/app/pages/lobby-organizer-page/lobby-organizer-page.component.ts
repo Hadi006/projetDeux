@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { LobbyService } from '@app/services/lobby.service';
 import { LobbyData } from '@common/lobby-data';
 
