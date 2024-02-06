@@ -1,16 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LobbyService } from './lobby.service';
+import { LobbyService } from '@app/services/lobby.service';
+import { SocketService } from '@app/services/socket.service';
 
 describe('LobbyService', () => {
-  let service: LobbyService;
+    let service: LobbyService;
+    let socketServiceSpy: jasmine.SpyObj<SocketService>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(LobbyService);
-  });
+    beforeEach(() => {
+        socketServiceSpy = jasmine.createSpyObj('SocketService', ['filteredDataByType']);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [{ provide: SocketService, useValue: socketServiceSpy }],
+        });
+        service = TestBed.inject(LobbyService);
+    });
+
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });
