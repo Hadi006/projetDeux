@@ -8,9 +8,9 @@ import { LobbyData } from '@common/lobby-data';
 export class LobbyService {
     constructor(private readonly socketService: SocketService) {}
 
-    subscribeToLobbyDataById(id: number, lobbyData: LobbyData) {
+    subscribeLobbyToServer(lobbyData: LobbyData) {
         this.socketService.filteredDataByType<LobbyData>('lobbyData').subscribe((data) => {
-            if (id === lobbyData.id) {
+            if (lobbyData.id === data.id) {
                 lobbyData = data;
             }
         });
