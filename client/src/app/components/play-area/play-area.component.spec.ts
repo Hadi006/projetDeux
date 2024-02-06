@@ -9,7 +9,7 @@ describe('PlayAreaComponent', () => {
     let timeServiceSpy: SpyObj<TimeService>;
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['startTimer', 'stopTimer', 'getTime', 'createTimer']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', ['startTimerById', 'stopTimerById', 'getTimeById', 'createTimerById']);
         await TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             providers: [{ provide: TimeService, useValue: timeServiceSpy }],
@@ -35,16 +35,16 @@ describe('PlayAreaComponent', () => {
         expect(component.buttonPressed).toEqual(expectedKey);
     });
 
-    it('mouseHitDetect should call startTimer with 5 seconds on left click', () => {
+    it('mouseHitDetect should call startTimerById with 5 seconds on left click', () => {
         const mockEvent = { button: 0 } as MouseEvent;
         component.mouseHitDetect(mockEvent);
-        expect(timeServiceSpy.startTimer).toHaveBeenCalled();
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(component['timerId'], component['timer']);
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(component['timerId'], component['timer']);
     });
 
-    it('mouseHitDetect should not call startTimer on right click', () => {
+    it('mouseHitDetect should not call startTimerById on right click', () => {
         const mockEvent = { button: 2 } as MouseEvent;
         component.mouseHitDetect(mockEvent);
-        expect(timeServiceSpy.startTimer).not.toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
     });
 });
