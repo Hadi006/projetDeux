@@ -39,4 +39,8 @@ describe('LobbyOrganizerPageComponent', () => {
     it('lobbyId should be set from route', () => {
         expect(component.lobbyId).toBe(activatedRouteSpy.snapshot.params.id);
     });
+
+    it('should call lobbyService.subscribeToLobbyDataById', () => {
+        expect(lobbyServiceSpy.subscribeToLobbyDataById).toHaveBeenCalledWith(component.lobbyId, component.lobbyData);
+    });
 });
