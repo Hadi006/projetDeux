@@ -35,4 +35,8 @@ describe('LobbyOrganizerPageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('lobbyId should be set from route', () => {
+        expect(component.lobbyId).toBe(activatedRouteSpy.snapshot.params.id);
+    });
 });
