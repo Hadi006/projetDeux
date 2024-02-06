@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
 import { ActivatedRoute } from '@angular/router';
@@ -12,17 +12,21 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(() => {
         activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
+        activatedRouteSpy.snapshot.params = { id: 1 };
         lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeToLobbyDataById']);
     });
 
-    beforeEach(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent],
             providers: [
                 { provide: ActivatedRoute, useValue: activatedRouteSpy },
                 { provide: LobbyService, useValue: lobbyServiceSpy },
             ],
-        });
+        }).compileComponents();
+    }));
+
+    beforeEach(() => {
         fixture = TestBed.createComponent(LobbyOrganizerPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
