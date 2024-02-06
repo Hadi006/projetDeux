@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LobbyOrganizerPageComponent } from './lobby-organizer-page.component';
+import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
+import { ActivatedRoute } from '@angular/router';
+import { LobbyService } from '@app/services/lobby.service';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
