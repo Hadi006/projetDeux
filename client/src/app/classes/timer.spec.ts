@@ -75,7 +75,7 @@ describe('Timer', () => {
         it('startTimer should call stopTimer at the end of timer', fakeAsync(() => {
             const spy = spyOn(timerTest, 'stop').and.callThrough();
             timerTest.start(TIMEOUT);
-            tick((TIMEOUT + 1) * MS_SECOND); // un tick de plus que la limite
+            tick((TIMEOUT + 1) * MS_SECOND);
 
             expect(spy).toHaveBeenCalled();
             discardPeriodicTasks();
@@ -149,7 +149,7 @@ describe('Timer', () => {
         it('startTimer should call stopTimer at the end of timer', fakeAsync(() => {
             const spy = spyOn(timerTest, 'stop').and.callThrough();
             timerTest.start(TIMEOUT);
-            tick((TIMEOUT + 1) * MS_SECOND); // un tick de plus que la limite
+            tick((TIMEOUT + 1) * MS_SECOND);
 
             expect(spy).toHaveBeenCalled();
             discardPeriodicTasks();
@@ -157,7 +157,7 @@ describe('Timer', () => {
 
         it('startTimer should call callback at the end of timer', fakeAsync(() => {
             timerTest.start(TIMEOUT);
-            tick((TIMEOUT + 1) * MS_SECOND); // un tick de plus que la limite
+            tick((TIMEOUT + 1) * MS_SECOND);
 
             expect(timerTest['onTimerEndCallback']).toHaveBeenCalled();
             discardPeriodicTasks();
