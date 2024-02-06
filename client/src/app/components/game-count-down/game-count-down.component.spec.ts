@@ -29,6 +29,10 @@ describe('GameCountDownComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should call createTimerById on TimeService', () => {
+        expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
+    });
+
     it('time getter should call getTimeById', () => {
         const time = 10;
         timeServiceSpy.getTimeById.and.returnValue(time);
