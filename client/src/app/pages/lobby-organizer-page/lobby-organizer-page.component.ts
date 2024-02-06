@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { LobbyService } from '@app/services/lobby.service';
 import { LobbyData } from '@common/lobby-data';
 
 @Component({
@@ -11,7 +12,11 @@ export class LobbyOrganizerPageComponent {
     lobbyId: number;
     lobbyData: LobbyData;
 
-    constructor(private readonly route: ActivatedRoute) {
+    constructor(
+        private readonly route: ActivatedRoute,
+        private readonly lobbyService: LobbyService,
+    ) {
         this.lobbyId = this.route.snapshot.params.id;
+        this.lobbyService.subscribeToLobbyDataById(this.lobbyId, this.lobbyData);
     }
 }
