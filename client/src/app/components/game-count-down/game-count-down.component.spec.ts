@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GameCountDownComponent } from './game-count-down.component';
+import { GameCountDownComponent, COUNTDOWN_TIME } from './game-count-down.component';
 import { TimeService } from '@app/services/time.service';
 
 describe('GameCountDownComponent', () => {
@@ -31,6 +31,10 @@ describe('GameCountDownComponent', () => {
 
     it('should call createTimerById on TimeService', () => {
         expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
+    });
+
+    it('ngOnInit should call startTimerById', () => {
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(TEST_ID, COUNTDOWN_TIME);
     });
 
     it('time getter should call getTimeById', () => {
