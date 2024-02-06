@@ -18,8 +18,8 @@ describe('GameTimersService', () => {
     let mockSubject: Subject<void>;
 
     beforeEach(() => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimer', 'startTimer', 'stopTimer', 'getTime', 'setTime']);
-        timeServiceSpy.createTimer.and.returnValues(QUESTION_TIMER_ID, ANSWER_TIMER_ID);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'startTimerById', 'stopTimerById', 'getTimeById', 'setTimeById']);
+        timeServiceSpy.createTimerById.and.returnValues(QUESTION_TIMER_ID, ANSWER_TIMER_ID);
 
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['allAnsweredSubject']);
         mockSubject = new Subject<void>();
@@ -48,7 +48,7 @@ describe('GameTimersService', () => {
     });
 
     it('should create 2 timers', () => {
-        expect(timeServiceSpy.createTimer).toHaveBeenCalledTimes(2);
+        expect(timeServiceSpy.createTimerById).toHaveBeenCalledTimes(2);
     });
 
     it('should stop question timer when all players have answered', () => {
@@ -59,53 +59,53 @@ describe('GameTimersService', () => {
 
     it('time getter should return the correct value when game state is ShowQuestion', () => {
         gameStateService.gameState = GameState.ShowQuestion;
-        timeServiceSpy.getTime.and.returnValue(TIME);
+        timeServiceSpy.getTimeById.and.returnValue(TIME);
         expect(service.time).toBe(TIME);
-        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(QUESTION_TIMER_ID);
+        expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(QUESTION_TIMER_ID);
     });
 
     it('time getter should return the correct value when game state is ShowAnswer', () => {
         const time = 10;
         gameStateService.gameState = GameState.ShowAnswer;
-        timeServiceSpy.getTime.and.returnValue(time);
+        timeServiceSpy.getTimeById.and.returnValue(time);
         expect(service.time).toBe(time);
-        expect(timeServiceSpy.getTime).toHaveBeenCalledWith(ANSWER_TIMER_ID);
+        expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
 
     it('time getter should return 0 when game state is GameEnded', () => {
         gameStateService.gameState = GameState.GameEnded;
         expect(service.time).toBe(0);
-        expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+        expect(timeServiceSpy.getTimeById).not.toHaveBeenCalled();
     });
 
     it('time getter should return 0 when game state is not recognized', () => {
         const unrecognizedState = 100;
         gameStateService.gameState = unrecognizedState;
         expect(service.time).toBe(0);
-        expect(timeServiceSpy.getTime).not.toHaveBeenCalled();
+        expect(timeServiceSpy.getTimeById).not.toHaveBeenCalled();
     });
 
     it('startQuestionTimer should start the timer with the correct id', () => {
         service.startQuestionTimer(TIME);
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID, TIME);
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(QUESTION_TIMER_ID, TIME);
     });
 
     it('startAnswerTimer should start the timer with the correct id', () => {
         service.startAnswerTimer(TIME);
-        expect(timeServiceSpy.startTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID, TIME);
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(ANSWER_TIMER_ID, TIME);
     });
 
     it('stopQuestionTimer should stop the timer and notify subscribers', () => {
         spyOn(service.timerEndedSubject, 'next');
         service.stopQuestionTimer();
-        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(QUESTION_TIMER_ID);
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(QUESTION_TIMER_ID);
         expect(service.timerEndedSubject.next).toHaveBeenCalled();
     });
 
     it('stopAnswerTimer should stop the timer and notify subscribers', () => {
         spyOn(service.timerEndedSubject, 'next');
         service.stopAnswerTimer();
-        expect(timeServiceSpy.stopTimer).toHaveBeenCalledWith(ANSWER_TIMER_ID);
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(ANSWER_TIMER_ID);
         expect(service.timerEndedSubject.next).toHaveBeenCalled();
     });
 

@@ -18,8 +18,8 @@ export class GameTimersService implements OnDestroy {
         private gameStateService: GameStateService,
         private playerHandlerService: PlayerHandlerService,
     ) {
-        this.questionTimerId = this.timeService.createTimer(this.stopQuestionTimer.bind(this));
-        this.answerTimerId = this.timeService.createTimer(this.stopAnswerTimer.bind(this));
+        this.questionTimerId = this.timeService.createTimerById(this.stopQuestionTimer.bind(this));
+        this.answerTimerId = this.timeService.createTimerById(this.stopAnswerTimer.bind(this));
         this.internalAllAnsweredSubscription = this.playerHandlerService.allAnsweredSubject.subscribe(() => {
             this.stopQuestionTimer();
         });
@@ -28,9 +28,9 @@ export class GameTimersService implements OnDestroy {
     get time(): number {
         switch (this.gameStateService.gameState) {
             case GameState.ShowQuestion:
-                return this.timeService.getTime(this.questionTimerId);
+                return this.timeService.getTimeById(this.questionTimerId);
             case GameState.ShowAnswer:
-                return this.timeService.getTime(this.answerTimerId);
+                return this.timeService.getTimeById(this.answerTimerId);
             default:
                 return 0;
         }
@@ -41,20 +41,20 @@ export class GameTimersService implements OnDestroy {
     }
 
     startQuestionTimer(time: number): void {
-        this.timeService.startTimer(this.questionTimerId, time);
+        this.timeService.startTimerById(this.questionTimerId, time);
     }
 
     startAnswerTimer(time: number): void {
-        this.timeService.startTimer(this.answerTimerId, time);
+        this.timeService.startTimerById(this.answerTimerId, time);
     }
 
     stopQuestionTimer(): void {
-        this.timeService.stopTimer(this.questionTimerId);
+        this.timeService.stopTimerById(this.questionTimerId);
         this.internalTimerEndedSubject.next();
     }
 
     stopAnswerTimer(): void {
-        this.timeService.stopTimer(this.answerTimerId);
+        this.timeService.stopTimerById(this.answerTimerId);
         this.internalTimerEndedSubject.next();
     }
 
