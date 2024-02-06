@@ -15,5 +15,14 @@ export class LobbyService {
         private readonly socketService: SocketService,
     ) {
         this.lobbyId = this.route.snapshot.params.id;
+        this.subscribeToLobbyData();
+    }
+
+    private subscribeToLobbyData() {
+        this.socketService.filteredDataByType<LobbyData>('lobbyData').subscribe((lobbyData) => {
+            if (lobbyData.id === this.lobbyId) {
+                this.lobbyData = lobbyData;
+            }
+        });
     }
 }
