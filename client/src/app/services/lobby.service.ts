@@ -11,7 +11,7 @@ export class LobbyService {
     subscribeLobbyToServer(lobbyData: LobbyData) {
         this.socketService.filteredDataByType<LobbyData>('lobbyData').subscribe((data) => {
             if (lobbyData.id === data.id) {
-                lobbyData = data;
+                Object.assign(lobbyData, data);
             }
         });
     }
