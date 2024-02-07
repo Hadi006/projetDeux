@@ -4,11 +4,13 @@ import { GameTimersComponent } from '@app/components/game-timers/game-timers.com
 import { QuestionComponent } from '@app/components/question/question.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
 
 describe('GameplayPlayerPageComponent', () => {
     let component: GameplayPlayerPageComponent;
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let questionHandlerService: QuestionHandlerService;
 
     beforeEach(() => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData', 'startGame']);
@@ -17,13 +19,15 @@ describe('GameplayPlayerPageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [GameplayPlayerPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
-            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
+            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }, QuestionHandlerService],
         }).compileComponents();
     }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(GameplayPlayerPageComponent);
         component = fixture.componentInstance;
+        questionHandlerService = TestBed.inject(QuestionHandlerService);
+        spyOnProperty(questionHandlerService, 'currentQuestion', 'get').and.returnValue(undefined);
         fixture.detectChanges();
     });
 
@@ -32,7 +36,6 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('ngOnInit should call loadGameData and startGame', () => {
-        component.ngOnInit();
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.startGame).toHaveBeenCalled();
     });
