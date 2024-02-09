@@ -4,7 +4,11 @@ export class Timer {
     private readonly tick: number = 1000;
     private interval: number | undefined;
 
-    constructor(private onTimerEndCallback?: () => void) {}
+    constructor(
+        private onTimerEndCallback: () => void = () => {
+            return;
+        },
+    ) {}
 
     start(startValue: number): void {
         if (this.interval) {
@@ -17,12 +21,16 @@ export class Timer {
                 this.time--;
             } else {
                 this.stop();
-                this.onTimerEndCallback?.();
+                this.onTimerEndCallback();
             }
         }, this.tick);
     }
 
     stop(): void {
+        if (!this.interval) {
+            return;
+        }
+
         clearInterval(this.interval);
         this.interval = undefined;
     }
