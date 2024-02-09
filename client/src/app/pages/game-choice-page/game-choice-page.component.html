@@ -1,19 +1,14 @@
-<p>choix-jeu works!</p>
 <div class="container">
-  <h1>Choisissez un jeu</h1>
-  <div class="liste-jeux">
-    <button *ngFor="let jeu of jeux" (click)="choisirJeu(jeu)" class="bouton-jeu">
-      {{ jeu }}
-    </button>
-  </div>
-  <p *ngIf="chosenGame">Jeu sélectionné: {{ chosenGame }}</p>
-  <app-description-panel [selectedGame]="chosenGame"></app-description-panel>
+    <h1>Choisissez un jeu</h1>
+    <div class="games-list">
+        <button *ngFor="let game of games" (click)="chooseGame(game)" class="game-button">
+            {{ game }}
+        </button>
+    </div>
+    <p *ngIf="chosenGame">Jeu sélectionné: {{ chosenGame }}</p>
+    <app-description-panel [selectedGame]="chosenGame"></app-description-panel>
 </div>
 <div class="button-navigation">
-  <button class="CreateGame" [disabled]="!chosenGame" (click)="createGame()">
-    Create Game
-  </button>
-  <button class="testGame" [disabled]="!chosenGame" (click)="testGame()">
-    Test Game
-  </button>
+    <button class="CreateGame" [disabled]="!chosenGame" (click)="createGame()">Create Game</button>
+    <button class="testGame" [disabled]="!chosenGame" (click)="testGame()">Test Game</button>
 </div>

@@ -44,7 +44,7 @@ export class DescriptionPanelComponent implements OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['selectedGame']) {
+        if (changes.selectedGame) {
             this.updateGameInfo(this.selectedGame);
         }
     }

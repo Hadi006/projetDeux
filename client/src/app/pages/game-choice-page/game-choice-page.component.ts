@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class GameChoicePageComponent {
     // Liste des jeux disponibles
-    jeux = ['Math', 'Science', 'Programmation', 'Histoire', 'Physique', 'Random mode'];
+    games = ['Math', 'Science', 'Programmation', 'Histoire', 'Physique', 'Mode aleatoire'];
 
     // Jeu sélectionné
     chosenGame: string | null = null;
@@ -16,8 +16,8 @@ export class GameChoicePageComponent {
     constructor(private router: Router) {}
 
     // Méthode pour gérer la sélection d'un jeu
-    choisirJeu(jeu: string) {
-        this.chosenGame = jeu;
+    chooseGame(game: string) {
+        this.chosenGame = game;
     }
 
     createGame() {

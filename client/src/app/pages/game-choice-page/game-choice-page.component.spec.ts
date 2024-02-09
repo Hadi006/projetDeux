@@ -25,24 +25,24 @@ describe('GameChoicePageComponent', () => {
     });
 
     it('should set chosenGame on choisirJeu call', () => {
-        const jeu = 'Math';
-        component.choisirJeu(jeu);
-        expect(component.chosenGame).toEqual(jeu);
+        const game = 'Math';
+        component.choisirJeu(game);
+        expect(component.chosenGame).toEqual(game);
     });
 
     it('should navigate on createGame call', () => {
-        const jeu = 'Science';
-        component.choisirJeu(jeu);
+        const game = 'Science';
+        component.choisirJeu(game);
         const navigateSpy = spyOn(router, 'navigate');
         component.createGame();
-        expect(navigateSpy).toHaveBeenCalledWith(['/questions', jeu]);
+        expect(navigateSpy).toHaveBeenCalledWith(['/questions', game]);
     });
 
     it('should navigate on testGame call', () => {
-        const jeu = 'Programmation';
-        component.choisirJeu(jeu);
+        const game = 'Programmation';
+        component.choisirJeu(game);
         const navigateSpy = spyOn(router, 'navigate');
         component.testGame();
-        expect(navigateSpy).toHaveBeenCalledWith(['/test', jeu]);
+        expect(navigateSpy).toHaveBeenCalledWith(['/test', game]);
     });
 });

@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     styleUrls: ['./questions-page.component.scss'],
 })
 export class QuestionsPageComponent implements OnInit {
-    jeu: string | null = null;
+    game: string | null = null;
     questions: string[] = [];
     description: string = '';
     selectedQuestion: string | null = null;
@@ -17,16 +17,28 @@ export class QuestionsPageComponent implements OnInit {
         private router: Router,
     ) {}
 
-    selectQuestion(question: string, event: MouseEvent) {
-        this.selectedQuestion = question;
+    toggleQuestion(question: string, event: MouseEvent) {
         const target = event.currentTarget as HTMLElement;
-        target.classList.add('selected');
+
+        // Check if the clicked question is already selected
+        if (this.selectedQuestion === question) {
+            // Unselect the question and remove the 'selected' class
+            this.selectedQuestion = null;
+            target.classList.remove('selected');
+        } else {
+            // Select the new question and add the 'selected' class, while removing it from any previously selected question
+            if (this.selectedQuestion) {
+                document.querySelector('.selected')?.classList.remove('selected');
+            }
+            this.selectedQuestion = question;
+            target.classList.add('selected');
+        }
     }
 
     ngOnInit(): void {
-        this.jeu = this.route.snapshot.paramMap.get('jeu');
+        this.game = this.route.snapshot.paramMap.get('game');
 
-        switch (this.jeu) {
+        switch (this.game) {
             case 'Math':
                 this.questions = ['1+1', '1x1', '1-1', '5x2', '1-4', '6/2'];
                 break;

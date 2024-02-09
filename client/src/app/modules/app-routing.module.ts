@@ -10,7 +10,7 @@ const routes: Routes = [
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GameChoicePageComponent },
     { path: 'material', component: MaterialPageComponent },
-    { path: 'questions/:jeu', component: QuestionsPageComponent },
+    { path: 'questions/:game', component: QuestionsPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

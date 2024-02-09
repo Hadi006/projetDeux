@@ -1,24 +1,20 @@
 <div class="questions-container">
-  <div class="game-header">
-    <h2>{{ jeu }}</h2>
-  </div>
+    <div class="game-header">
+        <h2>{{ game }}</h2>
+    </div>
 
-  <p class="description">{{ description }}</p>
+    <p class="description">{{ description }}</p>
 
+    <ul class="questions-list">
+        <li *ngFor="let question of questions" (click)="toggleQuestion(question, $event)">
+            <span class="question-text">{{ question }}</span>
+        </li>
+    </ul>
 
-
-  <ul class="questions-list">
-    <li *ngFor="let question of questions" (click)="selectQuestion(question, $event)">
-      <span class="question-text">{{ question }}</span>
-    </li>
-  </ul>
-
-  <div class="navigation-buttons">
-    <button class="back" (click)="goBack()">Back</button>
-    <button class="startGame" (click)="startGame()">Start Game</button>
-  </div>
+    <div class="navigation-buttons">
+        <button class="back" (click)="goBack()">Back</button>
+        <button class="startGame" (click)="startGame()">Start Game</button>
+    </div>
 </div>
 
-<div *ngIf="selectedQuestion" class="selected-question">
-  Question sélectionnée: {{ selectedQuestion }}
-</div>
+<div *ngIf="selectedQuestion" class="selected-question">Question sélectionnée: {{ selectedQuestion }}</div>

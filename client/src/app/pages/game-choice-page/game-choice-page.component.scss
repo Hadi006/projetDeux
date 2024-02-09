@@ -12,12 +12,12 @@ h1 {
   margin-bottom: 20px;
 }
 
-.liste-jeux {
+.games-list {
   margin: 0 auto;
   max-width: 300px;
 }
 
-.bouton-jeu {
+.game-button {
   display: block;
   width: 100%;
   padding: 10px;
@@ -30,7 +30,7 @@ h1 {
   transition: background-color 0.3s;
 }
 
-.bouton-jeu:hover {
+.game-button:hover {
   background-color: #0056b3;
 }
 

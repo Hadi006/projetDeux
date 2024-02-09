@@ -30,7 +30,7 @@ describe('QuestionsPageComponent', () => {
     });
 
     it('should initialize questions to be empty', () => {
-        expect(component.jeu).toEqual(null);
+        expect(component.game).toEqual(null);
         expect(component.questions.length).toEqual(0);
     });
 
@@ -39,7 +39,7 @@ describe('QuestionsPageComponent', () => {
         const mockElement = document.createElement('div');
         const mockEvent = new MouseEvent('click');
         Object.defineProperty(mockEvent, 'currentTarget', { value: mockElement });
-        component.selectQuestion(question, mockEvent);
+        component.toggleQuestion(question, mockEvent);
         expect(component.selectedQuestion).toEqual(question);
         expect(mockElement.classList.contains('selected')).toBeTrue();
     });
@@ -57,7 +57,7 @@ describe('QuestionsPageComponent', () => {
             spyOn(activatedRouteMock.snapshot.paramMap, 'get').and.returnValue(game.type);
             component.ngOnInit();
 
-            expect(component.jeu).toEqual(game.type);
+            expect(component.game).toEqual(game.type);
             expect(component.questions).toContain(game.expectedQuestion);
         });
     });
