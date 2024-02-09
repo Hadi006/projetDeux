@@ -13,6 +13,10 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
+import { QuestionComponent } from './components/question/question.component';
+import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { GameTimersComponent } from './components/game-timers/game-timers.component';
+import { ChatboxComponent } from './components/chatbox/chatbox.component';
 
 /**
  * Main module that is used in main.ts.
@@ -30,6 +34,10 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
         SidebarComponent,
         LobbyOrganizerPageComponent,
         GameCountDownComponent,
+        QuestionComponent,
+        GameplayPlayerPageComponent,
+        GameTimersComponent,
+        ChatboxComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

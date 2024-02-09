@@ -32,25 +32,27 @@ describe('Timer', () => {
             discardPeriodicTasks();
         }));
 
-        it('startTimer should set time to the correct value', () => {
+        it('startTimer should set time to the correct value', fakeAsync(() => {
             timerTest.start(TIMEOUT);
 
             expect(timerTest.time).toEqual(TIMEOUT);
-        });
+            discardPeriodicTasks();
+        }));
 
-        it('startTimer should set time to 0 if startValue is negative', () => {
+        it('startTimer should set time to 0 if startValue is negative', fakeAsync(() => {
             timerTest.start(-TIMEOUT);
 
             expect(timerTest.time).toEqual(0);
-        });
+            discardPeriodicTasks();
+        }));
 
         it('interval should reduce time by 1 every second ', fakeAsync(() => {
             timerTest.start(TIMEOUT);
-            tick(MS_SECOND);
 
+            tick(MS_SECOND);
             expect(timerTest.time).toEqual(TIMEOUT - 1);
-            tick(MS_SECOND);
 
+            tick(MS_SECOND);
             expect(timerTest.time).toEqual(TIMEOUT - 2);
             discardPeriodicTasks();
         }));
@@ -92,14 +94,16 @@ describe('Timer', () => {
     });
 
     describe('with callback', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             const callbackSpy = jasmine.createSpy('callbackSpy');
             timerTest = new Timer(callbackSpy);
-        });
+            discardPeriodicTasks();
+        }));
 
-        it('should be created', () => {
+        it('should be created', fakeAsync(() => {
             expect(timerTest).toBeTruthy();
-        });
+            discardPeriodicTasks();
+        }));
 
         it('startTimer should start an interval', fakeAsync(() => {
             timerTest.start(TIMEOUT);

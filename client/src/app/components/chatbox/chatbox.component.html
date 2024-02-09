@@ -1,0 +1,18 @@
+<div class="chatbox-component">
+    <button (click)="toggleChat()">
+        <span *ngIf="showChat">Close chat</span>
+        <span *ngIf="!showChat">Open chat</span>
+    </button>
+<div *ngIf="showChat" class="chat-container">
+    <div class="messages">
+        <div *ngFor="let message of chatService.messages" class="message">
+            <span>{{ message.text }}</span>
+            <span class="timestamp"> {{ message.timestamp | date: 'mediumTime' }}</span>
+        </div>
+    </div>
+    <div class="input-container">
+        <input [(ngModel)]="newMessage" placeholder="Type your message..." />
+        <button id="sendButton" (click)="sendMessage()">Send</button>
+    </div>
+</div>
+</div>

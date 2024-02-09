@@ -6,6 +6,14 @@ import { LobbyData } from '@common/lobby-data';
 import { of } from 'rxjs';
 
 describe('LobbyService', () => {
+    const lobbyData: LobbyData = { id: 1, players: [], game: { id: 0, name: 'Math', questions: [], timePerQuestion: 5 }, started: true };
+    const newData: LobbyData = {
+        id: 1,
+        players: [{ id: 1, name: 'Player 1' }],
+        game: { id: 1, name: 'Math', questions: [], timePerQuestion: 10 },
+        started: false,
+    };
+
     let service: LobbyService;
     let socketServiceSpy: jasmine.SpyObj<SocketService>;
 
@@ -25,8 +33,6 @@ describe('LobbyService', () => {
     });
 
     it('should update lobbyData when data is received', () => {
-        const lobbyData: LobbyData = { id: 1, players: [], game: { id: 1, name: 'Math' }, started: false };
-        const newData: LobbyData = { id: 1, players: [{ id: 1, name: 'Player 1' }], game: { id: 1, name: 'Math' }, started: false };
         socketServiceSpy.filteredDataByType.and.returnValue(of(newData));
         service.subscribeLobbyToServer(lobbyData);
         expect(socketServiceSpy.filteredDataByType).toHaveBeenCalledWith('lobbyData');
