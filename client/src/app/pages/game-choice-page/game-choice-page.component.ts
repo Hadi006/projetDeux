@@ -29,7 +29,7 @@ export class GameChoicePageComponent {
 
     startGame() {
         this.gameHandlerService.loadGameData();
-        this.router.navigate(['organizer/lobby']);
+        this.router.navigate(['lobby']);
     }
 
     testGame() {
