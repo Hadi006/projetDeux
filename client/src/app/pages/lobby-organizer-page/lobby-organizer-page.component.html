@@ -1,4 +1,4 @@
-<div class="title-container">
+<div *ngIf="lobbyData.game" class="title-container">
     <h2>{{ lobbyData.game.name }}</h2>
 </div>
 
@@ -14,11 +14,11 @@
 </div>
 
 <footer>
-<a routerLink=""> Back </a>
+    <a routerLink=""> Back </a>
 
-    <button (click)="startGame()">Start game</button>
+    <button *ngIf="lobbyData.game" (click)="startGame()">Start game</button>
 </footer>
 
-    <div *ngIf="lobbyData.started">
-        <app-game-count-down [gameName]="lobbyData.game.name"></app-game-count-down>
-    </div>
+<div *ngIf="lobbyData.started">
+    <app-game-count-down *ngIf="lobbyData.game" [gameName]="lobbyData.game.name"></app-game-count-down>
+</div>

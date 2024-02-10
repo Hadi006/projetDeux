@@ -1,19 +1,28 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameChoicePageComponent } from './game-choice-page.component';
+import { GameHandlerService } from '@app/services/game-handler.service';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let router: Router;
+    let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
 
     beforeEach(async () => {
-        await TestBed.configureTestingModule({
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData']);
+    });
+
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
             imports: [RouterTestingModule],
             declarations: [GameChoicePageComponent],
+            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
         }).compileComponents();
+    }));
 
+    beforeEach(() => {
         fixture = TestBed.createComponent(GameChoicePageComponent);
         component = fixture.componentInstance;
         router = TestBed.inject(Router);
@@ -41,7 +50,8 @@ describe('GameChoicePageComponent', () => {
     it('should navigate on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
         component.startGame();
-        expect(navigateSpy).toHaveBeenCalledWith(['game-start']);
+        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
+        expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
     });
 
     it('should navigate on testGame call', () => {
@@ -49,6 +59,7 @@ describe('GameChoicePageComponent', () => {
         component.chooseGame(game);
         const navigateSpy = spyOn(router, 'navigate');
         component.testGame();
-        expect(navigateSpy).toHaveBeenCalledWith(['/test', game]);
+        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
+        expect(navigateSpy).toHaveBeenCalledWith(['/play']);
     });
 });

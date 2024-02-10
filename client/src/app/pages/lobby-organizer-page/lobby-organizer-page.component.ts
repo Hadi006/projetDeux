@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GameHandlerService } from '@app/services/game-handler.service';
 import { LobbyService } from '@app/services/lobby.service';
 import { LobbyData } from '@common/lobby-data';
 
@@ -6,11 +7,9 @@ const TEST_PLAYER_DATA = [
     { id: 1, name: 'Player 1' },
     { id: 2, name: 'Player 2' },
 ];
-const TEST_GAME_DATA = { id: 1, name: 'Math', questions: [], timePerQuestion: 10 };
 export const TEST_LOBBY_DATA: LobbyData = {
     id: 1,
     players: TEST_PLAYER_DATA,
-    game: TEST_GAME_DATA,
     started: false,
 };
 
@@ -22,9 +21,12 @@ export const TEST_LOBBY_DATA: LobbyData = {
 export class LobbyOrganizerPageComponent {
     lobbyData: LobbyData;
 
-    constructor(private readonly lobbyService: LobbyService) {
-        // TODO hard coded data for the moment
+    constructor(
+        private readonly lobbyService: LobbyService,
+        private gameHandlerService: GameHandlerService,
+    ) {
         this.lobbyData = TEST_LOBBY_DATA;
+        this.lobbyData.game = this.gameHandlerService.gameData;
         this.lobbyService.subscribeLobbyToServer(this.lobbyData);
     }
 
