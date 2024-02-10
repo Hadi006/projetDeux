@@ -130,4 +130,23 @@ export class AdminQuizzesService {
         QUIZ.visible = !QUIZ.visible;
         this.http.patch<string>(`quizzes/${QUIZ.id}/visibility`).subscribe();
     }
+
+    /**
+     * @source https://www.linkedin.com/pulse/how-download-file-using-httpclient-angular7-shah-faisal-
+     */
+    downloadQuiz(quizIndex: number) {
+        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
+        if (!QUIZ) return;
+
+        this.http.download(`quizzes/${QUIZ.id}/download`).subscribe((response: Blob) => {
+            // create a link
+            const FILE_LINK = document.createElement('a');
+            FILE_LINK.href = window.URL.createObjectURL(response);
+            FILE_LINK.download = 'quiz.json';
+            // simulate a click
+            document.body.appendChild(FILE_LINK);
+            FILE_LINK.click();
+            document.body.removeChild(FILE_LINK);
+        });
+    }
 }
