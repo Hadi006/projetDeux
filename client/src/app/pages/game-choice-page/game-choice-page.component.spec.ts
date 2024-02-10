@@ -34,8 +34,14 @@ describe('GameChoicePageComponent', () => {
         const game = 'Science';
         component.chooseGame(game);
         const navigateSpy = spyOn(router, 'navigate');
-        component.createGame();
+        component.previewQuestions();
         expect(navigateSpy).toHaveBeenCalledWith(['/questions', game]);
+    });
+
+    it('should navigate on startGame call', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.startGame();
+        expect(navigateSpy).toHaveBeenCalledWith(['game-start']);
     });
 
     it('should navigate on testGame call', () => {
