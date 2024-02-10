@@ -23,4 +23,13 @@ export class DatabaseService {
             process.on(KILL_SIGNAL, disconnect);
         }
     }
+
+    async connect(): Promise<void> {
+        try {
+            await this.client.connect();
+            this.db = this.client.db('log2990');
+        } catch (error) {
+            return;
+        }
+    }
 }
