@@ -48,4 +48,11 @@ export class CommunicationService {
             .delete<T>(`${this.baseUrl}/${relativeUrl}`, { observe: 'response', responseType: 'json' })
             .pipe(catchError(this.handleErrorResponse<T>())); // todo: add error handling
     }
+
+    download(relativeUrl: string, baseUrl: string = this.baseUrl): Observable<Blob> {
+        return this.http
+            .get(`${baseUrl}/${relativeUrl}`, { observe: 'body', responseType: 'blob' })
+            .pipe(catchError(this.handleError<Blob>(`download ${relativeUrl}`)));
+    }
+
 }
