@@ -38,4 +38,8 @@ export class AdminQuizzesService {
             this.quizzes$.next(this.quizzes);
         });
     }
+
+    setSelectedQuiz(quizIndex: number) {
+        this.selectedQuizIndex = quizIndex;
+    }
 }
