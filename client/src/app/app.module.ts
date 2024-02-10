@@ -9,7 +9,6 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
-import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { QuestionsPageComponent } from '@app/pages/questions-page/questions-page.component';
@@ -24,7 +23,6 @@ import { DescriptionPanelComponent } from './components/description-panel/descri
 @NgModule({
     declarations: [
         AppComponent,
-        GamePageComponent,
         MainPageComponent,
         MaterialPageComponent,
         PlayAreaComponent,
