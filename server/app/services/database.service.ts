@@ -50,4 +50,9 @@ export class DatabaseService {
         const UPDATED = !!RESULT;
         return UPDATED;
     }
+
+    async delete(collection: string, query: object): Promise<boolean> {
+        const RESULT = await this.db?.collection(collection)?.deleteMany(query);
+        return RESULT?.deletedCount ? true : false;
+    }
 }
