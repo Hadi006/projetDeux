@@ -59,6 +59,8 @@ describe('GameHandlerService', () => {
             ],
         });
         service = TestBed.inject(GameHandlerService);
+        const subjectSpy = jasmine.createSpyObj('Subject', ['next']);
+        service['internalGameEnded$'] = subjectSpy;
         gameStateService = TestBed.inject(GameStateService);
     });
 
@@ -106,18 +108,23 @@ describe('GameHandlerService', () => {
 
     it('setUpNextState should set the game correctly if state is show answer and the next question does not exist', () => {
         gameStateService.gameState = GameState.ShowAnswer;
+        spyOnProperty(service, 'gameEnded$', 'get').and.callThrough();
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(undefined);
         service.setUpNextState();
+        expect(service.gameEnded$.next).toHaveBeenCalled();
         expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
     });
 
     it('setUpNextState should set the game correctly if the state is not show answer or show question', () => {
         gameStateService.gameState = GameState.GameEnded;
+        spyOnProperty(service, 'gameEnded$', 'get').and.callThrough();
         service.setUpNextState();
+        expect(service.gameEnded$.next).toHaveBeenCalled();
         expect(gameStateService.gameState).toBe(GameState.GameEnded);
         const unrecognizedState = 100;
         gameStateService.gameState = unrecognizedState;
         service.setUpNextState();
+        expect(service.gameEnded$.next).toHaveBeenCalledTimes(2);
         expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
     });
 
