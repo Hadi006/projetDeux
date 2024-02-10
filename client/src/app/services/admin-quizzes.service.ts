@@ -1,7 +1,7 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Question, Quiz } from '@common/quiz';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { CommunicationService } from './communication.service';
 const INVALID_INDEX = -1;
 
@@ -62,5 +62,9 @@ export class AdminQuizzesService {
         };
 
         return BLANK_QUIZ;
+    }
+
+    uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
+        return this.readQuizFile(quizFile).pipe(switchMap((quiz: unknown) => this.submitQuiz(quiz)));
     }
 }
