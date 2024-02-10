@@ -6,7 +6,7 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .game-header {
     display: flex;
     justify-content: space-between;
@@ -17,18 +17,18 @@
     padding: 10px;
     border-radius: 5px;
   }
-  
+
   .timer-setting {
     display: flex;
     flex-direction: column;
   }
-  
+
   .questions-list {
     list-style: none;
     padding: 0;
     margin-bottom: 20px;
   }
-  
+
   .question-text {
     display: block;
     background: #e7e7e7;
@@ -36,35 +36,35 @@
     padding: 10px;
     border-radius: 5px;
   }
-  
+
   .navigation-buttons {
     text-align: center;
   }
-  
-  .back, .startGame{
+
+  .back, .startGame, .testGame{
     padding: 10px 20px;
     margin: 5px;
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    
+
   }
-  
+
   .back {
     background-color: #2196f3;
     color: white;
   }
-  
+
   .startGame {
     background-color: #4caf50;
     color: white;
   }
 
- 
+
   .questions-list li {
     cursor: pointer;
   }
-  
+
   questions-list li.selected {
     background-color: #e90b0b; /* Couleur de fond pour l'élément sélectionné */
   }
