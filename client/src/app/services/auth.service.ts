@@ -26,7 +26,7 @@ export class AuthService {
         );
     }
 
-    heckAuthorization(): Observable<boolean> {
+    checkAuthorization(): Observable<boolean> {
         return this.http.post<{ authorized: boolean }>('auth/token', { token: this.accessToken }).pipe(
             map((response: HttpResponse<{ authorized: boolean }>) => {
                 const AUTHORIZED = response.body?.authorized || false;
