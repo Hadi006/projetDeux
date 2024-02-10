@@ -53,4 +53,10 @@ describe('GameplayPlayerPageComponent', () => {
     it('ngOnInit should call loadGameData and startGame', () => {
         expect(gameHandlerServiceSpy.startGame).toHaveBeenCalled();
     });
+
+    it('ngOnDestroy should unsubscribe from gameEndedSubscription', () => {
+        component.ngOnDestroy();
+        gameHandlerServiceSpy.gameEnded$.next();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
 });
