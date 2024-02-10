@@ -106,4 +106,20 @@ export class AdminQuizzesService {
             }),
         );
     }
+
+    submitQuestion(question: Question): Observable<string> {
+        return this.http.post<{ question: Question; compilationError: string }>('questions/validate', { question }).pipe(
+            map((response) => {
+                if (!response.body) {
+                    return 'Server error';
+                }
+
+                if (response.status !== HttpStatusCode.Ok || response.body.compilationError) {
+                    return response.body.compilationError;
+                }
+
+                return '';
+            }),
+        );
+    }
 }
