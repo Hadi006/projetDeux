@@ -149,4 +149,13 @@ export class AdminQuizzesService {
             document.body.removeChild(FILE_LINK);
         });
     }
+
+    deleteQuiz(quizIndex: number) {
+        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
+        if (!QUIZ) return;
+
+        this.quizzes = this.quizzes.filter((quiz: Quiz) => quiz.id !== QUIZ.id);
+        this.quizzes$.next(this.quizzes);
+        this.http.delete<string>(`quizzes/${QUIZ.id}`).subscribe();
+    }
 }
