@@ -19,6 +19,8 @@ import { GameTimersComponent } from './components/game-timers/game-timers.compon
 import { QuestionComponent } from './components/question/question.component';
 import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { AlertComponent } from './components/alert/alert.component';
+import { HomePageComponent } from './pages/home-page/home-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -42,6 +44,8 @@ import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gamepl
         GameTimersComponent,
         ChatboxComponent,
         AdminLoginPageComponent,
+        AlertComponent,
+        HomePageComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
