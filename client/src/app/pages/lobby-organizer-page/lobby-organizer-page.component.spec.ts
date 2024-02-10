@@ -20,8 +20,10 @@ describe('LobbyOrganizerPageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent],
-            providers: [{ provide: LobbyService, useValue: lobbyServiceSpy },
-                        { provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
+            providers: [
+                { provide: LobbyService, useValue: lobbyServiceSpy },
+                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
+            ],
         }).compileComponents();
     }));
 
@@ -37,6 +39,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     it('lobbyId should be set lobbyData', () => {
         expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
+        expect(component.lobbyData.game).toEqual(TEST_GAME);
     });
 
     it('should call lobbyService.subscribeToLobbyDataById', () => {
