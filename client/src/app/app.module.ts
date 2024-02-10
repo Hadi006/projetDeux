@@ -11,6 +11,8 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
@@ -30,6 +32,8 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
+        LobbyOrganizerPageComponent,
+        GameCountDownComponent,
         GameChoicePageComponent,
         DescriptionPanelComponent,
         QuestionComponent,

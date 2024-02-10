@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { GameHandlerService } from '@app/services/game-handler.service';
 
 @Component({
     selector: 'app-game-choice-page',
@@ -11,7 +12,10 @@ export class GameChoicePageComponent {
 
     chosenGame: string | null = null;
 
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router,
+        private gameHandlerService: GameHandlerService,
+    ) {}
 
     chooseGame(game: string) {
         this.chosenGame = game;
@@ -24,12 +28,14 @@ export class GameChoicePageComponent {
     }
 
     startGame() {
-        this.router.navigate(['game-start']);
+        this.gameHandlerService.loadGameData();
+        this.router.navigate(['lobby']);
     }
 
     testGame() {
         if (this.chosenGame) {
-            this.router.navigate(['/test', this.chosenGame]);
+            this.gameHandlerService.loadGameData();
+            this.router.navigate(['/play']);
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from './question-handler.service';
@@ -47,6 +47,7 @@ export const TEST_GAME: GameData = {
 export class GameHandlerService implements OnDestroy {
     private internalGameData: GameData;
     private timerEndedSubscription: Subscription;
+    private internalGameEnded$: Subject<void> = new Subject<void>();
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
@@ -58,6 +59,10 @@ export class GameHandlerService implements OnDestroy {
 
     get gameData(): GameData {
         return this.internalGameData;
+    }
+
+    get gameEnded$(): Subject<void> {
+        return this.internalGameEnded$;
     }
 
     loadGameData(/* TODO id: number */): void {
@@ -80,6 +85,7 @@ export class GameHandlerService implements OnDestroy {
             case GameState.ShowAnswer:
                 this.questionHandlerService.nextQuestion();
                 if (!this.questionHandlerService.currentQuestion) {
+                    this.internalGameEnded$.next();
                     this.gameStateService.gameState = GameState.GameEnded;
                 } else {
                     this.gameTimersService.startQuestionTimer(this.internalGameData.timePerQuestion);
@@ -87,6 +93,7 @@ export class GameHandlerService implements OnDestroy {
                 }
                 break;
             default:
+                this.internalGameEnded$.next();
                 this.gameStateService.gameState = GameState.GameEnded;
                 break;
         }
