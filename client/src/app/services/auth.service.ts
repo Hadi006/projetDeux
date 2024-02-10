@@ -25,4 +25,15 @@ export class AuthService {
             catchError(() => of(false)),
         );
     }
+
+    heckAuthorization(): Observable<boolean> {
+        return this.http.post<{ authorized: boolean }>('auth/token', { token: this.accessToken }).pipe(
+            map((response: HttpResponse<{ authorized: boolean }>) => {
+                const AUTHORIZED = response.body?.authorized || false;
+
+                return response.status === HttpStatusCode.Ok && AUTHORIZED;
+            }),
+            catchError(() => of(false)),
+        );
+    }
 }
