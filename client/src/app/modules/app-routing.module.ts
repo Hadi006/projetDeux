@@ -9,7 +9,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'home', component: MainPageComponent },
+    { path: 'home', component: HomePageComponent },
     { path: 'admin/login', component: AdminLoginPageComponent },
     { path: 'game', component: GameChoicePageComponent },
     { path: 'material', component: MaterialPageComponent },
