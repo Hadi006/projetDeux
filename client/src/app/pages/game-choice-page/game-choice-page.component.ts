@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./game-choice-page.component.scss'],
 })
 export class GameChoicePageComponent {
-    games = ['Math', 'Science', 'Programmation', 'Histoire', 'Physique', 'Mode aleatoire'];
+    games = ['Math', 'Science', 'Programmation', 'Histoire','Mode aleatoire'];
 
     chosenGame: string | null = null;
 

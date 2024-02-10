@@ -3,8 +3,9 @@
     <p>{{ description }}</p>
     <h3>Durée</h3>
     <p>{{ duration }}</p>
+    <h3>Questions</h3>
     <ul>
-      <li *ngFor="let question of questions">{{ question }}</li>
+        <li *ngFor="let question of questions">{{ question }}</li>
     </ul>
 </div>
 <div *ngIf="!selectedGame">

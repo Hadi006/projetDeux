@@ -86,8 +86,8 @@ export class QuestionsPageComponent implements OnInit {
     }
 
     testGame() {
-        if (this.chosenGame) {
-            this.router.navigate(['/test', this.chosenGame]);
+        if (this.game) {
+            this.router.navigate(['/test', this.game]);
         }
     }
 }

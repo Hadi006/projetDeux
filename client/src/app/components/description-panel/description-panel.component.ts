@@ -50,8 +50,8 @@ export class DescriptionPanelComponent implements OnChanges {
     }
 
     private updateGameInfo(game: string | null) {
-        if (game && this.gamesInfo[game]) {
-            const gameInfo = this.gamesInfo[game];
+        if (game && this.gamesInfo[game.toLowerCase()]) {
+            const gameInfo = this.gamesInfo[game.toLowerCase()];
             this.description = gameInfo.description;
             this.duration = gameInfo.duration;
             this.questions = gameInfo.questions;
