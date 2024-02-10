@@ -44,4 +44,10 @@ export class DatabaseService {
     async add(collection: string, data: object): Promise<void> {
         this.db?.collection(collection)?.insertOne(data);
     }
+
+    async update(collection: string, query: object, update: object): Promise<boolean> {
+        const RESULT = await this.db?.collection(collection)?.findOneAndUpdate(query, update);
+        const UPDATED = !!RESULT;
+        return UPDATED;
+    }
 }
