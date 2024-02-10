@@ -1,7 +1,7 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Question, Quiz } from '@common/quiz';
-import { BehaviorSubject, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, map, switchMap } from 'rxjs';
 import { CommunicationService } from './communication.service';
 const INVALID_INDEX = -1;
 
@@ -66,5 +66,24 @@ export class AdminQuizzesService {
 
     uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
         return this.readQuizFile(quizFile).pipe(switchMap((quiz: unknown) => this.submitQuiz(quiz)));
+    }
+
+    submitQuiz(quiz: unknown): Observable<{ quiz?: Quiz; errorLog: string }> {
+        return this.http.post<{ quiz: Quiz; errorLog: string }>('quizzes', { quiz }).pipe(
+            map((response: HttpResponse<{ quiz: Quiz; errorLog: string }>) => {
+                if (!response.body || response.body.errorLog === undefined || !response.body.quiz) {
+                    return { quiz: undefined, errorLog: 'submission failed' };
+                }
+
+                if (response.body.errorLog) {
+                    return response.body;
+                }
+
+                this.quizzes.push(response.body.quiz);
+                this.quizzes$.next(this.quizzes);
+
+                return response.body;
+            }),
+        );
     }
 }
