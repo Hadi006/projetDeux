@@ -32,4 +32,12 @@ export class DatabaseService {
             return;
         }
     }
+
+    async get<T>(collection: string, query: object = {}, projection: object = {}): Promise<T[]> {
+        return (this.db
+            ?.collection(collection)
+            ?.find(query)
+            ?.project({ _id: 0, ...projection })
+            ?.toArray() || []) as T[];
+    }
 }
