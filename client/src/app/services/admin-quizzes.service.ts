@@ -42,4 +42,25 @@ export class AdminQuizzesService {
     setSelectedQuiz(quizIndex: number) {
         this.selectedQuizIndex = quizIndex;
     }
+
+    getSelectedQuiz(): Quiz {
+        const SELECTED_QUIZ: Quiz | undefined = this.quizzes[this.selectedQuizIndex];
+        this.selectedQuizIndex = -1;
+
+        if (SELECTED_QUIZ) {
+            return SELECTED_QUIZ;
+        }
+
+        const BLANK_QUIZ: Quiz = {
+            id: '',
+            title: '',
+            visible: false,
+            description: '',
+            duration: 10,
+            lastModification: new Date(),
+            questions: [],
+        };
+
+        return BLANK_QUIZ;
+    }
 }
