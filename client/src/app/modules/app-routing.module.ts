@@ -3,12 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GameChoicePageComponent },
     { path: 'material', component: MaterialPageComponent },
+    { path: 'play', component: GameplayPlayerPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

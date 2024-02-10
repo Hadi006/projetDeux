@@ -12,6 +12,10 @@ import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
+import { QuestionComponent } from './components/question/question.component';
+import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { GameTimersComponent } from './components/game-timers/game-timers.component';
+import { ChatboxComponent } from './components/chatbox/chatbox.component';
 
 /**
  * Main module that is used in main.ts.
@@ -28,6 +32,10 @@ import { DescriptionPanelComponent } from './components/description-panel/descri
         SidebarComponent,
         GameChoicePageComponent,
         DescriptionPanelComponent,
+        QuestionComponent,
+        GameplayPlayerPageComponent,
+        GameTimersComponent,
+        ChatboxComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
