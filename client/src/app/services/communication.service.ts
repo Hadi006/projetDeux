@@ -21,10 +21,6 @@ export class CommunicationService {
         return this.http.post(`${this.baseUrl}/example/send`, message, { observe: 'response', responseType: 'text' });
     }
 
-    private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
-        return () => of(result as T);
-    }
-
     get<T>(relativeUrl: string, baseUrl: string = this.baseUrl): Observable<HttpResponse<T>> {
         return this.http
             .get<T>(`${baseUrl}/${relativeUrl}`, { observe: 'response', responseType: 'json' })
@@ -53,6 +49,10 @@ export class CommunicationService {
         return this.http
             .get(`${baseUrl}/${relativeUrl}`, { observe: 'body', responseType: 'blob' })
             .pipe(catchError(this.handleError<Blob>(`download ${relativeUrl}`)));
+    }
+
+    private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
+        return () => of(result as T);
     }
 
     private handleErrorResponse<T>(): (error: HttpErrorResponse) => Observable<HttpResponse<T>> {
