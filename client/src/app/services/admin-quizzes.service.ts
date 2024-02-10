@@ -86,4 +86,24 @@ export class AdminQuizzesService {
             }),
         );
     }
+
+    updateQuiz(quiz: Quiz): Observable<{ quiz?: Quiz; errorLog: string }> {
+        return this.http.patch<{ quiz: Quiz; errorLog: string }>(`quizzes/${quiz.id}`, { quiz }).pipe(
+            map((response: HttpResponse<{ quiz: Quiz; errorLog: string }>) => {
+                if (!response.body) {
+                    return { quiz: undefined, errorLog: 'update failed' };
+                }
+
+                if (response.body.errorLog) {
+                    return response.body;
+                }
+
+                const INDEX: number = this.quizzes.findIndex((q: Quiz) => q.id === quiz.id);
+                this.quizzes[INDEX] = quiz;
+                this.quizzes$.next(this.quizzes);
+
+                return response.body;
+            }),
+        );
+    }
 }
