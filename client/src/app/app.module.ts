@@ -18,6 +18,7 @@ import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
+import { AlertComponent } from './components/alert/alert.component';
 
 /**
  * Main module that is used in main.ts.
@@ -40,6 +41,7 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
         GameplayPlayerPageComponent,
         GameTimersComponent,
         ChatboxComponent,
+        AlertComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
