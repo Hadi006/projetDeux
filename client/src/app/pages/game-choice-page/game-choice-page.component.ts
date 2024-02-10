@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./game-choice-page.component.scss'],
 })
 export class GameChoicePageComponent {
-    games = ['Math', 'Science', 'Programmation', 'Histoire','Mode aleatoire'];
+    games = ['Math', 'Science', 'Programmation', 'Histoire', 'Mode aleatoire'];
 
     chosenGame: string | null = null;
 
@@ -20,6 +20,16 @@ export class GameChoicePageComponent {
     previewQuestions() {
         if (this.chosenGame) {
             this.router.navigate(['/questions', this.chosenGame]);
+        }
+    }
+
+    startGame() {
+        this.router.navigate(['game-start']);
+    }
+
+    testGame() {
+        if (this.chosenGame) {
+            this.router.navigate(['/test', this.chosenGame]);
         }
     }
 }

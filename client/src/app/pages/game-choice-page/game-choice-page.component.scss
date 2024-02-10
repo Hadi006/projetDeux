@@ -1,67 +1,80 @@
 .container {
-  text-align: center;
-  padding: 20px;
-  background-color: #f4f4f4;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 .games-list {
-  margin: 0 auto;
-  max-width: 300px;
+    margin: 0 auto;
+    max-width: 300px;
 }
 
 .game-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .game-button:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }
 
 p {
-  margin-top: 20px;
-  color: #333;
+    margin-top: 20px;
+    color: #333;
 }
 
 .button-navigation {
-  text-align: center;
-  margin-top: 20px;
+    text-align: center;
+    margin-top: 20px;
 }
 
-.CreateGame, .testGame {
-  padding: 10px 20px;
-  margin: 0 10px;
-  background-color: #000000;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  
-  transition: background-color 0.3s;
+.CreateGame,
+.testGame {
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+
+    transition: background-color 0.3s;
 }
 
-.CreateGame:hover, .next:hover {
-  background-color: #0056b3;
+.startGame {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: white;
 }
 
-.CreateGame.disabled, .testGame.disabled {
-  background-color: #cccccc;
-  cursor: default;
+.CreateGame:hover,
+.next:hover {
+    background-color: #0056b3;
+}
+
+.CreateGame.disabled,
+.testGame.disabled {
+    background-color: #cccccc;
+    cursor: default;
 }
