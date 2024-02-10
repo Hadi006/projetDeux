@@ -27,12 +27,12 @@ describe('AuthService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('checkAuthentification should call communicationService.post and return true with a valid token', () => {
+    it('checkAuthentication should call communicationService.post and return true with a valid token', () => {
         const password = 'password';
         const token: AccessToken = { id: 'id', expirationDate: 0 };
         const expectedResponse = new HttpResponse({ status: HttpStatusCode.Ok, body: { token } });
         communicationServiceSpy.post.and.returnValue(of(expectedResponse));
-        service.checkAuthentification(password).subscribe({
+        service.checkAuthentication(password).subscribe({
             next: (response: boolean) => {
                 expect(response).toBeTrue();
                 expect(service['accessToken']).toEqual(token);
@@ -42,7 +42,7 @@ describe('AuthService', () => {
         expect(communicationServiceSpy.post).toHaveBeenCalledWith('auth/password', { password, token: accessToken });
     });
 
-    it('checkAuthentification should call communicationService.post and return false with an invalid token', () => {
+    it('checkAuthentication should call communicationService.post and return false with an invalid token', () => {
         const password = 'password';
         const expectedResponse = new HttpResponse({
             status: 401,
@@ -50,7 +50,7 @@ describe('AuthService', () => {
         });
 
         communicationServiceSpy.post.and.returnValue(of(expectedResponse));
-        service.checkAuthentification(password).subscribe({
+        service.checkAuthentication(password).subscribe({
             next: (response: boolean) => {
                 expect(response).toBeFalse();
                 expect(service['accessToken']).toEqual(INVALID_TOKEN);
@@ -60,10 +60,10 @@ describe('AuthService', () => {
         expect(communicationServiceSpy.post).toHaveBeenCalledWith('auth/password', { password, token: accessToken });
     });
 
-    it('checkAuthentification should return false if an error occurs', () => {
+    it('checkAuthentication should return false if an error occurs', () => {
         const password = 'password';
         communicationServiceSpy.post.and.returnValue(throwError(() => new Error('Test Error')));
-        service.checkAuthentification(password).subscribe({
+        service.checkAuthentication(password).subscribe({
             next: (response: boolean) => expect(response).toBeFalse(),
             error: () => fail('Expected response to be false'),
         });

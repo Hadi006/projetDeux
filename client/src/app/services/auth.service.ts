@@ -15,7 +15,7 @@ export class AuthService {
 
     constructor(private http: CommunicationService) {}
 
-    checkAuthentification(password: string): Observable<boolean> {
+    checkAuthentication(password: string): Observable<boolean> {
         return this.http.post<{ token: AccessToken }>('auth/password', { password, token: this.accessToken }).pipe(
             map((response: HttpResponse<{ token: AccessToken }>) => {
                 this.accessToken = response.body?.token || INVALID_TOKEN;
