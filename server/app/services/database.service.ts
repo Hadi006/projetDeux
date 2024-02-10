@@ -40,4 +40,8 @@ export class DatabaseService {
             ?.project({ _id: 0, ...projection })
             ?.toArray() || []) as T[];
     }
+
+    async add(collection: string, data: object): Promise<void> {
+        this.db?.collection(collection)?.insertOne(data);
+    }
 }
