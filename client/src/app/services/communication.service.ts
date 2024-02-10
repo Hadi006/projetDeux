@@ -36,4 +36,10 @@ export class CommunicationService {
             .post<T>(`${this.baseUrl}/${relativeUrl}`, body, { observe: 'response', responseType: 'json' })
             .pipe(catchError(this.handleErrorResponse<T>()));
     }
+
+    patch<T>(relativeUrl: string, body: object = {}): Observable<HttpResponse<T>> {
+        return this.http
+            .patch<T>(`${this.baseUrl}/${relativeUrl}`, body, { observe: 'response', responseType: 'json' })
+            .pipe(catchError(this.handleErrorResponse<T>()));
+    }
 }
