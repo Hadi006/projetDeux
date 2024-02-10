@@ -17,7 +17,7 @@ export class GameChoicePageComponent {
         this.chosenGame = game;
     }
 
-    createGame() {
+    previewQuestions() {
         if (this.chosenGame) {
             // Navigue vers la page de création du jeu sélectionné
             this.router.navigate(['/questions', this.chosenGame]);
