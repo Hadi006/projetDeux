@@ -24,4 +24,10 @@ export class CommunicationService {
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }
+
+    get<T>(relativeUrl: string, baseUrl: string = this.baseUrl): Observable<HttpResponse<T>> {
+        return this.http
+            .get<T>(`${baseUrl}/${relativeUrl}`, { observe: 'response', responseType: 'json' })
+            .pipe(catchError(this.handleErrorResponse<T>()));
+    }
 }
