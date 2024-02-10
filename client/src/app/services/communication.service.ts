@@ -42,4 +42,10 @@ export class CommunicationService {
             .patch<T>(`${this.baseUrl}/${relativeUrl}`, body, { observe: 'response', responseType: 'json' })
             .pipe(catchError(this.handleErrorResponse<T>()));
     }
+
+    delete<T>(relativeUrl: string): Observable<HttpResponse<T>> {
+        return this.http
+            .delete<T>(`${this.baseUrl}/${relativeUrl}`, { observe: 'response', responseType: 'json' })
+            .pipe(catchError(this.handleErrorResponse<T>())); // todo: add error handling
+    }
 }
