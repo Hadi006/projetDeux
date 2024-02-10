@@ -23,10 +23,4 @@ export class GameChoicePageComponent {
             this.router.navigate(['/questions', this.chosenGame]);
         }
     }
-
-    testGame() {
-        if (this.chosenGame) {
-            this.router.navigate(['/test', this.chosenGame]);
-        }
-    }
 }
