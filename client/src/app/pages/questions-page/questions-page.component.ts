@@ -20,13 +20,10 @@ export class QuestionsPageComponent implements OnInit {
     toggleQuestion(question: string, event: MouseEvent) {
         const target = event.currentTarget as HTMLElement;
 
-        // Check if the clicked question is already selected
         if (this.selectedQuestion === question) {
-            // Unselect the question and remove the 'selected' class
             this.selectedQuestion = null;
             target.classList.remove('selected');
         } else {
-            // Select the new question and add the 'selected' class, while removing it from any previously selected question
             if (this.selectedQuestion) {
                 document.querySelector('.selected')?.classList.remove('selected');
             }
