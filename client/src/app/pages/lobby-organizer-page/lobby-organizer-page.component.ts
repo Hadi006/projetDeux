@@ -7,11 +7,9 @@ const TEST_PLAYER_DATA = [
     { id: 1, name: 'Player 1' },
     { id: 2, name: 'Player 2' },
 ];
-const TEST_GAME_DATA = { id: 1, name: 'Math', questions: [], timePerQuestion: 10 };
 export const TEST_LOBBY_DATA: LobbyData = {
     id: 1,
     players: TEST_PLAYER_DATA,
-    game: TEST_GAME_DATA,
     started: false,
 };
 
