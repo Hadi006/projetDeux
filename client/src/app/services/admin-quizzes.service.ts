@@ -158,4 +158,22 @@ export class AdminQuizzesService {
         this.quizzes$.next(this.quizzes);
         this.http.delete<string>(`quizzes/${QUIZ.id}`).subscribe();
     }
+
+    private readQuizFile(quizFile: File): Observable<unknown> {
+        return new Observable<unknown>((observer) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const result = event.target?.result?.toString() || '';
+                    const quiz = JSON.parse(result);
+                    observer.next(quiz);
+                } catch (error) {
+                    observer.error({ errorLog: 'Invalid or empty quiz file' });
+                }
+                observer.complete();
+            };
+            reader.onerror = () => observer.error('File read error');
+            reader.readAsText(quizFile);
+        });
+    }
 }
