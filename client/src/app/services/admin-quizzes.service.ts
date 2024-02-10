@@ -122,4 +122,12 @@ export class AdminQuizzesService {
             }),
         );
     }
+
+    changeQuizVisibility(quizIndex: number) {
+        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
+        if (!QUIZ) return;
+
+        QUIZ.visible = !QUIZ.visible;
+        this.http.patch<string>(`quizzes/${QUIZ.id}/visibility`).subscribe();
+    }
 }
