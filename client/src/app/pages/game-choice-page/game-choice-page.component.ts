@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-choix-jeu',
+    selector: 'app-game-choice-page',
     templateUrl: './game-choice-page.component.html',
     styleUrls: ['./game-choice-page.component.scss'],
 })

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-questions',
+    selector: 'app-questions-page',
     templateUrl: './questions-page.component.html',
     styleUrls: ['./questions-page.component.scss'],
 })
