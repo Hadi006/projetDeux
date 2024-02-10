@@ -1,4 +1,4 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Message } from '@common/message';
 import { Observable, of } from 'rxjs';
@@ -55,4 +55,7 @@ export class CommunicationService {
             .pipe(catchError(this.handleError<Blob>(`download ${relativeUrl}`)));
     }
 
+    private handleErrorResponse<T>(): (error: HttpErrorResponse) => Observable<HttpResponse<T>> {
+        return (error: HttpErrorResponse) => of(new HttpResponse<T>({ body: error.error as T, status: error.status, statusText: error.statusText }));
+    }
 }
