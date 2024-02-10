@@ -28,7 +28,8 @@ export class GameChoicePageComponent {
     }
 
     startGame() {
-        this.router.navigate(['game-start']);
+        this.gameHandlerService.loadGameData();
+        this.router.navigate(['organizer/lobby']);
     }
 
     testGame() {
