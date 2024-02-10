@@ -18,7 +18,7 @@ describe('GameChoicePageComponent', () => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
             declarations: [GameChoicePageComponent],
-            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy}]
+            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
         }).compileComponents();
     }));
 
@@ -58,6 +58,7 @@ describe('GameChoicePageComponent', () => {
         component.chooseGame(game);
         const navigateSpy = spyOn(router, 'navigate');
         component.testGame();
-        expect(navigateSpy).toHaveBeenCalledWith(['/test', game]);
+        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
+        expect(navigateSpy).toHaveBeenCalledWith(['/play']);
     });
 });
