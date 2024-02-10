@@ -1,0 +1,14 @@
+<div class="container">
+    <h1>Choisissez un jeu</h1>
+    <div class="games-list">
+        <button *ngFor="let game of games" (click)="chooseGame(game)" class="game-button">
+            {{ game }}
+        </button>
+    </div>
+    <p *ngIf="chosenGame">Jeu sélectionné: {{ chosenGame }}</p>
+    <app-description-panel [selectedGame]="chosenGame"></app-description-panel>
+</div>
+<div class="button-navigation">
+        <button class="testGame" (click)="testGame()">Test Game</button>
+        <button class="startGame" (click)="startGame()">Start Game</button>
+</div>
