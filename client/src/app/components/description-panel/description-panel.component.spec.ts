@@ -34,7 +34,6 @@ describe('DescriptionPanelComponent', () => {
         component.ngOnChanges({
             selectedGame: new SimpleChange(null, component.selectedGame, true),
         });
-        fixture.detectChanges();
 
         expect(component.description).toEqual('Une série de questions sur les mathématiques.');
         expect(component.duration).toEqual('30 secondes par question');
@@ -46,7 +45,6 @@ describe('DescriptionPanelComponent', () => {
         component.ngOnChanges({
             selectedGame: new SimpleChange(null, component.selectedGame, true),
         });
-        fixture.detectChanges();
 
         expect(component.description).toEqual('Sélectionnez un jeu pour voir sa description, sa durée et ses questions.');
         expect(component.duration).toEqual('');
@@ -58,7 +56,6 @@ describe('DescriptionPanelComponent', () => {
         component.ngOnChanges({
             selectedGame: new SimpleChange('Math', null, false),
         });
-        fixture.detectChanges();
 
         expect(component.description).toEqual('Sélectionnez un jeu pour voir sa description, sa durée et ses questions.');
         expect(component.duration).toEqual('');
