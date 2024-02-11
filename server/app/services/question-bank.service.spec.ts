@@ -79,4 +79,9 @@ describe('QuestionBankService', () => {
         expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
         expect(result).to.equal(false);
     });
+
+    it('should validate an answer', async () => {
+        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [true, false]);
+        expect(result).to.equal(true);
+    });
 });
