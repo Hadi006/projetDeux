@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { Quiz } from '@common/quiz';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-choice-page',
@@ -9,15 +11,21 @@ import { PublicQuizzesService } from '@app/services/public-quizzes.service';
     styleUrls: ['./game-choice-page.component.scss'],
 })
 export class GameChoicePageComponent {
-    games = ['Math', 'Science', 'Programmation', 'Histoire', 'Mode aleatoire'];
+    quizzes: Quiz[] = [];
 
     chosenGame: string | null = null;
+
+    private quizzesSubscription: Subscription;
 
     constructor(
         private publicQuizzesService: PublicQuizzesService,
         private router: Router,
         private gameHandlerService: GameHandlerService,
-    ) {}
+    ) {
+        this.quizzesSubscription = this.publicQuizzesService.quizzes$.subscribe((quizzes) => {
+            this.quizzes = quizzes;
+        });
+    }
 
     chooseGame(game: string) {
         this.chosenGame = game;
