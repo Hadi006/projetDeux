@@ -56,6 +56,19 @@ export class QuestionBankController {
             res.status(httpStatus.BAD_REQUEST).json(RESULT);
         });
 
+        this.router.post('/:questionId/validate-answer', async (req: Request, res: Response) => {
+            const QUESTION_ID: string = req.params.questionId;
+            const ANSWER = req.body.answer;
+            const QUESTION = await this.questionBankService.getQuestion(QUESTION_ID);
+            if (!QUESTION) {
+                res.status(httpStatus.NOT_FOUND).json({});
+                return;
+            }
+
+            const RESULT = this.questionBankService.validateAnswer(QUESTION, ANSWER);
+            res.status(httpStatus.OK).json(RESULT);
+        });
+
         this.router.delete('/:questionId', async (req: Request, res: Response) => {
             const QUESTION_ID: string = req.params.questionId;
             const DELETED = await this.questionBankService.deleteQuestion(QUESTION_ID);
