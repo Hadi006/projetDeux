@@ -69,4 +69,21 @@ export class QuizValidator {
 
         return this;
     }
+
+    checkDescription(): QuizValidator {
+        this.tasks.push(async () => {
+            if (!this.isObject) {
+                return;
+            }
+
+            const QUIZ = this.quiz as object;
+            if (!('description' in QUIZ) || typeof QUIZ.description !== 'string') {
+                this.compilationError += 'Quiz : description is missing !\n';
+                return;
+            }
+            this.newQuiz.description = QUIZ.description as string;
+        });
+
+        return this;
+    }
 }
