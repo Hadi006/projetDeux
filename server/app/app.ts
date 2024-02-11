@@ -15,6 +15,7 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
     constructor(
+        // eslint-disable-next-line prettier/prettier
         private readonly authController: AuthController,
     ) {
         this.app = express();
