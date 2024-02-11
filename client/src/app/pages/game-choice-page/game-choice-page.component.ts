@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 
 @Component({
     selector: 'app-game-choice-page',
@@ -14,7 +14,7 @@ export class GameChoicePageComponent {
     chosenGame: string | null = null;
 
     constructor(
-        private adminQuizzesService: AdminQuizzesService,
+        private publicQuizzesService: PublicQuizzesService,
         private router: Router,
         private gameHandlerService: GameHandlerService,
     ) {}
