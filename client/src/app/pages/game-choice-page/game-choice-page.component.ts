@@ -22,22 +22,25 @@ export class GameChoicePageComponent {
     }
 
     previewQuestions() {
-        if (this.chosenGame) {
-            this.router.navigate(['/questions', this.chosenGame]);
+        if (!this.chosenGame) {
+            return;
         }
+        this.router.navigate(['/questions', this.chosenGame]);
     }
 
     startGame() {
-        if (this.chosenGame) {
+        if (!this.chosenGame) {
+            return;
+        }
         this.gameHandlerService.loadGameData();
         this.router.navigate(['lobby']);
-        }
     }
 
     testGame() {
-        if (this.chosenGame) {
-            this.gameHandlerService.loadGameData();
-            this.router.navigate(['/play']);
+        if (!this.chosenGame) {
+            return;
         }
+        this.gameHandlerService.loadGameData();
+        this.router.navigate(['/play']);
     }
 }
