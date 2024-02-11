@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { Player } from '@app/interfaces/player';
 import { Subject } from 'rxjs';
+import { Answer, Question } from '@common/quiz';
 
 describe('QuestionHandlerService', () => {
     const PLAYERS = new Map<number, Player>([
@@ -26,6 +26,38 @@ describe('QuestionHandlerService', () => {
             },
         ],
     ]);
+
+    const answers: Answer[] = [
+        {
+            text: '1',
+            isCorrect: false,
+        },
+        {
+            text: '2',
+            isCorrect: true,
+        },
+        {
+            text: '3',
+            isCorrect: false,
+        },
+    ];
+
+    const QUESTIONS_DATA: Question[] = [
+        {
+            id: '0',
+            points: 1,
+            text: '1+1?',
+            choices: answers,
+            type: 'multiple-choices',
+        },
+        {
+            id: '1',
+            points: 1,
+            text: 'What is the capital of France?',
+            choices: [],
+            type: 'text',
+        },
+    ];
 
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
@@ -86,15 +118,7 @@ describe('QuestionHandlerService', () => {
     });
 
     it('resetAnswers should reset the answers of the players', () => {
-        const testQuestion = {
-            id: 0,
-            points: 1,
-            question: '1+1?',
-            answers: ['1', '2', '3'],
-            correctAnswers: ['2'],
-            isMCQ: true,
-        };
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(testQuestion);
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue({ ...QUESTIONS_DATA[0] });
         service.resetAnswers();
         expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(3);
     });
@@ -144,15 +168,15 @@ describe('QuestionHandlerService', () => {
     });
 
     it('isAnswerCorrect should return true if the answer is correct', () => {
-        const answers = [false, true, false, false];
+        const playerAnswers = [false, true, false, false];
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(service.isAnswerCorrect(answers)).toEqual(true);
+        expect(service.isAnswerCorrect(playerAnswers)).toEqual(true);
     });
 
     it('isAnswerCorrect should return false if the answer is incorrect', () => {
-        const answers = [true, false, false, false];
+        const playerAnswers = [true, false, false, false];
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(service.isAnswerCorrect(answers)).toEqual(false);
+        expect(service.isAnswerCorrect(playerAnswers)).toEqual(false);
     });
 
     it('ngOnDestroy should unsubscribe from the timerEndedSubject', () => {
