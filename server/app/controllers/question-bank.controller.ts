@@ -61,12 +61,12 @@ export class QuestionBankController {
             const ANSWER = req.body.answer;
             const QUESTION = await this.questionBankService.getQuestion(QUESTION_ID);
             if (!QUESTION) {
-                res.status(httpStatus.NOT_FOUND).json({});
+                res.status(httpStatus.NOT_FOUND).send(false);
                 return;
             }
 
             const RESULT = await this.questionBankService.validateAnswer(QUESTION, ANSWER);
-            res.status(httpStatus.OK).json({ correct: RESULT });
+            res.status(httpStatus.OK).send(RESULT);
         });
 
         this.router.delete('/:questionId', async (req: Request, res: Response) => {
