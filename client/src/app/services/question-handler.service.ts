@@ -53,37 +53,12 @@ export class QuestionHandlerService implements OnDestroy {
 
     updateScores(): void {
         this.playerHandlerService.players.forEach((player) => {
-            player.score += this.calculateScore(player.answer);
+            if (!this.currentQuestion) {
+                return;
+            }
+
+            player.score += player.isCorrect ? this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER : 0;
         });
-    }
-
-    calculateScore(isChecked: boolean[]): number {
-        if (!this.currentQuestion) {
-            return 0;
-        }
-
-        const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
-
-        return this.isAnswerCorrect(isChecked) ? score : 0;
-    }
-
-    isAnswerCorrect(isChecked: boolean[]): boolean {
-        if (!(this.currentQuestion?.type === 'multiple-choices')) {
-            return true;
-        }
-
-        const answers = this.currentQuestion.choices;
-        const correctAnswers = this.currentQuestion.choices.filter((answer) => answer.isCorrect);
-
-        const allCheckedAreCorrect = isChecked.every((checked, index) => {
-            return !checked || (checked && correctAnswers.includes(answers[index]));
-        });
-
-        const allCorrectAreChecked = correctAnswers.every((correctAnswer) => {
-            return isChecked[answers.indexOf(correctAnswer)];
-        });
-
-        return allCheckedAreCorrect && allCorrectAreChecked;
     }
 
     ngOnDestroy(): void {
@@ -93,6 +68,7 @@ export class QuestionHandlerService implements OnDestroy {
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
             if (this.gameStateService.gameState === GameState.ShowQuestion) {
+                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.id || '');
                 this.updateScores();
             }
         });

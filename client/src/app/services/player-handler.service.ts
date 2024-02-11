@@ -1,6 +1,8 @@
+import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
 import { Subject } from 'rxjs';
+import { CommunicationService } from './communication.service';
 
 @Injectable({
     providedIn: 'root',
@@ -10,6 +12,8 @@ export class PlayerHandlerService {
     private internalNPlayers: number = 0;
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
+
+    constructor(private communicationService: CommunicationService) {}
 
     get players(): Map<number, Player> {
         return this.internalPlayers;
@@ -28,6 +32,7 @@ export class PlayerHandlerService {
             score: 0,
             answer: [],
             answerConfirmed: false,
+            isCorrect: false,
         };
         this.internalPlayers.set(this.internalNPlayers++, player);
 
@@ -62,6 +67,20 @@ export class PlayerHandlerService {
         this.internalPlayers.forEach((player) => {
             player.answer = new Array(newAnswersLength).fill(false);
             player.answerConfirmed = false;
+            player.isCorrect = false;
+        });
+    }
+
+    validatePlayerAnswers(questionId: string): void {
+        this.internalPlayers.forEach((player) => {
+            this.communicationService
+                .post<boolean>(`questions/${questionId}/validate-answer`, player.answer)
+                .subscribe((response: HttpResponse<boolean>) => {
+                    if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+                        return;
+                    }
+                    player.isCorrect = response.body;
+                });
         });
     }
 }
