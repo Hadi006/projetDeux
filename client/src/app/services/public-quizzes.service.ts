@@ -13,7 +13,7 @@ export class PublicQuizzesService {
     constructor(private http: CommunicationService) {}
 
     fetchVisibleQuizzes() {
-        this.http.get<Quiz[]>('quizzes/visible').subscribe((response: HttpResponse<Quiz[]>) => {
+        this.http.get<Quiz[]>('quizzes').subscribe((response: HttpResponse<Quiz[]>) => {
             if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
                 return;
             }

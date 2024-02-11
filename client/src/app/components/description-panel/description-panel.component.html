@@ -5,7 +5,7 @@
     <p>{{ selectedQuiz.duration }}</p>
     <h3>Questions</h3>
     <ul>
-        <li *ngFor="let question of selectedQuiz.questions">{{ question }}</li>
+        <li *ngFor="let question of selectedQuiz.questions">{{ question.text }}</li>
     </ul>
 </div>
 <div *ngIf="!selectedQuiz">
