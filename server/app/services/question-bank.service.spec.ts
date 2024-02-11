@@ -88,7 +88,7 @@ describe('QuestionBankService', () => {
     it('should validate an answer and return false', async () => {
         const result = await questionBankService.validateAnswer(MOCK_QUESTION, [false, true]);
         expect(result).to.equal(false);
-    })
+    });
 
     it('should validate an answer for a non multiple-choices question', async () => {
         const result = await questionBankService.validateAnswer({ ...MOCK_QUESTION, type: 'open' }, [true, false]);
