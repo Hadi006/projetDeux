@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionComponent } from './question.component';
 import { Player } from '@app/interfaces/player';
+import { Question } from '@common/quiz';
 
 const TEST_PLAYER: Player = {
     score: 0,
@@ -13,6 +13,36 @@ const TEST_PLAYER: Player = {
 };
 
 describe('QuestionComponent', () => {
+    const QUESTIONS_DATA: Question[] = [
+        {
+            id: '0',
+            points: 1,
+            text: '1+1?',
+            choices: [
+                {
+                    text: '1',
+                    isCorrect: false,
+                },
+                {
+                    text: '2',
+                    isCorrect: true,
+                },
+                {
+                    text: '3',
+                    isCorrect: false,
+                },
+            ],
+            type: 'multiple-choices',
+        },
+        {
+            id: '1',
+            points: 1,
+            text: 'What is the capital of France?',
+            choices: [],
+            type: 'text',
+        },
+    ];
+
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
