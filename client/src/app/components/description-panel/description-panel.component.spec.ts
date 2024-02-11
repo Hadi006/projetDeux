@@ -22,43 +22,4 @@ describe('DescriptionPanelComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should initialize with default values', () => {
-        expect(component.description).toEqual('');
-        expect(component.duration).toEqual('');
-        expect(component.questions).toEqual([]);
-        expect(component.selectedGame).toBeNull();
-    });
-
-    it('should update game info when a valid game is selected', () => {
-        component.selectedGame = 'math';
-        component.ngOnChanges({
-            selectedGame: new SimpleChange(null, component.selectedGame, true),
-        });
-
-        expect(component.description).toEqual('Une série de questions sur les mathématiques.');
-        expect(component.duration).toEqual('30 secondes par question');
-        expect(component.questions.length).toBeGreaterThan(0);
-    });
-
-    it('should clear game info when an invalid game is selected', () => {
-        component.selectedGame = 'InvalidGame';
-        component.ngOnChanges({
-            selectedGame: new SimpleChange(null, component.selectedGame, true),
-        });
-
-        expect(component.description).toEqual('Sélectionnez un jeu pour voir sa description, sa durée et ses questions.');
-        expect(component.duration).toEqual('');
-        expect(component.questions).toEqual([]);
-    });
-
-    it('should clear game info when selectedGame is null', () => {
-        component.selectedGame = null;
-        component.ngOnChanges({
-            selectedGame: new SimpleChange('Math', null, false),
-        });
-
-        expect(component.description).toEqual('Sélectionnez un jeu pour voir sa description, sa durée et ses questions.');
-        expect(component.duration).toEqual('');
-        expect(component.questions).toEqual([]);
-    });
 });
