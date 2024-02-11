@@ -31,4 +31,15 @@ export class AuthService {
 
         return TOKEN;
     }
+
+    private isObjectToken(obj: unknown): obj is AccessToken {
+        return (
+            obj &&
+            typeof obj === 'object' &&
+            'id' in obj &&
+            'expirationDate' in obj &&
+            typeof obj.id === 'string' &&
+            typeof obj.expirationDate === 'number'
+        );
+    }
 }
