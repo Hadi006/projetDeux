@@ -6,7 +6,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
@@ -71,7 +70,7 @@ describe('CreateQuizPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQuizPageComponent, QuestionBankComponent],
+            declarations: [CreateQuizPageComponent],
             imports: [FormsModule, DragDropModule, HttpClientTestingModule, MatIconModule],
             providers: [
                 { provide: AdminQuizzesService, useValue: adminQuizzesServiceSpy },
