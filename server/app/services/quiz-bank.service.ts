@@ -54,4 +54,9 @@ export class QuizBankService {
 
         return UPDATED;
     }
+
+    async deleteQuiz(quizId: string) {
+        const QUERY = { id: quizId };
+        await this.database.delete('quizzes', QUERY);
+    }
 }
