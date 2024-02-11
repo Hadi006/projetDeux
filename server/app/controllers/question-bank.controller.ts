@@ -66,7 +66,7 @@ export class QuestionBankController {
             }
 
             const RESULT = await this.questionBankService.validateAnswer(QUESTION, ANSWER);
-            res.status(httpStatus.OK).json(RESULT);
+            res.status(httpStatus.OK).json({ correct: RESULT });
         });
 
         this.router.delete('/:questionId', async (req: Request, res: Response) => {
