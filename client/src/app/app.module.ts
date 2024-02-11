@@ -21,6 +21,7 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 
 /**
  * Main module that is used in main.ts.
@@ -46,6 +47,7 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
         AlertComponent,
         HomePageComponent,
         AdminPageComponent,
+        QuizItemComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

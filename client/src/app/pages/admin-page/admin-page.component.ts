@@ -45,4 +45,23 @@ export class AdminPageComponent implements OnInit {
         this.admin.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
         this.router.navigate(['/home/admin/quizzes/quiz']);
     }
+
+    handle(action: { type: string; quizIndex: number }) {
+        switch (action.type) {
+            case 'change visibility':
+                this.admin.changeQuizVisibility(action.quizIndex);
+                break;
+            case 'edit':
+                this.gotoQuizPage(action.quizIndex);
+                break;
+            case 'export':
+                this.admin.downloadQuiz(action.quizIndex);
+                break;
+            case 'delete':
+                this.admin.deleteQuiz(action.quizIndex);
+                break;
+            default:
+                break;
+        }
+    }
 }
