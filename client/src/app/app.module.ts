@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
@@ -54,7 +54,7 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
         QuestionItemComponent,
         QuestionFormComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, DragDropModule],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, DragDropModule, ReactiveFormsModule],
     providers: [],
     bootstrap: [AppComponent],
 })
