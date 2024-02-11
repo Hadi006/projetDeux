@@ -32,4 +32,17 @@ export class QuestionBankComponent implements OnInit {
 
         this.questionBank.fetchQuestions();
     }
+
+    handle(action: { type: string; questionIndex: number }) {
+        switch (action.type) {
+            case 'edit':
+                this.openQuestionForm(action.questionIndex);
+                break;
+            case 'delete':
+                this.questionBank.deleteQuestion(action.questionIndex);
+                break;
+            default:
+                break;
+        }
+    }
 }
