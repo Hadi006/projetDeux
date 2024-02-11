@@ -72,10 +72,6 @@ export class PlayerHandlerService {
     }
 
     validatePlayerAnswers(questionId: string): void {
-        if (this.internalPlayers.size === 0  || !questionId) {
-            return;
-        }
-
         this.internalPlayers.forEach((player) => {
             this.communicationService
                 .post<boolean>(`questions/${questionId}/validate-answer`, player.answer)
@@ -83,7 +79,6 @@ export class PlayerHandlerService {
                     if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
                         return;
                     }
-                    console.log(response.body);
                     player.isCorrect = response.body;
                 });
         });
