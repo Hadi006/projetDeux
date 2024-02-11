@@ -18,4 +18,8 @@ export class QuestionBankService {
 
         return RESULT;
     }
+
+    async updateQuestion(question: Question, id: string): Promise<boolean> {
+        return await this.database.update('questions', { id }, [{ $set: question }]);
+    }
 }
