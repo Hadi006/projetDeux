@@ -34,4 +34,20 @@ export class AnswerValidator {
         });
         return this;
     }
+
+    checkType(): AnswerValidator {
+        this.tasks.push(() => {
+            if (!this.isObject) {
+                return;
+            }
+
+            const ANSWER = this.answer as Answer;
+            if (!('isCorrect' in ANSWER) || typeof ANSWER.isCorrect !== 'boolean') {
+                this.compilationError += 'Answer : type is missing !\n';
+                return;
+            }
+            this.newAnswer.isCorrect = ANSWER.isCorrect;
+        });
+        return this;
+    }
 }
