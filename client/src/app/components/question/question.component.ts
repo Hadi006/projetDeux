@@ -1,9 +1,9 @@
 import { Component, HostListener } from '@angular/core';
-import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { Answer, Question } from '@common/quiz';
 
 @Component({
     selector: 'app-question',
@@ -21,8 +21,12 @@ export class QuestionComponent {
         this.player = this.playerHandlerService.createPlayer();
     }
 
-    get questionData(): QuestionData | undefined {
+    get questionData(): Question | undefined {
         return this.questionHandlerService.currentQuestion;
+    }
+
+    get correctAnswers(): Answer[] {
+        return this.questionHandlerService.currentAnswers;
     }
 
     get isChecked(): boolean[] {
@@ -35,7 +39,7 @@ export class QuestionComponent {
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.questionData || !this.questionData.isMCQ || !this.canEditAnswer()) {
+        if (!this.questionData || !(this.questionData.type === 'multiple-choices') || !this.canEditAnswer()) {
             return;
         }
 

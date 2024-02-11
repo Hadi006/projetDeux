@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { QuestionData } from '@common/question-data';
+import { Answer, Question } from '@common/quiz';
 import { Subscription } from 'rxjs';
 import { GameStateService, GameState } from './game-state.service';
 import { GameTimersService } from './game-timers.service';
@@ -11,7 +11,7 @@ export const GOOD_ANSWER_MULTIPLIER = 1.2;
     providedIn: 'root',
 })
 export class QuestionHandlerService implements OnDestroy {
-    private internalQuestionsData: QuestionData[];
+    private internalQuestions: Question[];
     private currentQuestionIndex = 0;
     private internalNQuestions: number = 0;
     private timerEndedSubscription: Subscription;
@@ -24,20 +24,25 @@ export class QuestionHandlerService implements OnDestroy {
         this.subscribeToTimerEnded();
     }
 
-    get currentQuestion(): QuestionData | undefined {
-        return this.internalQuestionsData[this.currentQuestionIndex];
+    get currentQuestion(): Question | undefined {
+        return this.internalQuestions[this.currentQuestionIndex];
     }
+
+    get currentAnswers(): Answer[] {
+return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
+    }
+
     get nQuestions(): number {
         return this.internalNQuestions;
     }
 
-    set questionsData(data: QuestionData[]) {
-        this.internalQuestionsData = data;
+    set questionsData(data: Question[]) {
+        this.internalQuestions = data;
         this.internalNQuestions = data.length;
     }
 
     resetAnswers(): void {
-        const nAnswers = this.currentQuestion?.answers.length || 0;
+        const nAnswers = this.currentQuestion?.choices.length || 0;
         this.playerHandlerService.resetPlayerAnswers(nAnswers);
     }
 
@@ -63,12 +68,12 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     isAnswerCorrect(isChecked: boolean[]): boolean {
-        if (!this.currentQuestion?.isMCQ) {
+        if (!(this.currentQuestion?.type === 'multiple-choices')) {
             return true;
         }
 
-        const answers = this.currentQuestion.answers;
-        const correctAnswers = this.currentQuestion.correctAnswers;
+        const answers = this.currentQuestion.choices;
+        const correctAnswers = this.currentQuestion.choices.filter((answer) => answer.isCorrect);
 
         const allCheckedAreCorrect = isChecked.every((checked, index) => {
             return !checked || (checked && correctAnswers.includes(answers[index]));

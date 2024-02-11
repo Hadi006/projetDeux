@@ -39,7 +39,7 @@ export class GameChoicePageComponent implements OnInit, OnDestroy {
         if (!this.chosenQuiz) {
             return;
         }
-        this.gameHandlerService.loadGameData();
+        this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['lobby']);
     }
 
@@ -47,7 +47,7 @@ export class GameChoicePageComponent implements OnInit, OnDestroy {
         if (!this.chosenQuiz) {
             return;
         }
-        this.gameHandlerService.loadGameData();
+        this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['/play']);
     }
 
