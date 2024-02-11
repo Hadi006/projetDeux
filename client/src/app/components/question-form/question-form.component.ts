@@ -19,4 +19,8 @@ export class QuestionFormComponent {
         this.question = { ...admin.selectedQuestion };
         // this.question.choices = this.question.choices.map((choice) => ({ ...choice }));
     }
+
+    addChoice() {
+        this.question.choices.push({ text: '', isCorrect: false });
+    }
 }
