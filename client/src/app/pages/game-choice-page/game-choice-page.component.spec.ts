@@ -41,6 +41,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should navigate on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        component.chosenGame = 'Math';
         component.startGame();
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
