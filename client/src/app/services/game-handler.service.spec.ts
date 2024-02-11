@@ -1,16 +1,54 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GameHandlerService, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
-import { QuestionData } from '@common/question-data';
+import { GameHandlerService, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
 import { Subject } from 'rxjs';
+import { Question, Quiz } from '@common/quiz';
 
 describe('GameHandlerService', () => {
+    const TEST_QUIZ: Quiz = {
+        id: '0',
+        title: 'Math',
+        visible: true,
+        description: 'Math quiz',
+        duration: 10,
+        lastModification: new Date(),
+        questions: [
+            {
+                id: '0',
+                points: 1,
+                text: '1+1?',
+                choices: [
+                    {
+                        text: '1',
+                        isCorrect: false,
+                    },
+                    {
+                        text: '2',
+                        isCorrect: true,
+                    },
+                    {
+                        text: '3',
+                        isCorrect: false,
+                    },
+                ],
+                type: 'multiple-choices',
+            },
+            {
+                id: '1',
+                points: 1,
+                text: 'What is the capital of France?',
+                choices: [],
+                type: 'text',
+            },
+        ],
+    };
+
     let service: GameHandlerService;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
-    let questionsData: QuestionData[];
+    let questionsData: Question[];
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
     let gameStateService: GameStateService;
     let mockSubject: Subject<void>;
@@ -75,18 +113,16 @@ describe('GameHandlerService', () => {
     });
 
     it('loadGameData should load the correct game', () => {
-        // TODO - mock the server response
-        service.loadGameData();
-        expect(service.gameData).toEqual(TEST_GAME);
+        service.loadQuizData(TEST_QUIZ);
+        expect(service.quizData).toEqual(TEST_QUIZ);
     });
 
     it('startGame should set questionsData, reset player answers and start question timer with the correct value', () => {
-        // TODO - mock the server response
-        service.loadGameData();
+        service.loadQuizData(TEST_QUIZ);
         service.startGame();
-        expect(questionsData).toEqual(TEST_GAME.questions);
+        expect(questionsData).toEqual(TEST_QUIZ.questions);
         expect(questionHandlerServiceSpy.resetAnswers).toHaveBeenCalled();
-        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
+        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
     });
 
     it('setUpNextState should set the game correctly if state is show question', () => {
@@ -99,10 +135,10 @@ describe('GameHandlerService', () => {
 
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
         gameStateService.gameState = GameState.ShowAnswer;
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_GAME.questions[0]);
-        service.loadGameData();
+        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_QUIZ.questions[0]);
+        service.loadQuizData(TEST_QUIZ);
         service.setUpNextState();
-        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_GAME.timePerQuestion);
+        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
         expect(gameStateService.gameState.valueOf()).toBe(GameState.ShowQuestion.valueOf());
     });
 
