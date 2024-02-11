@@ -149,4 +149,27 @@ export class QuizValidator {
 
         return this;
     }
+
+    async compile(): Promise<{ quiz: Quiz; compilationError: string }> {
+        for (const TASK of this.tasks) {
+            await TASK();
+        }
+        this.newQuiz.lastModification = new Date();
+        this.newQuiz.visible = false;
+
+        return { quiz: this.newQuiz, compilationError: this.compilationError };
+    }
+
+    private checkType(): QuizValidator {
+        this.tasks.push(async () => {
+            if (!this.quiz || typeof this.quiz !== 'object') {
+                this.compilationError += 'Quiz : must be an object of type Quiz !\n';
+                this.isObject = false;
+                return;
+            }
+            this.isObject = true;
+        });
+
+        return this;
+    }
 }
