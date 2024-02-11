@@ -172,7 +172,7 @@ describe('QuestionBankController', () => {
             .expect(httpStatus.OK)
             .then((response) => {
                 expect(questionBankServiceStub.validateAnswer.calledWith(MOCK_QUESTIONS[0], [true, false])).to.equal(true);
-                expect(response.body).to.equal(true);
+                expect(response.body.correct).to.equal(true);
             });
     });
 
