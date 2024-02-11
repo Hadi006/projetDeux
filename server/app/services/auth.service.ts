@@ -1,3 +1,5 @@
+import { AccessToken } from '@common/access-token';
+import { randomUUID } from 'crypto';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 
@@ -20,5 +22,13 @@ export class AuthService {
         const RESULT = await this.database.get('tokens', { id: token.id });
 
         return RESULT && RESULT.length > 0;
+    }
+
+    async generateAccessToken(): Promise<AccessToken> {
+        const ONE_HOUR_MS = 3_600_000;
+        const TOKEN = { id: randomUUID(), expirationDate: Date.now() + ONE_HOUR_MS };
+        this.database.add('tokens', TOKEN);
+
+        return TOKEN;
     }
 }
