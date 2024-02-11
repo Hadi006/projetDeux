@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 export class GameChoicePageComponent implements OnDestroy {
     quizzes: Quiz[] = [];
 
-    chosenGame: string | null = null;
+    chosenQuiz: Quiz;
 
     private quizzesSubscription: Subscription;
 
@@ -27,8 +27,8 @@ export class GameChoicePageComponent implements OnDestroy {
         });
     }
 
-    chooseGame(game: string) {
-        this.chosenGame = game;
+    chooseGame(quiz: Quiz) {
+        this.chosenQuiz = quiz;
     }
 
     previewQuestions() {
@@ -43,7 +43,7 @@ export class GameChoicePageComponent implements OnDestroy {
     }
 
     testGame() {
-        if (this.chosenGame) {
+        if (this.chosenQuiz) {
             this.gameHandlerService.loadGameData();
             this.router.navigate(['/play']);
         }
