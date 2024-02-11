@@ -65,7 +65,7 @@ export class QuestionBankController {
                 return;
             }
 
-            const RESULT = this.questionBankService.validateAnswer(QUESTION, ANSWER);
+            const RESULT = await this.questionBankService.validateAnswer(QUESTION, ANSWER);
             res.status(httpStatus.OK).json(RESULT);
         });
 
