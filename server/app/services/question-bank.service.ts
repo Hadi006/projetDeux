@@ -48,16 +48,12 @@ export class QuestionBankService {
             return true;
         }
 
-        const CORRECT_ANSWERS = question.choices.filter((choice) => choice.isCorrect);
+        for (let i = 0; i < question.choices.length; i++) {
+            if (question.choices[i].isCorrect !== playerAnswers[i]) {
+                return false;
+            }
+        }
 
-        const allCheckedAreCorrect = playerAnswers.every((checked, index) => {
-            return !checked || (checked && CORRECT_ANSWERS.includes(question.choices[index]));
-        });
-
-        const allCorrectAreChecked = CORRECT_ANSWERS.every((correctAnswer) => {
-            return playerAnswers[question.choices.indexOf(correctAnswer)];
-        });
-
-        return allCheckedAreCorrect && allCorrectAreChecked;
+        return true;
     }
 }
