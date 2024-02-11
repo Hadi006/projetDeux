@@ -8,7 +8,7 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class PublicQuizzesService {
-    readonly quizzes$: Subject<Quiz[]>;
+    readonly quizzes$: Subject<Quiz[]> = new Subject<Quiz[]>();
 
     constructor(private http: CommunicationService) {}
 
