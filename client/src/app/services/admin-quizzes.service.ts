@@ -47,7 +47,7 @@ export class AdminQuizzesService {
             this.quizzes = response.body;
             this.quizzes$.next(this.quizzes);
         });
-    };
+    }
 
     setSelectedQuiz(quizIndex: number) {
         this.selectedQuizIndex = quizIndex;
