@@ -1,0 +1,13 @@
+<a routerLink="/home">Home</a>
+<div class="quiz-list">
+    <div>
+        <input type="file" accept=".json" (change)="importQuiz($event)">
+        <button (click)="gotoQuizPage()">Create Quiz</button>
+    </div>
+    <br />
+    Quiz List
+    <div *ngFor="let quiz of quizzes | async; let i = index">
+        <app-quiz-item [quiz]="quiz" [index]="i" (action)="handle($event)"></app-quiz-item>
+    </div>
+</div>
+<app-question-bank></app-question-bank>
