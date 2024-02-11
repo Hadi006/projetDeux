@@ -40,6 +40,7 @@ export class Application {
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/auth', this.authController.router);
+        this.app.use('/api/quizzes', this.quizBankController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });
