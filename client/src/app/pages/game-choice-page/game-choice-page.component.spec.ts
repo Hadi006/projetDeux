@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameChoicePageComponent } from './game-choice-page.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { Quiz } from '@common/quiz';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
@@ -27,7 +28,7 @@ describe('GameChoicePageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
+            imports: [RouterTestingModule, HttpClientTestingModule],
             declarations: [GameChoicePageComponent],
             providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
         }).compileComponents();
