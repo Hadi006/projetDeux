@@ -58,6 +58,10 @@ describe('GameChoicePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should call fetchVisibleQuizzes on init', () => {
+        expect(publicQuizzesServiceSpy.fetchVisibleQuizzes).toHaveBeenCalled();
+    });
+
     it('should set quizzes on fetchVisibleQuizzes call', () => {
         publicQuizzesServiceSpy.quizzes$.next([mockQuiz]);
         expect(component.quizzes).toEqual([mockQuiz]);
