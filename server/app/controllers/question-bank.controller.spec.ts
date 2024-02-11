@@ -163,17 +163,6 @@ describe('QuestionBankController', () => {
             });
     });
 
-    it('DELETE /:questionId should delete a question', async () => {
-        questionBankServiceStub.deleteQuestion.resolves(true);
-        return supertest(expressApp)
-            .delete(`/api/questions/${PARAM_ID}`)
-            .expect(httpStatus.OK)
-            .then((response) => {
-                expect(questionBankServiceStub.deleteQuestion.calledWith(PARAM_ID)).to.equal(true);
-                expect(response.body).to.deep.equal({});
-            });
-    });
-
     it('POST /:questionId/validate-answer should validate an answer', async () => {
         questionBankServiceStub.getQuestion.resolves(MOCK_QUESTIONS[0]);
         questionBankServiceStub.validateAnswer.resolves(true);
@@ -184,6 +173,17 @@ describe('QuestionBankController', () => {
             .then((response) => {
                 expect(questionBankServiceStub.validateAnswer.calledWith(MOCK_QUESTIONS[0], [true, false])).to.equal(true);
                 expect(response.body).to.equal(true);
+            });
+    });
+
+    it('DELETE /:questionId should delete a question', async () => {
+        questionBankServiceStub.deleteQuestion.resolves(true);
+        return supertest(expressApp)
+            .delete(`/api/questions/${PARAM_ID}`)
+            .expect(httpStatus.OK)
+            .then((response) => {
+                expect(questionBankServiceStub.deleteQuestion.calledWith(PARAM_ID)).to.equal(true);
+                expect(response.body).to.deep.equal({});
             });
     });
 
