@@ -35,31 +35,38 @@ describe('GameChoicePageComponent', () => {
 
     it('should set chosenGame on choisirJeu call', () => {
         const game = 'Math';
-        component.chooseGame(game);
-        expect(component.chosenGame).toEqual(game);
-    });
-
-    it('should navigate on createGame call', () => {
-        const game = 'Science';
-        component.chooseGame(game);
-        const navigateSpy = spyOn(router, 'navigate');
-        component.previewQuestions();
-        expect(navigateSpy).toHaveBeenCalledWith(['/questions', game]);
+        component.chooseQuiz(game);
+        expect(component.chooseQuiz).toEqual(game);
     });
 
     it('should navigate on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz = 'Math';
         component.startGame();
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
     });
 
+    it('should do nothing on startGame call if chosenGame is null', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.startGame();
+        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
+        expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
     it('should navigate on testGame call', () => {
         const game = 'Programmation';
-        component.chooseGame(game);
+        component.chooseQuiz(game);
         const navigateSpy = spyOn(router, 'navigate');
         component.testGame();
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(navigateSpy).toHaveBeenCalledWith(['/play']);
+    });
+
+    it('should do nothing on testGame call if chosenGame is null', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.testGame();
+        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
+        expect(navigateSpy).not.toHaveBeenCalled();
     });
 });

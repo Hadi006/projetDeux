@@ -27,26 +27,24 @@ export class GameChoicePageComponent implements OnDestroy {
         });
     }
 
-    chooseGame(quiz: Quiz) {
+    chooseQuiz(quiz: Quiz) {
         this.chosenQuiz = quiz;
     }
 
-    previewQuestions() {
-        if (this.chosenGame) {
-            this.router.navigate(['/questions', this.chosenGame]);
-        }
-    }
-
     startGame() {
+        if (!this.chosenQuiz) {
+            return;
+        }
         this.gameHandlerService.loadGameData();
         this.router.navigate(['lobby']);
     }
 
     testGame() {
-        if (this.chosenQuiz) {
-            this.gameHandlerService.loadGameData();
-            this.router.navigate(['/play']);
+        if (!this.chosenQuiz) {
+            return;
         }
+        this.gameHandlerService.loadGameData();
+        this.router.navigate(['/play']);
     }
 
     ngOnDestroy() {
