@@ -62,4 +62,11 @@ describe('GameChoicePageComponent', () => {
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(navigateSpy).toHaveBeenCalledWith(['/play']);
     });
+
+    it('should do nothing on testGame call if chosenGame is null', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.testGame();
+        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
+        expect(navigateSpy).not.toHaveBeenCalled();
+    });
 });
