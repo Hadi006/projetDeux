@@ -1,6 +1,7 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Question } from '@common/quiz';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { CommunicationService } from './communication.service';
 
 @Injectable({
