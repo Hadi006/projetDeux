@@ -1,3 +1,4 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AdminService } from '@app/services/admin.service';
@@ -44,5 +45,19 @@ export class QuestionBankComponent implements OnInit {
             default:
                 break;
         }
+    }
+
+    drop(event: CdkDragDrop<Question[] | null>) {
+        if (event.container.data === null || event.previousContainer.data === null || event.previousContainer === event.container) {
+            return;
+        }
+
+        const NEW_QUESTION: Question = event.previousContainer.data[event.previousIndex];
+
+        this.questionBank.addQuestion(NEW_QUESTION).subscribe((error: string) => {
+            if (error) {
+                this.dialog.open(AlertComponent, { data: { message: error } });
+            }
+        });
     }
 }
