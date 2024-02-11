@@ -6,7 +6,7 @@
         </button>
     </div>
     <p *ngIf="chosenQuiz">Jeu sélectionné: {{ chosenQuiz.title }}</p>
-    <app-description-panel [selectedGame]="chosenQuiz"></app-description-panel>
+    <app-description-panel [selectedQuiz]="chosenQuiz"></app-description-panel>
 </div>
 <div class="button-navigation">
     <button routerLink="/home">Retour</button>
