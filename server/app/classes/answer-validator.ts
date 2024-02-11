@@ -18,4 +18,20 @@ export class AnswerValidator {
         };
         this.checkObject();
     }
+
+    checkText(): AnswerValidator {
+        this.tasks.push(() => {
+            if (!this.isObject) {
+                return;
+            }
+
+            const ANSWER = this.answer as Answer;
+            if (!('text' in ANSWER) || typeof ANSWER.text !== 'string' || ANSWER.text === '') {
+                this.compilationError += 'Answer : text is missing !\n';
+                return;
+            }
+            this.newAnswer.text = ANSWER.text;
+        });
+        return this;
+    }
 }
