@@ -97,4 +97,11 @@ describe('GameChoicePageComponent', () => {
         expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
+
+    it('should unsubscribe on destroy', () => {
+        component.quizzes = [];
+        component.ngOnDestroy();
+        publicQuizzesServiceSpy.quizzes$.next([mockQuiz]);
+        expect(component.quizzes).toEqual([]);
+    });
 });
