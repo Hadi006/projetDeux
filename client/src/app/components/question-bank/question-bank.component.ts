@@ -5,6 +5,8 @@ import { AdminService } from '@app/services/admin.service';
 import { Question } from '@common/quiz';
 import { Observable, map } from 'rxjs';
 import { QuestionBankService } from 'src/app/services/question-bank.service';
+import { AlertComponent } from '../alert/alert.component';
+import { QuestionFormComponent } from '../question-form/question-form.component';
 
 @Component({
     selector: 'app-question-bank',
@@ -55,6 +57,31 @@ export class QuestionBankComponent implements OnInit {
         const NEW_QUESTION: Question = event.previousContainer.data[event.previousIndex];
 
         this.questionBank.addQuestion(NEW_QUESTION).subscribe((error: string) => {
+            if (error) {
+                this.dialog.open(AlertComponent, { data: { message: error } });
+            }
+        });
+    }
+
+    openQuestionForm(index?: number) {
+        const INVALID_INDEX = -1;
+        const isNewQuestion = index === undefined;
+        const question = this.questionBank.getQuestion(isNewQuestion ? INVALID_INDEX : index);
+        this.admin.selectedQuestion = question;
+
+        const questionFormRef = this.dialog.open(QuestionFormComponent);
+
+        questionFormRef.afterClosed().subscribe((editedQuestion?: Question) => {
+            if (editedQuestion) {
+                this.processQuestion(editedQuestion, isNewQuestion);
+            }
+        });
+    }
+
+    private processQuestion(question: Question, isNew: boolean) {
+        const operation = isNew ? this.questionBank.addQuestion(question) : this.questionBank.updateQuestion(question);
+
+        operation.subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             }
