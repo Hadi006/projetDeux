@@ -39,6 +39,16 @@ export class AdminQuizzesService {
         });
     }
 
+    fetchVisibleQuizzes() {
+        this.http.get<Quiz[]>('quizzes/visible').subscribe((response: HttpResponse<Quiz[]>) => {
+            if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+                return;
+            }
+            this.quizzes = response.body;
+            this.quizzes$.next(this.quizzes);
+        });
+    };
+
     setSelectedQuiz(quizIndex: number) {
         this.selectedQuizIndex = quizIndex;
     }
