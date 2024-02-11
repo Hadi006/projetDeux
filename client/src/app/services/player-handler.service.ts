@@ -72,6 +72,10 @@ export class PlayerHandlerService {
     }
 
     validatePlayerAnswers(questionId: string): void {
+        if (this.internalPlayers.size === 0) {
+            return;
+        }
+
         this.internalPlayers.forEach((player) => {
             this.communicationService
                 .post<boolean>(`questions/${questionId}/validate-answer`, player.answer)
