@@ -74,6 +74,17 @@ describe('QuizBankController', () => {
             });
     });
 
+    it('GET /visible should return visible quizzes from quiz service', async () => {
+        quizBankServiceStub.getVisibleQuizzes.resolves(MOCK_QUIZZES);
+
+        return supertest(expressApp)
+            .get('/api/quizzes/visible')
+            .expect(httpStatus.OK)
+            .then((response) => {
+                expect(response.body).to.deep.equal(EXPECTED_QUIZZES);
+            });
+    });
+
     it('GET /:quizId/download should return a quiz from quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
         const noIdQuestion = { ...MOCK_QUESTION };
