@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminLoginPageComponent } from '@app/pages/admin-login-page/admin-login-page.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
@@ -9,6 +10,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: HomePageComponent },
+    { path: 'admin/login', component: AdminLoginPageComponent },
     { path: 'game', component: GameChoicePageComponent },
     { path: 'material', component: MaterialPageComponent },
     { path: 'lobby', component: LobbyOrganizerPageComponent },

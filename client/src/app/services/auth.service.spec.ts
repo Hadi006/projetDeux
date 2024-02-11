@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { AuthService, INVALID_TOKEN } from '@app/services/auth.service';
 import { CommunicationService } from '@app/services/communication.service';
-import { AccessToken } from '@common/acesss-token';
+import { AccessToken } from '@common/access-token';
 import { of, throwError } from 'rxjs';
 
 describe('AuthService', () => {

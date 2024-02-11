@@ -1,6 +1,6 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AccessToken } from '@common/acesss-token';
+import { AccessToken } from '@common/access-token';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { CommunicationService } from './communication.service';

@@ -1,0 +1,11 @@
+<span>{{ index + 1 }}</span>
+<div class="truncated-text">| Question : {{ question.text }}</div>
+<span>{{ question.type  }}</span>
+<span>{{ question.points }} pts |</span>
+<span *ngIf="displayDate">{{ question.lastModification }}</span>
+<button type="button"  mat-icon-button (click)="onAction('edit')">
+    <mat-icon>edit</mat-icon>
+</button>
+<button type="button" mat-icon-button (click)="onAction('delete')">
+    <mat-icon>delete</mat-icon>
+</button>
