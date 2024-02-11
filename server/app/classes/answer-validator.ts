@@ -50,4 +50,10 @@ export class AnswerValidator {
         });
         return this;
     }
+
+    compile(): { answer: Answer; compilationError: string } {
+        this.tasks.forEach((task) => task());
+
+        return { answer: this.newAnswer, compilationError: this.compilationError };
+    }
 }
