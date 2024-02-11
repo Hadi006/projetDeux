@@ -39,6 +39,15 @@ describe('QuizBankService', () => {
         const quizzes = new Array(3).fill(MOCK_QUIZ);
         databaseServiceStub.get.resolves(quizzes);
         const result = await quizBankService.getQuizzes();
+        expect(databaseServiceStub.get.calledWith('quizzes')).to.equal(true);
+        expect(result).to.deep.equal(quizzes);
+    });
+
+    it('should return all visible quizzes', async () => {
+        const quizzes = new Array(3).fill(MOCK_QUIZ);
+        databaseServiceStub.get.resolves(quizzes);
+        const result = await quizBankService.getVisibleQuizzes();
+        expect(databaseServiceStub.get.calledWith('quizzes', { visible: true })).to.equal(true);
         expect(result).to.deep.equal(quizzes);
     });
 
