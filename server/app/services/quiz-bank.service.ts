@@ -46,4 +46,12 @@ export class QuizBankService {
         const RESULT = await QUIZ.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
         return { quiz: RESULT.quiz, errorLog: RESULT.compilationError };
     }
+
+    async changeQuizVisibility(quizId: string): Promise<boolean> {
+        const QUERY = { id: quizId };
+        const UPDATE = [{ $set: { visible: { $not: '$visible' } } }];
+        const UPDATED = await this.database.update('quizzes', QUERY, UPDATE);
+
+        return UPDATED;
+    }
 }
