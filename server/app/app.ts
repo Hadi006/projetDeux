@@ -7,6 +7,7 @@ import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
+import { QuizBankController } from './controllers/quiz-bank.controller';
 
 @Service()
 export class Application {
@@ -15,8 +16,8 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
     constructor(
-        // eslint-disable-next-line prettier/prettier
         private readonly authController: AuthController,
+        private readonly quizBankController: QuizBankController,
     ) {
         this.app = express();
 
