@@ -33,4 +33,8 @@ export class QuestionBankService {
         await this.database.add('questions', question);
         return true;
     }
+
+    async deleteQuestion(questionId: string): Promise<boolean> {
+        return await this.database.delete('questions', { id: questionId });
+    }
 }
