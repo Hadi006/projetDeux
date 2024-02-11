@@ -30,4 +30,13 @@ export class QuizBankService {
         }
         await this.database.add('quizzes', quiz);
     }
+
+    async updateQuiz(quiz: Quiz) {
+        const QUERY = { id: quiz.id };
+        const UPDATE = [{ $set: quiz }];
+        const UPDATED = await this.database.update('quizzes', QUERY, UPDATE);
+        if (!UPDATED) {
+            await this.database.add('quizzes', quiz);
+        }
+    }
 }
