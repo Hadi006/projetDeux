@@ -19,7 +19,6 @@ export class CreateQuizPageComponent implements OnInit {
         private admin: AdminQuizzesService,
         private router: Router,
         private dialog: MatDialog,
-        private alert: AlertComponent,
     ) {}
 
     ngOnInit() {
@@ -96,5 +95,13 @@ export class CreateQuizPageComponent implements OnInit {
                 choices: [{ text: '', isCorrect: false }],
             }
         );
+    }
+
+    private alert(error: string) {
+        this.dialog.open(AlertComponent, {
+            data: { message: error },
+            width: '300px',
+            position: { top: '50%', left: '50%' },
+        });
     }
 }
