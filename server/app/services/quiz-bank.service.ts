@@ -12,6 +12,11 @@ export class QuizBankService {
         return RESULT as Quiz[];
     }
 
+    async getVisibleQuizzes(): Promise<Quiz[]> {
+        const RESULT = await this.database.get('quizzes', { visible: true });
+        return RESULT as Quiz[];
+    }
+
     async exportQuiz(quizId: string): Promise<Quiz | undefined> {
         const RESULT = (await this.database.get('quizzes', { id: quizId }, { visible: 0 })) as Quiz[];
         let quiz = RESULT[0];
