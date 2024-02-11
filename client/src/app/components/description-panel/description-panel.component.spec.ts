@@ -1,4 +1,3 @@
-import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DescriptionPanelComponent } from './description-panel.component';
 
@@ -21,5 +20,4 @@ describe('DescriptionPanelComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
 });
