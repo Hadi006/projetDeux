@@ -1,12 +1,12 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
+import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question } from '@common/quiz';
 import { Observable, map } from 'rxjs';
 import { QuestionBankService } from 'src/app/services/question-bank.service';
-import { AlertComponent } from '../alert/alert.component';
-import { QuestionFormComponent } from '../question-form/question-form.component';
 
 @Component({
     selector: 'app-question-bank',
