@@ -7,6 +7,7 @@ import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
+import { QuizBankController } from './controllers/quiz-bank.controller';
 
 @Service()
 export class Application {
@@ -15,8 +16,8 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
     constructor(
-        // eslint-disable-next-line prettier/prettier
         private readonly authController: AuthController,
+        private readonly quizBankController: QuizBankController,
     ) {
         this.app = express();
 
@@ -39,6 +40,7 @@ export class Application {
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/auth', this.authController.router);
+        this.app.use('/api/quizzes', this.quizBankController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });
