@@ -29,7 +29,7 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     get currentAnswers(): Answer[] {
-return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
+        return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
     }
 
     get nQuestions(): number {
