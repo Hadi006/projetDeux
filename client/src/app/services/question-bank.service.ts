@@ -36,4 +36,23 @@ export class QuestionBankService {
             }
         );
     }
+
+    addQuestion(question: Question): Observable<string> {
+        return this.http.post<{ question: Question; compilationError: string }>('questions', { question }).pipe(
+            map((response) => {
+                if (!response.body) {
+                    return 'Server error';
+                }
+
+                if (response.body.compilationError) {
+                    return response.body.compilationError;
+                }
+
+                this.questions.push(response.body.question);
+                this.questions$.next(this.questions);
+
+                return '';
+            }),
+        );
+    }
 }
