@@ -111,6 +111,16 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 
+    it('currentAnswers getter should return the correct answers', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        expect(service.currentAnswers).toEqual(answers.filter((answer) => answer.isCorrect));
+    });
+
+    it('currentAnswers getter should return an empty array if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        expect(service.currentAnswers).toEqual([]);
+    });
+
     it('questionsData setter should set the questionsData and nQuestions', () => {
         service.questionsData = QUESTIONS_DATA;
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
