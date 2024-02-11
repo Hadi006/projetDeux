@@ -31,6 +31,12 @@ describe('QuestionBankService', () => {
         expect(result).to.deep.equal(questions);
     });
 
+    it('should return a question', async () => {
+        databaseServiceStub.get.resolves([MOCK_QUESTION]);
+        const result = await questionBankService.getQuestion(MOCK_QUESTION.id);
+        expect(result).to.deep.equal(MOCK_QUESTION);
+    });
+
     it('should validate a question', () => {
         const result = questionBankService.validateQuestion(MOCK_QUESTION);
         expect(result).to.deep.equal({ question: MOCK_QUESTION, compilationError: '' });
@@ -72,5 +78,20 @@ describe('QuestionBankService', () => {
         const result = await questionBankService.deleteQuestion('1');
         expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
         expect(result).to.equal(false);
+    });
+
+    it('should validate an answer and return true', async () => {
+        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [true, false]);
+        expect(result).to.equal(true);
+    });
+
+    it('should validate an answer and return false', async () => {
+        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [false, true]);
+        expect(result).to.equal(false);
+    });
+
+    it('should validate an answer for a non multiple-choices question', async () => {
+        const result = await questionBankService.validateAnswer({ ...MOCK_QUESTION, type: 'open' }, [true, false]);
+        expect(result).to.equal(true);
     });
 });
