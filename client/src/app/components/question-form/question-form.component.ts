@@ -23,4 +23,8 @@ export class QuestionFormComponent {
     addChoice() {
         this.question.choices.push({ text: '', isCorrect: false });
     }
+
+    removeChoice(index: number) {
+        this.question.choices.splice(index, 1);
+    }
 }
