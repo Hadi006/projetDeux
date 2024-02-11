@@ -55,4 +55,24 @@ export class QuestionBankService {
             }),
         );
     }
+
+    updateQuestion(question: Question): Observable<string> {
+        return this.http.patch<{ question: Question; compilationError: string }>(`questions/${question.id}`, { question }).pipe(
+            map((response) => {
+                if (!response.body || !response.body.question || response.body.compilationError === undefined) {
+                    return 'Server error';
+                }
+
+                if (response.body.compilationError) {
+                    return response.body.compilationError;
+                }
+
+                const INDEX: number = this.questions.findIndex((q: Question) => q.id === question.id);
+                this.questions[INDEX] = response.body.question;
+                this.questions$.next(this.questions);
+
+                return '';
+            }),
+        );
+    }
 }
