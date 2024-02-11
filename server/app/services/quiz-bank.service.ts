@@ -1,3 +1,4 @@
+import { QuizValidator } from '@app/classes/quiz-validator';
 import { DatabaseService } from '@app/services/database.service';
 import { Quiz } from '@common/quiz';
 import { Service } from 'typedi';
@@ -38,5 +39,11 @@ export class QuizBankService {
         if (!UPDATED) {
             await this.database.add('quizzes', quiz);
         }
+    }
+
+    async verifyQuiz(quiz: unknown): Promise<{ quiz: Quiz; errorLog: string }> {
+        const QUIZ = new QuizValidator(quiz, async (query: object) => this.database.get<Quiz>('quizzes', query));
+        const RESULT = await QUIZ.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
+        return { quiz: RESULT.quiz, errorLog: RESULT.compilationError };
     }
 }
