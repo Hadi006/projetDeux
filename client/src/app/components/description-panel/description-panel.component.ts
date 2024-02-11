@@ -1,14 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-
-interface GameInfo {
-    description: string;
-    duration: string;
-    questions: string[];
-}
-
-interface Games {
-    [key: string]: GameInfo;
-}
+import { Question, Quiz } from '@common/quiz';
 
 @Component({
     selector: 'app-description-panel',
@@ -16,45 +7,22 @@ interface Games {
     styleUrls: ['./description-panel.component.scss'],
 })
 export class DescriptionPanelComponent implements OnChanges {
-    @Input() selectedGame: string | null = null;
+    @Input() selectedQuiz: Quiz | null = null;
     description: string = '';
     duration: string = '';
-    questions: string[] = [];
-    gamesInfo: Games = {
-        math: {
-            description: 'Une série de questions sur les mathématiques.',
-            duration: '30 secondes par question',
-            questions: ['1+1', '1x1', '1-1'],
-        },
-        science: {
-            description: 'Explorez les mystères de la science.',
-            duration: '45 secondes par question',
-            questions: ['Quelle est la base de la vie?', "Quel gaz est le plus abondant dans l'atmosphère terrestre?"],
-        },
-        programmation: {
-            description: 'Une série de questions sur les mathématiques.',
-            duration: '30 secondes par question',
-            questions: ['1+1', '1x1', '1-1'],
-        },
-        histoire: {
-            description: 'Explorez les mystères de la science.',
-            duration: '45 secondes par question',
-            questions: ['Quelle est la base de la vie?', "Quel gaz est le plus abondant dans l'atmosphère terrestre?"],
-        },
-    };
+    questions: Question[] = [];
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.selectedGame) {
-            this.updateGameInfo(this.selectedGame);
+            this.updateGameInfo(this.selectedQuiz);
         }
     }
 
-    private updateGameInfo(game: string | null) {
-        if (game && this.gamesInfo[game.toLowerCase()]) {
-            const gameInfo = this.gamesInfo[game.toLowerCase()];
-            this.description = gameInfo.description;
-            this.duration = gameInfo.duration;
-            this.questions = gameInfo.questions;
+    private updateGameInfo(quiz: Quiz | null) {
+        if (quiz) {
+            this.description = quiz.description;
+            this.duration = quiz.duration.toString() + ' seconds';
+            this.questions = quiz.questions;
         } else {
             this.description = 'Sélectionnez un jeu pour voir sa description, sa durée et ses questions.';
             this.duration = '';
