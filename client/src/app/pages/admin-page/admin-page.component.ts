@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Quiz } from '@common/quiz';
 import { Observable } from 'rxjs';
+import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
 
 @Component({
@@ -22,5 +23,20 @@ export class AdminPageComponent implements OnInit {
     ngOnInit() {
         this.quizzes = this.admin.quizzes$;
         this.admin.fetchQuizzes();
+    }
+
+    importQuiz(event: Event) {
+        const quizFile: File | undefined = (event.target as HTMLInputElement)?.files?.[0];
+        if (!quizFile) {
+            return;
+        }
+
+        this.admin.uploadQuiz(quizFile).subscribe((response: { quiz?: Quiz; errorLog: string }) => {
+            if (!response.errorLog) {
+                return;
+            }
+
+            this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
+        });
     }
 }
