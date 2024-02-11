@@ -1,8 +1,10 @@
+import { CdkDragDrop, copyArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
-import { Quiz } from '@common/quiz';
+import { Question, Quiz } from '@common/quiz';
 
 @Component({
     selector: 'app-create-quiz-page',
@@ -50,5 +52,13 @@ export class CreateQuizPageComponent implements OnInit {
                 this.quiz.questions[INDEX] = question;
             }
         });
+    }
+
+    drop(event: CdkDragDrop<Question[]>) {
+        if (event.container === event.previousContainer) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else if (event.previousContainer.data !== this.quiz.questions) {
+            copyArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+        }
     }
 }
