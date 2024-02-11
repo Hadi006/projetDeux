@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
@@ -30,5 +31,9 @@ export class QuestionFormComponent {
 
     trackByFn(index: number) {
         return index;
+    }
+
+    drop(event: CdkDragDrop<Question[]>) {
+        moveItemInArray(this.question.choices, event.previousIndex, event.currentIndex);
     }
 }
