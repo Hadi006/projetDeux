@@ -1,40 +1,65 @@
-import { QuestionValidator } from '@app/classes/question-validator';
-import { DatabaseService } from '@app/services/database.service';
+import { QuestionBankService } from '@app/services/question-bank.service';
 import { Question } from '@common/quiz';
-import { randomUUID } from 'crypto';
+import { Request, Response, Router } from 'express';
+import httpStatus from 'http-status-codes';
 import { Service } from 'typedi';
 
 @Service()
-export class QuestionBankService {
-    constructor(private database: DatabaseService) {}
+export class QuestionBankController {
+    router: Router;
 
-    async getQuestions(): Promise<Question[]> {
-        const QUESTIONS = await this.database.get<Question>('questions');
-        return QUESTIONS;
+    constructor(private readonly questionBankService: QuestionBankService) {
+        this.configureRouter();
     }
 
-    validateQuestion(question: unknown): { question: Question; compilationError: string } {
-        const QUESTION = new QuestionValidator(question);
-        const RESULT = QUESTION.checkId().checkText().checkType().checkPoints().checkChoices().compile();
+    private configureRouter() {
+        this.router = Router();
 
-        return RESULT;
-    }
+        this.router.get('/', async (req: Request, res: Response) => {
+            const QUESTIONS: Question[] = await this.questionBankService.getQuestions();
+            res.status(QUESTIONS.length === 0 ? httpStatus.NOT_FOUND : httpStatus.OK).json(QUESTIONS);
+        });
 
-    async updateQuestion(question: Question, id: string): Promise<boolean> {
-        return await this.database.update('questions', { id }, [{ $set: question }]);
-    }
+        this.router.post('/', async (req: Request, res: Response) => {
+            const QUESTION: unknown = req.body.question;
+            const RESULT: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(QUESTION);
+            if (!RESULT.compilationError) {
+                const ADDED = await this.questionBankService.addQuestion(RESULT.question);
+                if (!ADDED) {
+                    RESULT.compilationError = 'Question : text must be unique !';
+                    res.status(httpStatus.BAD_REQUEST).json(RESULT);
+                    return;
+                }
+                RESULT.question.lastModification = new Date();
+            }
 
-    async addQuestion(question: Question): Promise<boolean> {
-        question.id = randomUUID();
-        const SAME_NAMES = await this.database.get<Question>('questions', { text: question.text });
-        if (SAME_NAMES.length > 0) {
-            return false;
-        }
-        await this.database.add('questions', question);
-        return true;
-    }
+            res.status(RESULT.compilationError ? httpStatus.BAD_REQUEST : httpStatus.CREATED).json(RESULT);
+        });
 
-    async deleteQuestion(questionId: string): Promise<boolean> {
-        return await this.database.delete('questions', { id: questionId });
+        this.router.post('/validate', async (req: Request, res: Response) => {
+            const QUESTION: unknown = req.body.question;
+            const RESULT: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(QUESTION);
+
+            res.status(RESULT.compilationError ? httpStatus.BAD_REQUEST : httpStatus.OK).json(RESULT);
+        });
+
+        this.router.patch('/:questionId', async (req: Request, res: Response) => {
+            const QUESTION: unknown = req.body.question;
+            const RESULT: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(QUESTION);
+            if (!RESULT.compilationError) {
+                RESULT.question.lastModification = new Date();
+                const result = await this.questionBankService.updateQuestion(RESULT.question, req.params.questionId);
+                res.status(result ? httpStatus.OK : httpStatus.NOT_FOUND).json(RESULT);
+                return;
+            }
+
+            res.status(httpStatus.BAD_REQUEST).json(RESULT);
+        });
+
+        this.router.delete('/:questionId', async (req: Request, res: Response) => {
+            const QUESTION_ID: string = req.params.questionId;
+            const DELETED = await this.questionBankService.deleteQuestion(QUESTION_ID);
+            res.status(DELETED ? httpStatus.OK : httpStatus.NOT_FOUND).json({});
+        });
     }
 }
