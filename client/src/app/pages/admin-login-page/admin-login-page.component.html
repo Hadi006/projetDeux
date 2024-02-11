@@ -1,0 +1,6 @@
+<a routerLink="../">Back</a>
+<form [formGroup]="loginForm" (ngSubmit)="login()">
+  <label for="password">Password</label>
+  <input id="password" type="password" formControlName="password">
+  <button type="submit">Continuer</button>
+</form>
