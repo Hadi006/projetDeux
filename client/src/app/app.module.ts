@@ -21,6 +21,7 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
+import { QuestionItemComponent } from './components/question-item/question-item.component';
 
 /**
  * Main module that is used in main.ts.
@@ -46,6 +47,7 @@ import { QuestionBankComponent } from './components/question-bank/question-bank.
         AlertComponent,
         HomePageComponent,
         QuestionBankComponent,
+        QuestionItemComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
