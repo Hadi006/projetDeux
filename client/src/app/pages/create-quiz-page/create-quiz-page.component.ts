@@ -84,4 +84,17 @@ export class CreateQuizPageComponent implements OnInit {
             }
         });
     }
+
+    private getQuestion(index: number): Question {
+        return (
+            this.quiz.questions[index] || {
+                id: '',
+                text: '',
+                type: 'multiple-choice',
+                points: 0,
+                lastModification: new Date(),
+                choices: [{ text: '', isCorrect: false }],
+            }
+        );
+    }
 }
