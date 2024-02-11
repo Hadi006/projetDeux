@@ -2,6 +2,7 @@ import { CdkDragDrop, copyArrayItem, moveItemInArray } from '@angular/cdk/drag-d
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question, Quiz } from '@common/quiz';
@@ -18,6 +19,7 @@ export class CreateQuizPageComponent implements OnInit {
         private admin: AdminQuizzesService,
         private router: Router,
         private dialog: MatDialog,
+        private alert: AlertComponent,
     ) {}
 
     ngOnInit() {
@@ -69,5 +71,17 @@ export class CreateQuizPageComponent implements OnInit {
 
     close() {
         this.router.navigate(['/home/admin/quizzes']);
+    }
+
+    private processQuiz(quiz: Quiz, isNew: boolean) {
+        const operation = isNew ? this.admin.submitQuiz(quiz) : this.admin.updateQuiz(quiz);
+
+        operation.subscribe((response: { errorLog: string }) => {
+            if (response.errorLog) {
+                this.alert(response.errorLog);
+            } else {
+                this.close();
+            }
+        });
     }
 }
