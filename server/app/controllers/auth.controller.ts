@@ -27,5 +27,11 @@ export class AuthController {
 
             res.status(AUTHENTIFICATED ? httpStatus.OK : httpStatus.FORBIDDEN).json({ token: accessToken });
         });
+
+        this.router.post('/token', async (req: Request, res: Response) => {
+            const ACCESS_TOKEN: unknown = req.body.token;
+            const AUTHORIZED = await this.authService.validateToken(ACCESS_TOKEN);
+            res.status(AUTHORIZED ? httpStatus.OK : httpStatus.UNAUTHORIZED).json({ authorized: AUTHORIZED });
+        });
     }
 }
