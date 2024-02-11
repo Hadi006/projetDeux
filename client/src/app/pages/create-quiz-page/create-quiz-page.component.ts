@@ -66,4 +66,8 @@ export class CreateQuizPageComponent implements OnInit {
         const isNewQuiz = this.quiz.id === '';
         this.processQuiz(this.quiz, isNewQuiz);
     }
+
+    close() {
+        this.router.navigate(['/home/admin/quizzes']);
+    }
 }
