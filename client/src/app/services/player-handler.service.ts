@@ -72,7 +72,7 @@ export class PlayerHandlerService {
     }
 
     validatePlayerAnswers(questionId: string): void {
-        if (this.internalPlayers.size === 0) {
+        if (this.internalPlayers.size === 0  || !questionId) {
             return;
         }
 
@@ -83,6 +83,7 @@ export class PlayerHandlerService {
                     if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
                         return;
                     }
+                    console.log(response.body);
                     player.isCorrect = response.body;
                 });
         });
