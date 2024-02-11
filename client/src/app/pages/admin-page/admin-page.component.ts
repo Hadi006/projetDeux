@@ -39,4 +39,10 @@ export class AdminPageComponent implements OnInit {
             this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
         });
     }
+
+    gotoQuizPage(index?: number) {
+        const INVALID_INDEX = -1;
+        this.admin.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
+        this.router.navigate(['/home/admin/quizzes/quiz']);
+    }
 }
