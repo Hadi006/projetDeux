@@ -176,6 +176,18 @@ describe('QuestionBankController', () => {
             });
     });
 
+    it('POST /:questionId/validate-answer should return 404 when no question is found', async () => {
+        questionBankServiceStub.getQuestion.resolves(null);
+        return supertest(expressApp)
+            .post(`/api/questions/${PARAM_ID}/validate-answer`)
+            .send({ answer: [true, false] })
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(questionBankServiceStub.validateAnswer.called).to.equal(false);
+                expect(response.body).to.deep.equal({});
+            });
+    });
+
     it('DELETE /:questionId should delete a question', async () => {
         questionBankServiceStub.deleteQuestion.resolves(true);
         return supertest(expressApp)
