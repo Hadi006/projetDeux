@@ -112,7 +112,18 @@ describe('GameHandlerService', () => {
         expect(service.setUpNextState).toHaveBeenCalled();
     });
 
-    it('loadGameData should load the correct game', () => {
+    it('quizData getter should return the correct quiz', () => {
+        service.loadQuizData(TEST_QUIZ);
+        expect(service.quizData).toEqual(TEST_QUIZ);
+    });
+
+    it('gameEnded$ getter should return the correct subject', () => {
+        const subject = new Subject<void>();
+        service['internalGameEnded$'] = subject;
+        expect(service.gameEnded$).toEqual(subject);
+    });
+
+    it('loadQuizData should load the correct game', () => {
         service.loadQuizData(TEST_QUIZ);
         expect(service.quizData).toEqual(TEST_QUIZ);
     });
