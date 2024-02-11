@@ -61,4 +61,9 @@ export class CreateQuizPageComponent implements OnInit {
             copyArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
         }
     }
+
+    submitQuiz() {
+        const isNewQuiz = this.quiz.id === '';
+        this.processQuiz(this.quiz, isNewQuiz);
+    }
 }
