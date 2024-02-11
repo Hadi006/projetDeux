@@ -13,4 +13,27 @@ export class QuestionBankService {
     constructor(private http: CommunicationService) {
         this.questions$ = new BehaviorSubject<Question[]>(this.questions);
     }
+
+    fetchQuestions() {
+        this.http.get<Question[]>('questions').subscribe((response) => {
+            this.questions = response.body || [];
+            this.questions$.next(this.questions);
+        });
+    }
+
+    getQuestion(index: number): Question {
+        const QUESTION: Question | undefined = this.questions[index];
+        return (
+            QUESTION || {
+                id: '',
+                text: '',
+                type: 'multiple-choice',
+                points: 0,
+                choices: [
+                    { text: '', isCorrect: false },
+                    { text: '', isCorrect: false },
+                ],
+            }
+        );
+    }
 }
