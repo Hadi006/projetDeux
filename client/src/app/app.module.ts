@@ -25,6 +25,8 @@ import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
 import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 
 /**
  * Main module that is used in main.ts.
@@ -50,6 +52,8 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
         AdminLoginPageComponent,
         AlertComponent,
         HomePageComponent,
+        AdminPageComponent,
+        QuizItemComponent,
         QuestionBankComponent,
         QuestionItemComponent,
         QuestionFormComponent,
