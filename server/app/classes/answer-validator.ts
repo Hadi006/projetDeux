@@ -56,4 +56,16 @@ export class AnswerValidator {
 
         return { answer: this.newAnswer, compilationError: this.compilationError };
     }
+
+    private checkObject(): AnswerValidator {
+        this.tasks.push(() => {
+            if (!this.answer || typeof this.answer !== 'object') {
+                this.compilationError += 'Answer : must be an object of type Answer !\n';
+                this.isObject = false;
+                return;
+            }
+            this.isObject = true;
+        });
+        return this;
+    }
 }
