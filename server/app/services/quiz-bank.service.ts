@@ -21,4 +21,13 @@ export class QuizBankService {
         });
         return RESULT[0] as Quiz;
     }
+
+    async addQuiz(quiz: Quiz) {
+        const RESULT = await this.database.get('quizzes', { id: quiz.id });
+        if (RESULT.length > 0) {
+            await this.database.update('quizzes', { id: quiz.id }, [{ $set: quiz }]);
+            return;
+        }
+        await this.database.add('quizzes', quiz);
+    }
 }
