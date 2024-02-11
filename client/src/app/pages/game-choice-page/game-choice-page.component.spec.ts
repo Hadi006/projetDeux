@@ -26,7 +26,7 @@ describe('GameChoicePageComponent', () => {
             lastModification: new Date(),
             questions: [],
         };
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData']);
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
         publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', ['fetchVisibleQuizzes']);
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
             value: new Subject<Quiz[]>(),
