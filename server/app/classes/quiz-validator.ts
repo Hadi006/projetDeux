@@ -86,4 +86,30 @@ export class QuizValidator {
 
         return this;
     }
+
+    checkDuration(): QuizValidator {
+        this.tasks.push(async () => {
+            if (!this.isObject) {
+                return;
+            }
+
+            const QUIZ = this.quiz as object;
+            if (!('duration' in QUIZ) || typeof QUIZ.duration !== 'number') {
+                this.compilationError += 'Quiz : duration is missing !\n';
+                return;
+            }
+
+            const DURATION = QUIZ.duration as number;
+            const MIN_DURATION = 10;
+            const MAX_DURATION = 60;
+            const VALID_DURATION = DURATION >= MIN_DURATION && DURATION <= MAX_DURATION;
+            if (!VALID_DURATION) {
+                this.compilationError += 'Quiz : duration must be between 10 and 60 !\n';
+                return;
+            }
+            this.newQuiz.duration = DURATION;
+        });
+
+        return this;
+    }
 }
