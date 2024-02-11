@@ -91,6 +91,22 @@ describe('AdminQuizzesService', () => {
         });
     });
 
+    it('fetchVisibleQuizzes() should make GET request and update quizzes', () => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
+        service.fetchVisibleQuizzes();
+        service.quizzes$.subscribe((quizzes) => {
+            expect(quizzes).toEqual(quizListTest);
+        });
+    });
+
+    it('fetchVisibleQuizzes() should handle error if HTTP request fails', () => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error' })));
+        service.fetchVisibleQuizzes();
+        service.quizzes$.subscribe((quizzes) => {
+            expect(quizzes).toEqual([]);
+        });
+    });
+
     it('uploadQuiz should read a quiz file and validate the uploaded quiz', (done) => {
         const quizJson = JSON.stringify(quizListTest[0]);
         const mockQuizFile = new File([quizJson], 'quiz.txt', {
