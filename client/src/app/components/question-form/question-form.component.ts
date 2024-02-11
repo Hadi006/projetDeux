@@ -1,6 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question } from '@common/quiz';
 
@@ -35,5 +36,15 @@ export class QuestionFormComponent {
 
     drop(event: CdkDragDrop<Question[]>) {
         moveItemInArray(this.question.choices, event.previousIndex, event.currentIndex);
+    }
+
+    submit() {
+        this.admin.submitQuestion(this.question).subscribe((error: string) => {
+            if (error) {
+                this.dialog.open(AlertComponent, { data: { message: error } });
+            } else {
+                this.dialogRef.close(this.question);
+            }
+        });
     }
 }
