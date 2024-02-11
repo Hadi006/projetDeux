@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './game-choice-page.component.html',
     styleUrls: ['./game-choice-page.component.scss'],
 })
-export class GameChoicePageComponent {
+export class GameChoicePageComponent implements OnDestroy {
     quizzes: Quiz[] = [];
 
     chosenGame: string | null = null;
@@ -47,5 +47,9 @@ export class GameChoicePageComponent {
             this.gameHandlerService.loadGameData();
             this.router.navigate(['/play']);
         }
+    }
+
+    ngOnDestroy() {
+        this.quizzesSubscription.unsubscribe();
     }
 }
