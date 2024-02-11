@@ -27,4 +27,8 @@ export class QuestionFormComponent {
     removeChoice(index: number) {
         this.question.choices.splice(index, 1);
     }
+
+    trackByFn(index: number) {
+        return index;
+    }
 }
