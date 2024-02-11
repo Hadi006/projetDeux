@@ -47,6 +47,13 @@ describe('GameChoicePageComponent', () => {
         expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
     });
 
+    it('should do nothing on startGame call if chosenGame is null', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.startGame();
+        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
+        expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
     it('should navigate on testGame call', () => {
         const game = 'Programmation';
         component.chooseGame(game);
