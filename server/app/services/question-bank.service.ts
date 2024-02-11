@@ -13,6 +13,11 @@ export class QuestionBankService {
         return QUESTIONS;
     }
 
+    async getQuestion(id: string): Promise<Question> {
+        const QUESTION = (await this.database.get<Question>('questions', { id }))[0];
+        return QUESTION;
+    }
+
     validateQuestion(question: unknown): { question: Question; compilationError: string } {
         const QUESTION = new QuestionValidator(question);
         const RESULT = QUESTION.checkId().checkText().checkType().checkPoints().checkChoices().compile();
@@ -36,5 +41,23 @@ export class QuestionBankService {
 
     async deleteQuestion(questionId: string): Promise<boolean> {
         return await this.database.delete('questions', { id: questionId });
+    }
+
+    async validateAnswer(question: Question, playerAnswers: boolean[]): Promise<boolean> {
+        if (question.type !== 'multiple-choices') {
+            return true;
+        }
+
+        const CORRECT_ANSWERS = question.choices.filter((choice) => choice.isCorrect);
+
+        const allCheckedAreCorrect = playerAnswers.every((checked, index) => {
+            return !checked || (checked && CORRECT_ANSWERS.includes(question.choices[index]));
+        });
+
+        const allCorrectAreChecked = CORRECT_ANSWERS.every((correctAnswer) => {
+            return playerAnswers[question.choices.indexOf(correctAnswer)];
+        });
+
+        return allCheckedAreCorrect && allCorrectAreChecked;
     }
 }
