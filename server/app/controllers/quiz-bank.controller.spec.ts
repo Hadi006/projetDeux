@@ -85,6 +85,17 @@ describe('QuizBankController', () => {
             });
     });
 
+    it('GET /visible should return 404 when no visible quizzes are found', async () => {
+        quizBankServiceStub.getVisibleQuizzes.resolves(null);
+
+        return supertest(expressApp)
+            .get('/api/quizzes/visible')
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(response.body).to.deep.equal(null);
+            });
+    });
+
     it('GET /:quizId/download should return a quiz from quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
         const noIdQuestion = { ...MOCK_QUESTION };
