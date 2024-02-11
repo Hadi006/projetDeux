@@ -21,13 +21,6 @@ export class GameChoicePageComponent {
         this.chosenGame = game;
     }
 
-    previewQuestions() {
-        if (!this.chosenGame) {
-            return;
-        }
-        this.router.navigate(['/questions', this.chosenGame]);
-    }
-
     startGame() {
         if (!this.chosenGame) {
             return;
