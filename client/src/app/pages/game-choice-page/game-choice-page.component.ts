@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './game-choice-page.component.html',
     styleUrls: ['./game-choice-page.component.scss'],
 })
-export class GameChoicePageComponent implements OnInit,OnDestroy {
+export class GameChoicePageComponent implements OnInit, OnDestroy {
     quizzes: Quiz[] = [];
 
     chosenQuiz: Quiz;
