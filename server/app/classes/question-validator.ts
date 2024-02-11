@@ -132,4 +132,21 @@ export class QuestionValidator {
         });
         return this;
     }
+
+    compile(): { question: Question; compilationError: string } {
+        this.tasks.forEach((task) => task());
+        return { question: this.newQuestion, compilationError: this.compilationError };
+    }
+
+    private checkObject(): QuestionValidator {
+        this.tasks.push(() => {
+            if (!this.question || typeof this.question !== 'object') {
+                this.compilationError += 'Question : must be an object of type Question !\n';
+                this.isObject = false;
+                return;
+            }
+            this.isObject = true;
+        });
+        return this;
+    }
 }
