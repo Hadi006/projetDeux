@@ -57,6 +57,12 @@ describe('QuestionComponent', () => {
             },
             configurable: true,
         });
+        Object.defineProperty(questionHandlerServiceSpy, 'currentAnswers', {
+            get: () => {
+                return [];
+            },
+            configurable: true,
+        });
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
@@ -92,6 +98,11 @@ describe('QuestionComponent', () => {
     it('questionData getter should return currentQuestion', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         expect(component.questionData).toBe(QUESTIONS_DATA[0]);
+    });
+
+    it('correctAnswers getter should return the correct answers', () => {
+        spyOnProperty(questionHandlerServiceSpy, 'currentAnswers', 'get').and.returnValue([{ ...QUESTIONS_DATA[0].choices[1] }]);
+        expect(component.correctAnswers).toEqual([QUESTIONS_DATA[0].choices[1]]);
     });
 
     it('isChecked getter should return the players answer', () => {
