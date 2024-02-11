@@ -1,4 +1,5 @@
 import { Quiz } from '@common/quiz';
+import { randomUUID } from 'crypto';
 
 export class QuizValidator {
     private tasks: (() => Promise<void>)[];
@@ -24,5 +25,23 @@ export class QuizValidator {
             questions: [],
         };
         this.checkType();
+    }
+
+    checkId(): QuizValidator {
+        this.tasks.push(async () => {
+            if (!this.isObject) {
+                return;
+            }
+
+            const QUIZ = this.quiz as object;
+            if (!('id' in QUIZ) || typeof QUIZ.id !== 'string' || QUIZ.id === '') {
+                this.newQuiz.id = randomUUID();
+                return;
+            }
+
+            this.newQuiz.id = QUIZ.id as string;
+        });
+
+        return this;
     }
 }
