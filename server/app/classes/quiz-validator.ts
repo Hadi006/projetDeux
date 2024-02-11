@@ -1,5 +1,6 @@
-import { Quiz } from '@common/quiz';
+import { Question, Quiz } from '@common/quiz';
 import { randomUUID } from 'crypto';
+import { QuestionValidator } from './question-validator';
 
 export class QuizValidator {
     private tasks: (() => Promise<void>)[];
@@ -108,6 +109,42 @@ export class QuizValidator {
                 return;
             }
             this.newQuiz.duration = DURATION;
+        });
+
+        return this;
+    }
+
+    checkQuestions(): QuizValidator {
+        this.tasks.push(async () => {
+            if (!this.isObject) {
+                return;
+            }
+
+            const QUIZ = this.quiz as object;
+            if (!('questions' in QUIZ) || !Array.isArray(QUIZ.questions)) {
+                this.compilationError += 'Quiz : questions are missing !\n';
+                return;
+            }
+
+            if ((QUIZ.questions as unknown[]).length < 1) {
+                this.compilationError += 'Quiz : at least one question is required !\n';
+                return;
+            }
+
+            for (const QUESTION of QUIZ.questions) {
+                const RESULT: { question: Question; compilationError: string } = new QuestionValidator(QUESTION)
+                    .checkId()
+                    .checkText()
+                    .checkType()
+                    .checkPoints()
+                    .checkChoices()
+                    .compile();
+                if (RESULT.compilationError) {
+                    this.compilationError += RESULT.compilationError;
+                } else {
+                    this.newQuiz.questions.push(RESULT.question);
+                }
+            }
         });
 
         return this;
