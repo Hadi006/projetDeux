@@ -21,9 +21,9 @@ export class CommunicationService {
         return this.http.post(`${this.baseUrl}/example/send`, message, { observe: 'response', responseType: 'text' });
     }
 
-    get<T>(relativeUrl: string, baseUrl: string = this.baseUrl): Observable<HttpResponse<T>> {
+    get<T>(relativeUrl: string): Observable<HttpResponse<T>> {
         return this.http
-            .get<T>(`${baseUrl}/${relativeUrl}`, { observe: 'response', responseType: 'json' })
+            .get<T>(`${this.baseUrl}/${relativeUrl}`, { observe: 'response', responseType: 'json' })
             .pipe(catchError(this.handleErrorResponse<T>()));
     }
 
