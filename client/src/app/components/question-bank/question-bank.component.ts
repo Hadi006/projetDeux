@@ -1,7 +1,7 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AdminService } from '@app/services/admin.service';
+import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question } from '@common/quiz';
 import { Observable, map } from 'rxjs';
 import { QuestionBankService } from 'src/app/services/question-bank.service';
@@ -19,7 +19,7 @@ export class QuestionBankComponent implements OnInit {
     constructor(
         private questionBank: QuestionBankService,
         private dialog: MatDialog,
-        private admin: AdminService,
+        private admin: AdminQuizzesService,
     ) {}
 
     ngOnInit() {
