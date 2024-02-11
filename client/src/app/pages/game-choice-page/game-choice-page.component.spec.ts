@@ -5,12 +5,15 @@ import { GameChoicePageComponent } from './game-choice-page.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { Quiz } from '@common/quiz';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { Subject } from 'rxjs';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let router: Router;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let publicQuizzesServiceSpy: jasmine.SpyObj<PublicQuizzesService>;
     let mockQuiz: Quiz;
 
     beforeEach(async () => {
@@ -24,13 +27,23 @@ describe('GameChoicePageComponent', () => {
             questions: [],
         };
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData']);
+        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', ['fetchVisibleQuizzes']);
+        Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
+            value: new Subject<Quiz[]>(),
+        });
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, HttpClientTestingModule],
             declarations: [GameChoicePageComponent],
-            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
+            providers: [
+                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
+                {
+                    provide: PublicQuizzesService,
+                    useValue: publicQuizzesServiceSpy,
+                },
+            ],
         }).compileComponents();
     }));
 
@@ -43,6 +56,11 @@ describe('GameChoicePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should set quizzes on fetchVisibleQuizzes call', () => {
+        publicQuizzesServiceSpy.quizzes$.next([mockQuiz]);
+        expect(component.quizzes).toEqual([mockQuiz]);
     });
 
     it('should set chosenGame on choisirJeu call', () => {
