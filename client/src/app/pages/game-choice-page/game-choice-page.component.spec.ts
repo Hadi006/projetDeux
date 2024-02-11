@@ -3,14 +3,25 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameChoicePageComponent } from './game-choice-page.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { Quiz } from '@common/quiz';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let router: Router;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let mockQuiz: Quiz;
 
     beforeEach(async () => {
+        mockQuiz = {
+            id: '1',
+            title: 'Math',
+            visible: true,
+            description: 'Math quiz',
+            duration: 10,
+            lastModification: new Date(),
+            questions: [],
+        };
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData']);
     });
 
@@ -34,14 +45,13 @@ describe('GameChoicePageComponent', () => {
     });
 
     it('should set chosenGame on choisirJeu call', () => {
-        const game = 'Math';
-        component.chooseQuiz(game);
-        expect(component.chooseQuiz).toEqual(game);
+        component.chooseQuiz(mockQuiz);
+        expect(component.chosenQuiz).toEqual(mockQuiz);
     });
 
     it('should navigate on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
-        component.chooseQuiz = 'Math';
+        component.chooseQuiz(mockQuiz);
         component.startGame();
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
         expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
@@ -55,8 +65,7 @@ describe('GameChoicePageComponent', () => {
     });
 
     it('should navigate on testGame call', () => {
-        const game = 'Programmation';
-        component.chooseQuiz(game);
+        component.chooseQuiz(mockQuiz);
         const navigateSpy = spyOn(router, 'navigate');
         component.testGame();
         expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
