@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { GameChoicePageComponent } from './game-choice-page.component';
+import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { GameChoicePageComponent } from './game-choice-page.component';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
@@ -17,7 +18,7 @@ describe('GameChoicePageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            declarations: [GameChoicePageComponent],
+            declarations: [GameChoicePageComponent, DescriptionPanelComponent],
             providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
         }).compileComponents();
     }));
@@ -33,7 +34,7 @@ describe('GameChoicePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should set chosenGame on choisirJeu call', () => {
+    it('should set chosenGame on chooseGame call', () => {
         const game = 'Math';
         component.chooseGame(game);
         expect(component.chosenGame).toEqual(game);
