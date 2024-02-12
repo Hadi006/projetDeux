@@ -92,24 +92,8 @@ describe('PublicQuizzesService', () => {
     it('checkQuizAvailability() should return true if quiz is in list', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
         service.fetchVisibleQuizzes().subscribe();
-        service.checkQuizAvailability(quizListTest[0]).subscribe((isAvailable) => {
-            expect(dialogSpy.open).not.toHaveBeenCalled();
+        service.checkQuizAvailability().subscribe((isAvailable) => {
             expect(isAvailable).toBeTrue();
-            done();
-        });
-    });
-
-    it('checkQuizAvailability() should return false if quiz is undefined', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
-        service.fetchVisibleQuizzes().subscribe();
-        service.checkQuizAvailability(undefined).subscribe((isAvailable) => {
-            expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
-                data: {
-                    title: 'Erreur',
-                    message: 'Aucun quiz sélectionné',
-                },
-            });
-            expect(isAvailable).toBeFalse();
             done();
         });
     });
@@ -117,13 +101,7 @@ describe('PublicQuizzesService', () => {
     it('checkQuizAvailability() should return false if quiz is not in list', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
         service.fetchVisibleQuizzes().subscribe();
-        service.checkQuizAvailability(quizListTest[0]).subscribe((isAvailable) => {
-            expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
-                data: {
-                    title: 'Erreur',
-                    message: 'Quiz non disponible',
-                },
-            });
+        service.checkQuizAvailability().subscribe((isAvailable) => {
             expect(isAvailable).toBeFalse();
             done();
         });
