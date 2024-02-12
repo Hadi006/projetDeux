@@ -43,7 +43,7 @@ export class PublicQuizzesService {
         this.dialog.open(AlertComponent, {
             data: {
                 title: 'Erreur',
-                message: 'Le questionnaire n\'est plus disponible',
+                message: "Le questionnaire n'est plus disponible",
             },
         });
     }
