@@ -88,6 +88,15 @@ describe('GameChoicePageComponent', () => {
         expect(navigateSpy).not.toHaveBeenCalled();
     });
 
+    it('should do nothing if game is no longer available on startGame call', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.quizzes$.next([]);
+        component.startGame();
+        expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
+        expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
     it('should navigate on testGame call', () => {
         component.chooseQuiz(mockQuiz);
         const navigateSpy = spyOn(router, 'navigate');
