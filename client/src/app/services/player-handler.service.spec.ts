@@ -2,22 +2,24 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { CommunicationService } from './communication.service';
-
+import { AnswerValidatorService } from './answer-validator.service';
 import { PlayerHandlerService } from './player-handler.service';
 
 describe('PlayerHandlerService', () => {
     let service: PlayerHandlerService;
-    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+    let answerValidatorServiceSpy: jasmine.SpyObj<AnswerValidatorService>;
 
     beforeEach(() => {
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['post']);
+        answerValidatorServiceSpy = jasmine.createSpyObj('AnswerValidatorService', ['validateAnswer']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
+            providers: [{
+                provide: AnswerValidatorService,
+                useValue: answerValidatorServiceSpy,
+            }],
         });
         service = TestBed.inject(PlayerHandlerService);
     });
