@@ -12,7 +12,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: HomePageComponent },
-    { path: 'create-game', component: GameChoicePageComponent },
+    { path: 'home/create-game', component: GameChoicePageComponent },
     { path: 'home/admin/login', component: AdminLoginPageComponent },
     { path: 'home/admin/quizzes', component: AdminPageComponent },
     { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent },
