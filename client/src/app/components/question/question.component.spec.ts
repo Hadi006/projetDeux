@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
-import { GameStateService, GameState } from '@app/services/game-state.service';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { QuestionComponent } from './question.component';
 import { Player } from '@app/interfaces/player';
+import { GameStateService } from '@app/services/game-state.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GameState, QUESTIONS_DATA } from '@common/constant';
+import { QuestionComponent } from './question.component';
 
 const TEST_PLAYER: Player = {
     score: 0,

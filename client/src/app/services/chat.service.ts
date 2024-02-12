@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@app/interfaces/chat-message';
-
-export const MAX_MESSAGE_LENGTH = 200;
+import { MAX_MESSAGE_LENGTH } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',

@@ -1,18 +1,9 @@
 import { Component, HostListener } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
-
+import { MouseButton } from '@common/constant';
 // TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 200;
-export const DEFAULT_HEIGHT = 200;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
 
 @Component({
     selector: 'app-play-area',

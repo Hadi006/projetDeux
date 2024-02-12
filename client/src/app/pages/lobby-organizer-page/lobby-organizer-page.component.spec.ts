@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
 import { LobbyOrganizerPageComponent, TEST_LOBBY_DATA } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
+import { GameHandlerService } from '@app/services/game-handler.service';
 import { LobbyService } from '@app/services/lobby.service';
-import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.service';
+import { TEST_GAME } from '@common/constant';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;

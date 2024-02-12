@@ -1,9 +1,10 @@
 import { Component, HostListener } from '@angular/core';
-import { QuestionData } from '@common/question-data';
 import { Player } from '@app/interfaces/player';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { GameStateService, GameState } from '@app/services/game-state.service';
+import { GameStateService } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GameState } from '@common/constant';
+import { QuestionData } from '@common/question-data';
 
 @Component({
     selector: 'app-question',

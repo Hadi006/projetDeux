@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-
-import { GameHandlerService, TEST_GAME, SHOW_ANSWER_DELAY } from '@app/services/game-handler.service';
-import { QuestionData } from '@common/question-data';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GameHandlerService } from '@app/services/game-handler.service';
+import { GameStateService } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
-import { GameStateService, GameState } from '@app/services/game-state.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GameState, SHOW_ANSWER_DELAY, TEST_GAME } from '@common/constant';
+import { QuestionData } from '@common/question-data';
 import { Subject } from 'rxjs';
 
 describe('GameHandlerService', () => {

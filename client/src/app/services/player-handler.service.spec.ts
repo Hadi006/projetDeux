@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { PlayerHandlerService } from './player-handler.service';
 
 describe('PlayerHandlerService', () => {

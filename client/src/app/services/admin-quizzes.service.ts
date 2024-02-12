@@ -1,10 +1,9 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { INVALID_INDEX } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { BehaviorSubject, Observable, map, switchMap } from 'rxjs';
 import { CommunicationService } from './communication.service';
-const INVALID_INDEX = -1;
-
 @Injectable({
     providedIn: 'root',
 })

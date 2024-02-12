@@ -84,7 +84,6 @@ export class QuestionBankService {
         }
 
         this.http.delete<string>(`questions/${QUESTION.id}`).subscribe((response) => {
-            // verify response body instead
             if (response.status === HttpStatusCode.Ok) {
                 this.questions.splice(index, 1);
                 this.questions$.next(this.questions);

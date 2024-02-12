@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-
-import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { GameTimersService } from '@app/services/game-timers.service';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
 import { Player } from '@app/interfaces/player';
+// import { QUESTIONS_DATA } from '@app/services/game-handler.service';
+import { GameTimersService } from '@app/services/game-timers.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GOOD_ANSWER_MULTIPLIER, QUESTIONS_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
 
 describe('QuestionHandlerService', () => {

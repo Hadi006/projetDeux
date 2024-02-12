@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { GameStateService } from '@app/services/game-state.service';
 import { TimeService } from '@app/services/time.service';
-import { GameStateService, GameState } from '@app/services/game-state.service';
+import { GameState } from '@common/constant';
 import { Subject, Subscription } from 'rxjs';
 import { PlayerHandlerService } from './player-handler.service';
 

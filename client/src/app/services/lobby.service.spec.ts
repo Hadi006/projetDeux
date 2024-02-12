@@ -1,12 +1,16 @@
 import { TestBed } from '@angular/core/testing';
-
 import { LobbyService } from '@app/services/lobby.service';
 import { SocketService } from '@app/services/socket.service';
 import { LobbyData } from '@common/lobby-data';
 import { of } from 'rxjs';
 
 describe('LobbyService', () => {
-    const lobbyData: LobbyData = { id: 1, players: [], game: { id: 0, name: 'Math', questions: [], timePerQuestion: 5 }, started: true };
+    const lobbyData: LobbyData = {
+        id: 1,
+        players: [],
+        game: { id: 0, name: 'Math', questions: [], timePerQuestion: 5 },
+        started: true,
+    };
     const newData: LobbyData = {
         id: 1,
         players: [{ id: 1, name: 'Player 1' }],
