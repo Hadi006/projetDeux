@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
@@ -103,6 +103,7 @@ describe('QuestionHandlerService', () => {
             ],
         });
         service = TestBed.inject(QuestionHandlerService);
+        service.questionsData = QUESTIONS_DATA;
         gameStateService = TestBed.inject(GameStateService);
     });
 
@@ -110,17 +111,15 @@ describe('QuestionHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should update scores when timer ends', fakeAsync(() => {
+    it('should update scores when timer ends', () => {
         spyOn(service, 'updateScores');
         gameStateService.gameState = GameState.ShowQuestion;
-        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of());
+        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
         gameTimersServiceSpy.timerEndedSubject.next();
-        tick();
         expect(service.updateScores).toHaveBeenCalled();
-    }));
+    });
 
     it('currentQuestion getter should return the current question', () => {
-        service.questionsData = QUESTIONS_DATA;
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 
@@ -135,7 +134,6 @@ describe('QuestionHandlerService', () => {
     });
 
     it('questionsData setter should set the questionsData and nQuestions', () => {
-        service.questionsData = QUESTIONS_DATA;
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
         expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
@@ -154,7 +152,6 @@ describe('QuestionHandlerService', () => {
 
     it('updateScores should update the scores of the players', () => {
         const score = 10;
-        service.questionsData = QUESTIONS_DATA;
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
         service.updateScores();
         expect(playerHandlerServiceSpy.players.get(0)?.score).toEqual(score * GOOD_ANSWER_MULTIPLIER);
@@ -162,7 +159,6 @@ describe('QuestionHandlerService', () => {
     });
 
     it('nextQuestion should load the next question', () => {
-        service.questionsData = QUESTIONS_DATA;
         service.nextQuestion();
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
     });

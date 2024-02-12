@@ -71,7 +71,7 @@ export class PlayerHandlerService {
         });
     }
 
-    validatePlayerAnswers(questionId: string): Observable<void> {
+    validatePlayerAnswers(questionId: string): Observable<null> {
         const validationObservables: Observable<{ player: Player; response: HttpResponse<boolean> } | null>[] = Array.from(
             this.internalPlayers.values(),
         ).map((player) => {
@@ -90,7 +90,7 @@ export class PlayerHandlerService {
                         result.player.isCorrect = result.response.body || false;
                     }
                 });
-                return;
+                return null;
             }),
         );
     }
