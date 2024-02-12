@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
 import { of } from 'rxjs';
@@ -20,18 +20,21 @@ describe('AdminLoginPageComponent', () => {
         TestBed.configureTestingModule({
             declarations: [AdminLoginPageComponent],
             imports: [ReactiveFormsModule],
-            providers: [{ provide: AuthService, useValue: authServiceSpy }, { provide: Router, useValue: routerSpy }, FormBuilder],
+            providers: [
+                { provide: AuthService, useValue: authServiceSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
         });
         fixture = TestBed.createComponent(AdminLoginPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-    it('should create', () => {
+    it('should create the login page', () => {
         expect(component).toBeTruthy();
     });
 
-    it('login should reset form', () => {
+    it('login should reset form after authentication', () => {
         component.loginForm.setValue({ password: 'password' });
         authServiceSpy.checkAuthentication.and.returnValue(of(true));
         component.login();
