@@ -37,4 +37,15 @@ describe('AnswerValidatorService', () => {
             expect(response).toBe(expectedResponse);
         });
     });
+
+    it('should return false if the response status is not HttpStatusCode.Ok', () => {
+        const questionId = '1234';
+        const answer = [true, false, true, false];
+        communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.NotFound })));
+
+        service.validateAnswer(questionId, answer).subscribe((response) => {
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/quiz/${questionId}/answer`, answer);
+            expect(response).toBeFalse();
+        });
+    });
 });
