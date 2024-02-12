@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { CommunicationService } from './communication.service';
 
 import { PlayerHandlerService } from './player-handler.service';
@@ -141,12 +141,19 @@ describe('PlayerHandlerService', () => {
             const player = service.createPlayer();
             player.answer = [true, false, true];
         }
-        const response = new HttpResponse({ status: 500, statusText: 'Internal Server Error' });
-        communicationServiceSpy.post.and.returnValues(of(response), of(response), of(response));
+        const response = new HttpResponse({ status: 200, body: true });
+        const errorResponse = new HttpResponse({ body: new Error('error') });
+        communicationServiceSpy.post.and.returnValues(
+            throwError(() => {
+                return errorResponse;
+            }),
+            of(response),
+            of(response),
+        );
         service.validatePlayerAnswers('').subscribe(() => {
-            service.players.forEach((player) => {
-                expect(player.isCorrect).toBeFalse();
-            });
+            expect(service.players.get(0)?.isCorrect).toBeFalse();
+            expect(service.players.get(1)?.isCorrect).toBeTrue();
+            expect(service.players.get(2)?.isCorrect).toBeTrue();
             done();
         });
     });
