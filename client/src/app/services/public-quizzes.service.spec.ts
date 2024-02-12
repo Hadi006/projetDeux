@@ -6,6 +6,7 @@ import { Quiz } from '@common/quiz';
 import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
 
 describe('PublicQuizzesService', () => {
     let service: PublicQuizzesService;
@@ -85,17 +86,34 @@ describe('PublicQuizzesService', () => {
     it('checkQuizAvailability() should return false if quiz is undefined', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
         service.fetchVisibleQuizzes();
+        expect(dialogSpy.open).not.toHaveBeenCalledWith(AlertComponent, {
+            data: {
+                title: 'Erreur',
+                message: 'Aucun quiz sélectionné',
+            },
+        });
         expect(service.checkQuizAvailability(undefined)).toBeFalse();
     });
 
     it('checkQuizAvailability() should return false if quiz is not in list', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
         service.fetchVisibleQuizzes();
+        expect(dialogSpy.open).not.toHaveBeenCalledWith(AlertComponent, {
+            data: {
+                title: 'Erreur',
+                message: 'Aucun quiz disponible',
+            },
+        });
         expect(service.checkQuizAvailability(quizListTest[0])).toBeFalse();
     });
 
     it('alertNoQuizAvailable() should open a dialog', () => {
-        service.alertNoQuizAvailable();
-        expect(dialogSpy.open).toHaveBeenCalled();
+        service.alertNoQuizAvailable('test');
+        expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
+            data: {
+                title: 'Erreur',
+                message: 'test',
+            },
+        });
     });
 });
