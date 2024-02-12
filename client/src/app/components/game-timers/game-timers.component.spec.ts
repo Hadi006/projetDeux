@@ -35,4 +35,9 @@ describe('GameTimersComponent', () => {
         spyOnProperty(gameTimersServiceSpy, 'time', 'get').and.returnValue(time);
         expect(component.time).toBe(time);
     });
+
+    it('should reset timers on destroy', () => {
+        component.ngOnDestroy();
+        expect(gameTimersServiceSpy.resetTimers).toHaveBeenCalled();
+    });
 });
