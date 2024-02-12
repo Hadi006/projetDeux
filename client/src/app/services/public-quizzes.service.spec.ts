@@ -79,8 +79,11 @@ describe('PublicQuizzesService', () => {
 
     it('checkQuizAvailability() should return true if quiz is in list', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
-        service.fetchVisibleQuizzes();
-        expect(service.checkQuizAvailability(quizListTest[0])).toBeTrue();
+        service.fetchVisibleQuizzes().subscribe();
+        service.checkQuizAvailability(quizListTest[0]).subscribe((isAvailable) => {
+            expect(dialogSpy.open).not.toHaveBeenCalled();
+            expect(isAvailable).toBeTrue();
+        });
     });
 
     it('checkQuizAvailability() should return false if quiz is undefined', () => {
