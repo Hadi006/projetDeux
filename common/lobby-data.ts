@@ -1,9 +1,9 @@
-import { GameData } from './game-data';
+import { Quiz } from './quiz';
 import { PlayerData } from './player-data';
 
 export interface LobbyData {
     id: number;
     players: PlayerData[];
-    game?: GameData;
+    quiz?: Quiz;
     started: boolean;
 }

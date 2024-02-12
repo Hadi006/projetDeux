@@ -1,5 +1,5 @@
-<div *ngIf="lobbyData.game" class="title-container">
-    <h2>{{ lobbyData.game.name }}</h2>
+<div *ngIf="lobbyData.quiz" class="title-container">
+    <h2>{{ lobbyData.quiz.title }}</h2>
 </div>
 
 <div id="nPlayers">Number of players: {{ lobbyData.players.length }}</div>
@@ -16,9 +16,9 @@
 <footer>
     <button routerLink="/home">Quitter</button>
 
-    <button *ngIf="lobbyData.game" (click)="startGame()">Start game</button>
+    <button *ngIf="lobbyData.quiz" (click)="startGame()">Start game</button>
 </footer>
 
 <div *ngIf="lobbyData.started">
-    <app-game-count-down *ngIf="lobbyData.game" [gameName]="lobbyData.game.name"></app-game-count-down>
+    <app-game-count-down *ngIf="lobbyData.quiz" [gameName]="lobbyData.quiz.title"></app-game-count-down>
 </div>

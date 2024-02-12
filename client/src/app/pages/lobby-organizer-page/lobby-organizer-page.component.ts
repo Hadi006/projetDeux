@@ -26,7 +26,7 @@ export class LobbyOrganizerPageComponent {
         private gameHandlerService: GameHandlerService,
     ) {
         this.lobbyData = TEST_LOBBY_DATA;
-        this.lobbyData.game = this.gameHandlerService.gameData;
+        this.lobbyData.quiz = this.gameHandlerService.quizData;
         this.lobbyService.subscribeLobbyToServer(this.lobbyData);
     }
 
