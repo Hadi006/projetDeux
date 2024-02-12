@@ -20,8 +20,7 @@ describe('GameplayPlayerPageComponent', () => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['startGame'], {
             gameEnded$: new Subject<void>(),
         });
-        Object.defineProperty(gameHandlerServiceSpy, 'quizData', { get: () => undefined,
-        configurable: true});
+        Object.defineProperty(gameHandlerServiceSpy, 'quizData', { get: () => undefined, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -65,6 +64,7 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('ngOnDestroy should unsubscribe from gameEndedSubscription', () => {
+        routerSpy.navigate.calls.reset();
         component.ngOnDestroy();
         gameHandlerServiceSpy.gameEnded$.next();
         expect(routerSpy.navigate).not.toHaveBeenCalled();
