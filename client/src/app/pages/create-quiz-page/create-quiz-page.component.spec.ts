@@ -172,8 +172,6 @@ describe('CreateQuizPageComponent', () => {
         expect(component.quiz.questions.splice).not.toHaveBeenCalled();
     });
 
-    // it('should move item within the same container', () => {});
-
     it('should subscribe to submitted quiz', () => {
         spyOn(component, 'close');
         component.quiz.id = '';
