@@ -92,4 +92,8 @@ export class PlayerHandlerService {
             }),
         );
     }
+
+    removePlayer(playerId: number): void {
+        this.internalPlayers = this.internalPlayers.filter((player) => player.id !== playerId);
+    }
 }

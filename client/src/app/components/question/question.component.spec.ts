@@ -66,7 +66,7 @@ describe('QuestionComponent', () => {
             configurable: true,
         });
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp', 'removePlayer']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
     });
 
@@ -175,5 +175,10 @@ describe('QuestionComponent', () => {
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         component.player.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
+    });
+
+    it('ngOnDestroy should remove the player', () => {
+        component.ngOnDestroy();
+        expect(playerHandlerServiceSpy.removePlayer).toHaveBeenCalledWith(TEST_PLAYER.id);
     });
 });

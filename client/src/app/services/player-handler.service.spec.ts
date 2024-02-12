@@ -156,4 +156,12 @@ describe('PlayerHandlerService', () => {
             expect(service.players[2].isCorrect).toBeTrue();
         });
     });
+
+    it('removePlayer should remove the player from the list', () => {
+        const player = service.createPlayer();
+        const nPlayers = service.players.length;
+        service.removePlayer(player.id);
+        expect(service.players.length).toBe(nPlayers - 1);
+        expect(service.players).not.toContain(player);
+    });
 });
