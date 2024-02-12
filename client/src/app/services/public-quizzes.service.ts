@@ -4,7 +4,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { Quiz } from '@common/quiz';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { MatDialog } from '@angular/material/dialog';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -32,16 +32,10 @@ export class PublicQuizzesService {
         );
     }
 
-    checkQuizAvailability(quiz: Quiz | undefined): Observable<boolean> {
-        if (!quiz) {
-            this.alertNoQuizAvailable('Aucun quiz sélectionné');
-            return of(false);
-        }
-
+    checkQuizAvailability(): Observable<boolean> {
         return this.fetchVisibleQuizzes().pipe(
             map(() => {
                 if (this.quizzes.length === 0) {
-                    this.alertNoQuizAvailable('Quiz non disponible');
                     return false;
                 }
 

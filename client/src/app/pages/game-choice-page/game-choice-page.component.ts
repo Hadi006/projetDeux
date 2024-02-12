@@ -10,7 +10,7 @@ import { Quiz } from '@common/quiz';
     styleUrls: ['./game-choice-page.component.scss'],
 })
 export class GameChoicePageComponent implements OnInit {
-    chosenQuiz: Quiz;
+    chosenQuiz: Quiz | null = null;
 
     constructor(
         public publicQuizzesService: PublicQuizzesService,
@@ -27,8 +27,15 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz).subscribe((isAvailable) => {
+        this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
+            if (!this.chosenQuiz) {
+                this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+                return;
+            }
+
             if (!isAvailable) {
+                this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible');
+                this.chosenQuiz = null;
                 return;
             }
 
@@ -38,8 +45,15 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     testGame() {
-        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz).subscribe((isAvailable) => {
+        this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
+            if (!this.chosenQuiz) {
+                this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+                return;
+            }
+
             if (!isAvailable) {
+                this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible');
+                this.chosenQuiz = null;
                 return;
             }
 
