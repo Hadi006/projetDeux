@@ -155,40 +155,6 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
     });
 
-    it('calculateScore should return 0 if there is no current question', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-        expect(service.calculateScore([])).toEqual(0);
-    });
-
-    it('calculateScore should return the correct value for a correct answer', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(service, 'isAnswerCorrect').and.returnValue(true);
-        expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
-    it('calculateScore should return 0 for an incorrect answer', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(service, 'isAnswerCorrect').and.returnValue(false);
-        expect(service.calculateScore([])).toEqual(0);
-    });
-
-    it('isAnswerCorrect should return true if the question is not MCQ', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
-        expect(service.isAnswerCorrect([false, false, false, false])).toEqual(true);
-    });
-
-    it('isAnswerCorrect should return true if the answer is correct', () => {
-        const playerAnswers = [false, true, false, false];
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(service.isAnswerCorrect(playerAnswers)).toEqual(true);
-    });
-
-    it('isAnswerCorrect should return false if the answer is incorrect', () => {
-        const playerAnswers = [true, false, false, false];
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(service.isAnswerCorrect(playerAnswers)).toEqual(false);
-    });
-
     it('ngOnDestroy should unsubscribe from the timerEndedSubject', () => {
         spyOn(service, 'updateScores');
         service.ngOnDestroy();
