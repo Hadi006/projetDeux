@@ -4,10 +4,10 @@
     <p>Question value: {{ questionData.points }} points</p>
 
     <div *ngIf="questionData.type === 'multiple-choices'" id="question-container" (keyup)="handleKeyUp($event)">
-        <div *ngFor="let answer of questionData.choices; let i = index">
+        <div *ngFor="let choice of questionData.choices; let i = index">
             <label>
                 <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="player.answer[i]" />
-                {{ i + 1 }} ) {{ answer }}
+                {{ i + 1 }} ) {{ choice.text }}
             </label>
         </div>
     </div>
