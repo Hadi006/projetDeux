@@ -99,6 +99,7 @@ describe('GameHandlerService', () => {
         service = TestBed.inject(GameHandlerService);
         const subjectSpy = jasmine.createSpyObj('Subject', ['next']);
         service['internalGameEnded$'] = subjectSpy;
+        service.loadQuizData(TEST_QUIZ);
         gameStateService = TestBed.inject(GameStateService);
     });
 
