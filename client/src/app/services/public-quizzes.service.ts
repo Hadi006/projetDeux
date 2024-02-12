@@ -4,6 +4,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { Quiz } from '@common/quiz';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { MatDialog } from '@angular/material/dialog';
+import { map, Observable, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -20,29 +21,33 @@ export class PublicQuizzesService {
         return this.internalQuizzes;
     }
 
-    fetchVisibleQuizzes() {
-        this.http.get<Quiz[]>('quizzes/visible').subscribe((response: HttpResponse<Quiz[]>) => {
-            if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
-                return;
-            }
-            this.internalQuizzes = response.body;
-        });
+    fetchVisibleQuizzes(): Observable<void> {
+        return this.http.get<Quiz[]>('quizzes/visible').pipe(
+            map((response: HttpResponse<Quiz[]>) => {
+                if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+                    return;
+                }
+                this.internalQuizzes = response.body;
+            }),
+        );
     }
 
-    checkQuizAvailability(quiz: Quiz | undefined): boolean {
+    checkQuizAvailability(quiz: Quiz | undefined): Observable<boolean> {
         if (!quiz) {
             this.alertNoQuizAvailable('Aucun quiz sélectionné');
-            return false;
+            return of(false);
         }
 
-        this.fetchVisibleQuizzes();
+        return this.fetchVisibleQuizzes().pipe(
+            map(() => {
+                if (this.quizzes.length === 0) {
+                    this.alertNoQuizAvailable('Aucun quiz disponible');
+                    return false;
+                }
 
-        if (this.quizzes.length === 0) {
-            this.alertNoQuizAvailable('Aucun quiz disponible');
-            return false;
-        }
-
-        return true;
+                return true;
+            }),
+        );
     }
 
     alertNoQuizAvailable(message: string) {
