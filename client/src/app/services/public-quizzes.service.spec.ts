@@ -85,14 +85,16 @@ describe('PublicQuizzesService', () => {
 
     it('checkQuizAvailability() should return false if quiz is undefined', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
-        service.fetchVisibleQuizzes();
-        expect(dialogSpy.open).not.toHaveBeenCalledWith(AlertComponent, {
-            data: {
-                title: 'Erreur',
-                message: 'Aucun quiz sélectionné',
-            },
+        service.fetchVisibleQuizzes().subscribe();
+        service.checkQuizAvailability(undefined).subscribe((isAvailable) => {
+            expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
+                data: {
+                    title: 'Erreur',
+                    message: 'Aucun quiz sélectionné',
+                },
+            });
+            expect(isAvailable).toBeFalse();
         });
-        expect(service.checkQuizAvailability(undefined)).toBeFalse();
     });
 
     it('checkQuizAvailability() should return false if quiz is not in list', () => {
