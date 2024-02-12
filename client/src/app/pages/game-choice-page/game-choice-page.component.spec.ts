@@ -113,6 +113,15 @@ describe('GameChoicePageComponent', () => {
         expect(navigateSpy).not.toHaveBeenCalled();
     });
 
+    it('should do nothing if game is no longer available on testGame call', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.quizzes$.next([]);
+        component.testGame();
+        expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
+        expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
     it('should unsubscribe on destroy', () => {
         component.quizzes = [];
         component.ngOnDestroy();
