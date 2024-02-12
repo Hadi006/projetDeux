@@ -5,11 +5,13 @@ import { CommunicationService } from './communication.service';
 import { Quiz } from '@common/quiz';
 import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
 
 describe('PublicQuizzesService', () => {
     let service: PublicQuizzesService;
     let quizListTest: Quiz[];
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+    let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['get']);
@@ -17,7 +19,10 @@ describe('PublicQuizzesService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
+            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }, {
+                provide: MatDialog,
+                useValue: jasmine.createSpyObj('MatDialog', ['open']),
+            }],
         });
         service = TestBed.inject(PublicQuizzesService);
         quizListTest = [
