@@ -1,14 +1,23 @@
+import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { CommunicationService } from './communication.service';
 
 import { PlayerHandlerService } from './player-handler.service';
 
 describe('PlayerHandlerService', () => {
     let service: PlayerHandlerService;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+
+    beforeEach(() => {
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['post']);
+    });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
+            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }],
         });
         service = TestBed.inject(PlayerHandlerService);
     });
@@ -107,6 +116,22 @@ describe('PlayerHandlerService', () => {
         service.players.forEach((player) => {
             expect(player.answer).toEqual(new Array(nAnswers).fill(false));
             expect(player.answerConfirmed).toBeFalse();
+        });
+    });
+
+    it('validatePlayerAnsewrs should set isCorrect to true if the answer is correct', (done) => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            const player = service.createPlayer();
+            player.answer = [true, false, true];
+        }
+        const response = new HttpResponse({ status: 200, body: true });
+        communicationServiceSpy.post.and.returnValues(of(response), of(response), of(response));
+        service.validatePlayerAnswers('').subscribe(() => {
+            service.players.forEach((player) => {
+                expect(player.isCorrect).toBeTrue();
+            });
+            done();
         });
     });
 });
