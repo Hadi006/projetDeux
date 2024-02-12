@@ -1,11 +1,10 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AccessToken } from '@common/access-token';
+import { INVALID_TOKEN } from '@common/constant';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { CommunicationService } from './communication.service';
-
-export const INVALID_TOKEN: AccessToken = { id: '', expirationDate: -1 };
 
 @Injectable({
     providedIn: 'root',

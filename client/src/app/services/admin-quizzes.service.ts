@@ -53,14 +53,14 @@ export class AdminQuizzesService {
     }
 
     getSelectedQuiz(): Quiz {
-        const SELECTED_QUIZ: Quiz | undefined = this.quizzes[this.selectedQuizIndex];
+        const selectedQuiz: Quiz | undefined = this.quizzes[this.selectedQuizIndex];
         this.selectedQuizIndex = -1;
 
-        if (SELECTED_QUIZ) {
-            return SELECTED_QUIZ;
+        if (selectedQuiz) {
+            return selectedQuiz;
         }
 
-        const BLANK_QUIZ: Quiz = {
+        const blankQuiz: Quiz = {
             id: '',
             title: '',
             visible: false,
@@ -70,7 +70,7 @@ export class AdminQuizzesService {
             questions: [],
         };
 
-        return BLANK_QUIZ;
+        return blankQuiz;
     }
 
     uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
@@ -107,8 +107,8 @@ export class AdminQuizzesService {
                     return response.body;
                 }
 
-                const INDEX: number = this.quizzes.findIndex((q: Quiz) => q.id === quiz.id);
-                this.quizzes[INDEX] = quiz;
+                const index: number = this.quizzes.findIndex((q: Quiz) => q.id === quiz.id);
+                this.quizzes[index] = quiz;
                 this.quizzes$.next(this.quizzes);
 
                 return response.body;
@@ -133,21 +133,19 @@ export class AdminQuizzesService {
     }
 
     changeQuizVisibility(quizIndex: number) {
-        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
-        if (!QUIZ) return;
+        if (!this.quizzes[quizIndex]) return;
 
-        QUIZ.visible = !QUIZ.visible;
-        this.http.patch<string>(`quizzes/${QUIZ.id}/visibility`).subscribe();
+        this.quizzes[quizIndex].visible = !this.quizzes[quizIndex].visible;
+        this.http.patch<string>(`quizzes/${this.quizzes[quizIndex].id}/visibility`).subscribe();
     }
 
     /**
      * @source https://www.linkedin.com/pulse/how-download-file-using-httpclient-angular7-shah-faisal-
      */
     downloadQuiz(quizIndex: number) {
-        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
-        if (!QUIZ) return;
+        if (!this.quizzes[quizIndex]) return;
 
-        this.http.download(`quizzes/${QUIZ.id}/download`).subscribe((response: Blob) => {
+        this.http.download(`quizzes/${this.quizzes[quizIndex].id}/download`).subscribe((response: Blob) => {
             // create a link
             const FILE_LINK = document.createElement('a');
             FILE_LINK.href = window.URL.createObjectURL(response);
