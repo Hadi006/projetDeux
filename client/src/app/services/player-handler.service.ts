@@ -2,7 +2,7 @@ import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
 import { Subject, Observable, map, of, catchError, forkJoin } from 'rxjs';
-import { CommunicationService } from './communication.service';
+import { AnswerValidatorService } from './answer-validator.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,7 +13,7 @@ export class PlayerHandlerService {
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
-    constructor(private communicationService: CommunicationService) {}
+    constructor(private answerValidatorService: AnswerValidatorService) {}
 
     get players(): Map<number, Player> {
         return this.internalPlayers;
