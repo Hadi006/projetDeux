@@ -28,6 +28,7 @@ export class GameChoicePageComponent implements OnInit {
 
     startGame() {
         if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
+            this.publicQuizzesService.alertNoQuizAvailable();
             return;
         }
 
@@ -37,6 +38,7 @@ export class GameChoicePageComponent implements OnInit {
 
     testGame() {
         if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
+            this.publicQuizzesService.alertNoQuizAvailable();
             return;
         }
 
