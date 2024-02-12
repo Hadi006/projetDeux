@@ -138,6 +138,14 @@ describe('GameHandlerService', () => {
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
     });
 
+    it('startGame should do nothing if quizData is not set', () => {
+        service.loadQuizData(undefined);
+        service.startGame();
+        expect(questionHandlerServiceSpy.resetAnswers).not.toHaveBeenCalled();
+        expect(gameTimersServiceSpy.startQuestionTimer).not.toHaveBeenCalled();
+        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+    });
+
     it('setUpNextState should set the game correctly if state is show question', () => {
         gameStateService.gameState = GameState.ShowQuestion;
         expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
@@ -175,6 +183,14 @@ describe('GameHandlerService', () => {
         service.setUpNextState();
         expect(service.gameEnded$.next).toHaveBeenCalledTimes(2);
         expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
+    });
+
+    it('setUpNextState should do nothing if quizData is not set', () => {
+        service.loadQuizData(undefined);
+        service.setUpNextState();
+        expect(gameTimersServiceSpy.startAnswerTimer).not.toHaveBeenCalled();
+        expect(gameTimersServiceSpy.startQuestionTimer).not.toHaveBeenCalled();
+        expect(service.gameEnded$.next).not.toHaveBeenCalled();
     });
 
     it('ngOnDestroy should unsubscribe from timer ended', () => {

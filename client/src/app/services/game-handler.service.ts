@@ -31,7 +31,7 @@ export class GameHandlerService implements OnDestroy {
         return this.internalGameEnded$;
     }
 
-    loadQuizData(quizData: Quiz): void {
+    loadQuizData(quizData: Quiz | undefined): void {
         this.internalQuizData = quizData;
     }
 
