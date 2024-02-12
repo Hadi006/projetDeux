@@ -41,7 +41,7 @@ export class PublicQuizzesService {
         return this.fetchVisibleQuizzes().pipe(
             map(() => {
                 if (this.quizzes.length === 0) {
-                    this.alertNoQuizAvailable('Aucun quiz disponible');
+                    this.alertNoQuizAvailable('Quiz non disponible');
                     return false;
                 }
 

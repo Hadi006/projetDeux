@@ -65,28 +65,41 @@ describe('PublicQuizzesService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('fetchVisibleQuizzes() should make GET request and update list', () => {
+    it('fetchVisibleQuizzes() should make GET request and update list', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
-        service.fetchVisibleQuizzes();
-        expect(service.quizzes).toEqual(quizListTest);
+        service.fetchVisibleQuizzes().subscribe(() => {
+            expect(service.quizzes).toEqual(quizListTest);
+            done();
+        });
     });
 
-    it('fetchVisibleQuizzes() should do nothing if HTTP request fails', () => {
+    it('fetchVisibleQuizzes() should do nothing if HTTP request fails', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error' })));
-        service.fetchVisibleQuizzes();
-        expect(service.quizzes).toEqual([]);
+        service.fetchVisibleQuizzes().subscribe(() => {
+            expect(service.quizzes).toEqual([]);
+            done();
+        });
     });
 
-    it('checkQuizAvailability() should return true if quiz is in list', () => {
+    it('fetchVisibleQuizzes() should do nothing if response body is not an array', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: {} })));
+        service.fetchVisibleQuizzes().subscribe(() => {
+            expect(service.quizzes).toEqual([]);
+            done();
+        });
+    });
+
+    it('checkQuizAvailability() should return true if quiz is in list', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
         service.fetchVisibleQuizzes().subscribe();
         service.checkQuizAvailability(quizListTest[0]).subscribe((isAvailable) => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
             expect(isAvailable).toBeTrue();
+            done();
         });
     });
 
-    it('checkQuizAvailability() should return false if quiz is undefined', () => {
+    it('checkQuizAvailability() should return false if quiz is undefined', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
         service.fetchVisibleQuizzes().subscribe();
         service.checkQuizAvailability(undefined).subscribe((isAvailable) => {
@@ -97,19 +110,23 @@ describe('PublicQuizzesService', () => {
                 },
             });
             expect(isAvailable).toBeFalse();
+            done();
         });
     });
 
-    it('checkQuizAvailability() should return false if quiz is not in list', () => {
+    it('checkQuizAvailability() should return false if quiz is not in list', (done) => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
-        service.fetchVisibleQuizzes();
-        expect(dialogSpy.open).not.toHaveBeenCalledWith(AlertComponent, {
-            data: {
-                title: 'Erreur',
-                message: 'Aucun quiz disponible',
-            },
+        service.fetchVisibleQuizzes().subscribe();
+        service.checkQuizAvailability(quizListTest[0]).subscribe((isAvailable) => {
+            expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
+                data: {
+                    title: 'Erreur',
+                    message: 'Quiz non disponible',
+                },
+            });
+            expect(isAvailable).toBeFalse();
+            done();
         });
-        expect(service.checkQuizAvailability(quizListTest[0])).toBeFalse();
     });
 
     it('alertNoQuizAvailable() should open a dialog', () => {
