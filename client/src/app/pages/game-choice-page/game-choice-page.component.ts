@@ -30,6 +30,7 @@ export class GameChoicePageComponent implements OnInit {
         if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
             return;
         }
+
         this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['lobby']);
     }
