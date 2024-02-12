@@ -36,7 +36,7 @@ export class GameChoicePageComponent implements OnInit, OnDestroy {
     }
 
     startGame() {
-        if (!this.chosenQuiz) {
+        if (!this.checkQuizAvailability()) {
             return;
         }
         this.gameHandlerService.loadQuizData(this.chosenQuiz);
@@ -44,14 +44,29 @@ export class GameChoicePageComponent implements OnInit, OnDestroy {
     }
 
     testGame() {
-        if (!this.chosenQuiz) {
+        if (!this.checkQuizAvailability()) {
             return;
         }
+
         this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['/play']);
     }
 
     ngOnDestroy() {
         this.quizzesSubscription.unsubscribe();
+    }
+
+    private checkQuizAvailability(): boolean {
+        if (!this.chosenQuiz) {
+            return false;
+        }
+
+        this.publicQuizzesService.fetchVisibleQuizzes();
+
+        if (this.quizzes.find((quiz) => quiz.id === this.chosenQuiz.id)) {
+            return true;
+        }
+
+        return false;
     }
 }
