@@ -1,10 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
+import { GameStateService, GameState } from '@app/services/game-state.service';
 import { Player } from '@app/interfaces/player';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { Answer, Question } from '@common/quiz';
 
 describe('QuestionHandlerService', () => {
@@ -15,6 +16,7 @@ describe('QuestionHandlerService', () => {
                 score: 0,
                 answer: [true, false],
                 answerConfirmed: true,
+                isCorrect: true,
             },
         ],
         [
@@ -23,6 +25,7 @@ describe('QuestionHandlerService', () => {
                 score: 0,
                 answer: [false, true],
                 answerConfirmed: true,
+                isCorrect: false,
             },
         ],
     ]);
@@ -45,14 +48,14 @@ describe('QuestionHandlerService', () => {
     const QUESTIONS_DATA: Question[] = [
         {
             id: '0',
-            points: 1,
+            points: 10,
             text: '1+1?',
             choices: answers,
             type: 'multiple-choices',
         },
         {
             id: '1',
-            points: 1,
+            points: 10,
             text: 'What is the capital of France?',
             choices: [],
             type: 'text',
@@ -62,10 +65,15 @@ describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let gameStateService: GameStateService;
     let mockSubject: Subject<void>;
 
     beforeEach(() => {
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players', 'resetPlayerAnswers']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
+            'players',
+            'resetPlayerAnswers',
+            'validatePlayerAnswers',
+        ]);
         Object.defineProperty(playerHandlerServiceSpy, 'players', {
             get: () => {
                 return [];
@@ -91,20 +99,25 @@ describe('QuestionHandlerService', () => {
                     provide: GameTimersService,
                     useValue: gameTimersServiceSpy,
                 },
+                GameStateService,
             ],
         });
         service = TestBed.inject(QuestionHandlerService);
+        gameStateService = TestBed.inject(GameStateService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should update scores when timer ends', () => {
+    it('should update scores when timer ends', fakeAsync(() => {
         spyOn(service, 'updateScores');
+        gameStateService.gameState = GameState.ShowQuestion;
+        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of());
         gameTimersServiceSpy.timerEndedSubject.next();
+        tick();
         expect(service.updateScores).toHaveBeenCalled();
-    });
+    }));
 
     it('currentQuestion getter should return the current question', () => {
         service.questionsData = QUESTIONS_DATA;
@@ -141,12 +154,11 @@ describe('QuestionHandlerService', () => {
 
     it('updateScores should update the scores of the players', () => {
         const score = 10;
+        service.questionsData = QUESTIONS_DATA;
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
-        spyOn(service, 'calculateScore').and.returnValue(score);
         service.updateScores();
-        PLAYERS.forEach((player) => {
-            expect(player.score).toBe(score);
-        });
+        expect(playerHandlerServiceSpy.players.get(0)?.score).toEqual(score * GOOD_ANSWER_MULTIPLIER);
+        expect(playerHandlerServiceSpy.players.get(1)?.score).toEqual(0);
     });
 
     it('nextQuestion should load the next question', () => {

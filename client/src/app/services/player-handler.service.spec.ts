@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { PlayerHandlerService } from './player-handler.service';
@@ -6,7 +7,9 @@ describe('PlayerHandlerService', () => {
     let service: PlayerHandlerService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         service = TestBed.inject(PlayerHandlerService);
     });
 

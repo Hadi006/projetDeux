@@ -7,6 +7,7 @@ import { GameHandlerService } from '@app/services/game-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('GameplayPlayerPageComponent', () => {
     let component: GameplayPlayerPageComponent;
@@ -25,6 +26,7 @@ describe('GameplayPlayerPageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [GameplayPlayerPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
                 { provide: Router, useValue: routerSpy },
