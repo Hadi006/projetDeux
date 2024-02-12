@@ -27,7 +27,11 @@ describe('GameChoicePageComponent', () => {
             questions: [],
         };
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
-        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', ['fetchVisibleQuizzes', 'checkQuizAvailability']);
+        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
+            'fetchVisibleQuizzes',
+            'checkQuizAvailability',
+            'alertNoQuizAvailable',
+        ]);
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
             value: new Subject<Quiz[]>(),
         });
@@ -76,11 +80,12 @@ describe('GameChoicePageComponent', () => {
         expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
     });
 
-    it('should do nothing if game is no longer available on startGame call', () => {
+    it('should alert if game is no longer available on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
         component.chooseQuiz(mockQuiz);
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(false);
         component.startGame();
+        expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
@@ -94,11 +99,12 @@ describe('GameChoicePageComponent', () => {
         expect(navigateSpy).toHaveBeenCalledWith(['/play']);
     });
 
-    it('should do nothing if game is no longer available on testGame call', () => {
+    it('should alert if game is no longer available on testGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
         component.chooseQuiz(mockQuiz);
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(false);
         component.testGame();
+        expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
