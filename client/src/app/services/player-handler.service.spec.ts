@@ -1,7 +1,6 @@
-import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { AnswerValidatorService } from './answer-validator.service';
 import { PlayerHandlerService } from './player-handler.service';
 
@@ -123,4 +122,21 @@ describe('PlayerHandlerService', () => {
         });
     });
 
+    it('validatePlayerAnswers should validate the answers of all players', () => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            service.createPlayer();
+        }
+        const questionId = '1234';
+        answerValidatorServiceSpy.validateAnswer.and.returnValues(of(true), of(false), of(true));
+        service.validatePlayerAnswers(questionId).subscribe(() => {
+            service.players.forEach((player) => {
+                expect(answerValidatorServiceSpy.validateAnswer).toHaveBeenCalledWith(questionId, player.answer);
+            });
+
+            expect(service.players.get(0)?.isCorrect).toBeTrue();
+            expect(service.players.get(1)?.isCorrect).toBeFalse();
+            expect(service.players.get(2)?.isCorrect).toBeTrue();
+        });
+    });
 });
