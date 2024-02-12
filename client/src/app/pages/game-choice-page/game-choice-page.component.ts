@@ -1,31 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { Quiz } from '@common/quiz';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-choice-page',
     templateUrl: './game-choice-page.component.html',
     styleUrls: ['./game-choice-page.component.scss'],
 })
-export class GameChoicePageComponent implements OnInit, OnDestroy {
-    quizzes: Quiz[] = [];
-
+export class GameChoicePageComponent implements OnInit {
     chosenQuiz: Quiz;
 
-    private quizzesSubscription: Subscription;
-
     constructor(
-        private publicQuizzesService: PublicQuizzesService,
+        public publicQuizzesService: PublicQuizzesService,
         private router: Router,
         private gameHandlerService: GameHandlerService,
-    ) {
-        this.quizzesSubscription = this.publicQuizzesService.quizzes$.subscribe((quizzes) => {
-            this.quizzes = quizzes;
-        });
-    }
+    ) {}
 
     ngOnInit() {
         this.publicQuizzesService.fetchVisibleQuizzes();
@@ -50,10 +41,6 @@ export class GameChoicePageComponent implements OnInit, OnDestroy {
 
         this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['/play']);
-    }
-
-    ngOnDestroy() {
-        this.quizzesSubscription.unsubscribe();
     }
 
     private checkQuizAvailability(): boolean {

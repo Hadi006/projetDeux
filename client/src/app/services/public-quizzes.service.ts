@@ -8,16 +8,20 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class PublicQuizzesService {
-    readonly quizzes$: Subject<Quiz[]> = new Subject<Quiz[]>();
+    private internalQuizzes: Quiz[] = [];
 
     constructor(private http: CommunicationService) {}
+
+    get quizzes(): Quiz[] {
+        return this.internalQuizzes;
+    }
 
     fetchVisibleQuizzes() {
         this.http.get<Quiz[]>('quizzes/visible').subscribe((response: HttpResponse<Quiz[]>) => {
             if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
                 return;
             }
-            this.quizzes$.next(response.body);
+            this.internalQuizzes = response.body;
         });
     }
 }
