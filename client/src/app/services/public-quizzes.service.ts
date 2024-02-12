@@ -2,7 +2,6 @@ import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CommunicationService } from '@app/services/communication.service';
 import { Quiz } from '@common/quiz';
-import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
