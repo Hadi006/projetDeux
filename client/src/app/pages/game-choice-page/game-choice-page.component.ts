@@ -27,7 +27,7 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        if (!this.checkQuizAvailability()) {
+        if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
             return;
         }
         this.gameHandlerService.loadQuizData(this.chosenQuiz);
@@ -35,25 +35,11 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     testGame() {
-        if (!this.checkQuizAvailability()) {
+        if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
             return;
         }
 
         this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['/play']);
-    }
-
-    private checkQuizAvailability(): boolean {
-        if (!this.chosenQuiz) {
-            return false;
-        }
-
-        this.publicQuizzesService.fetchVisibleQuizzes();
-
-        if (this.quizzes.find((quiz) => quiz.id === this.chosenQuiz.id)) {
-            return true;
-        }
-
-        return false;
     }
 }

@@ -24,4 +24,14 @@ export class PublicQuizzesService {
             this.internalQuizzes = response.body;
         });
     }
+
+    checkQuizAvailability(quiz: Quiz | undefined): boolean {
+        if (!quiz) {
+            return false;
+        }
+
+        this.fetchVisibleQuizzes();
+
+        return this.quizzes.find((q) => q.id === quiz.id) !== undefined;
+    }
 }
