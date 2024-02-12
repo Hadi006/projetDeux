@@ -4,6 +4,7 @@ import { LobbyOrganizerPageComponent, TEST_LOBBY_DATA } from '@app/pages/lobby-o
 import { LobbyService } from '@app/services/lobby.service';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { Quiz } from '@common/quiz';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 
 describe('LobbyOrganizerPageComponent', () => {
     const TEST_QUIZ: Quiz = {
@@ -30,7 +31,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [LobbyOrganizerPageComponent],
+            declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
             providers: [
                 { provide: LobbyService, useValue: lobbyServiceSpy },
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
