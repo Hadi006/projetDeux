@@ -72,24 +72,19 @@ export class PlayerHandlerService {
     }
 
     validatePlayerAnswers(questionId: string): Observable<null> {
-        const validationObservables: Observable<{ player: Player; response: HttpResponse<boolean> } | null>[] = Array.from(
-            this.internalPlayers.values(),
-        ).map((player) => {
-            return this.communicationService.post<boolean>(`questions/${questionId}/validate-answer`, player.answer).pipe(
-                map((response) => ({ player, response })),
-                catchError(() => {
-                    return of(null);
-                }),
-            );
+        const validationObservables: Observable<boolean>[] = [];
+
+        this.internalPlayers.forEach((player) => {
+            const validationObservable = this.answerValidatorService.validateAnswer(questionId, player.answer);
+
+            validationObservables.push(validationObservable);
+            validationObservable.subscribe((isCorrect) => {
+                player.isCorrect = isCorrect;
+            });
         });
 
         return forkJoin(validationObservables).pipe(
-            map((results) => {
-                results.forEach((result) => {
-                    if (result && result.response.status === HttpStatusCode.Ok) {
-                        result.player.isCorrect = result.response.body || false;
-                    }
-                });
+            map(() => {
                 return null;
             }),
         );
