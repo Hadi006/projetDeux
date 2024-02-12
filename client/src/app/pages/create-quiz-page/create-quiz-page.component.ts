@@ -16,13 +16,13 @@ export class CreateQuizPageComponent implements OnInit {
     quiz: Quiz;
 
     constructor(
-        private admin: AdminQuizzesService,
+        private adminService: AdminQuizzesService,
         private router: Router,
         private dialog: MatDialog,
     ) {}
 
     ngOnInit() {
-        this.quiz = this.admin.getSelectedQuiz();
+        this.quiz = this.adminService.getSelectedQuiz();
     }
 
     handle(action: { type: string; questionIndex: number }) {
@@ -41,7 +41,7 @@ export class CreateQuizPageComponent implements OnInit {
     openQuestionForm(index?: number) {
         const INDEX = index !== undefined ? index : this.quiz.questions.length;
         const QUESTION = this.getQuestion(INDEX);
-        this.admin.selectedQuestion = QUESTION;
+        this.adminService.selectedQuestion = QUESTION;
 
         const QUESTION_FORM = this.dialog.open(QuestionFormComponent, {
             width: '50%',
@@ -73,7 +73,7 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     private processQuiz(quiz: Quiz, isNew: boolean) {
-        const operation = isNew ? this.admin.submitQuiz(quiz) : this.admin.updateQuiz(quiz);
+        const operation = isNew ? this.adminService.submitQuiz(quiz) : this.adminService.updateQuiz(quiz);
 
         operation.subscribe((response: { errorLog: string }) => {
             if (response.errorLog) {
