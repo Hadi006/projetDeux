@@ -23,8 +23,8 @@ export class AdminLoginPageComponent {
         const PASSWORD = this.loginForm.value.password || '';
         this.loginForm.reset();
 
-        this.authService.checkAuthentication(PASSWORD).subscribe((authentificated: boolean) => {
-            if (authentificated) {
+        this.authService.checkAuthentication(PASSWORD).subscribe((authenticated: boolean) => {
+            if (authenticated) {
                 this.router.navigate(['home/admin/quizzes']);
             }
         });
