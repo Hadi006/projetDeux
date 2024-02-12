@@ -119,6 +119,15 @@ describe('QuestionHandlerService', () => {
         expect(service.updateScores).toHaveBeenCalled();
     });
 
+    it('should update scores when timer ends and there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        spyOn(service, 'updateScores');
+        gameStateService.gameState = GameState.ShowQuestion;
+        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
+        gameTimersServiceSpy.timerEndedSubject.next();
+        expect(service.updateScores).toHaveBeenCalled();
+    });
+
     it('currentQuestion getter should return the current question', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
@@ -155,6 +164,14 @@ describe('QuestionHandlerService', () => {
         spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
         service.updateScores();
         expect(playerHandlerServiceSpy.players.get(0)?.score).toEqual(score * GOOD_ANSWER_MULTIPLIER);
+        expect(playerHandlerServiceSpy.players.get(1)?.score).toEqual(0);
+    });
+
+    it('updateScores should not update the scores if there is no current question', () => {
+        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        service.updateScores();
+        expect(playerHandlerServiceSpy.players.get(0)?.score).toEqual(0);
         expect(playerHandlerServiceSpy.players.get(1)?.score).toEqual(0);
     });
 
