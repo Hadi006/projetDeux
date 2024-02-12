@@ -33,7 +33,7 @@ describe('AnswerValidatorService', () => {
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.Ok, body: expectedResponse })));
 
         service.validateAnswer(questionId, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/quiz/${questionId}/answer`, answer);
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/questions/${questionId}/answer`, answer);
             expect(response).toBe(expectedResponse);
         });
     });
@@ -44,7 +44,7 @@ describe('AnswerValidatorService', () => {
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.NotFound })));
 
         service.validateAnswer(questionId, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/quiz/${questionId}/answer`, answer);
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/questions/${questionId}/answer`, answer);
             expect(response).toBeFalse();
         });
     });
@@ -55,7 +55,7 @@ describe('AnswerValidatorService', () => {
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.Ok, body: null })));
 
         service.validateAnswer(questionId, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/quiz/${questionId}/answer`, answer);
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/questions/${questionId}/answer`, answer);
             expect(response).toBeFalse();
         });
     });
