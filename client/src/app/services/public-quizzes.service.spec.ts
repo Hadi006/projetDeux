@@ -15,14 +15,18 @@ describe('PublicQuizzesService', () => {
 
     beforeEach(() => {
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['get']);
+        dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: CommunicationService, useValue: communicationServiceSpy }, {
-                provide: MatDialog,
-                useValue: jasmine.createSpyObj('MatDialog', ['open']),
-            }],
+            providers: [
+                { provide: CommunicationService, useValue: communicationServiceSpy },
+                {
+                    provide: MatDialog,
+                    useValue: dialogSpy,
+                },
+            ],
         });
         service = TestBed.inject(PublicQuizzesService);
         quizListTest = [
@@ -88,5 +92,10 @@ describe('PublicQuizzesService', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
         service.fetchVisibleQuizzes();
         expect(service.checkQuizAvailability(quizListTest[0])).toBeFalse();
+    });
+
+    it('alertNoQuizAvailable() should open a dialog', () => {
+        service.alertNoQuizAvailable();
+        expect(dialogSpy.open).toHaveBeenCalled();
     });
 });
