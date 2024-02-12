@@ -8,7 +8,6 @@ import { AnswerValidatorService } from './answer-validator.service';
 })
 export class PlayerHandlerService {
     private internalPlayers: Map<number, Player> = new Map<number, Player>();
-    private internalNPlayers: number = 0;
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
@@ -16,10 +15,6 @@ export class PlayerHandlerService {
 
     get players(): Map<number, Player> {
         return this.internalPlayers;
-    }
-
-    get nPlayers(): number {
-        return this.internalNPlayers;
     }
 
     get allAnsweredSubject(): Subject<void> {
@@ -33,7 +28,7 @@ export class PlayerHandlerService {
             answerConfirmed: false,
             isCorrect: false,
         };
-        this.internalPlayers.set(this.internalNPlayers++, player);
+        this.internalPlayers.set(this.internalPlayers.size, player);
 
         return player;
     }
@@ -56,7 +51,7 @@ export class PlayerHandlerService {
 
         player.answerConfirmed = true;
 
-        if (++this.internalNAnswered >= this.internalNPlayers) {
+        if (++this.internalNAnswered >= this.internalPlayers.size) {
             this.internalAllAnsweredSubject.next();
             this.internalNAnswered = 0;
         }
