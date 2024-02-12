@@ -107,6 +107,23 @@ describe('PlayerHandlerService', () => {
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(2);
     });
 
+    it('updateScores should update the scores of all players', () => {
+        const nPlayers = 3;
+        const points = 10;
+        for (let i = 0; i < nPlayers; i++) {
+            const player = service.createPlayer();
+            player.isCorrect = i % 2 === 0;
+        }
+        service.updateScores(points);
+        service.players.forEach((player) => {
+            if (player.isCorrect) {
+                expect(player.score).toBe(points);
+            } else {
+                expect(player.score).toBe(0);
+            }
+        });
+    });
+
     it('resetPlayerAnswers should reset all players answers and answerConfirmed', () => {
         const nPlayers = 3;
         const nAnswers = 4;
