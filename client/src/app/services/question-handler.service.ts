@@ -13,7 +13,6 @@ export const GOOD_ANSWER_MULTIPLIER = 1.2;
 export class QuestionHandlerService implements OnDestroy {
     private internalQuestions: Question[];
     private currentQuestionIndex = 0;
-    private internalNQuestions: number = 0;
     private timerEndedSubscription: Subscription;
 
     constructor(
@@ -32,13 +31,8 @@ export class QuestionHandlerService implements OnDestroy {
         return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
     }
 
-    get nQuestions(): number {
-        return this.internalNQuestions;
-    }
-
     set questionsData(data: Question[]) {
         this.internalQuestions = data;
-        this.internalNQuestions = data.length;
     }
 
     resetAnswers(): void {

@@ -84,7 +84,7 @@ describe('QuestionHandlerService', () => {
             ],
         });
         service = TestBed.inject(QuestionHandlerService);
-        service.questionsData = QUESTIONS_DATA;
+        service.questionsData = [...QUESTIONS_DATA];
         gameStateService = TestBed.inject(GameStateService);
     });
 
@@ -123,9 +123,8 @@ describe('QuestionHandlerService', () => {
         expect(service.currentAnswers).toEqual([]);
     });
 
-    it('questionsData setter should set the questionsData and nQuestions', () => {
+    it('questionsData setter should set the questionsData', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
-        expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
     });
 
     it('resetAnswers should reset the answers of the players', () => {
