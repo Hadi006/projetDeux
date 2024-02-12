@@ -1,39 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { Quiz } from '@common/quiz';
 
 @Component({
     selector: 'app-game-choice-page',
     templateUrl: './game-choice-page.component.html',
     styleUrls: ['./game-choice-page.component.scss'],
 })
-export class GameChoicePageComponent {
-    games = ['Math', 'Science', 'Programmation', 'Histoire', 'Mode aleatoire'];
-
-    chosenGame: string | null = null;
+export class GameChoicePageComponent implements OnInit {
+    chosenQuiz: Quiz;
 
     constructor(
+        public publicQuizzesService: PublicQuizzesService,
         private router: Router,
         private gameHandlerService: GameHandlerService,
     ) {}
 
-    chooseGame(game: string) {
-        this.chosenGame = game;
+    ngOnInit() {
+        this.publicQuizzesService.fetchVisibleQuizzes();
+    }
+
+    chooseQuiz(quiz: Quiz) {
+        this.chosenQuiz = quiz;
     }
 
     startGame() {
-        if (!this.chosenGame) {
+        if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
+            this.publicQuizzesService.alertNoQuizAvailable();
             return;
         }
-        this.gameHandlerService.loadGameData();
+
+        this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['lobby']);
     }
 
     testGame() {
-        if (!this.chosenGame) {
+        if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
+            this.publicQuizzesService.alertNoQuizAvailable();
             return;
         }
-        this.gameHandlerService.loadGameData();
+
+        this.gameHandlerService.loadQuizData(this.chosenQuiz);
         this.router.navigate(['/play']);
     }
 }

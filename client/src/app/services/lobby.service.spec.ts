@@ -3,14 +3,23 @@ import { TestBed } from '@angular/core/testing';
 import { LobbyService } from '@app/services/lobby.service';
 import { SocketService } from '@app/services/socket.service';
 import { LobbyData } from '@common/lobby-data';
+import { Quiz } from '@common/quiz';
 import { of } from 'rxjs';
 
 describe('LobbyService', () => {
-    const lobbyData: LobbyData = { id: 1, players: [], game: { id: 0, name: 'Math', questions: [], timePerQuestion: 5 }, started: true };
+    const quizData: Quiz = {
+        id: '0',
+        title: 'Math',
+        visible: true,
+        description: 'Math quiz',
+        duration: 5,
+        lastModification: new Date(),
+        questions: [],
+    };
+    const lobbyData: LobbyData = { id: 1, players: [], quiz: quizData, started: true };
     const newData: LobbyData = {
         id: 1,
         players: [{ id: 1, name: 'Player 1' }],
-        game: { id: 1, name: 'Math', questions: [], timePerQuestion: 10 },
         started: false,
     };
 

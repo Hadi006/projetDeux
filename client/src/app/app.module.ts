@@ -18,6 +18,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
+import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
 import { QuestionFormComponent } from './components/question-form/question-form.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
@@ -52,6 +53,7 @@ import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
         AdminLoginPageComponent,
         AlertComponent,
         HomePageComponent,
+        CreateQuizPageComponent,
         AdminPageComponent,
         QuizItemComponent,
         QuestionBankComponent,
