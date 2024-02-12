@@ -27,7 +27,11 @@ describe('GameChoicePageComponent', () => {
             questions: [],
         };
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
-        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', ['fetchVisibleQuizzes', 'checkQuizAvailability', 'alertNoQuizAvailable']);
+        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
+            'fetchVisibleQuizzes',
+            'checkQuizAvailability',
+            'alertNoQuizAvailable',
+        ]);
         publicQuizzesServiceSpy.fetchVisibleQuizzes.and.returnValue(of());
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
             value: new Subject<Quiz[]>(),
@@ -83,6 +87,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should alert if no quiz is selected on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
@@ -117,6 +122,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should alert if no quiz is selected on testGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
