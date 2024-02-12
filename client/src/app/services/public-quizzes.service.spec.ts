@@ -55,17 +55,15 @@ describe('PublicQuizzesService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('fetchVisibleQuizzes() should make GET request and notifiy subscribers', () => {
+    it('fetchVisibleQuizzes() should make GET request and update list', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
-        spyOn(service.quizzes$, 'next');
         service.fetchVisibleQuizzes();
-        expect(service.quizzes$.next).toHaveBeenCalledWith(quizListTest);
+        expect(service.quizzes).toEqual(quizListTest);
     });
 
     it('fetchVisibleQuizzes() should do nothing if HTTP request fails', () => {
         communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error' })));
-        spyOn(service.quizzes$, 'next');
         service.fetchVisibleQuizzes();
-        expect(service.quizzes$.next).not.toHaveBeenCalled();
+        expect(service.quizzes).toEqual([]);
     });
 });
