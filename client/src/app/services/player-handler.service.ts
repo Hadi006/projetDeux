@@ -1,7 +1,6 @@
-import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
-import { Subject, Observable, map, of, catchError, forkJoin } from 'rxjs';
+import { Subject, Observable, map, forkJoin } from 'rxjs';
 import { AnswerValidatorService } from './answer-validator.service';
 
 @Injectable({
