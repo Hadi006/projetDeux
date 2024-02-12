@@ -7,6 +7,7 @@ import { Player } from '@app/interfaces/player';
 import { Question } from '@common/quiz';
 
 const TEST_PLAYER: Player = {
+    id: 0,
     score: 0,
     answer: [false, true, false, false],
     answerConfirmed: false,

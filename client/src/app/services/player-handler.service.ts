@@ -7,13 +7,13 @@ import { AnswerValidatorService } from './answer-validator.service';
     providedIn: 'root',
 })
 export class PlayerHandlerService {
-    private internalPlayers: Map<number, Player> = new Map<number, Player>();
+    private internalPlayers: Player[] = [];
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
     constructor(private answerValidatorService: AnswerValidatorService) {}
 
-    get players(): Map<number, Player> {
+    get players(): Player[] {
         return this.internalPlayers;
     }
 
@@ -23,12 +23,13 @@ export class PlayerHandlerService {
 
     createPlayer(): Player {
         const player: Player = {
+            id: this.internalPlayers.length,
             score: 0,
             answer: [],
             answerConfirmed: false,
             isCorrect: false,
         };
-        this.internalPlayers.set(this.internalPlayers.size, player);
+        this.internalPlayers.push(player);
 
         return player;
     }
@@ -51,7 +52,7 @@ export class PlayerHandlerService {
 
         player.answerConfirmed = true;
 
-        if (++this.internalNAnswered >= this.internalPlayers.size) {
+        if (++this.internalNAnswered >= this.internalPlayers.length) {
             this.internalAllAnsweredSubject.next();
             this.internalNAnswered = 0;
         }
