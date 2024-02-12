@@ -27,11 +27,7 @@ describe('GameChoicePageComponent', () => {
             questions: [],
         };
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
-        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
-            'fetchVisibleQuizzes',
-            'checkQuizAvailability',
-            'alertNoQuizAvailable',
-        ]);
+        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', ['fetchVisibleQuizzes', 'checkQuizAvailability']);
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
             value: new Subject<Quiz[]>(),
         });
@@ -85,7 +81,6 @@ describe('GameChoicePageComponent', () => {
         component.chooseQuiz(mockQuiz);
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(false);
         component.startGame();
-        expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
@@ -104,7 +99,6 @@ describe('GameChoicePageComponent', () => {
         component.chooseQuiz(mockQuiz);
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(false);
         component.testGame();
-        expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
