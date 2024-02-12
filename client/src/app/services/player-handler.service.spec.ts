@@ -119,7 +119,7 @@ describe('PlayerHandlerService', () => {
         });
     });
 
-    it('validatePlayerAnsewrs should set isCorrect to true if the answer is correct', (done) => {
+    it('validatePlayerAnswers should set isCorrect to true if the answer is correct', (done) => {
         const nPlayers = 3;
         for (let i = 0; i < nPlayers; i++) {
             const player = service.createPlayer();
@@ -130,6 +130,22 @@ describe('PlayerHandlerService', () => {
         service.validatePlayerAnswers('').subscribe(() => {
             service.players.forEach((player) => {
                 expect(player.isCorrect).toBeTrue();
+            });
+            done();
+        });
+    });
+
+    it('validatePlayerAnwers should handle the error if the request fails', (done) => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            const player = service.createPlayer();
+            player.answer = [true, false, true];
+        }
+        const response = new HttpResponse({ status: 500, statusText: 'Internal Server Error' });
+        communicationServiceSpy.post.and.returnValues(of(response), of(response), of(response));
+        service.validatePlayerAnswers('').subscribe(() => {
+            service.players.forEach((player) => {
+                expect(player.isCorrect).toBeFalse();
             });
             done();
         });
