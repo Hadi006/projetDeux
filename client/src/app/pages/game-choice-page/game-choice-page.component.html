@@ -1,7 +1,7 @@
 <div class="container">
     <h1>Choisissez un jeu</h1>
     <div class="games-list">
-        <button *ngFor="let quiz of quizzes" (click)="chooseQuiz(quiz)" class="game-button">
+        <button *ngFor="let quiz of publicQuizzesService.quizzes" (click)="chooseQuiz(quiz)" class="game-button">
             {{ quiz.title }}
         </button>
     </div>
