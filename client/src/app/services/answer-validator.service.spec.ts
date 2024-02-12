@@ -48,4 +48,15 @@ describe('AnswerValidatorService', () => {
             expect(response).toBeFalse();
         });
     });
+
+    it('should return false if the response body is falsy', () => {
+        const questionId = '1234';
+        const answer = [true, false, true, false];
+        communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.Ok, body: null })));
+
+        service.validateAnswer(questionId, answer).subscribe((response) => {
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`/api/quiz/${questionId}/answer`, answer);
+            expect(response).toBeFalse();
+        });
+    });
 });
