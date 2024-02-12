@@ -31,19 +31,25 @@ export class PublicQuizzesService {
 
     checkQuizAvailability(quiz: Quiz | undefined): boolean {
         if (!quiz) {
+            this.alertNoQuizAvailable('Aucun quiz sélectionné');
             return false;
         }
 
         this.fetchVisibleQuizzes();
 
-        return this.quizzes.find((q) => q.id === quiz.id) !== undefined;
+        if (this.quizzes.length === 0) {
+            this.alertNoQuizAvailable('Aucun quiz disponible');
+            return false;
+        }
+
+        return true;
     }
 
-    alertNoQuizAvailable() {
+    alertNoQuizAvailable(message: string) {
         this.dialog.open(AlertComponent, {
             data: {
                 title: 'Erreur',
-                message: "Le questionnaire n'est plus disponible",
+                message,
             },
         });
     }
