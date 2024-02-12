@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
 import { AdminLoginPageComponent } from '@app/pages/admin-login-page/admin-login-page.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
@@ -16,6 +17,7 @@ const routes: Routes = [
     { path: 'material', component: MaterialPageComponent },
     { path: 'lobby', component: LobbyOrganizerPageComponent },
     { path: 'play', component: GameplayPlayerPageComponent },
+    { path: 'create-quiz', component: CreateQuizPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 
