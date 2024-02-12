@@ -41,7 +41,7 @@ describe('AdminLoginPageComponent', () => {
         expect(component.loginForm.value.password).toBe(null);
     });
 
-    it('login should navigate to admin quizzes if authentificated', () => {
+    it('login should navigate to admin quizzes if authenticated', () => {
         component.loginForm.setValue({ password: 'password' });
         authServiceSpy.checkAuthentication.and.returnValue(of(true));
         component.login();
@@ -49,7 +49,7 @@ describe('AdminLoginPageComponent', () => {
         expect(routerSpy.navigate).toHaveBeenCalledWith(['home/admin/quizzes']);
     });
 
-    it('login should not navigate to admin quizzes if not authentificated', () => {
+    it('login should not navigate to admin quizzes if not authenticated', () => {
         component.loginForm.setValue({ password: 'password' });
         authServiceSpy.checkAuthentication.and.returnValue(of(false));
         component.login();
