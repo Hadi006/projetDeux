@@ -9,66 +9,69 @@ import { of, Subject } from 'rxjs';
 import { Answer, Question } from '@common/quiz';
 
 describe('QuestionHandlerService', () => {
-    const PLAYERS = new Map<number, Player>([
-        [
-            0,
-            {
-                score: 0,
-                answer: [true, false],
-                answerConfirmed: true,
-                isCorrect: true,
-            },
-        ],
-        [
-            1,
-            {
-                score: 0,
-                answer: [false, true],
-                answerConfirmed: true,
-                isCorrect: false,
-            },
-        ],
-    ]);
-
-    const answers: Answer[] = [
-        {
-            text: '1',
-            isCorrect: false,
-        },
-        {
-            text: '2',
-            isCorrect: true,
-        },
-        {
-            text: '3',
-            isCorrect: false,
-        },
-    ];
-
-    const QUESTIONS_DATA: Question[] = [
-        {
-            id: '0',
-            points: 10,
-            text: '1+1?',
-            choices: answers,
-            type: 'multiple-choices',
-        },
-        {
-            id: '1',
-            points: 10,
-            text: 'What is the capital of France?',
-            choices: [],
-            type: 'text',
-        },
-    ];
-
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
     let gameStateService: GameStateService;
     let mockSubject: Subject<void>;
+    let PLAYERS: Map<number, Player>;
+    let answers: Answer[];
+    let QUESTIONS_DATA: Question[];
 
     beforeEach(() => {
+        PLAYERS = new Map<number, Player>([
+            [
+                0,
+                {
+                    score: 0,
+                    answer: [true, false],
+                    answerConfirmed: true,
+                    isCorrect: true,
+                },
+            ],
+            [
+                1,
+                {
+                    score: 0,
+                    answer: [false, true],
+                    answerConfirmed: true,
+                    isCorrect: false,
+                },
+            ],
+        ]);
+
+        answers = [
+            {
+                text: '1',
+                isCorrect: false,
+            },
+            {
+                text: '2',
+                isCorrect: true,
+            },
+            {
+                text: '3',
+                isCorrect: false,
+            },
+        ];
+
+        QUESTIONS_DATA = [
+            {
+                id: '0',
+                points: 10,
+                text: '1+1?',
+                choices: answers,
+                type: 'multiple-choices',
+            },
+            {
+                id: '1',
+                points: 10,
+                text: 'What is the capital of France?',
+                choices: [],
+                type: 'text',
+            },
+        ];
+
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
             'players',
             'resetPlayerAnswers',
