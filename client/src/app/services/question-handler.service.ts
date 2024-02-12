@@ -52,13 +52,9 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     updateScores(): void {
-        this.playerHandlerService.players.forEach((player) => {
-            if (!this.currentQuestion) {
-                return;
-            }
+        const points = (this.currentQuestion?.points || 0) * GOOD_ANSWER_MULTIPLIER;
 
-            player.score += player.isCorrect ? this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER : 0;
-        });
+        this.playerHandlerService.updateScores(points);
     }
 
     ngOnDestroy(): void {

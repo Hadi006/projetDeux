@@ -62,6 +62,14 @@ export class PlayerHandlerService {
         }
     }
 
+    updateScores(points: number): void {
+        this.internalPlayers.forEach((player) => {
+            if (player.isCorrect) {
+                player.score += points;
+            }
+        });
+    }
+
     resetPlayerAnswers(newAnswersLength: number): void {
         this.internalPlayers.forEach((player) => {
             player.answer = new Array(newAnswersLength).fill(false);
