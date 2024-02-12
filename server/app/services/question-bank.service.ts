@@ -1,7 +1,6 @@
 import { QuestionValidator } from '@app/classes/question-validator';
 import { DatabaseService } from '@app/services/database.service';
 import { Question } from '@common/quiz';
-import { randomUUID } from 'crypto';
 import { Service } from 'typedi';
 
 @Service()
@@ -30,7 +29,6 @@ export class QuestionBankService {
     }
 
     async addQuestion(question: Question): Promise<boolean> {
-        question.id = randomUUID();
         const SAME_NAMES = await this.database.get<Question>('questions', { text: question.text });
         if (SAME_NAMES.length > 0) {
             return false;

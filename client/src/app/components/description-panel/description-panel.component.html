@@ -1,14 +1,13 @@
-<div *ngIf="selectedGame" class="game-description">
+<div *ngIf="selectedQuiz" class="game-description">
     <h3>Description</h3>
-    <p>{{ description }}</p>
+    <p>{{ selectedQuiz.description }}</p>
     <h3>Durée</h3>
-    <p>{{ duration }}</p>
+    <p>{{ selectedQuiz.duration }}</p>
     <h3>Questions</h3>
     <ul>
-        <li *ngFor="let question of questions">{{ question }}</li>
+        <li *ngFor="let question of selectedQuiz.questions">{{ question.text }}</li>
     </ul>
 </div>
-<div *ngIf="!selectedGame">
+<div *ngIf="!selectedQuiz">
     <p>Sélectionnez un jeu pour commencer.</p>
 </div>
-
