@@ -7,6 +7,7 @@ import { Quiz } from '@common/quiz';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { of, Subject } from 'rxjs';
+import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
@@ -41,7 +42,7 @@ describe('GameChoicePageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, HttpClientTestingModule],
-            declarations: [GameChoicePageComponent],
+            declarations: [GameChoicePageComponent, DescriptionPanelComponent],
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
                 {
