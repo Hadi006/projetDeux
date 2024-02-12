@@ -1,7 +1,7 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Question, Quiz } from '@common/quiz';
-import { BehaviorSubject, Observable, map, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, map, switchMap, of, catchError } from 'rxjs';
 import { CommunicationService } from './communication.service';
 const INVALID_INDEX = -1;
 
@@ -75,7 +75,12 @@ export class AdminQuizzesService {
     }
 
     uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
-        return this.readQuizFile(quizFile).pipe(switchMap((quiz: unknown) => this.submitQuiz(quiz)));
+        return this.readQuizFile(quizFile).pipe(
+            switchMap((quiz: unknown) => this.submitQuiz(quiz)),
+            catchError(() => {
+                return of({ quiz: undefined, errorLog: 'Error occurred while uploading quiz' });
+            }),
+        );
     }
 
     submitQuiz(quiz: unknown): Observable<{ quiz?: Quiz; errorLog: string }> {
@@ -182,7 +187,6 @@ export class AdminQuizzesService {
                 }
                 observer.complete();
             };
-            reader.onerror = () => observer.error('File read error');
             reader.readAsText(quizFile);
         });
     }

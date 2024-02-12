@@ -134,12 +134,12 @@ describe('AdminQuizzesService', () => {
     it('should handle an empty or invalid quiz file gracefully', (done) => {
         const mockQuizFile = new File([''], 'quiz.txt', { type: 'text/plain' });
         service.uploadQuiz(mockQuizFile).subscribe({
-            next: () => {
-                done.fail();
-            },
-            error: (error) => {
-                expect(error.errorLog).toBe('Invalid or empty quiz file');
+            next: (response) => {
+                expect(response.errorLog).toBe('Error occurred while uploading quiz');
                 done();
+            },
+            error: () => {
+                done.fail();
             },
         });
     });
@@ -148,12 +148,12 @@ describe('AdminQuizzesService', () => {
         const mockQuizFile = new File([''], 'quiz.txt', { type: 'text/plain' });
         spyOn(window, 'FileReader').and.throwError('File reading error');
         service.uploadQuiz(mockQuizFile).subscribe({
-            next: () => {
-                done.fail();
-            },
-            error: (error) => {
-                expect(error).toBe('File read error');
+            next: (response) => {
+                expect(response.errorLog).toBe('Error occurred while uploading quiz');
                 done();
+            },
+            error: () => {
+                done.fail();
             },
         });
     });
