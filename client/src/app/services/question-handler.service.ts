@@ -68,8 +68,9 @@ export class QuestionHandlerService implements OnDestroy {
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
             if (this.gameStateService.gameState === GameState.ShowQuestion) {
-                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.id || '');
-                this.updateScores();
+                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.id || '').subscribe(() => {
+                    this.updateScores();
+                });
             }
         });
     }

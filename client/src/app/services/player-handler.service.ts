@@ -1,7 +1,7 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
-import { Subject } from 'rxjs';
+import { Subject, Observable, map, of, catchError, forkJoin } from 'rxjs';
 import { CommunicationService } from './communication.service';
 
 @Injectable({
@@ -71,16 +71,27 @@ export class PlayerHandlerService {
         });
     }
 
-    validatePlayerAnswers(questionId: string): void {
-        this.internalPlayers.forEach((player) => {
-            this.communicationService
-                .post<boolean>(`questions/${questionId}/validate-answer`, player.answer)
-                .subscribe((response: HttpResponse<boolean>) => {
-                    if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
-                        return;
-                    }
-                    player.isCorrect = response.body;
-                });
+    validatePlayerAnswers(questionId: string): Observable<void> {
+        const validationObservables: Observable<{ player: Player; response: HttpResponse<boolean> } | null>[] = Array.from(
+            this.internalPlayers.values(),
+        ).map((player) => {
+            return this.communicationService.post<boolean>(`questions/${questionId}/validate-answer`, player.answer).pipe(
+                map((response) => ({ player, response })),
+                catchError(() => {
+                    return of(null);
+                }),
+            );
         });
+
+        return forkJoin(validationObservables).pipe(
+            map((results) => {
+                results.forEach((result) => {
+                    if (result && result.response.status === HttpStatusCode.Ok) {
+                        result.player.isCorrect = result.response.body || false;
+                    }
+                });
+                return;
+            }),
+        );
     }
 }
