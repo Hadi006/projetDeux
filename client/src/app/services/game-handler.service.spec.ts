@@ -134,6 +134,7 @@ describe('GameHandlerService', () => {
         expect(questionsData).toEqual(TEST_QUIZ.questions);
         expect(questionHandlerServiceSpy.resetAnswers).toHaveBeenCalled();
         expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
+        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
     });
 
     it('setUpNextState should set the game correctly if state is show question', () => {

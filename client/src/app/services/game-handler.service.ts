@@ -39,6 +39,7 @@ export class GameHandlerService implements OnDestroy {
         this.questionHandlerService.questionsData = this.internalQuizData.questions;
         this.questionHandlerService.resetAnswers();
         this.gameTimersService.startQuestionTimer(this.internalQuizData.duration);
+        this.gameStateService.gameState = GameState.ShowQuestion;
     }
 
     setUpNextState(): void {
