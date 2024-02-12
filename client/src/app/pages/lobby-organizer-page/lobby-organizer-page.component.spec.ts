@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent, TEST_LOBBY_DATA } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { LobbyService } from '@app/services/lobby.service';
 import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.service';
+import { LobbyService } from '@app/services/lobby.service';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
@@ -19,7 +19,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [LobbyOrganizerPageComponent],
+            declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
             providers: [
                 { provide: LobbyService, useValue: lobbyServiceSpy },
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
