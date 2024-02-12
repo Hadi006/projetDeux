@@ -19,7 +19,6 @@ export class QuestionFormComponent {
         private dialog: MatDialog,
     ) {
         this.question = { ...admin.selectedQuestion };
-        // this.question.choices = this.question.choices.map((choice) => ({ ...choice }));
     }
 
     addChoice() {

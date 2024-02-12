@@ -1,9 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { MouseButton } from '@common/constant';
-// TODO : Avoir un fichier séparé pour les constantes!
-
-// TODO : Déplacer ça dans un fichier séparé accessible par tous
 
 @Component({
     selector: 'app-play-area',
@@ -27,7 +24,6 @@ export class PlayAreaComponent {
         this.buttonPressed = event.key;
     }
 
-    // TODO : déplacer ceci dans un service de gestion de la souris!
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
             this.timeService.startTimerById(this.timerId, this.timer);
