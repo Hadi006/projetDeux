@@ -1,6 +1,4 @@
 import { HttpException } from '@app/classes/http.exception';
-import { DateController } from '@app/controllers/date.controller';
-import { ExampleController } from '@app/controllers/example.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -8,6 +6,9 @@ import { StatusCodes } from 'http-status-codes';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
+import { AuthController } from './controllers/auth.controller';
+import { QuestionBankController } from './controllers/question-bank.controller';
+import { QuizBankController } from './controllers/quiz-bank.controller';
 
 @Service()
 export class Application {
@@ -16,8 +17,9 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
     constructor(
-        private readonly exampleController: ExampleController,
-        private readonly dateController: DateController,
+        private readonly authController: AuthController,
+        private readonly quizBankController: QuizBankController,
+        private readonly questionBankController: QuestionBankController,
     ) {
         this.app = express();
 
@@ -39,8 +41,9 @@ export class Application {
 
     bindRoutes(): void {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
-        this.app.use('/api/example', this.exampleController.router);
-        this.app.use('/api/date', this.dateController.router);
+        this.app.use('/api/auth', this.authController.router);
+        this.app.use('/api/quizzes', this.quizBankController.router);
+        this.app.use('/api/questions', this.questionBankController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });

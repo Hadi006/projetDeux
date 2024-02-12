@@ -1,6 +1,7 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
@@ -17,10 +18,16 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
-import { QuestionComponent } from './components/question/question.component';
 import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
+import { QuestionBankComponent } from './components/question-bank/question-bank.component';
+import { QuestionFormComponent } from './components/question-form/question-form.component';
+import { QuestionItemComponent } from './components/question-item/question-item.component';
+import { QuestionComponent } from './components/question/question.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 
 /**
  * Main module that is used in main.ts.
@@ -43,11 +50,26 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
         GameplayPlayerPageComponent,
         GameTimersComponent,
         ChatboxComponent,
+        AdminLoginPageComponent,
         AlertComponent,
         HomePageComponent,
         CreateQuizPageComponent,
+        AdminPageComponent,
+        QuizItemComponent,
+        QuestionBankComponent,
+        QuestionItemComponent,
+        QuestionFormComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
+    imports: [
+        AppMaterialModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        DragDropModule,
+        ReactiveFormsModule,
+    ],
     providers: [],
     bootstrap: [AppComponent],
 })
