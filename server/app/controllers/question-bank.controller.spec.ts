@@ -168,11 +168,11 @@ describe('QuestionBankController', () => {
         questionBankServiceStub.validateAnswer.resolves(true);
         return supertest(expressApp)
             .post(`/api/questions/${PARAM_ID}/validate-answer`)
-            .send({ answer: [true, false] })
+            .send([true, false])
             .expect(httpStatus.OK)
             .then((response) => {
                 expect(questionBankServiceStub.validateAnswer.calledWith(MOCK_QUESTIONS[0], [true, false])).to.equal(true);
-                expect(response.body.correct).to.equal(true);
+                expect(response.body).to.equal(true);
             });
     });
 
@@ -180,11 +180,11 @@ describe('QuestionBankController', () => {
         questionBankServiceStub.getQuestion.resolves(null);
         return supertest(expressApp)
             .post(`/api/questions/${PARAM_ID}/validate-answer`)
-            .send({ answer: [true, false] })
+            .send([true, false])
             .expect(httpStatus.NOT_FOUND)
             .then((response) => {
                 expect(questionBankServiceStub.validateAnswer.called).to.equal(false);
-                expect(response.body).to.deep.equal({});
+                expect(response.body).to.equal(false);
             });
     });
 
