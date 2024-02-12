@@ -1,8 +1,11 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { Quiz } from '@common/quiz';
+import { Subject } from 'rxjs';
 import { GameChoicePageComponent } from './game-choice-page.component';
 
 describe('GameChoicePageComponent', () => {
@@ -10,16 +13,41 @@ describe('GameChoicePageComponent', () => {
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let router: Router;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let publicQuizzesServiceSpy: jasmine.SpyObj<PublicQuizzesService>;
+    let mockQuiz: Quiz;
 
     beforeEach(async () => {
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData']);
+        mockQuiz = {
+            id: '1',
+            title: 'Math',
+            visible: true,
+            description: 'Math quiz',
+            duration: 10,
+            lastModification: new Date(),
+            questions: [],
+        };
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
+        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
+            'fetchVisibleQuizzes',
+            'checkQuizAvailability',
+            'alertNoQuizAvailable',
+        ]);
+        Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
+            value: new Subject<Quiz[]>(),
+        });
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
-            declarations: [GameChoicePageComponent, DescriptionPanelComponent],
-            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
+            imports: [RouterTestingModule, HttpClientTestingModule],
+            declarations: [GameChoicePageComponent],
+            providers: [
+                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
+                {
+                    provide: PublicQuizzesService,
+                    useValue: publicQuizzesServiceSpy,
+                },
+            ],
         }).compileComponents();
     }));
 
@@ -34,40 +62,50 @@ describe('GameChoicePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should set chosenGame on chooseGame call', () => {
-        const game = 'Math';
-        component.chooseGame(game);
-        expect(component.chosenGame).toEqual(game);
+    it('should call fetchVisibleQuizzes on init', () => {
+        expect(publicQuizzesServiceSpy.fetchVisibleQuizzes).toHaveBeenCalled();
+    });
+
+    it('should set chosenGame on choisirJeu call', () => {
+        component.chooseQuiz(mockQuiz);
+        expect(component.chosenQuiz).toEqual(mockQuiz);
     });
 
     it('should navigate on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
-        component.chosenGame = 'Math';
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(true);
         component.startGame();
-        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
+        expect(gameHandlerServiceSpy.loadQuizData).toHaveBeenCalledWith(mockQuiz);
         expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
     });
 
-    it('should do nothing on startGame call if chosenGame is null', () => {
+    it('should alert if game is no longer available on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(false);
         component.startGame();
-        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
+        expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalled();
+        expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
 
     it('should navigate on testGame call', () => {
-        const game = 'Programmation';
-        component.chooseGame(game);
+        component.chooseQuiz(mockQuiz);
         const navigateSpy = spyOn(router, 'navigate');
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(true);
         component.testGame();
-        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
+        expect(gameHandlerServiceSpy.loadQuizData).toHaveBeenCalledWith(mockQuiz);
         expect(navigateSpy).toHaveBeenCalledWith(['/play']);
     });
 
-    it('should do nothing on testGame call if chosenGame is null', () => {
+    it('should alert if game is no longer available on testGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(false);
         component.testGame();
-        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
+        expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalled();
+        expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
         expect(navigateSpy).not.toHaveBeenCalled();
     });
 });

@@ -1,10 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent, TEST_LOBBY_DATA } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { GameHandlerService, TEST_GAME } from '@app/services/game-handler.service';
+import { GameHandlerService } from '@app/services/game-handler.service';
 import { LobbyService } from '@app/services/lobby.service';
+import { Quiz } from '@common/quiz';
 
 describe('LobbyOrganizerPageComponent', () => {
+    const TEST_QUIZ: Quiz = {
+        id: '0',
+        title: 'Math',
+        visible: true,
+        description: 'Math quiz',
+        duration: 10,
+        lastModification: new Date(),
+        questions: [],
+    };
+
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
     let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
@@ -13,7 +24,7 @@ describe('LobbyOrganizerPageComponent', () => {
     beforeEach(() => {
         lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeLobbyToServer']);
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', [], {
-            gameData: TEST_GAME,
+            quizData: TEST_QUIZ,
         });
     });
 
@@ -39,7 +50,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     it('lobbyId should be set lobbyData', () => {
         expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
-        expect(component.lobbyData.game).toEqual(TEST_GAME);
+        expect(component.lobbyData.quiz).toEqual(TEST_QUIZ);
     });
 
     it('should call lobbyService.subscribeToLobbyDataById', () => {
