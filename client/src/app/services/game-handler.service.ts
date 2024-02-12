@@ -11,7 +11,7 @@ export const SHOW_ANSWER_DELAY = 3;
     providedIn: 'root',
 })
 export class GameHandlerService implements OnDestroy {
-    private internalQuizData: Quiz;
+    private internalQuizData: Quiz | undefined;
     private timerEndedSubscription: Subscription;
     private internalGameEnded$: Subject<void> = new Subject<void>();
 
@@ -23,7 +23,7 @@ export class GameHandlerService implements OnDestroy {
         this.subscribeToTimerEnded();
     }
 
-    get quizData(): Quiz {
+    get quizData(): Quiz | undefined {
         return this.internalQuizData;
     }
 
@@ -36,6 +36,10 @@ export class GameHandlerService implements OnDestroy {
     }
 
     startGame(): void {
+        if (!this.internalQuizData) {
+            return;
+        }
+
         this.questionHandlerService.questionsData = this.internalQuizData.questions;
         this.questionHandlerService.resetAnswers();
         this.gameTimersService.startQuestionTimer(this.internalQuizData.duration);
@@ -43,6 +47,10 @@ export class GameHandlerService implements OnDestroy {
     }
 
     setUpNextState(): void {
+        if (!this.internalQuizData) {
+            return;
+        }
+
         switch (this.gameStateService.gameState) {
             case GameState.ShowQuestion:
                 this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
