@@ -9,7 +9,7 @@ describe('GameTimersComponent', () => {
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
 
     beforeEach(() => {
-        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer']);
+        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer', 'resetTimers']);
         Object.defineProperty(gameTimersServiceSpy, 'time', { get: () => 0, configurable: true });
     });
 

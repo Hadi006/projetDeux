@@ -58,6 +58,11 @@ export class GameTimersService implements OnDestroy {
         this.internalTimerEndedSubject.next();
     }
 
+    resetTimers(): void {
+        this.timeService.stopTimerById(this.questionTimerId);
+        this.timeService.stopTimerById(this.answerTimerId);
+    }
+
     ngOnDestroy(): void {
         this.internalAllAnsweredSubscription.unsubscribe();
     }
