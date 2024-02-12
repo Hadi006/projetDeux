@@ -20,6 +20,7 @@ describe('GameplayPlayerPageComponent', () => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['startGame'], {
             gameEnded$: new Subject<void>(),
         });
+        Object.defineProperty(gameHandlerServiceSpy, 'quizData', { get: () => undefined, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -56,7 +57,14 @@ describe('GameplayPlayerPageComponent', () => {
         expect(gameHandlerServiceSpy.startGame).toHaveBeenCalled();
     });
 
+    it('ngOnInit should navigate to game page if there is no quiz', () => {
+        spyOnProperty(gameHandlerServiceSpy, 'quizData', 'get').and.returnValue(undefined);
+        component.ngOnInit();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
+    });
+
     it('ngOnDestroy should unsubscribe from gameEndedSubscription', () => {
+        routerSpy.navigate.calls.reset();
         component.ngOnDestroy();
         gameHandlerServiceSpy.gameEnded$.next();
         expect(routerSpy.navigate).not.toHaveBeenCalled();

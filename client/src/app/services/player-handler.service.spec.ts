@@ -30,11 +30,11 @@ describe('PlayerHandlerService', () => {
     });
 
     it('createPlayer should create a player and increment nPlayers', () => {
-        const nPlayers = service.players.size;
+        const nPlayers = service.players.length;
         const player = service.createPlayer();
         expect(player).toBeTruthy();
-        expect(service.players.size).toBe(nPlayers + 1);
-        expect(service.players.get(nPlayers)).toEqual(player);
+        expect(service.players.length).toBe(nPlayers + 1);
+        expect(service.players[nPlayers]).toEqual(player);
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
@@ -85,8 +85,8 @@ describe('PlayerHandlerService', () => {
         }
         spyOn(service.allAnsweredSubject, 'next');
         for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players.get(i));
-            expect(service.players.get(i)?.answerConfirmed).toBeTrue();
+            service.confirmPlayerAnswer(service.players[i]);
+            expect(service.players[i].answerConfirmed).toBeTrue();
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalled();
     });
@@ -98,11 +98,11 @@ describe('PlayerHandlerService', () => {
         }
         spyOn(service.allAnsweredSubject, 'next');
         for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players.get(i));
+            service.confirmPlayerAnswer(service.players[i]);
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(1);
         for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players.get(i));
+            service.confirmPlayerAnswer(service.players[i]);
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(2);
     });
@@ -151,9 +151,17 @@ describe('PlayerHandlerService', () => {
                 expect(answerValidatorServiceSpy.validateAnswer).toHaveBeenCalledWith(questionId, player.answer);
             });
 
-            expect(service.players.get(0)?.isCorrect).toBeTrue();
-            expect(service.players.get(1)?.isCorrect).toBeFalse();
-            expect(service.players.get(2)?.isCorrect).toBeTrue();
+            expect(service.players[0].isCorrect).toBeTrue();
+            expect(service.players[1].isCorrect).toBeFalse();
+            expect(service.players[2].isCorrect).toBeTrue();
         });
+    });
+
+    it('removePlayer should remove the player from the list', () => {
+        const player = service.createPlayer();
+        const nPlayers = service.players.length;
+        service.removePlayer(player.id);
+        expect(service.players.length).toBe(nPlayers - 1);
+        expect(service.players).not.toContain(player);
     });
 });

@@ -33,6 +33,7 @@ export class QuestionHandlerService implements OnDestroy {
 
     set questionsData(data: Question[]) {
         this.internalQuestions = data;
+        this.currentQuestionIndex = 0;
     }
 
     resetAnswers(): void {
