@@ -144,6 +144,20 @@ describe('AdminQuizzesService', () => {
         });
     });
 
+    it('should handle file reading error gracefully', (done) => {
+        const mockQuizFile = new File([''], 'quiz.txt', { type: 'text/plain' });
+        spyOn(window, 'FileReader').and.throwError('File reading error');
+        service.uploadQuiz(mockQuizFile).subscribe({
+            next: () => {
+                done.fail();
+            },
+            error: (error) => {
+                expect(error).toBe('File read error');
+                done();
+            },
+        });
+    });
+
     it('should toggle quiz visibility', () => {
         const QUIZ = service['quizzes'][0];
         const initialVisibility = QUIZ.visible;
