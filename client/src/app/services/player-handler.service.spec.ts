@@ -135,6 +135,22 @@ describe('PlayerHandlerService', () => {
         });
     });
 
+    it('validatePlayerAnswers should set isCorrect to false if the response body is null', (done) => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            const player = service.createPlayer();
+            player.answer = [true, false, true];
+        }
+        const response = new HttpResponse({ status: 200, body: null });
+        communicationServiceSpy.post.and.returnValues(of(response), of(response), of(response));
+        service.validatePlayerAnswers('').subscribe(() => {
+            service.players.forEach((player) => {
+                expect(player.isCorrect).toBeFalse();
+            });
+            done();
+        });
+    });
+
     it('validatePlayerAnwers should handle the error if the request fails', (done) => {
         const nPlayers = 3;
         for (let i = 0; i < nPlayers; i++) {
