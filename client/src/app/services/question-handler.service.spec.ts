@@ -4,7 +4,6 @@ import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/qu
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { GameStateService, GameState } from '@app/services/game-state.service';
-import { Player } from '@app/interfaces/player';
 import { of, Subject } from 'rxjs';
 import { Answer, Question } from '@common/quiz';
 
@@ -14,32 +13,10 @@ describe('QuestionHandlerService', () => {
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
     let gameStateService: GameStateService;
     let mockSubject: Subject<void>;
-    let PLAYERS: Map<number, Player>;
     let answers: Answer[];
     let QUESTIONS_DATA: Question[];
 
     beforeEach(() => {
-        PLAYERS = new Map<number, Player>([
-            [
-                0,
-                {
-                    score: 0,
-                    answer: [true, false],
-                    answerConfirmed: true,
-                    isCorrect: true,
-                },
-            ],
-            [
-                1,
-                {
-                    score: 0,
-                    answer: [false, true],
-                    answerConfirmed: true,
-                    isCorrect: false,
-                },
-            ],
-        ]);
-
         answers = [
             {
                 text: '1',
@@ -76,6 +53,7 @@ describe('QuestionHandlerService', () => {
             'players',
             'resetPlayerAnswers',
             'validatePlayerAnswers',
+            'updateScores',
         ]);
         Object.defineProperty(playerHandlerServiceSpy, 'players', {
             get: () => {
@@ -163,19 +141,14 @@ describe('QuestionHandlerService', () => {
     });
 
     it('updateScores should update the scores of the players', () => {
-        const score = 10;
-        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
         service.updateScores();
-        expect(playerHandlerServiceSpy.players.get(0)?.score).toEqual(score * GOOD_ANSWER_MULTIPLIER);
-        expect(playerHandlerServiceSpy.players.get(1)?.score).toEqual(0);
+        expect(playerHandlerServiceSpy.updateScores).toHaveBeenCalledWith(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
     });
 
     it('updateScores should not update the scores if there is no current question', () => {
-        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
         service.updateScores();
-        expect(playerHandlerServiceSpy.players.get(0)?.score).toEqual(0);
-        expect(playerHandlerServiceSpy.players.get(1)?.score).toEqual(0);
+        expect(playerHandlerServiceSpy.updateScores).toHaveBeenCalledWith(0);
     });
 
     it('nextQuestion should load the next question', () => {
