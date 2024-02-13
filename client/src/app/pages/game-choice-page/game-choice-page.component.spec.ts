@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { Quiz } from '@common/quiz';
@@ -40,7 +41,7 @@ describe('GameChoicePageComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, HttpClientTestingModule],
-            declarations: [GameChoicePageComponent],
+            declarations: [GameChoicePageComponent, DescriptionPanelComponent],
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
                 {

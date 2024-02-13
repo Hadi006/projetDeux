@@ -39,18 +39,18 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     openQuestionForm(index?: number) {
-        const INDEX = index !== undefined ? index : this.quiz.questions.length;
-        const QUESTION = this.getQuestion(INDEX);
-        this.adminService.selectedQuestion = QUESTION;
+        const questionIndex = index !== undefined ? index : this.quiz.questions.length;
+        const chosenQuestion = this.getQuestion(questionIndex);
+        this.adminService.selectedQuestion = chosenQuestion;
 
-        const QUESTION_FORM = this.dialog.open(QuestionFormComponent, {
+        const questionForm = this.dialog.open(QuestionFormComponent, {
             width: '50%',
             height: '50%',
         });
 
-        QUESTION_FORM.afterClosed().subscribe((question?: Question) => {
+        questionForm.afterClosed().subscribe((question?: Question) => {
             if (question) {
-                this.quiz.questions[INDEX] = question;
+                this.quiz.questions[questionIndex] = question;
             }
         });
     }
