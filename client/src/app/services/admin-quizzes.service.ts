@@ -138,9 +138,10 @@ export class AdminQuizzesService {
      * @source https://www.linkedin.com/pulse/how-download-file-using-httpclient-angular7-shah-faisal-
      */
     downloadQuiz(quizIndex: number) {
-        if (!this.quizzes[quizIndex]) return;
+        const quiz: Quiz | undefined = this.quizzes[quizIndex];
+        if (!quiz) return;
 
-        this.http.download(`quizzes/${this.quizzes[quizIndex].id}/download`).subscribe((response: Blob) => {
+        this.http.download(`quizzes/${quiz.id}/download`).subscribe((response: Blob) => {
             // create a link
             const FILE_LINK = document.createElement('a');
             FILE_LINK.href = window.URL.createObjectURL(response);
@@ -153,12 +154,12 @@ export class AdminQuizzesService {
     }
 
     deleteQuiz(quizIndex: number) {
-        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
-        if (!QUIZ) return;
+        const quiz: Quiz | undefined = this.quizzes[quizIndex];
+        if (!quiz) return;
 
-        this.quizzes = this.quizzes.filter((quiz: Quiz) => quiz.id !== QUIZ.id);
+        this.quizzes = this.quizzes.filter((currentQuiz: Quiz) => currentQuiz.id !== quiz.id);
         this.quizzes$.next(this.quizzes);
-        this.http.delete<string>(`quizzes/${QUIZ.id}`).subscribe();
+        this.http.delete<string>(`quizzes/${quiz.id}`).subscribe();
     }
 
     private readQuizFile(quizFile: File): Observable<unknown> {
