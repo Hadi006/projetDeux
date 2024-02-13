@@ -1,6 +1,7 @@
 import { AccessToken } from '@common/access-token';
 import { GameData } from '@common/game-data';
 import { QuestionData } from '@common/question-data';
+import { Quiz } from '@common/quiz';
 
 /* Components */
 export const COUNTDOWN_TIME = 5;
@@ -95,3 +96,13 @@ export const MAX_CHOICES = 4;
 export const MIN_DURATION = 10;
 
 export const MAX_DURATION = 60;
+
+export const BLANK_QUIZ: Quiz = {
+            id: '',
+            title: '',
+            visible: false,
+            description: '',
+            duration: 10,
+            lastModification: new Date(),
+            questions: [],
+}

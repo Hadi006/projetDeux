@@ -1,6 +1,6 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { INVALID_INDEX } from '@common/constant';
+import { INVALID_INDEX, BLANK_QUIZ } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { BehaviorSubject, Observable, map, switchMap, of, catchError } from 'rxjs';
 import { CommunicationService } from './communication.service';
@@ -60,17 +60,7 @@ export class AdminQuizzesService {
             return selectedQuiz;
         }
 
-        const blankQuiz: Quiz = {
-            id: '',
-            title: '',
-            visible: false,
-            description: '',
-            duration: 10,
-            lastModification: new Date(),
-            questions: [],
-        };
-
-        return blankQuiz;
+        return BLANK_QUIZ;
     }
 
     uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
