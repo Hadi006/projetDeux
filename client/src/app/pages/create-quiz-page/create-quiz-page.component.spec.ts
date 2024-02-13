@@ -103,8 +103,8 @@ describe('CreateQuizPageComponent', () => {
         dialogRefSpy.afterClosed.and.returnValue(of({ ...TEST_QUESTIONS[0] }));
         component.openQuestionForm(0);
         expect(dialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
-            width: '50%',
-            height: '50%',
+            width: '80%',
+            height: '80%',
         });
     });
 
@@ -118,8 +118,8 @@ describe('CreateQuizPageComponent', () => {
         dialogRefSpy.afterClosed.and.returnValue(of([]));
         component.openQuestionForm();
         expect(dialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
-            width: '50%',
-            height: '50%',
+            width: '80%',
+            height: '80%',
         });
     });
 
