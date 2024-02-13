@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
+import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
 import { of } from 'rxjs';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
 import { AdminPageComponent } from './admin-page.component';
@@ -29,7 +30,7 @@ describe('AdminPageComponent', () => {
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
 
         await TestBed.configureTestingModule({
-            declarations: [AdminPageComponent],
+            declarations: [AdminPageComponent, QuestionBankComponent],
             imports: [DragDropModule, MatIconModule, HttpClientTestingModule],
             providers: [
                 { provide: AdminQuizzesService, useValue: adminService },

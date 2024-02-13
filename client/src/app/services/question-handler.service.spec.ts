@@ -3,37 +3,58 @@ import { TestBed } from '@angular/core/testing';
 import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { GameTimersService } from '@app/services/game-timers.service';
-import { QUESTIONS_DATA } from '@app/services/game-handler.service';
-import { Player } from '@app/interfaces/player';
-import { Subject } from 'rxjs';
+import { GameStateService, GameState } from '@app/services/game-state.service';
+import { of, Subject } from 'rxjs';
+import { Answer, Question } from '@common/quiz';
 
 describe('QuestionHandlerService', () => {
-    const PLAYERS = new Map<number, Player>([
-        [
-            0,
-            {
-                score: 0,
-                answer: [true, false],
-                answerConfirmed: true,
-            },
-        ],
-        [
-            1,
-            {
-                score: 0,
-                answer: [false, true],
-                answerConfirmed: true,
-            },
-        ],
-    ]);
-
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let gameStateService: GameStateService;
     let mockSubject: Subject<void>;
+    let answers: Answer[];
+    let QUESTIONS_DATA: Question[];
 
     beforeEach(() => {
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['players', 'resetPlayerAnswers']);
+        answers = [
+            {
+                text: '1',
+                isCorrect: false,
+            },
+            {
+                text: '2',
+                isCorrect: true,
+            },
+            {
+                text: '3',
+                isCorrect: false,
+            },
+        ];
+
+        QUESTIONS_DATA = [
+            {
+                id: '0',
+                points: 10,
+                text: '1+1?',
+                choices: answers,
+                type: 'multiple-choices',
+            },
+            {
+                id: '1',
+                points: 10,
+                text: 'What is the capital of France?',
+                choices: [],
+                type: 'text',
+            },
+        ];
+
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
+            'players',
+            'resetPlayerAnswers',
+            'validatePlayerAnswers',
+            'updateScores',
+        ]);
         Object.defineProperty(playerHandlerServiceSpy, 'players', {
             get: () => {
                 return [];
@@ -59,9 +80,12 @@ describe('QuestionHandlerService', () => {
                     provide: GameTimersService,
                     useValue: gameTimersServiceSpy,
                 },
+                GameStateService,
             ],
         });
         service = TestBed.inject(QuestionHandlerService);
+        service.questionsData = [...QUESTIONS_DATA];
+        gameStateService = TestBed.inject(GameStateService);
     });
 
     it('should be created', () => {
@@ -70,31 +94,47 @@ describe('QuestionHandlerService', () => {
 
     it('should update scores when timer ends', () => {
         spyOn(service, 'updateScores');
+        gameStateService.gameState = GameState.ShowQuestion;
+        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
+        gameTimersServiceSpy.timerEndedSubject.next();
+        expect(service.updateScores).toHaveBeenCalled();
+    });
+
+    it('should update scores when timer ends and there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        spyOn(service, 'updateScores');
+        gameStateService.gameState = GameState.ShowQuestion;
+        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
         gameTimersServiceSpy.timerEndedSubject.next();
         expect(service.updateScores).toHaveBeenCalled();
     });
 
     it('currentQuestion getter should return the current question', () => {
-        service.questionsData = QUESTIONS_DATA;
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 
-    it('questionsData setter should set the questionsData and nQuestions', () => {
-        service.questionsData = QUESTIONS_DATA;
+    it('currentAnswers getter should return the correct answers', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        expect(service.currentAnswers).toEqual(answers.filter((answer) => answer.isCorrect));
+    });
+
+    it('currentAnswers getter should return an empty array if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        expect(service.currentAnswers).toEqual([]);
+    });
+
+    it('questionsData setter should set the questionsData', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
-        expect(service.nQuestions).toEqual(QUESTIONS_DATA.length);
+    });
+
+    it('questionsData setter should reset the currentQuestionIndex', () => {
+        service.nextQuestion();
+        service.questionsData = [...QUESTIONS_DATA];
+        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 
     it('resetAnswers should reset the answers of the players', () => {
-        const testQuestion = {
-            id: 0,
-            points: 1,
-            question: '1+1?',
-            answers: ['1', '2', '3'],
-            correctAnswers: ['2'],
-            isMCQ: true,
-        };
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(testQuestion);
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue({ ...QUESTIONS_DATA[0] });
         service.resetAnswers();
         expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(3);
     });
@@ -106,53 +146,19 @@ describe('QuestionHandlerService', () => {
     });
 
     it('updateScores should update the scores of the players', () => {
-        const score = 10;
-        spyOnProperty(playerHandlerServiceSpy, 'players', 'get').and.returnValue(PLAYERS);
-        spyOn(service, 'calculateScore').and.returnValue(score);
         service.updateScores();
-        PLAYERS.forEach((player) => {
-            expect(player.score).toBe(score);
-        });
+        expect(playerHandlerServiceSpy.updateScores).toHaveBeenCalledWith(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
+    });
+
+    it('updateScores should not update the scores if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        service.updateScores();
+        expect(playerHandlerServiceSpy.updateScores).toHaveBeenCalledWith(0);
     });
 
     it('nextQuestion should load the next question', () => {
-        service.questionsData = QUESTIONS_DATA;
         service.nextQuestion();
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
-    });
-
-    it('calculateScore should return 0 if there is no current question', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-        expect(service.calculateScore([])).toEqual(0);
-    });
-
-    it('calculateScore should return the correct value for a correct answer', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(service, 'isAnswerCorrect').and.returnValue(true);
-        expect(service.calculateScore([])).toEqual(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
-    it('calculateScore should return 0 for an incorrect answer', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(service, 'isAnswerCorrect').and.returnValue(false);
-        expect(service.calculateScore([])).toEqual(0);
-    });
-
-    it('isAnswerCorrect should return true if the question is not MCQ', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
-        expect(service.isAnswerCorrect([false, false, false, false])).toEqual(true);
-    });
-
-    it('isAnswerCorrect should return true if the answer is correct', () => {
-        const answers = [false, true, false, false];
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(service.isAnswerCorrect(answers)).toEqual(true);
-    });
-
-    it('isAnswerCorrect should return false if the answer is incorrect', () => {
-        const answers = [true, false, false, false];
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(service.isAnswerCorrect(answers)).toEqual(false);
     });
 
     it('ngOnDestroy should unsubscribe from the timerEndedSubject', () => {

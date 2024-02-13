@@ -1,12 +1,27 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-
+import { of } from 'rxjs';
+import { AnswerValidatorService } from './answer-validator.service';
 import { PlayerHandlerService } from './player-handler.service';
 
 describe('PlayerHandlerService', () => {
     let service: PlayerHandlerService;
+    let answerValidatorServiceSpy: jasmine.SpyObj<AnswerValidatorService>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        answerValidatorServiceSpy = jasmine.createSpyObj('AnswerValidatorService', ['validateAnswer']);
+    });
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+            providers: [
+                {
+                    provide: AnswerValidatorService,
+                    useValue: answerValidatorServiceSpy,
+                },
+            ],
+        });
         service = TestBed.inject(PlayerHandlerService);
     });
 
@@ -15,11 +30,11 @@ describe('PlayerHandlerService', () => {
     });
 
     it('createPlayer should create a player and increment nPlayers', () => {
-        const nPlayers = service.nPlayers;
+        const nPlayers = service.players.length;
         const player = service.createPlayer();
         expect(player).toBeTruthy();
-        expect(service.nPlayers).toBe(nPlayers + 1);
-        expect(service.players.get(nPlayers)).toEqual(player);
+        expect(service.players.length).toBe(nPlayers + 1);
+        expect(service.players[nPlayers]).toEqual(player);
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
@@ -70,8 +85,8 @@ describe('PlayerHandlerService', () => {
         }
         spyOn(service.allAnsweredSubject, 'next');
         for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players.get(i));
-            expect(service.players.get(i)?.answerConfirmed).toBeTrue();
+            service.confirmPlayerAnswer(service.players[i]);
+            expect(service.players[i].answerConfirmed).toBeTrue();
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalled();
     });
@@ -83,13 +98,30 @@ describe('PlayerHandlerService', () => {
         }
         spyOn(service.allAnsweredSubject, 'next');
         for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players.get(i));
+            service.confirmPlayerAnswer(service.players[i]);
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(1);
         for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players.get(i));
+            service.confirmPlayerAnswer(service.players[i]);
         }
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(2);
+    });
+
+    it('updateScores should update the scores of all players', () => {
+        const nPlayers = 3;
+        const points = 10;
+        for (let i = 0; i < nPlayers; i++) {
+            const player = service.createPlayer();
+            player.isCorrect = i % 2 === 0;
+        }
+        service.updateScores(points);
+        service.players.forEach((player) => {
+            if (player.isCorrect) {
+                expect(player.score).toBe(points);
+            } else {
+                expect(player.score).toBe(0);
+            }
+        });
     });
 
     it('resetPlayerAnswers should reset all players answers and answerConfirmed', () => {
@@ -105,5 +137,31 @@ describe('PlayerHandlerService', () => {
             expect(player.answer).toEqual(new Array(nAnswers).fill(false));
             expect(player.answerConfirmed).toBeFalse();
         });
+    });
+
+    it('validatePlayerAnswers should validate the answers of all players', () => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            service.createPlayer();
+        }
+        const questionId = '1234';
+        answerValidatorServiceSpy.validateAnswer.and.returnValues(of(true), of(false), of(true));
+        service.validatePlayerAnswers(questionId).subscribe(() => {
+            service.players.forEach((player) => {
+                expect(answerValidatorServiceSpy.validateAnswer).toHaveBeenCalledWith(questionId, player.answer);
+            });
+
+            expect(service.players[0].isCorrect).toBeTrue();
+            expect(service.players[1].isCorrect).toBeFalse();
+            expect(service.players[2].isCorrect).toBeTrue();
+        });
+    });
+
+    it('removePlayer should remove the player from the list', () => {
+        const player = service.createPlayer();
+        const nPlayers = service.players.length;
+        service.removePlayer(player.id);
+        expect(service.players.length).toBe(nPlayers - 1);
+        expect(service.players).not.toContain(player);
     });
 });

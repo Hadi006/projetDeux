@@ -58,15 +58,15 @@ export class QuestionBankController {
 
         this.router.post('/:questionId/validate-answer', async (req: Request, res: Response) => {
             const QUESTION_ID: string = req.params.questionId;
-            const ANSWER = req.body.answer;
+            const ANSWER = req.body;
             const QUESTION = await this.questionBankService.getQuestion(QUESTION_ID);
             if (!QUESTION) {
-                res.status(httpStatus.NOT_FOUND).json({});
+                res.status(httpStatus.NOT_FOUND).send(false);
                 return;
             }
 
             const RESULT = await this.questionBankService.validateAnswer(QUESTION, ANSWER);
-            res.status(httpStatus.OK).json(RESULT);
+            res.status(httpStatus.OK).send(RESULT);
         });
 
         this.router.delete('/:questionId', async (req: Request, res: Response) => {
