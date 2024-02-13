@@ -20,13 +20,11 @@ export class AdminLoginPageComponent {
     ) {}
 
     login() {
-        const PASSWORD = this.loginForm.value.password || '';
-        this.loginForm.reset();
-
-        this.authService.checkAuthentication(PASSWORD).subscribe((authentificated: boolean) => {
-            if (authentificated) {
+        this.authService.checkAuthentication(this.loginForm.value.password || '').subscribe((authenticated: boolean) => {
+            if (authenticated) {
                 this.router.navigate(['home/admin/quizzes']);
             }
         });
+        this.loginForm.reset();
     }
 }

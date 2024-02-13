@@ -1,11 +1,11 @@
-<button type="button" routerLink="/home">Home</button>
+<button type="button" routerLink="/home">Accueil</button>
 <div class="quiz-list">
     <div>
-        <input type="file" accept=".json" (change)="importQuiz($event)">
-        <button (click)="gotoQuizPage()">Create Quiz</button>
+        <input type="file" accept=".json" (change)="importQuiz($event)" />
+        <button (click)="gotoQuizPage()">Créer un quiz</button>
     </div>
     <br />
-    Quiz List
+    Liste de quiz
     <div *ngFor="let quiz of quizzes | async; let i = index">
         <app-quiz-item [quiz]="quiz" [index]="i" (action)="handle($event)"></app-quiz-item>
     </div>

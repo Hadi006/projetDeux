@@ -33,7 +33,7 @@ describe('QuestionBankService', () => {
 
     it('should return a question', async () => {
         databaseServiceStub.get.resolves([MOCK_QUESTION]);
-        const result = await questionBankService.getQuestion(MOCK_QUESTION.id);
+        const result = await questionBankService.getQuestion(MOCK_QUESTION.text);
         expect(result).to.deep.equal(MOCK_QUESTION);
     });
 
