@@ -1,7 +1,7 @@
 <div *ngIf="questionData">
     <h2>{{ questionData.text }}</h2>
 
-    <p>Valeur de la Question: {{ questionData.points }} points</p>
+    <p>Valeur de la question: {{ questionData.points }} points</p>
 
     <div *ngIf="questionData.type === 'multiple-choices'" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let choice of questionData.choices; let i = index">
