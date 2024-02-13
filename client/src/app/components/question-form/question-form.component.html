@@ -23,10 +23,14 @@
                 <label [for]="'text' + i">Answer {{ i + 1 }} :</label>
                 <input type="text" [id]="'text' + i" [name]="'text' + i" [(ngModel)]="answer.text" required />
                 <input type="checkbox" [id]="'checkbox' + i" [name]="'checkbox' + i" [(ngModel)]="answer.isCorrect" />
-                <button type="button" (click)="removeChoice(i)">Remove</button>
+                <!-- <button type="button" (click)="removeChoice(i)">Remove</button> -->
+                <button mat-fab color="primary" type="button" id="delete-button" (click)="removeChoice(i)">
+                    <mat-icon>delete</mat-icon>
+                </button>
             </div>
+            
         </div>
-        <button type="button" (click)="addChoice()">Add Choice</button>
+        <button type="button" id="add-button" (click)="addChoice()">Add Choice</button>
     </div>
     <div class="form-group" *ngIf="question.type === 'open-ended'">
         <label for="answer">Answer:</label>

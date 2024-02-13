@@ -44,8 +44,8 @@ export class CreateQuizPageComponent implements OnInit {
         this.admin.selectedQuestion = QUESTION;
 
         const QUESTION_FORM = this.dialog.open(QuestionFormComponent, {
-            width: '50%',
-            height: '50%',
+            width: '80%',
+            height: '80%',
         });
 
         QUESTION_FORM.afterClosed().subscribe((question?: Question) => {

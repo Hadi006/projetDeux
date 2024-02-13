@@ -69,7 +69,10 @@ export class QuestionBankComponent implements OnInit {
         const question = this.questionBank.getQuestion(isNewQuestion ? INVALID_INDEX : index);
         this.admin.selectedQuestion = question;
 
-        const questionFormRef = this.dialog.open(QuestionFormComponent);
+        const questionFormRef = this.dialog.open(QuestionFormComponent, {
+            width: '80%',
+            height: '80%',
+        });
 
         questionFormRef.afterClosed().subscribe((editedQuestion?: Question) => {
             if (editedQuestion) {

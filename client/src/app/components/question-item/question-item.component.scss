@@ -1,6 +1,49 @@
+/* Container for each question item */
+.question-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.question-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Creates space between elements */
+}
+
 .truncated-text {
-    width: 250px;
-    white-space: nowrap;
+    max-width: 60%; /* Adjusts based on your layout */
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.question-info {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Adjusts spacing between info spans */
+}
+
+button[mat-icon-button] {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #333; /* Icon color */
+}
+
+button[mat-icon-button]:hover {
+    color: #007bff; /* Change color on hover */
+}
+
+.mat-icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 24px; /* Icon size */
+    height: 24px; /* Icon size */
+    fill: currentColor; /* Icon color inherits from button */
 }
