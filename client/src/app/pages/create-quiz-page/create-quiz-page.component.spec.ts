@@ -6,13 +6,13 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
+import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
+import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question, Quiz } from '@common/quiz';
 import { of } from 'rxjs';
-import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
-import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
 
 describe('CreateQuizPageComponent', () => {
     const TEST_QUESTIONS: Question[] = [
@@ -171,8 +171,6 @@ describe('CreateQuizPageComponent', () => {
         expect(component.openQuestionForm).not.toHaveBeenCalled();
         expect(component.quiz.questions.splice).not.toHaveBeenCalled();
     });
-
-    // it('should move item within the same container', () => {});
 
     it('should subscribe to submitted quiz', () => {
         spyOn(component, 'close');

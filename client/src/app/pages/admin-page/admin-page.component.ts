@@ -16,14 +16,14 @@ export class AdminPageComponent implements OnInit {
     quizzes: Observable<Quiz[]>;
 
     constructor(
-        private admin: AdminQuizzesService,
+        private adminService: AdminQuizzesService,
         private router: Router,
         private dialog: MatDialog,
     ) {}
 
     ngOnInit() {
-        this.quizzes = this.admin.quizzes$;
-        this.admin.fetchQuizzes();
+        this.quizzes = this.adminService.quizzes$;
+        this.adminService.fetchQuizzes();
     }
 
     importQuiz(event: Event) {
@@ -32,7 +32,7 @@ export class AdminPageComponent implements OnInit {
             return;
         }
 
-        this.admin.uploadQuiz(quizFile).subscribe((response: { quiz?: Quiz; errorLog: string }) => {
+        this.adminService.uploadQuiz(quizFile).subscribe((response: { quiz?: Quiz; errorLog: string }) => {
             if (!response.errorLog) {
                 return;
             }
@@ -42,23 +42,23 @@ export class AdminPageComponent implements OnInit {
     }
 
     gotoQuizPage(index?: number) {
-        this.admin.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
+        this.adminService.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
         this.router.navigate(['/home/admin/quizzes/quiz']);
     }
 
     handle(action: { type: string; quizIndex: number }) {
         switch (action.type) {
             case 'change visibility':
-                this.admin.changeQuizVisibility(action.quizIndex);
+                this.adminService.changeQuizVisibility(action.quizIndex);
                 break;
             case 'edit':
                 this.gotoQuizPage(action.quizIndex);
                 break;
             case 'export':
-                this.admin.downloadQuiz(action.quizIndex);
+                this.adminService.downloadQuiz(action.quizIndex);
                 break;
             case 'delete':
-                this.admin.deleteQuiz(action.quizIndex);
+                this.adminService.deleteQuiz(action.quizIndex);
                 break;
             default:
                 break;
