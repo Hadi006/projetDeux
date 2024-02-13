@@ -10,7 +10,7 @@ export class AnswerValidatorService {
     constructor(private communicationService: CommunicationService) {}
 
     validateAnswer(text: string, answer: boolean[]): Observable<boolean> {
-        return this.communicationService.post<boolean>('questions/validate-answer', { answer, text}).pipe(
+        return this.communicationService.post<boolean>('questions/validate-answer', { answer, text }).pipe(
             map((response) => {
                 if (response.status !== HttpStatusCode.Ok) {
                     return false;

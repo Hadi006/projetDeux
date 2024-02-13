@@ -55,7 +55,7 @@ describe('AnswerValidatorService', () => {
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.Ok, body: null })));
 
         service.validateAnswer(text, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith('questions/validate-answer', {answer, text});
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith('questions/validate-answer', { answer, text });
             expect(response).toBeFalse();
         });
     });
