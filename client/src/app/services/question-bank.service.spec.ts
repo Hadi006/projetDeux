@@ -2,7 +2,6 @@ import { HttpClientModule, HttpStatusCode } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-// import { Message } from '@common/message';
 import { Question } from '@common/quiz';
 import { CommunicationService } from './communication.service';
 import { QuestionBankService } from './question-bank.service';
@@ -83,7 +82,7 @@ describe('QuestionBankService', () => {
 
     it('should delete a question by index and send a DELETE request', () => {
         const initialQuestionsLength = service['questions'].length;
-        const questionToDeleteIndex = 0; // Index of the question to delete
+        const questionToDeleteIndex = 0;
         const questionToDeleteId = service['questions'][questionToDeleteIndex].id;
 
         service.deleteQuestion(questionToDeleteIndex);

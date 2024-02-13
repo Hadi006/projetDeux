@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { INVALID_INDEX } from '@common/constant';
 import { Question } from '@common/quiz';
 import { Observable, map } from 'rxjs';
 import { QuestionBankService } from 'src/app/services/question-bank.service';
@@ -54,9 +55,9 @@ export class QuestionBankComponent implements OnInit {
             return;
         }
 
-        const NEW_QUESTION: Question = event.previousContainer.data[event.previousIndex];
+        const newQuestion: Question = event.previousContainer.data[event.previousIndex];
 
-        this.questionBank.addQuestion(NEW_QUESTION).subscribe((error: string) => {
+        this.questionBank.addQuestion(newQuestion).subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             }
@@ -64,7 +65,6 @@ export class QuestionBankComponent implements OnInit {
     }
 
     openQuestionForm(index?: number) {
-        const INVALID_INDEX = -1;
         const isNewQuestion = index === undefined;
         const question = this.questionBank.getQuestion(isNewQuestion ? INVALID_INDEX : index);
         this.admin.selectedQuestion = question;

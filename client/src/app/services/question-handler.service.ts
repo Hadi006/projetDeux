@@ -1,11 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { GOOD_ANSWER_MULTIPLIER, GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { Subscription } from 'rxjs';
-import { GameStateService, GameState } from './game-state.service';
+import { GameStateService } from './game-state.service';
 import { GameTimersService } from './game-timers.service';
 import { PlayerHandlerService } from './player-handler.service';
-
-export const GOOD_ANSWER_MULTIPLIER = 1.2;
 
 @Injectable({
     providedIn: 'root',

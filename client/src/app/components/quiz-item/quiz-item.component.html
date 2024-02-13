@@ -1,6 +1,6 @@
 <button (click)="onAction('change visibility')">{{ quiz.visible ? 'visible' : 'caché' }}</button>
-<span>Title : {{ quiz.title }} |</span>
-<span>| LastModified : {{ quiz.lastModification.toString().slice(0, 10) }}</span>
-<button type="button" (click)="onAction('edit')">edit</button>
-<button type="button" (click)="onAction('export')">export</button>
-<button type="button" (click)="onAction('delete')">delete</button>
+<span>Titre : {{ quiz.title }} |</span>
+<span>| Dernière modification : {{ quiz.lastModification.toString().slice(0, 10) }}</span>
+<button type="button" (click)="onAction('edit')">modifier</button>
+<button type="button" (click)="onAction('export')">exporter</button>
+<button type="button" (click)="onAction('delete')">supprimer</button>

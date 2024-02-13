@@ -78,13 +78,12 @@ export class QuestionBankService {
     }
 
     deleteQuestion(index: number) {
-        const QUESTION: Question | undefined = this.questions[index];
-        if (!QUESTION) {
+        const question: Question | undefined = this.questions[index];
+        if (!question) {
             return;
         }
 
-        this.http.delete<string>(`questions/${QUESTION.id}`).subscribe((response) => {
-            // verify response body instead
+        this.http.delete<string>(`questions/${question.id}`).subscribe((response) => {
             if (response.status === HttpStatusCode.Ok) {
                 this.questions.splice(index, 1);
                 this.questions$.next(this.questions);

@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
-
-export const COUNTDOWN_TIME = 5;
+import { COUNTDOWN_TIME } from '@common/constant';
 
 @Component({
     selector: 'app-game-count-down',

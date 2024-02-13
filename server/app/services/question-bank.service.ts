@@ -8,20 +8,15 @@ export class QuestionBankService {
     constructor(private database: DatabaseService) {}
 
     async getQuestions(): Promise<Question[]> {
-        const QUESTIONS = await this.database.get<Question>('questions');
-        return QUESTIONS;
+        return await this.database.get<Question>('questions');
     }
 
     async getQuestion(text: string): Promise<Question> {
-        const QUESTION = (await this.database.get<Question>('questions', { text }))[0];
-        return QUESTION;
+        return (await this.database.get<Question>('questions', { text }))[0];
     }
 
     validateQuestion(question: unknown): { question: Question; compilationError: string } {
-        const QUESTION = new QuestionValidator(question);
-        const RESULT = QUESTION.checkId().checkText().checkType().checkPoints().checkChoices().compile();
-
-        return RESULT;
+        return new QuestionValidator(question).checkId().checkText().checkType().checkPoints().checkChoices().compile();
     }
 
     async updateQuestion(question: Question, id: string): Promise<boolean> {
@@ -29,8 +24,7 @@ export class QuestionBankService {
     }
 
     async addQuestion(question: Question): Promise<boolean> {
-        const SAME_NAMES = await this.database.get<Question>('questions', { text: question.text });
-        if (SAME_NAMES.length > 0) {
+        if (await this.getQuestion(question.text)) {
             return false;
         }
         await this.database.add('questions', question);

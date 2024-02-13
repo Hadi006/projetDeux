@@ -1,10 +1,9 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { INVALID_INDEX } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { BehaviorSubject, Observable, map, switchMap, of, catchError } from 'rxjs';
 import { CommunicationService } from './communication.service';
-const INVALID_INDEX = -1;
-
 @Injectable({
     providedIn: 'root',
 })
@@ -54,14 +53,14 @@ export class AdminQuizzesService {
     }
 
     getSelectedQuiz(): Quiz {
-        const SELECTED_QUIZ: Quiz | undefined = this.quizzes[this.selectedQuizIndex];
+        const selectedQuiz: Quiz | undefined = this.quizzes[this.selectedQuizIndex];
         this.selectedQuizIndex = -1;
 
-        if (SELECTED_QUIZ) {
-            return SELECTED_QUIZ;
+        if (selectedQuiz) {
+            return selectedQuiz;
         }
 
-        const BLANK_QUIZ: Quiz = {
+        const blankQuiz: Quiz = {
             id: '',
             title: '',
             visible: false,
@@ -71,7 +70,7 @@ export class AdminQuizzesService {
             questions: [],
         };
 
-        return BLANK_QUIZ;
+        return blankQuiz;
     }
 
     uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
@@ -113,8 +112,7 @@ export class AdminQuizzesService {
                     return response.body;
                 }
 
-                const INDEX: number = this.quizzes.findIndex((q: Quiz) => q.id === quiz.id);
-                this.quizzes[INDEX] = quiz;
+                this.quizzes[this.findQuizIndex(quiz.id)] = quiz;
                 this.quizzes$.next(this.quizzes);
 
                 return response.body;
@@ -139,21 +137,20 @@ export class AdminQuizzesService {
     }
 
     changeQuizVisibility(quizIndex: number) {
-        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
-        if (!QUIZ) return;
+        const quiz: Quiz | undefined = this.quizzes[quizIndex];
+        if (!quiz) return;
 
-        QUIZ.visible = !QUIZ.visible;
-        this.http.patch<string>(`quizzes/${QUIZ.id}/visibility`).subscribe();
+        quiz.visible = !quiz.visible;
+        this.http.patch<string>(`quizzes/${quiz.id}/visibility`).subscribe();
     }
 
     /**
      * @source https://www.linkedin.com/pulse/how-download-file-using-httpclient-angular7-shah-faisal-
      */
     downloadQuiz(quizIndex: number) {
-        const QUIZ: Quiz | undefined = this.quizzes[quizIndex];
-        if (!QUIZ) return;
+        if (!this.quizzes[quizIndex]) return;
 
-        this.http.download(`quizzes/${QUIZ.id}/download`).subscribe((response: Blob) => {
+        this.http.download(`quizzes/${this.quizzes[quizIndex].id}/download`).subscribe((response: Blob) => {
             // create a link
             const FILE_LINK = document.createElement('a');
             FILE_LINK.href = window.URL.createObjectURL(response);
@@ -189,5 +186,9 @@ export class AdminQuizzesService {
             };
             reader.readAsText(quizFile);
         });
+    }
+
+    private findQuizIndex(quizId: string): number {
+        return this.quizzes.findIndex((quiz: Quiz) => quiz.id === quizId);
     }
 }

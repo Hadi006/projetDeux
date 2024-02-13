@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-
-import { ChatService, MAX_MESSAGE_LENGTH } from './chat.service';
+import { MAX_MESSAGE_LENGTH } from '@common/constant';
+import { ChatService } from './chat.service';
 
 describe('ChatService', () => {
     let service: ChatService;
