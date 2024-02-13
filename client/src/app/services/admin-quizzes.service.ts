@@ -137,10 +137,11 @@ export class AdminQuizzesService {
     }
 
     changeQuizVisibility(quizIndex: number) {
-        if (!this.quizzes[quizIndex]) return;
+        const quiz: Quiz | undefined = this.quizzes[quizIndex];
+        if (!quiz) return;
 
-        this.quizzes[quizIndex].visible = !this.quizzes[quizIndex].visible;
-        this.http.patch<string>(`quizzes/${this.quizzes[quizIndex].id}/visibility`).subscribe();
+        quiz.visible = !quiz.visible;
+        this.http.patch<string>(`quizzes/${quiz.id}/visibility`).subscribe();
     }
 
     /**
