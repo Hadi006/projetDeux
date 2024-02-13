@@ -27,35 +27,35 @@ describe('AnswerValidatorService', () => {
     });
 
     it('should validate an answer', () => {
-        const questionId = '1234';
+        const text = '1234';
         const answer = [true, false, true, false];
         const expectedResponse = true;
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.Ok, body: expectedResponse })));
 
-        service.validateAnswer(questionId, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`questions/${questionId}/validate-answer`, answer);
+        service.validateAnswer(text, answer).subscribe((response) => {
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith('questions/validate-answer', { answer, text });
             expect(response).toBe(expectedResponse);
         });
     });
 
     it('should return false if the response status is not HttpStatusCode.Ok', () => {
-        const questionId = '1234';
+        const text = '1234';
         const answer = [true, false, true, false];
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.NotFound })));
 
-        service.validateAnswer(questionId, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`questions/${questionId}/validate-answer`, answer);
+        service.validateAnswer(text, answer).subscribe((response) => {
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith('questions/validate-answer', { answer, text });
             expect(response).toBeFalse();
         });
     });
 
     it('should return false if the response body is falsy', () => {
-        const questionId = '1234';
+        const text = '1234';
         const answer = [true, false, true, false];
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: HttpStatusCode.Ok, body: null })));
 
-        service.validateAnswer(questionId, answer).subscribe((response) => {
-            expect(communicationServiceSpy.post).toHaveBeenCalledWith(`questions/${questionId}/validate-answer`, answer);
+        service.validateAnswer(text, answer).subscribe((response) => {
+            expect(communicationServiceSpy.post).toHaveBeenCalledWith('questions/validate-answer', {answer, text});
             expect(response).toBeFalse();
         });
     });
