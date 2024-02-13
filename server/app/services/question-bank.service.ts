@@ -8,13 +8,11 @@ export class QuestionBankService {
     constructor(private database: DatabaseService) {}
 
     async getQuestions(): Promise<Question[]> {
-        const QUESTIONS = await this.database.get<Question>('questions');
-        return QUESTIONS;
+        return await this.database.get<Question>('questions');
     }
 
-    async getQuestion(id: string): Promise<Question> {
-        const QUESTION = (await this.database.get<Question>('questions', { id }))[0];
-        return QUESTION;
+    async getQuestion(text: string): Promise<Question> {
+        return (await this.database.get<Question>('questions', { text }))[0];
     }
 
     validateQuestion(question: unknown): { question: Question; compilationError: string } {
