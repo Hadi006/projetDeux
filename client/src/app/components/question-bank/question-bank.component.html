@@ -1,13 +1,16 @@
-<button type="button" class="create-button" (click)="openQuestionForm()">Create Question
-    <mat-icon>add</mat-icon>
+<button type="button" class="create-button" (click)="openQuestionForm()">
+    Créer une Question
+    <mat-icon>ajouter</mat-icon>
 </button>
-<div id="question-bank"
+<div
+    id="question-bank"
     cdkDropList
     [cdkDropListData]="questions | async"
     (cdkDropListDropped)="drop($event)"
     cdkDropListConnectedTo="question-list"
-    cdkDroplistSortingDisabled="true">
-    Question Bank
+    cdkDroplistSortingDisabled="true"
+>
+    Banque de Questions
     <div *ngFor="let question of questions | async; let i = index" cdkDrag>
         <app-question-item [question]="question" [index]="i" (action)="handle($event)"></app-question-item>
     </div>

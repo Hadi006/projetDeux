@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { INVALID_INDEX } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Observable } from 'rxjs';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
@@ -41,7 +42,6 @@ export class AdminPageComponent implements OnInit {
     }
 
     gotoQuizPage(index?: number) {
-        const INVALID_INDEX = -1;
         this.admin.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
         this.router.navigate(['/home/admin/quizzes/quiz']);
     }

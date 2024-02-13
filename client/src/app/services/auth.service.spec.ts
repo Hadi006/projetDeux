@@ -1,9 +1,9 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-
-import { AuthService, INVALID_TOKEN } from '@app/services/auth.service';
+import { AuthService } from '@app/services/auth.service';
 import { CommunicationService } from '@app/services/communication.service';
 import { AccessToken } from '@common/access-token';
+import { INVALID_TOKEN } from '@common/constant';
 import { of, throwError } from 'rxjs';
 
 describe('AuthService', () => {

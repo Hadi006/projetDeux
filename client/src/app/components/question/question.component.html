@@ -1,7 +1,7 @@
 <div *ngIf="questionData">
     <h2>{{ questionData.text }}</h2>
 
-    <p>Question value: {{ questionData.points }} points</p>
+    <p>Valeur de la question: {{ questionData.points }} points</p>
 
     <div *ngIf="questionData.type === 'multiple-choices'" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let choice of questionData.choices; let i = index">
@@ -13,7 +13,7 @@
     </div>
 
     <div *ngIf="!(questionData.type === 'multiple-choices')" id="question-container">
-        <textarea [disabled]="showingAnswer" placeholder="Type your answer here..."></textarea>
+        <textarea [disabled]="showingAnswer" placeholder="Tapez votre réponse ici..."></textarea>
     </div>
 
     <div>Score: {{ player.score }}</div>
@@ -27,4 +27,4 @@
         </div>
     </div>
 </div>
-<button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirm</button>
+<button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>
