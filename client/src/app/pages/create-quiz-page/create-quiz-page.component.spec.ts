@@ -183,7 +183,7 @@ describe('CreateQuizPageComponent', () => {
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
             data: { message: 'error' },
             width: '300px',
-            position: { top: '50%', left: '50%' },
+            height: '300px',
         });
         expect(component.close).toHaveBeenCalledTimes(1);
     });
@@ -198,7 +198,7 @@ describe('CreateQuizPageComponent', () => {
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
             data: { message: 'error' },
             width: '300px',
-            position: { top: '50%', left: '50%' },
+            height: '300px',
         });
         expect(component.close).toHaveBeenCalledTimes(1);
     });
