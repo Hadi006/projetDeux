@@ -5,8 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
-import { of, Subject } from 'rxjs';
-import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
+import { Quiz } from '@common/quiz';
+import { Subject, of } from 'rxjs';
+import { GameChoicePageComponent } from './game-choice-page.component';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
@@ -67,7 +68,7 @@ describe('GameChoicePageComponent', () => {
         expect(publicQuizzesServiceSpy.fetchVisibleQuizzes).toHaveBeenCalled();
     });
 
-    it('should set chosenGame on choisirJeu call', () => {
+    it('should set chosenGame on chooseQuiz call', () => {
         component.chooseQuiz(mockQuiz);
         expect(component.chosenQuiz).toEqual(mockQuiz);
     });
