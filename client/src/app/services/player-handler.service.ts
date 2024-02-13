@@ -1,22 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
-import { Subject } from 'rxjs';
+import { Subject, Observable, map, forkJoin } from 'rxjs';
+import { AnswerValidatorService } from './answer-validator.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerHandlerService {
-    private internalPlayers: Map<number, Player> = new Map<number, Player>();
-    private internalNPlayers: number = 0;
+    private internalPlayers: Player[] = [];
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
-    get players(): Map<number, Player> {
-        return this.internalPlayers;
-    }
+    constructor(private answerValidatorService: AnswerValidatorService) {}
 
-    get nPlayers(): number {
-        return this.internalNPlayers;
+    get players(): Player[] {
+        return this.internalPlayers;
     }
 
     get allAnsweredSubject(): Subject<void> {
@@ -25,11 +23,13 @@ export class PlayerHandlerService {
 
     createPlayer(): Player {
         const player: Player = {
+            id: this.internalPlayers.length,
             score: 0,
             answer: [],
             answerConfirmed: false,
+            isCorrect: false,
         };
-        this.internalPlayers.set(this.internalNPlayers++, player);
+        this.internalPlayers.push(player);
 
         return player;
     }
@@ -52,16 +52,48 @@ export class PlayerHandlerService {
 
         player.answerConfirmed = true;
 
-        if (++this.internalNAnswered >= this.internalNPlayers) {
+        if (++this.internalNAnswered >= this.internalPlayers.length) {
             this.internalAllAnsweredSubject.next();
             this.internalNAnswered = 0;
         }
+    }
+
+    updateScores(points: number): void {
+        this.internalPlayers.forEach((player) => {
+            if (player.isCorrect) {
+                player.score += points;
+            }
+        });
     }
 
     resetPlayerAnswers(newAnswersLength: number): void {
         this.internalPlayers.forEach((player) => {
             player.answer = new Array(newAnswersLength).fill(false);
             player.answerConfirmed = false;
+            player.isCorrect = false;
         });
+    }
+
+    validatePlayerAnswers(questionId: string): Observable<null> {
+        const validationObservables: Observable<boolean>[] = [];
+
+        this.internalPlayers.forEach((player) => {
+            const validationObservable = this.answerValidatorService.validateAnswer(questionId, player.answer);
+
+            validationObservables.push(validationObservable);
+            validationObservable.subscribe((isCorrect) => {
+                player.isCorrect = isCorrect;
+            });
+        });
+
+        return forkJoin(validationObservables).pipe(
+            map(() => {
+                return null;
+            }),
+        );
+    }
+
+    removePlayer(playerId: number): void {
+        this.internalPlayers = this.internalPlayers.filter((player) => player.id !== playerId);
     }
 }

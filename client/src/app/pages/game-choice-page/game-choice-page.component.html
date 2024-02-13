@@ -1,12 +1,12 @@
 <div class="container">
     <h1>Choisissez un jeu</h1>
     <div class="games-list">
-        <button *ngFor="let game of games" (click)="chooseGame(game)" class="game-button">
-            {{ game }}
+        <button *ngFor="let quiz of publicQuizzesService.quizzes" (click)="chooseQuiz(quiz)" class="game-button">
+            {{ quiz.title }}
         </button>
     </div>
-    <p *ngIf="chosenGame">Jeu sélectionné: {{ chosenGame }}</p>
-    <app-description-panel [selectedGame]="chosenGame"></app-description-panel>
+    <p *ngIf="chosenQuiz">Jeu sélectionné: {{ chosenQuiz.title }}</p>
+    <app-description-panel [selectedQuiz]="chosenQuiz"></app-description-panel>
 </div>
 <div class="button-navigation">
     <button routerLink="/home">Retour</button>

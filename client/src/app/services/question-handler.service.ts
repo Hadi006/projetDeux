@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { GOOD_ANSWER_MULTIPLIER, GameState } from '@common/constant';
-import { QuestionData } from '@common/question-data';
+import { Answer, Question } from '@common/quiz';
 import { Subscription } from 'rxjs';
 import { GameStateService } from './game-state.service';
 import { GameTimersService } from './game-timers.service';
@@ -10,9 +10,8 @@ import { PlayerHandlerService } from './player-handler.service';
     providedIn: 'root',
 })
 export class QuestionHandlerService implements OnDestroy {
-    private internalQuestionsData: QuestionData[];
+    private internalQuestions: Question[];
     private currentQuestionIndex = 0;
-    private internalNQuestions: number = 0;
     private timerEndedSubscription: Subscription;
 
     constructor(
@@ -23,20 +22,21 @@ export class QuestionHandlerService implements OnDestroy {
         this.subscribeToTimerEnded();
     }
 
-    get currentQuestion(): QuestionData | undefined {
-        return this.internalQuestionsData[this.currentQuestionIndex];
-    }
-    get nQuestions(): number {
-        return this.internalNQuestions;
+    get currentQuestion(): Question | undefined {
+        return this.internalQuestions[this.currentQuestionIndex];
     }
 
-    set questionsData(data: QuestionData[]) {
-        this.internalQuestionsData = data;
-        this.internalNQuestions = data.length;
+    get currentAnswers(): Answer[] {
+        return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
+    }
+
+    set questionsData(data: Question[]) {
+        this.internalQuestions = data;
+        this.currentQuestionIndex = 0;
     }
 
     resetAnswers(): void {
-        const nAnswers = this.currentQuestion?.answers.length || 0;
+        const nAnswers = this.currentQuestion?.choices.length || 0;
         this.playerHandlerService.resetPlayerAnswers(nAnswers);
     }
 
@@ -46,38 +46,8 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     updateScores(): void {
-        this.playerHandlerService.players.forEach((player) => {
-            player.score += this.calculateScore(player.answer);
-        });
-    }
-
-    calculateScore(isChecked: boolean[]): number {
-        if (!this.currentQuestion) {
-            return 0;
-        }
-
-        const score = this.currentQuestion.points * GOOD_ANSWER_MULTIPLIER;
-
-        return this.isAnswerCorrect(isChecked) ? score : 0;
-    }
-
-    isAnswerCorrect(isChecked: boolean[]): boolean {
-        if (!this.currentQuestion?.isMCQ) {
-            return true;
-        }
-
-        const answers = this.currentQuestion.answers;
-        const correctAnswers = this.currentQuestion.correctAnswers;
-
-        const allCheckedAreCorrect = isChecked.every((checked, index) => {
-            return !checked || (checked && correctAnswers.includes(answers[index]));
-        });
-
-        const allCorrectAreChecked = correctAnswers.every((correctAnswer) => {
-            return isChecked[answers.indexOf(correctAnswer)];
-        });
-
-        return allCheckedAreCorrect && allCorrectAreChecked;
+        const points = (this.currentQuestion?.points || 0) * GOOD_ANSWER_MULTIPLIER;
+        this.playerHandlerService.updateScores(points);
     }
 
     ngOnDestroy(): void {
@@ -87,7 +57,9 @@ export class QuestionHandlerService implements OnDestroy {
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
             if (this.gameStateService.gameState === GameState.ShowQuestion) {
-                this.updateScores();
+                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.id || '').subscribe(() => {
+                    this.updateScores();
+                });
             }
         });
     }

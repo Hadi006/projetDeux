@@ -3,22 +3,53 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameChoicePageComponent } from './game-choice-page.component';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { Quiz } from '@common/quiz';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { of, Subject } from 'rxjs';
+import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let router: Router;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let publicQuizzesServiceSpy: jasmine.SpyObj<PublicQuizzesService>;
+    let mockQuiz: Quiz;
 
     beforeEach(async () => {
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadGameData']);
+        mockQuiz = {
+            id: '1',
+            title: 'Math',
+            visible: true,
+            description: 'Math quiz',
+            duration: 10,
+            lastModification: new Date(),
+            questions: [],
+        };
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
+        publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
+            'fetchVisibleQuizzes',
+            'checkQuizAvailability',
+            'alertNoQuizAvailable',
+        ]);
+        publicQuizzesServiceSpy.fetchVisibleQuizzes.and.returnValue(of());
+        Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
+            value: new Subject<Quiz[]>(),
+        });
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
-            declarations: [GameChoicePageComponent],
-            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
+            imports: [RouterTestingModule, HttpClientTestingModule],
+            declarations: [GameChoicePageComponent, DescriptionPanelComponent],
+            providers: [
+                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
+                {
+                    provide: PublicQuizzesService,
+                    useValue: publicQuizzesServiceSpy,
+                },
+            ],
         }).compileComponents();
     }));
 
@@ -33,40 +64,83 @@ describe('GameChoicePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should call fetchVisibleQuizzes on init', () => {
+        expect(publicQuizzesServiceSpy.fetchVisibleQuizzes).toHaveBeenCalled();
+    });
+
     it('should set chosenGame on choisirJeu call', () => {
-        const game = 'Math';
-        component.chooseGame(game);
-        expect(component.chosenGame).toEqual(game);
+        component.chooseQuiz(mockQuiz);
+        expect(component.chosenQuiz).toEqual(mockQuiz);
     });
 
-    it('should navigate on startGame call', () => {
+    it('should navigate on startGame call', (done) => {
         const navigateSpy = spyOn(router, 'navigate');
-        component.chosenGame = 'Math';
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.startGame();
-        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
-        expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).not.toHaveBeenCalled();
+            expect(gameHandlerServiceSpy.loadQuizData).toHaveBeenCalledWith(mockQuiz);
+            expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
+            done();
+        });
     });
 
-    it('should do nothing on startGame call if chosenGame is null', () => {
+    it('should alert if no quiz is selected on startGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.startGame();
-        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
-        expect(navigateSpy).not.toHaveBeenCalled();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
+            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
+            expect(navigateSpy).not.toHaveBeenCalled();
+        });
+    });
+
+    it('should alert if game is no longer available on startGame call', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
+        component.startGame();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible');
+            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
+            expect(navigateSpy).not.toHaveBeenCalled();
+        });
     });
 
     it('should navigate on testGame call', () => {
-        const game = 'Programmation';
-        component.chooseGame(game);
+        component.chooseQuiz(mockQuiz);
         const navigateSpy = spyOn(router, 'navigate');
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.testGame();
-        expect(gameHandlerServiceSpy.loadGameData).toHaveBeenCalled();
-        expect(navigateSpy).toHaveBeenCalledWith(['/play']);
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).not.toHaveBeenCalled();
+            expect(gameHandlerServiceSpy.loadQuizData).toHaveBeenCalledWith(mockQuiz);
+            expect(navigateSpy).toHaveBeenCalledWith(['/play']);
+        });
     });
 
-    it('should do nothing on testGame call if chosenGame is null', () => {
+    it('should alert if no quiz is selected on testGame call', () => {
         const navigateSpy = spyOn(router, 'navigate');
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.testGame();
-        expect(gameHandlerServiceSpy.loadGameData).not.toHaveBeenCalled();
-        expect(navigateSpy).not.toHaveBeenCalled();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
+            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
+            expect(navigateSpy).not.toHaveBeenCalled();
+        });
+    });
+
+    it('should alert if game is no longer available on testGame call', () => {
+        const navigateSpy = spyOn(router, 'navigate');
+        component.chooseQuiz(mockQuiz);
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
+        component.testGame();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible');
+            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
+            expect(navigateSpy).not.toHaveBeenCalled();
+        });
     });
 });

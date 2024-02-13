@@ -1,26 +1,26 @@
 <div *ngIf="questionData">
-    <h2>{{ questionData.question }}</h2>
+    <h2>{{ questionData.text }}</h2>
 
     <p>Valeur de la Question: {{ questionData.points }} points</p>
 
-    <div *ngIf="questionData.isMCQ" id="question-container" (keyup)="handleKeyUp($event)">
-        <div *ngFor="let answer of questionData.answers; let i = index">
+    <div *ngIf="questionData.type === 'multiple-choices'" id="question-container" (keyup)="handleKeyUp($event)">
+        <div *ngFor="let choice of questionData.choices; let i = index">
             <label>
                 <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="player.answer[i]" />
-                {{ i + 1 }} ) {{ answer }}
+                {{ i + 1 }} ) {{ choice.text }}
             </label>
         </div>
     </div>
 
-    <div *ngIf="!questionData.isMCQ" id="question-container">
+    <div *ngIf="!(questionData.type === 'multiple-choices')" id="question-container">
         <textarea [disabled]="showingAnswer" placeholder="Tapez votre réponse ici..."></textarea>
     </div>
 
     <div>Score: {{ player.score }}</div>
 
     <div *ngIf="showingAnswer" id="grade-container">
-        <span *ngFor="let correctAnswer of questionData.correctAnswers; let i = index">
-            <p>Réponse(s): {{ correctAnswer }}</p>
+        <span *ngFor="let correctAnswer of correctAnswers; let i = index">
+            <p>Réponse(s): {{ correctAnswer.text }}</p>
         </span>
     </div>
 </div>

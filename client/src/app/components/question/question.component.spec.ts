@@ -2,17 +2,52 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Player } from '@app/interfaces/player';
 import { GameStateService } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
+// import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { GameState, QUESTIONS_DATA } from '@common/constant';
+import { GameState } from '@common/constant';
+import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
+// import { QuestionComponent } from './question.component';
 
 const TEST_PLAYER: Player = {
+    id: 0,
     score: 0,
     answer: [false, true, false, false],
     answerConfirmed: false,
+    isCorrect: false,
 };
 
 describe('QuestionComponent', () => {
+    const QUESTIONS_DATA: Question[] = [
+        {
+            id: '0',
+            points: 1,
+            text: '1+1?',
+            choices: [
+                {
+                    text: '1',
+                    isCorrect: false,
+                },
+                {
+                    text: '2',
+                    isCorrect: true,
+                },
+                {
+                    text: '3',
+                    isCorrect: false,
+                },
+            ],
+            type: 'multiple-choices',
+        },
+        {
+            id: '1',
+            points: 1,
+            text: 'What is the capital of France?',
+            choices: [],
+            type: 'text',
+        },
+    ];
+
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
@@ -27,8 +62,14 @@ describe('QuestionComponent', () => {
             },
             configurable: true,
         });
+        Object.defineProperty(questionHandlerServiceSpy, 'currentAnswers', {
+            get: () => {
+                return [];
+            },
+            configurable: true,
+        });
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp', 'removePlayer']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
     });
 
@@ -62,6 +103,11 @@ describe('QuestionComponent', () => {
     it('questionData getter should return currentQuestion', () => {
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
         expect(component.questionData).toBe(QUESTIONS_DATA[0]);
+    });
+
+    it('correctAnswers getter should return the correct answers', () => {
+        spyOnProperty(questionHandlerServiceSpy, 'currentAnswers', 'get').and.returnValue([{ ...QUESTIONS_DATA[0].choices[1] }]);
+        expect(component.correctAnswers).toEqual([QUESTIONS_DATA[0].choices[1]]);
     });
 
     it('isChecked getter should return the players answer', () => {
@@ -132,5 +178,10 @@ describe('QuestionComponent', () => {
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         component.player.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
+    });
+
+    it('ngOnDestroy should remove the player', () => {
+        component.ngOnDestroy();
+        expect(playerHandlerServiceSpy.removePlayer).toHaveBeenCalledWith(TEST_PLAYER.id);
     });
 });

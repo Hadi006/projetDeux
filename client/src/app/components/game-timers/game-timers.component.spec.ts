@@ -8,7 +8,7 @@ describe('GameTimersComponent', () => {
     let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
 
     beforeEach(() => {
-        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer']);
+        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer', 'resetTimers']);
         Object.defineProperty(gameTimersServiceSpy, 'time', { get: () => 0, configurable: true });
     });
 
@@ -33,5 +33,10 @@ describe('GameTimersComponent', () => {
         const time = 10;
         spyOnProperty(gameTimersServiceSpy, 'time', 'get').and.returnValue(time);
         expect(component.time).toBe(time);
+    });
+
+    it('should reset timers on destroy', () => {
+        component.ngOnDestroy();
+        expect(gameTimersServiceSpy.resetTimers).toHaveBeenCalled();
     });
 });
