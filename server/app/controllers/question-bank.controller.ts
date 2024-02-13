@@ -56,16 +56,14 @@ export class QuestionBankController {
             res.status(httpStatus.BAD_REQUEST).json(RESULT);
         });
 
-        this.router.post('/:questionId/validate-answer', async (req: Request, res: Response) => {
-            const QUESTION_ID: string = req.params.questionId;
-            const ANSWER = req.body;
-            const QUESTION = await this.questionBankService.getQuestion(QUESTION_ID);
+        this.router.post('/validate-answer', async (req: Request, res: Response) => {
+            const QUESTION = await this.questionBankService.getQuestion(req.body.text);
             if (!QUESTION) {
                 res.status(httpStatus.NOT_FOUND).send(false);
                 return;
             }
 
-            const RESULT = await this.questionBankService.validateAnswer(QUESTION, ANSWER);
+            const RESULT = await this.questionBankService.validateAnswer(QUESTION, req.body.answer);
             res.status(httpStatus.OK).send(RESULT);
         });
 
