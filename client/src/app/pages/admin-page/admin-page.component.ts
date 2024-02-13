@@ -42,11 +42,7 @@ export class AdminPageComponent implements OnInit {
     }
 
     gotoQuizPage(index?: number) {
-<<<<<<< HEAD
         this.adminService.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
-=======
-        this.admin.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
->>>>>>> dev
         this.router.navigate(['/home/admin/quizzes/quiz']);
     }
 
