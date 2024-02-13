@@ -12,8 +12,8 @@ export class QuestionBankService {
         return QUESTIONS;
     }
 
-    async getQuestion(id: string): Promise<Question> {
-        const QUESTION = (await this.database.get<Question>('questions', { id }))[0];
+    async getQuestion(text: string): Promise<Question> {
+        const QUESTION = (await this.database.get<Question>('questions', { text }))[0];
         return QUESTION;
     }
 
