@@ -1,3 +1,4 @@
+import { MAX_DURATION, MIN_DURATION } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { randomUUID } from 'crypto';
 import { QuestionValidator } from './question-validator';
@@ -100,15 +101,15 @@ export class QuizValidator {
                 return;
             }
 
-            const DURATION = QUIZ.duration as number;
-            const MIN_DURATION = 10;
-            const MAX_DURATION = 60;
-            const VALID_DURATION = DURATION >= MIN_DURATION && DURATION <= MAX_DURATION;
-            if (!VALID_DURATION) {
+            // const DURATION = QUIZ.duration as number;
+
+            // const VALID_DURATION = DURATION >= MIN_DURATION && DURATION <= MAX_DURATION;
+
+            if (!(QUIZ.duration >= MIN_DURATION && QUIZ.duration <= MAX_DURATION)) {
                 this.compilationError += 'Quiz : duration must be between 10 and 60 !\n';
                 return;
             }
-            this.newQuiz.duration = DURATION;
+            this.newQuiz.duration = QUIZ.duration;
         });
 
         return this;

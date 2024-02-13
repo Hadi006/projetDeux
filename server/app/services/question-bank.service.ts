@@ -19,10 +19,7 @@ export class QuestionBankService {
     }
 
     validateQuestion(question: unknown): { question: Question; compilationError: string } {
-        const QUESTION = new QuestionValidator(question);
-        const RESULT = QUESTION.checkId().checkText().checkType().checkPoints().checkChoices().compile();
-
-        return RESULT;
+        return new QuestionValidator(question).checkId().checkText().checkType().checkPoints().checkChoices().compile();
     }
 
     async updateQuestion(question: Question, id: string): Promise<boolean> {
@@ -31,12 +28,15 @@ export class QuestionBankService {
 
     async addQuestion(question: Question): Promise<boolean> {
         question.id = randomUUID();
-        const SAME_NAMES = await this.database.get<Question>('questions', { text: question.text });
-        if (SAME_NAMES.length > 0) {
+        if ((await this.getTextOfQuestion(question)).length > 0) {
             return false;
         }
         await this.database.add('questions', question);
         return true;
+    }
+
+    async getTextOfQuestion(question: Question): Promise<Question[]> {
+        return this.database.get<Question>('questions', { text: question.text });
     }
 
     async deleteQuestion(questionId: string): Promise<boolean> {

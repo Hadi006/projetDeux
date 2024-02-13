@@ -1,3 +1,4 @@
+import { LOWER_BOUND, MAX_CHOICES, TEN, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { randomUUID } from 'crypto';
 import { AnswerValidator } from './answer-validator';
@@ -86,9 +87,7 @@ export class QuestionValidator {
                 return;
             }
             const POINTS = QUESTION.points as number;
-            const TEN = 10;
-            const LOWER_BOUND = 10;
-            const UPPER_BOUND = 100;
+
             if (POINTS % TEN !== 0 || POINTS < LOWER_BOUND || POINTS > UPPER_BOUND) {
                 this.compilationError += 'Question : points must be a multiple of 10 between 10 and 100 !\n';
                 return;
@@ -109,7 +108,7 @@ export class QuestionValidator {
                 return;
             }
             const CHOICES = QUESTION.choices as unknown[];
-            const MAX_CHOICES = 4;
+
             if (CHOICES.length < 2 || CHOICES.length > MAX_CHOICES) {
                 this.compilationError += 'Question : must have 2-4 choices !\n';
                 return;
