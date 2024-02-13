@@ -18,6 +18,7 @@
         <input type="number" id="points" name="points" [(ngModel)]="question.points" />
     </div>
     <div *ngIf="question.type === 'multiple-choices'">
+        <label>Drag and drop pour réordonner les réponses</label>
         <div cdkDropList (cdkDropListDropped)="drop($event)">
             <div cdkDrag class="form-group" *ngFor="let answer of question.choices; let i = index; trackBy: trackByFn">
                 <label [for]="'text' + i">Réponse(s) {{ i + 1 }} :</label>

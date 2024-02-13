@@ -101,7 +101,7 @@ export class CreateQuizPageComponent implements OnInit {
         this.dialog.open(AlertComponent, {
             data: { message: error },
             width: '300px',
-            position: { top: '50%', left: '50%' },
+            height: '300px',
         });
     }
 }
