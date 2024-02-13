@@ -44,8 +44,8 @@ export class CreateQuizPageComponent implements OnInit {
         this.adminService.selectedQuestion = chosenQuestion;
 
         const questionForm = this.dialog.open(QuestionFormComponent, {
-            width: '50%',
-            height: '50%',
+            width: '80%',
+            height: '80%',
         });
 
         questionForm.afterClosed().subscribe((question?: Question) => {
@@ -101,7 +101,7 @@ export class CreateQuizPageComponent implements OnInit {
         this.dialog.open(AlertComponent, {
             data: { message: error },
             width: '300px',
-            position: { top: '50%', left: '50%' },
+            height: '300px',
         });
     }
 }

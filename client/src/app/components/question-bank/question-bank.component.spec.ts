@@ -175,7 +175,10 @@ describe('QuestionBankComponent', () => {
         questionBankServiceSpy.getQuestion.and.returnValue(questions[0]);
         matDialogRefSpy.afterClosed.and.returnValue(of(undefined));
         component.openQuestionForm(0);
-        expect(matDialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent);
+        expect(matDialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
+            width: '80%',
+            height: '80%',
+        });
     });
 
     it('should call questionBank.updateQuestion when openQuestionForm is called with an existing question', () => {
