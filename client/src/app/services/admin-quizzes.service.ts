@@ -112,8 +112,7 @@ export class AdminQuizzesService {
                     return response.body;
                 }
 
-                const index: number = this.quizzes.findIndex((q: Quiz) => q.id === quiz.id);
-                this.quizzes[index] = quiz;
+                this.quizzes[this.findQuizIndex(quiz.id)] = quiz;
                 this.quizzes$.next(this.quizzes);
 
                 return response.body;
@@ -186,5 +185,9 @@ export class AdminQuizzesService {
             };
             reader.readAsText(quizFile);
         });
+    }
+
+    private findQuizIndex(quizId: string): number {
+        return this.quizzes.findIndex((quiz: Quiz) => quiz.id === quizId);
     }
 }
