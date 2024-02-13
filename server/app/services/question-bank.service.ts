@@ -24,16 +24,11 @@ export class QuestionBankService {
     }
 
     async addQuestion(question: Question): Promise<boolean> {
-        const SAME_NAMES = await this.database.get<Question>('questions', { text: question.text });
-        if (SAME_NAMES.length > 0) {
+        if (await this.getQuestion(question.text)) {
             return false;
         }
         await this.database.add('questions', question);
         return true;
-    }
-
-    async getTextOfQuestion(question: Question): Promise<Question[]> {
-        return this.database.get<Question>('questions', { text: question.text });
     }
 
     async deleteQuestion(questionId: string): Promise<boolean> {
