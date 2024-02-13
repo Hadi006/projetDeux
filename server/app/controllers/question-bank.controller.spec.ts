@@ -163,12 +163,12 @@ describe('QuestionBankController', () => {
             });
     });
 
-    it('POST /:questionId/validate-answer should validate an answer', async () => {
+    it('POST /validate-answer should validate an answer', async () => {
         questionBankServiceStub.getQuestion.resolves(MOCK_QUESTIONS[0]);
         questionBankServiceStub.validateAnswer.resolves(true);
         return supertest(expressApp)
-            .post(`/api/questions/${PARAM_ID}/validate-answer`)
-            .send([true, false])
+            .post('/api/questions/validate-answer')
+            .send({ answer: [true, false], text: MOCK_QUESTIONS[0].text })
             .expect(httpStatus.OK)
             .then((response) => {
                 expect(questionBankServiceStub.validateAnswer.calledWith(MOCK_QUESTIONS[0], [true, false])).to.equal(true);
@@ -176,11 +176,11 @@ describe('QuestionBankController', () => {
             });
     });
 
-    it('POST /:questionId/validate-answer should return 404 when no question is found', async () => {
+    it('POST /validate-answer should return 404 when no question is found', async () => {
         questionBankServiceStub.getQuestion.resolves(null);
         return supertest(expressApp)
-            .post(`/api/questions/${PARAM_ID}/validate-answer`)
-            .send([true, false])
+            .post('/api/questions/validate-answer')
+            .send({ answer: [true, false], text: MOCK_QUESTIONS[0].text })
             .expect(httpStatus.NOT_FOUND)
             .then((response) => {
                 expect(questionBankServiceStub.validateAnswer.called).to.equal(false);

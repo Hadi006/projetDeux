@@ -144,11 +144,11 @@ describe('PlayerHandlerService', () => {
         for (let i = 0; i < nPlayers; i++) {
             service.createPlayer();
         }
-        const questionId = '1234';
+        const questionText = '1234';
         answerValidatorServiceSpy.validateAnswer.and.returnValues(of(true), of(false), of(true));
-        service.validatePlayerAnswers(questionId).subscribe(() => {
+        service.validatePlayerAnswers(questionText).subscribe(() => {
             service.players.forEach((player) => {
-                expect(answerValidatorServiceSpy.validateAnswer).toHaveBeenCalledWith(questionId, player.answer);
+                expect(answerValidatorServiceSpy.validateAnswer).toHaveBeenCalledWith(questionText, player.answer);
             });
 
             expect(service.players[0].isCorrect).toBeTrue();
