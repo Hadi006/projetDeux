@@ -29,14 +29,15 @@
     gap: 5px; /* Adjusts spacing between info spans */
 }
 
-button[mat-icon-button] {
+button[type="button"] {
     border: none;
     background-color: transparent;
     cursor: pointer;
     color: #333; /* Icon color */
+    padding: 0; /* Remove default button padding */
 }
 
-button[mat-icon-button]:hover {
+button[type="button"]:hover {
     color: #007bff; /* Change color on hover */
 }
 
