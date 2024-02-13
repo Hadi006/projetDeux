@@ -1,6 +1,4 @@
 import { AccessToken } from '@common/access-token';
-import { GameData } from '@common/game-data';
-import { QuestionData } from '@common/question-data';
 import { Quiz } from '@common/quiz';
 
 /* Components */
@@ -43,40 +41,6 @@ export const MAX_MESSAGE_LENGTH = 200;
 export const SHOW_ANSWER_DELAY = 3;
 export const INVALID_TOKEN: AccessToken = { id: '', expirationDate: -1 };
 
-export const QUESTIONS_DATA: QuestionData[] = [
-    {
-        id: 0,
-        points: 1,
-        question: '1+1?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['2'],
-        isMCQ: true,
-    },
-    {
-        id: 1,
-        points: 4,
-        question: 'Open ended question',
-        answers: [],
-        correctAnswers: [],
-        isMCQ: false,
-    },
-    {
-        id: 2,
-        points: 2,
-        question: '2+2?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['4'],
-        isMCQ: true,
-    },
-];
-
-export const TEST_GAME: GameData = {
-    id: 0,
-    name: 'Math',
-    questions: QUESTIONS_DATA,
-    timePerQuestion: 10,
-};
-
 export const enum GameState {
     ShowQuestion = 0,
     ShowAnswer = 1,
@@ -98,11 +62,11 @@ export const MIN_DURATION = 10;
 export const MAX_DURATION = 60;
 
 export const BLANK_QUIZ: Quiz = {
-            id: '',
-            title: '',
-            visible: false,
-            description: '',
-            duration: 10,
-            lastModification: new Date(),
-            questions: [],
-}
+    id: '',
+    title: '',
+    visible: false,
+    description: '',
+    duration: 10,
+    lastModification: new Date(),
+    questions: [],
+};
