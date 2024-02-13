@@ -10,7 +10,7 @@ import { Quiz } from '@common/quiz';
     styleUrls: ['./game-choice-page.component.scss'],
 })
 export class GameChoicePageComponent implements OnInit {
-    chosenQuiz: Quiz;
+    chosenQuiz: Quiz | null = null;
 
     constructor(
         public publicQuizzesService: PublicQuizzesService,
@@ -19,7 +19,7 @@ export class GameChoicePageComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.publicQuizzesService.fetchVisibleQuizzes();
+        this.publicQuizzesService.fetchVisibleQuizzes().subscribe();
     }
 
     chooseQuiz(quiz: Quiz) {
@@ -27,22 +27,38 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
-            this.publicQuizzesService.alertNoQuizAvailable();
-            return;
-        }
+        this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
+            if (!this.chosenQuiz) {
+                this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+                return;
+            }
 
-        this.gameHandlerService.loadQuizData(this.chosenQuiz);
-        this.router.navigate(['lobby']);
+            if (!isAvailable) {
+                this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible');
+                this.chosenQuiz = null;
+                return;
+            }
+
+            this.gameHandlerService.loadQuizData(this.chosenQuiz);
+            this.router.navigate(['lobby']);
+        });
     }
 
     testGame() {
-        if (!this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz)) {
-            this.publicQuizzesService.alertNoQuizAvailable();
-            return;
-        }
+        this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
+            if (!this.chosenQuiz) {
+                this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+                return;
+            }
 
-        this.gameHandlerService.loadQuizData(this.chosenQuiz);
-        this.router.navigate(['/play']);
+            if (!isAvailable) {
+                this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible');
+                this.chosenQuiz = null;
+                return;
+            }
+
+            this.gameHandlerService.loadQuizData(this.chosenQuiz);
+            this.router.navigate(['/play']);
+        });
     }
 }

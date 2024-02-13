@@ -21,6 +21,10 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        if (!this.gameHandlerService.quizData) {
+            this.router.navigate(['game']);
+        }
+
         this.gameHandlerService.startGame();
     }
 

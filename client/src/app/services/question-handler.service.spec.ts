@@ -127,6 +127,12 @@ describe('QuestionHandlerService', () => {
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 
+    it('questionsData setter should reset the currentQuestionIndex', () => {
+        service.nextQuestion();
+        service.questionsData = [...QUESTIONS_DATA];
+        expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
+    });
+
     it('resetAnswers should reset the answers of the players', () => {
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue({ ...QUESTIONS_DATA[0] });
         service.resetAnswers();

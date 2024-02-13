@@ -13,6 +13,8 @@ import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question, Quiz } from '@common/quiz';
 import { of } from 'rxjs';
+import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
+import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
 
 describe('CreateQuizPageComponent', () => {
     const TEST_QUESTIONS: Question[] = [
@@ -72,7 +74,7 @@ describe('CreateQuizPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [CreateQuizPageComponent, QuestionBankComponent, QuestionItemComponent],
+            declarations: [CreateQuizPageComponent, QuestionItemComponent, QuestionBankComponent],
             imports: [FormsModule, DragDropModule, HttpClientTestingModule, MatIconModule],
             providers: [
                 { provide: AdminQuizzesService, useValue: adminQuizzesServiceSpy },
