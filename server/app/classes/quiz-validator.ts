@@ -101,10 +101,6 @@ export class QuizValidator {
                 return;
             }
 
-            // const DURATION = QUIZ.duration as number;
-
-            // const VALID_DURATION = DURATION >= MIN_DURATION && DURATION <= MAX_DURATION;
-
             if (!(QUIZ.duration >= MIN_DURATION && QUIZ.duration <= MAX_DURATION)) {
                 this.compilationError += 'Quiz : duration must be between 10 and 60 !\n';
                 return;
