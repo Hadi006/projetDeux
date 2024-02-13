@@ -9,7 +9,7 @@ export class AnswerValidator {
 
     constructor(answer: unknown) {
         this.tasks = [];
-        this.answer = answer as Answer;
+        this.answer = answer;
         this.compilationError = '';
         this.isObject = false;
         this.newAnswer = {

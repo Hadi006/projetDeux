@@ -86,7 +86,7 @@ export class QuestionValidator {
                 this.compilationError += 'Question : points are missing !\n';
                 return;
             }
-            const POINTS = QUESTION.points as number;
+            const POINTS = QUESTION.points;
 
             if (POINTS % TEN !== 0 || POINTS < LOWER_BOUND || POINTS > UPPER_BOUND) {
                 this.compilationError += 'Question : points must be a multiple of 10 between 10 and 100 !\n';
