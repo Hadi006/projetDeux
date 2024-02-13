@@ -22,6 +22,9 @@
         <span *ngFor="let correctAnswer of correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer.text }}</p>
         </span>
+        <div *ngIf="player.isCorrect">
+            <p>Bonne réponse!</p>
+        </div>
     </div>
 </div>
 <button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirm</button>
