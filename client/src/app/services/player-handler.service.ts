@@ -74,11 +74,11 @@ export class PlayerHandlerService {
         });
     }
 
-    validatePlayerAnswers(questionId: string): Observable<null> {
+    validatePlayerAnswers(questionText: string): Observable<null> {
         const validationObservables: Observable<boolean>[] = [];
 
         this.internalPlayers.forEach((player) => {
-            const validationObservable = this.answerValidatorService.validateAnswer(questionId, player.answer);
+            const validationObservable = this.answerValidatorService.validateAnswer(questionText, player.answer);
 
             validationObservables.push(validationObservable);
             validationObservable.subscribe((isCorrect) => {
