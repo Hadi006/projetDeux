@@ -16,7 +16,7 @@ describe('QuestionValidator', () => {
     const MOCK_QUESTION: Question = {
         text: 'This is a test question',
         id: '1',
-        type: 'multiple-choices',
+        type: 'QCM',
         points: 10,
         choices: MOCK_ANSWERS,
     };

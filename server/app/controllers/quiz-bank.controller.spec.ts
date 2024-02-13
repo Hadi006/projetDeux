@@ -13,7 +13,7 @@ describe('QuizBankController', () => {
     const MOCK_QUESTION: Question = {
         id: '1',
         text: 'Question 1',
-        type: 'multiple-choice',
+        type: 'QCM',
         points: 1,
         choices: [MOCK_ANSWER],
     };

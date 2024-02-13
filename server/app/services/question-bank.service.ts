@@ -36,7 +36,7 @@ export class QuestionBankService {
     }
 
     async validateAnswer(question: Question, playerAnswers: boolean[]): Promise<boolean> {
-        if (question.type !== 'multiple-choices') {
+        if (question.type !== 'QCM') {
             return true;
         }
 
