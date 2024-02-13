@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { Timer } from '@app/classes/timer';
 import { TimeService } from '@app/services/time.service';
 

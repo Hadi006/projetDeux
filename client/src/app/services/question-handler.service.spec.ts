@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-
-import { QuestionHandlerService, GOOD_ANSWER_MULTIPLIER } from '@app/services/question-handler.service';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { GameStateService } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
-import { GameStateService, GameState } from '@app/services/game-state.service';
-import { of, Subject } from 'rxjs';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { QuestionHandlerService } from '@app/services/question-handler.service';
+import { GOOD_ANSWER_MULTIPLIER, GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
+import { Subject, of } from 'rxjs';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-
-import { authGuard, UNAUTHORIZED_REDIRECT_URL } from '@app/guards/auth.guard';
+import { authGuard } from '@app/guards/auth.guard';
 import { AuthService } from '@app/services/auth.service';
+import { UNAUTHORIZED_REDIRECT_URL } from '@common/constant';
 import { of, throwError } from 'rxjs';
 describe('authGuard', () => {
     const executeGuard = () => TestBed.runInInjectionContext(() => authGuard());

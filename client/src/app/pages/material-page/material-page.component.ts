@@ -1,6 +1,8 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MATERIAL_DEFAULT_PREBUILT_THEME, MATERIAL_PREBUILT_THEMES } from '@common/constants';
+import { MATERIAL_DEFAULT_PREBUILT_THEME, MATERIAL_PREBUILT_THEMES } from '@common/constant';
+
+// TODO : Avoir un fichier séparé pour les constantes!
 
 @Component({
     selector: 'app-material-page',

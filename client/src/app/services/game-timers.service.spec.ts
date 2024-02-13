@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { GameStateService, GameState } from '@app/services/game-state.service';
-
+import { GameStateService } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
+import { GameState } from '@common/constant';
 import { Subject } from 'rxjs';
 import { PlayerHandlerService } from './player-handler.service';
 import { TimeService } from './time.service';
