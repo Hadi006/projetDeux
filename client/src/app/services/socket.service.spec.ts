@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { ServerData } from '@common/server-data';
 import { Subject } from 'rxjs';
 import { WebSocketSubject } from 'rxjs/webSocket';
-
 import { SocketService } from './socket.service';
 
 describe('SocketService', () => {

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { GameCountDownComponent, COUNTDOWN_TIME } from './game-count-down.component';
 import { TimeService } from '@app/services/time.service';
+import { COUNTDOWN_TIME } from '@common/constant';
+import { GameCountDownComponent } from './game-count-down.component';
 
 describe('GameCountDownComponent', () => {
     const TEST_ID = 1;
