@@ -110,7 +110,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator(MOCK_QUIZ, async (): Promise<Quiz[]> => [MOCK_QUIZ]);
         quizValidator.checkTitle();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : title must be unique !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : titre déjà utilisé !\n');
         expect(compiledQuiz.quiz.title).to.equal(EMPTY_QUIZ.title);
     });
 

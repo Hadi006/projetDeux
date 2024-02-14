@@ -1,8 +1,8 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { INVALID_INDEX, BLANK_QUIZ } from '@common/constant';
+import { BLANK_QUIZ, INVALID_INDEX } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
-import { BehaviorSubject, Observable, map, switchMap, of, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, switchMap } from 'rxjs';
 import { CommunicationService } from './communication.service';
 @Injectable({
     providedIn: 'root',
@@ -72,8 +72,8 @@ export class AdminQuizzesService {
         );
     }
 
-    submitQuiz(quiz: unknown): Observable<{ quiz?: Quiz; errorLog: string }> {
-        return this.http.post<{ quiz: Quiz; errorLog: string }>('quizzes', { quiz }).pipe(
+    submitQuiz(quiz: unknown, newTitle?: string): Observable<{ quiz?: Quiz; errorLog: string }> {
+        return this.http.post<{ quiz: Quiz; errorLog: string }>('quizzes', { quiz, newTitle }).pipe(
             map((response: HttpResponse<{ quiz: Quiz; errorLog: string }>) => {
                 if (!response.body || response.body.errorLog === undefined || !response.body.quiz) {
                     return { quiz: undefined, errorLog: 'submission failed' };

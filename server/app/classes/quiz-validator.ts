@@ -62,7 +62,7 @@ export class QuizValidator {
             const TITLE = QUIZ.title as string;
             const SAME_NAMES = await this.getData({ title: TITLE });
             if (SAME_NAMES.length > 0 && SAME_NAMES[0].id !== this.newQuiz.id) {
-                this.compilationError += 'Quiz : title must be unique !\n';
+                this.compilationError += 'Quiz : titre déjà utilisé !\n';
                 return;
             }
 

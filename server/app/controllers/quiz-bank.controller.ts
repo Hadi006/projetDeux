@@ -42,10 +42,12 @@ export class QuizBankController {
         });
 
         this.router.post('/', async (req: Request, res: Response) => {
+            if (req.body.newTitle) {
+                req.body.quiz.title = req.body.newTitle;
+            }
             const RESULT: { quiz: Quiz; errorLog: string } = await this.quizBankService.verifyQuiz(req.body.quiz);
             const VALID = !RESULT.errorLog;
             if (VALID) {
-                // attention, si addQuiz decouvre que le titre est deja pris, il faut avertir le client que le quiz n'a pas ete ajoute
                 await this.quizBankService.addQuiz(RESULT.quiz);
             }
 

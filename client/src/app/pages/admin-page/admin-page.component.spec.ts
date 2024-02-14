@@ -25,6 +25,7 @@ describe('AdminPageComponent', () => {
             'downloadQuiz',
             'deleteQuiz',
             'setSelectedQuiz',
+            'submitQuiz',
         ]);
         router = jasmine.createSpyObj('Router', ['navigate']);
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -81,6 +82,34 @@ describe('AdminPageComponent', () => {
 
         expect(adminService.uploadQuiz).not.toHaveBeenCalled();
         expect(dialog.open).not.toHaveBeenCalled();
+    });
+
+    it('should prompt for new title and submit quiz when title must be unique', () => {
+        const quizFile = new File(['quiz data'], 'quiz.json', { type: 'application/json' });
+        const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
+        const response = { quiz: undefined, errorLog: 'Quiz : titre déjà utilisé !\n' };
+        adminService.uploadQuiz.and.returnValue(of(response));
+        spyOn(window, 'prompt').and.returnValue('New title');
+        adminService.submitQuiz.and.returnValue(of());
+
+        component.importQuiz(event as unknown as Event);
+
+        expect(adminService.uploadQuiz).toHaveBeenCalledWith(quizFile);
+        expect(adminService.submitQuiz).toHaveBeenCalledWith(response.quiz, 'New title');
+    });
+
+    it('should do nothing when prompt for new title is cancelled', () => {
+        const quizFile = new File(['quiz data'], 'quiz.json', { type: 'application/json' });
+        const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
+        const response = { quiz: undefined, errorLog: 'Quiz : titre déjà utilisé !\n' };
+        adminService.uploadQuiz.and.returnValue(of(response));
+        spyOn(window, 'prompt').and.returnValue(null);
+        adminService.submitQuiz.and.returnValue(of());
+
+        component.importQuiz(event as unknown as Event);
+
+        expect(adminService.uploadQuiz).toHaveBeenCalledWith(quizFile);
+        expect(adminService.submitQuiz).not.toHaveBeenCalled();
     });
 
     it('should set selected quiz and navigate to correct URL with index', () => {
