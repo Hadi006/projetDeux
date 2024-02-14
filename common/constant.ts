@@ -52,10 +52,20 @@ export const BLANK_QUIZ: Quiz = {
     questions: [],
 };
 
+export const BLANK_QUESTION = {
+                id: '',
+                text: '',
+                type: 'QCM',
+                points: 0,
+                choices: [
+                    { text: '', isCorrect: false },
+                    { text: '', isCorrect: false },
+                ],
+}
+
 export const NEW_PLAYER = {
     score: 0,
     answer: [],
     answerConfirmed: false,
     isCorrect: false,
 };
-

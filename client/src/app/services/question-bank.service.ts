@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Question } from '@common/quiz';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { CommunicationService } from './communication.service';
+import { BLANK_QUESTION } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
@@ -25,16 +26,7 @@ export class QuestionBankService {
     getQuestion(index: number): Question {
         const QUESTION: Question | undefined = this.questions[index];
         return (
-            QUESTION || {
-                id: '',
-                text: '',
-                type: 'QCM',
-                points: 0,
-                choices: [
-                    { text: '', isCorrect: false },
-                    { text: '', isCorrect: false },
-                ],
-            }
+            QUESTION || BLANK_QUESTION
         );
     }
 
