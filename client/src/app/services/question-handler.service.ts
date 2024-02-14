@@ -46,8 +46,7 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     updateScores(): void {
-        const points = (this.currentQuestion?.points || 0) * GOOD_ANSWER_MULTIPLIER;
-        this.playerHandlerService.updateScores(points);
+        this.playerHandlerService.updateScores(this.calculateQuestionPoints());
     }
 
     ngOnDestroy(): void {
@@ -62,5 +61,9 @@ export class QuestionHandlerService implements OnDestroy {
                 });
             }
         });
+    }
+
+    private calculateQuestionPoints(): number {
+        return (this.currentQuestion?.points || 0) * GOOD_ANSWER_MULTIPLIER;
     }
 }
