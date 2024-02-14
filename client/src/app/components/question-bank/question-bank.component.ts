@@ -1,6 +1,6 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
@@ -69,25 +69,31 @@ export class QuestionBankComponent implements OnInit {
         const question = this.questionBank.getQuestion(isNewQuestion ? INVALID_INDEX : index);
         this.admin.selectedQuestion = question;
 
-        const questionFormRef = this.dialog.open(QuestionFormComponent, {
-            width: '80%',
-            height: '80%',
-        });
-
-        questionFormRef.afterClosed().subscribe((editedQuestion?: Question) => {
-            if (editedQuestion) {
-                this.processQuestion(editedQuestion, isNewQuestion);
-            }
-        });
+        this.openQuestionFormRef()
+            .afterClosed()
+            .subscribe((editedQuestion?: Question) => {
+                if (editedQuestion) {
+                    this.processQuestion(editedQuestion, isNewQuestion);
+                }
+            });
     }
 
     private processQuestion(question: Question, isNew: boolean) {
-        const operation = isNew ? this.questionBank.addQuestion(question) : this.questionBank.updateQuestion(question);
-
-        operation.subscribe((error: string) => {
+        this.submitQuestionChange(question, isNew).subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             }
         });
+    }
+
+    private openQuestionFormRef(): MatDialogRef<QuestionFormComponent> {
+        return this.dialog.open(QuestionFormComponent, {
+            width: '80%',
+            height: '80%',
+        });
+    }
+
+    private submitQuestionChange(question: Question, isNew: boolean): Observable<string> {
+        return isNew ? this.questionBank.addQuestion(question) : this.questionBank.updateQuestion(question);
     }
 }
