@@ -40,8 +40,7 @@ export class CreateQuizPageComponent implements OnInit {
 
     openQuestionForm(index?: number) {
         const questionIndex = index !== undefined ? index : this.quiz.questions.length;
-        const chosenQuestion = this.getQuestion(questionIndex);
-        this.adminService.selectedQuestion = chosenQuestion;
+        this.adminService.selectedQuestion = this.getQuestion(questionIndex);
 
         const questionForm = this.dialog.open(QuestionFormComponent, {
             width: '80%',
@@ -64,8 +63,7 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     submitQuiz() {
-        const isNewQuiz = this.quiz.id === '';
-        this.processQuiz(this.quiz, isNewQuiz);
+        this.processQuiz(this.quiz, this.isNewQuiz());
     }
 
     close() {
@@ -73,9 +71,7 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     private processQuiz(quiz: Quiz, isNew: boolean) {
-        const operation = isNew ? this.adminService.submitQuiz(quiz) : this.adminService.updateQuiz(quiz);
-
-        operation.subscribe((response: { errorLog: string }) => {
+        this.submitQuizUpdate(quiz, isNew).subscribe((response: { errorLog: string }) => {
             if (response.errorLog) {
                 this.alert(response.errorLog);
             } else {
@@ -103,5 +99,13 @@ export class CreateQuizPageComponent implements OnInit {
             width: '300px',
             height: '300px',
         });
+    }
+
+    private isNewQuiz(): boolean {
+        return this.quiz.id === '';
+    }
+
+    private submitQuizUpdate(quiz: Quiz, isNew: boolean) {
+        return isNew ? this.adminService.submitQuiz(quiz) : this.adminService.updateQuiz(quiz);
     }
 }
