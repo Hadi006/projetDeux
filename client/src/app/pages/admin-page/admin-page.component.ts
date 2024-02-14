@@ -39,12 +39,14 @@ export class AdminPageComponent implements OnInit {
             }
 
             if (response.errorLog.includes('titre déjà utilisé')) {
-                this.promptForNewTitle().afterClosed().subscribe((newTitle: string) => {
-                    if (!newTitle) {
-                        return;
-                    }
-                    this.adminService.submitQuiz(response.quiz, newTitle).subscribe();
-                });
+                this.promptForNewTitle()
+                    .afterClosed()
+                    .subscribe((newTitle: string) => {
+                        if (!newTitle) {
+                            return;
+                        }
+                        this.adminService.submitQuiz(response.quiz, newTitle).subscribe();
+                    });
             }
 
             this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
