@@ -40,6 +40,9 @@ export class QuizBankController {
         });
 
         this.router.post('/', async (req: Request, res: Response) => {
+            if (req.body.newTitle) {
+                req.body.quiz.title = req.body.newTitle;
+            }
             const result: { quiz: Quiz; errorLog: string } = await this.quizBankService.verifyQuiz(req.body.quiz);
             if (!result.errorLog) {
                 await this.quizBankService.addQuiz(result.quiz);
