@@ -19,7 +19,7 @@ describe('CreateQuizPageComponent', () => {
         {
             id: '1',
             text: 'Test Question 1',
-            type: 'multiple-choice',
+            type: 'QCM',
             points: 10,
             choices: [
                 { text: 'Choice 1', isCorrect: true },
@@ -31,7 +31,7 @@ describe('CreateQuizPageComponent', () => {
         {
             id: '2',
             text: 'Test Question 2',
-            type: 'multiple-choice',
+            type: 'QCM',
             points: 10,
             choices: [
                 { text: 'Choice 1', isCorrect: true },

@@ -18,7 +18,7 @@ describe('QuestionBankComponent', () => {
         {
             id: '0',
             text: 'text0',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text01', isCorrect: true },
@@ -29,7 +29,7 @@ describe('QuestionBankComponent', () => {
         {
             id: '1',
             text: 'text1',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text11', isCorrect: true },
@@ -40,7 +40,7 @@ describe('QuestionBankComponent', () => {
         {
             id: '2',
             text: 'text2',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text21', isCorrect: true },
@@ -116,7 +116,7 @@ describe('QuestionBankComponent', () => {
         const NO_MODIFICATION_DATE: Question = {
             id: '3',
             text: 'text3',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text31', isCorrect: true },

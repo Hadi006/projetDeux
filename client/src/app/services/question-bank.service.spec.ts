@@ -27,7 +27,7 @@ describe('QuestionBankService', () => {
             {
                 id: '1',
                 text: 'What is Angular?',
-                type: 'multiple-choice',
+                type: 'QCM',
                 points: 5,
                 lastModification: new Date('2018-11-13T20:20:39+00:00'),
                 choices: [
@@ -38,7 +38,7 @@ describe('QuestionBankService', () => {
             {
                 id: '2',
                 text: 'What is TypeScript?',
-                type: 'multiple-choice',
+                type: 'QCM',
                 points: 5,
                 lastModification: new Date('2018-11-13T20:20:39+00:00'),
                 choices: [
@@ -49,7 +49,7 @@ describe('QuestionBankService', () => {
             {
                 id: '',
                 text: '',
-                type: 'multiple-choice',
+                type: 'QCM',
                 points: 0,
                 choices: [
                     { text: '', isCorrect: false },
@@ -76,7 +76,7 @@ describe('QuestionBankService', () => {
 
     it('should return a default question template for an invalid index', () => {
         const outOfBoundsIndex = 999;
-        const question = service.getQuestion(outOfBoundsIndex); // Assuming 999 is out of bounds
+        const question = service.getQuestion(outOfBoundsIndex);
         expect(question).toEqual(questionListTest[2]);
     });
 
@@ -142,7 +142,7 @@ describe('QuestionBankService', () => {
         const newQuestion: Question = {
             id: '',
             text: 'What is Angular Material?',
-            type: 'multiple-choice',
+            type: 'QCM',
             points: 5,
             lastModification: new Date('2018-11-13T20:20:39+00:00'),
             choices: [

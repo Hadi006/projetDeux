@@ -40,7 +40,7 @@ export class QuestionComponent implements OnDestroy {
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.questionData || !(this.questionData.type === 'multiple-choices') || !this.canEditAnswer()) {
+        if (!this.questionData || !(this.questionData.type === 'QCM') || !this.canEditAnswer()) {
             return;
         }
 

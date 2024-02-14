@@ -8,8 +8,8 @@
     <div class="form-group">
         <label for="type">Type:</label>
         <select id="type" name="type" [(ngModel)]="question.type">
-            <option value="multiple-choices">Questions à Choix Multiples</option>
-            <option value="open-ended">Questions Longues</option>
+            <option value="QCM">Questions à Choix Multiples</option>
+            <option value="QRL">Questions Longues</option>
         </select>
     </div>
 
@@ -17,7 +17,7 @@
         <label for="points">Nombre de points:</label>
         <input type="number" id="points" name="points" [(ngModel)]="question.points" />
     </div>
-    <div *ngIf="question.type === 'multiple-choices'">
+    <div *ngIf="question.type === 'QCM'">
         <label>Drag and drop pour réordonner les réponses</label>
         <div cdkDropList (cdkDropListDropped)="drop($event)">
             <div cdkDrag class="form-group" *ngFor="let answer of question.choices; let i = index; trackBy: trackByFn">
@@ -28,11 +28,10 @@
                     <mat-icon>delete</mat-icon>
                 </button>
             </div>
-
         </div>
         <button type="button" id="add-button" (click)="addChoice()">Ajouter une réponse</button>
     </div>
-    <div class="form-group" *ngIf="question.type === 'open-ended'">
+    <div class="form-group" *ngIf="question.type === 'QRL'">
         <label for="answer">Réponse:</label>
         <input type="text" id="answer" name="answer" [(ngModel)]="question.choices[0].text" required />
     </div>

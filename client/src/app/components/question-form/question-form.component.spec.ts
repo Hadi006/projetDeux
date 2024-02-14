@@ -14,10 +14,10 @@ describe('QuestionFormComponent', () => {
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<QuestionFormComponent>>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
 
-    const TEST_QUESTION = {
+    const TEST_QUESTION: Question = {
         id: '1',
         text: 'Test Question 1',
-        type: 'multiple-choice',
+        type: 'QCM',
         points: 10,
         choices: [
             { text: 'Choice 1', isCorrect: true },

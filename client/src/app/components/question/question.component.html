@@ -3,7 +3,7 @@
 
     <p>Valeur de la question: {{ questionData.points }} points</p>
 
-    <div *ngIf="questionData.type === 'multiple-choices'" id="question-container" (keyup)="handleKeyUp($event)">
+    <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let choice of questionData.choices; let i = index">
             <label>
                 <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="player.answer[i]" />
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div *ngIf="!(questionData.type === 'multiple-choices')" id="question-container">
+    <div *ngIf="!(questionData.type === 'QCM')" id="question-container">
         <textarea [disabled]="showingAnswer" placeholder="Tapez votre réponse ici..."></textarea>
     </div>
 
