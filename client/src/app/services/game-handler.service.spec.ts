@@ -34,14 +34,14 @@ describe('GameHandlerService', () => {
                         isCorrect: false,
                     },
                 ],
-                type: 'multiple-choices',
+                type: 'QCM',
             },
             {
                 id: '1',
                 points: 1,
                 text: 'What is the capital of France?',
                 choices: [],
-                type: 'text',
+                type: 'QRL',
             },
         ],
     };

@@ -67,7 +67,7 @@ export class QuestionValidator {
                 this.compilationError += 'Question : type is missing !\n';
                 return;
             }
-            if (QUESTION.type !== 'multiple-choices' && QUESTION.type !== 'open-ended') {
+            if (QUESTION.type !== 'QCM' && QUESTION.type !== 'QRL') {
                 this.compilationError += 'Question : type must be multiple-choices or open-ended !\n';
                 return;
             }

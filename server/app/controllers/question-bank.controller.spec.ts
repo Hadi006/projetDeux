@@ -1,5 +1,6 @@
 import { Application } from '@app/app';
 import { QuestionBankService } from '@app/services/question-bank.service';
+import { Question } from '@common/quiz';
 import { expect } from 'chai';
 import httpStatus from 'http-status-codes';
 import { SinonStubbedInstance, createStubInstance, match } from 'sinon';
@@ -7,11 +8,11 @@ import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
 describe('QuestionBankController', () => {
-    const MOCK_QUESTIONS = [
+    const MOCK_QUESTIONS: Question[] = [
         {
             id: '1',
             text: 'Question 1',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 10,
             choices: [
                 { text: 'Answer 1', isCorrect: true },
@@ -21,7 +22,7 @@ describe('QuestionBankController', () => {
         {
             id: '2',
             text: 'Question 2',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 10,
             choices: [
                 { text: 'Answer 1', isCorrect: true },

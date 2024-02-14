@@ -19,7 +19,7 @@ export class AdminQuizzesService {
         this.selectedQuestion = {
             id: '',
             text: '',
-            type: 'multiple-choice',
+            type: 'QCM',
             points: 0,
             choices: [
                 { text: '', isCorrect: false },

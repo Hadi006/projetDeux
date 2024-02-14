@@ -89,7 +89,7 @@ export class CreateQuizPageComponent implements OnInit {
             this.quiz.questions[index] || {
                 id: '',
                 text: '',
-                type: 'multiple-choice',
+                type: 'QCM',
                 points: 0,
                 lastModification: new Date(),
                 choices: [{ text: '', isCorrect: false }],

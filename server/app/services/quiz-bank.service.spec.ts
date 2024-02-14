@@ -12,7 +12,7 @@ describe('QuizBankService', () => {
     const MOCK_QUESTION: Question = {
         id: '1',
         text: 'Question 1',
-        type: 'multiple-choices',
+        type: 'QCM',
         points: 10,
         choices: MOCK_ANSWERS,
     };

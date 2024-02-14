@@ -6,7 +6,7 @@ interface Answer {
 interface Question {
     id: string;
     text: string;
-    type: string;
+    type: 'QCM' | 'QRL' | '';
     points: number;
     lastModification?: Date;
     choices: Answer[];
@@ -23,4 +23,3 @@ interface Quiz {
 }
 
 export { Answer, Question, Quiz };
-
