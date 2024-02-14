@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div *ngIf="!(questionData.type === 'QCM')" id="question-container">
+    <div *ngIf="questionData.type === 'QRL'" id="question-container">
         <textarea [disabled]="showingAnswer" placeholder="Tapez votre réponse ici..."></textarea>
     </div>
 
