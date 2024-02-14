@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Player } from '@app/interfaces/player';
+import { Player } from '@common/player';
 import { Subject, Observable, map, forkJoin } from 'rxjs';
 import { AnswerValidatorService } from './answer-validator.service';
 import { NEW_PLAYER } from '@common/constant';

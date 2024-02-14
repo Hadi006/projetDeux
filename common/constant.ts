@@ -1,6 +1,7 @@
 import { AccessToken } from '@common/access-token';
 import { Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
+import { Player } from '@common/player';
 
 /* Components */
 export const COUNTDOWN_TIME = 5;
@@ -17,9 +18,23 @@ export enum MouseButton {
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
 
-const TEST_PLAYER_DATA = [
-    { id: 1, name: 'Player 1' },
-    { id: 2, name: 'Player 2' },
+const TEST_PLAYER_DATA: Player[] = [
+    {
+        id: 1,
+        name: 'Player 1',
+        score: 0,
+        answer: [],
+        answerConfirmed: false,
+        isCorrect: false,
+    },
+    {
+        id: 2,
+        name: 'Player 2',
+        score: 0,
+        answer: [],
+        answerConfirmed: false,
+        isCorrect: false,
+    },
 ];
 
 export const TEST_LOBBY_DATA: LobbyData = {
@@ -75,7 +90,9 @@ export const BLANK_QUESTION = {
     ],
 };
 
-export const NEW_PLAYER = {
+export const NEW_PLAYER: Player = {
+    id: 0,
+    name: '',
     score: 0,
     answer: [],
     answerConfirmed: false,

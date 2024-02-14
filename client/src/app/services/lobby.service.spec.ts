@@ -18,7 +18,16 @@ describe('LobbyService', () => {
     const lobbyData: LobbyData = { id: 1, players: [], quiz: quizData, started: true };
     const newData: LobbyData = {
         id: 1,
-        players: [{ id: 1, name: 'Player 1' }],
+        players: [
+            {
+                id: 1,
+                name: 'Player 1',
+                score: 0,
+                answer: [],
+                answerConfirmed: false,
+                isCorrect: false,
+            },
+        ],
         started: false,
     };
 

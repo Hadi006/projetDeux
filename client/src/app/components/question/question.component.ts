@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy } from '@angular/core';
-import { Player } from '@app/interfaces/player';
+import { Player } from '@common/player';
 import { GameStateService } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
