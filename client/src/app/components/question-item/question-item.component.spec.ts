@@ -15,7 +15,7 @@ describe('QuestionItemComponent', () => {
     const TEST_QUESTION: Question = {
         id: '1',
         text: 'What is the capital of France ?',
-        type: 'single',
+        type: 'QCM',
         points: 5,
         lastModification: new Date(),
         choices: TEST_ANSWERS,

@@ -17,7 +17,7 @@ describe('QuizValidator', () => {
         {
             id: '1',
             text: 'This is a test question',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 10,
             choices: MOCK_ANSWERS,
         },

@@ -18,7 +18,7 @@ describe('QuestionBankComponent', () => {
         {
             id: '0',
             text: 'text0',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text01', isCorrect: true },
@@ -29,7 +29,7 @@ describe('QuestionBankComponent', () => {
         {
             id: '1',
             text: 'text1',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text11', isCorrect: true },
@@ -40,7 +40,7 @@ describe('QuestionBankComponent', () => {
         {
             id: '2',
             text: 'text2',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text21', isCorrect: true },
@@ -116,7 +116,7 @@ describe('QuestionBankComponent', () => {
         const NO_MODIFICATION_DATE: Question = {
             id: '3',
             text: 'text3',
-            type: 'multiple-choices',
+            type: 'QCM',
             points: 1,
             choices: [
                 { text: 'text31', isCorrect: true },
@@ -175,7 +175,10 @@ describe('QuestionBankComponent', () => {
         questionBankServiceSpy.getQuestion.and.returnValue(questions[0]);
         matDialogRefSpy.afterClosed.and.returnValue(of(undefined));
         component.openQuestionForm(0);
-        expect(matDialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent);
+        expect(matDialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
+            width: '80%',
+            height: '80%',
+        });
     });
 
     it('should call questionBank.updateQuestion when openQuestionForm is called with an existing question', () => {

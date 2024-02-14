@@ -2,6 +2,7 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question } from '@common/quiz';
@@ -14,10 +15,10 @@ describe('QuestionFormComponent', () => {
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<QuestionFormComponent>>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
 
-    const TEST_QUESTION = {
+    const TEST_QUESTION: Question = {
         id: '1',
         text: 'Test Question 1',
-        type: 'multiple-choice',
+        type: 'QCM',
         points: 10,
         choices: [
             { text: 'Choice 1', isCorrect: true },
@@ -36,7 +37,7 @@ describe('QuestionFormComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionFormComponent],
-            imports: [FormsModule],
+            imports: [FormsModule, MatIconModule],
             providers: [
                 { provide: AdminQuizzesService, useValue: adminQuizzesServiceSpy },
                 { provide: MatDialogRef, useValue: dialogRefSpy },

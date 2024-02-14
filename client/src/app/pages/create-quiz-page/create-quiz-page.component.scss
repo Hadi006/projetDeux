@@ -1,0 +1,188 @@
+/* Base styles to ensure consistency across browsers */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+
+/* Base styles */
+form {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.left-content {
+    flex: 1; /* Takes up the remaining space */
+    padding: 20px; /* Adds padding inside the left content for spacing */
+    margin-left: 40px; /* Adds space to the left side of the left content */
+    background-color: #ffffff; /* Sets a white background for contrast */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-top: 20px; /* Adds top margin for spacing from the top of the page */
+}
+
+.right-content {
+    flex-basis: 40%; /* Adjust the width as needed, now it's 40% of the parent */
+    max-width: 40%; /* You can also set a max-width if you want */
+    background-color: #f8f9fa; /* A light background color for the right side div */
+    padding: 20px; /* Space inside the right content */
+    margin-left: 20px; /* Space between the left and right content */
+    border-radius: 8px; /* Optional: rounded corners for the right content */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: shadow for depth */
+}
+
+/* Rest of the styles... */
+
+/* Continue with the rest of your styles */
+
+
+/* Styling for form sections */
+.quiz-settings {
+    background-color: #f9f9f9; /* Light grey background for each setting section */
+    padding: 15px;
+    border-radius: 8px; /* Slightly rounded corners within the sections */
+    margin-bottom: 20px; /* Adds bottom margin for spacing between sections */
+}
+#question-list {
+    margin-bottom: 20px;
+}
+
+/* Styling for input fields and textareas */
+.title-box,
+.description-box,
+.time-box {
+    margin-bottom: 15px; /* Spacing between each input/textarea */
+}
+
+/* Enhancing input fields and textareas */
+input[type='text'],
+input[type='number'],
+textarea {
+    width: calc(100% - 20px); /* Full width minus padding */
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc; /* Subtle border color */
+    border-radius: 4px;
+    background-color: #fff; /* White background for the input fields */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow for depth */
+}
+
+
+textarea {
+    height: 120px; /* Larger height for more text */
+}
+
+/* Label styling */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333; /* Darker text for better readability */
+}
+
+/* Button styling */
+/* Button styling */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 5px; /* Add space around buttons */
+    transition:
+        background-color 0.2s,
+        box-shadow 0.2s;
+}
+
+/* Adjust the right margin for the submit button specifically */
+.submit-button {
+    background-color: #337ab7;
+    color: white;
+    margin-right: 20px; /* Increase right margin to space it out from the next button */
+}
+
+/* Adjust the left margin for the cancel button specifically */
+.cancel-button {
+    background-color: #d9534f;
+    color: white;
+    margin-left: 20px; /* Increase left margin to space it out from the previous button */
+}
+
+/* Button styling inside the left content */
+.create-button {
+    background-color: #5cb85c; /* Attractive green color */
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase; /* Capitalizes button text */
+    letter-spacing: 0.05em; /* More spacing between letters */
+    margin-bottom: 20px; /* Adds space below the create button */
+}
+
+
+/* If the buttons are in a flex container, add this */
+.button-container {
+    display: flex;
+    justify-content: center; /* Center buttons */
+    gap: 20px; /* Spacing between buttons */
+}
+
+.create-button:hover {
+    background-color: #4cae4c;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Darker shadow on hover for a pop effect */
+}
+
+/* Submit button specific styling */
+.submit-button {
+    background-color: #337ab7;
+    color: white;
+}
+
+.submit-button:hover {
+    background-color: #286090;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Cancel button specific styling */
+.cancel-button {
+    background-color: #d9534f;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #c9302c;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Question list styling */
+#question-list {
+    padding: 15px;
+    background-color: #e7e7e7;
+    border-radius: 4px;
+}
+
+.question-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Angular Material Icon styling */
+mat-icon {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* Additional utility classes for margins */
+.mt-20 {
+    margin-top: 20px;
+}

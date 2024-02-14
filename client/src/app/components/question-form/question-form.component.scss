@@ -1,85 +1,100 @@
+/* Base styling for the form container */
 .form-container {
-    background-color: #fff;
-    max-width: 600px;
-    margin: 0 auto;
+    background-color: #f9f9f9;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
 }
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
+
+/* Styling for form groups */
 .form-group {
-    margin-bottom: 10px;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-.form-group input[type='checkbox'] {
-    margin-left: auto; /* Pushes the checkbox to the end of the line */
-}
-
-.form-group input[type='text'],
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* added for box-sizing */
-}
-.form-group textarea {
-    height: 100px;
-}
-button {
-    background-color: #5cb85c;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #4cae4c;
-}
-/* Styling for the drag-and-drop container */
-.cdk-drop-list {
-    padding: 10px;
-    border: 2px dashed #aaa; /* Dashed border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #f8f9fa; /* Light background */
-    min-height: 100px; /* Minimum height */
-    list-style: none; /* Remove list styling */
     display: flex;
-    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Aligns the label, input, checkbox, and button */
     gap: 10px; /* Spacing between items */
 }
 
-/* Styling for individual draggable items */
-.cdk-drag {
+/* Label styling for better readability */
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Input, select, and textarea styling */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
     padding: 10px;
-    border: 1px solid #ccc; /* Solid border for items */
-    border-radius: 3px; /* Rounded corners for items */
-    background-color: white; /* White background for items */
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    cursor: move; /* Cursor indicates item can be moved */
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding does not affect overall width */
 }
 
-/* Styling for when dragging an item */
-.cdk-drag-preview {
-    box-sizing: border-box;
-    border-radius: 3px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+/* Style adjustments for checkboxes */
+input[type="checkbox"] {
+    margin-top: 0.5em;
 }
 
-/* Styling for the placeholder when moving items */
-.cdk-drag-placeholder {
-    opacity: 0; /* Make placeholder invisible */
+/* Button styling for a consistent look */
+button {
+    background-color: #007bff; /* Blue */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+#delete-button{
+    background-color: red; /* Green */
+}
+#add-button{
+    background-color: blue; /* Green */
 }
 
-/* Styling when dragging over a container */
-.cdk-drop-list-dragging .cdk-drag {
-    transition: transform 250ms ease-out;
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
 }
+
+/* Specific styles for 'Add Choice' and 'Remove' buttons */
+[type="button"] {
+    background-color: #28a745; /* Green */
+    margin-top: 10px; /* Additional spacing */
+}
+
+[type="button"]:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Styling for the submit button */
+[type="submit"] {
+    background-color:green; /* Yellow */
+    color: #212529; /* Black text for contrast */
+}
+
+[type="submit"]:hover {
+    background-color: green; /* Darker yellow on hover */
+}
+// .remove-button {
+//     background-color: #ff4d4d; /* Red background */
+//     color: white; /* White text */
+//     border: none;
+//     border-radius: 50%; /* Circular button */
+//     cursor: pointer;
+//     width: 30px;
+//     height: 30px;
+//     display: inline-flex;
+//     align-items: center;
+//     justify-content: center;
+//     transition: background-color 0.2s;
+// }
+// .remove-button:hover {
+//     background-color: #cc0000; /* Darker shade of red on hover */
+// }

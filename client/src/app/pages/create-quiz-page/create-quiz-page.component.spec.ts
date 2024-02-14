@@ -19,7 +19,7 @@ describe('CreateQuizPageComponent', () => {
         {
             id: '1',
             text: 'Test Question 1',
-            type: 'multiple-choice',
+            type: 'QCM',
             points: 10,
             choices: [
                 { text: 'Choice 1', isCorrect: true },
@@ -31,7 +31,7 @@ describe('CreateQuizPageComponent', () => {
         {
             id: '2',
             text: 'Test Question 2',
-            type: 'multiple-choice',
+            type: 'QCM',
             points: 10,
             choices: [
                 { text: 'Choice 1', isCorrect: true },
@@ -103,8 +103,8 @@ describe('CreateQuizPageComponent', () => {
         dialogRefSpy.afterClosed.and.returnValue(of({ ...TEST_QUESTIONS[0] }));
         component.openQuestionForm(0);
         expect(dialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
-            width: '50%',
-            height: '50%',
+            width: '80%',
+            height: '80%',
         });
     });
 
@@ -118,8 +118,8 @@ describe('CreateQuizPageComponent', () => {
         dialogRefSpy.afterClosed.and.returnValue(of([]));
         component.openQuestionForm();
         expect(dialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
-            width: '50%',
-            height: '50%',
+            width: '80%',
+            height: '80%',
         });
     });
 
@@ -183,7 +183,7 @@ describe('CreateQuizPageComponent', () => {
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
             data: { message: 'error' },
             width: '300px',
-            position: { top: '50%', left: '50%' },
+            height: '300px',
         });
         expect(component.close).toHaveBeenCalledTimes(1);
     });
@@ -198,7 +198,7 @@ describe('CreateQuizPageComponent', () => {
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
             data: { message: 'error' },
             width: '300px',
-            position: { top: '50%', left: '50%' },
+            height: '300px',
         });
         expect(component.close).toHaveBeenCalledTimes(1);
     });

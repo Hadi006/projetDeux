@@ -7,7 +7,6 @@ import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -17,7 +16,6 @@ const routes: Routes = [
     { path: 'home/admin/quizzes', component: AdminPageComponent },
     { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent },
     { path: 'game', component: GameChoicePageComponent },
-    { path: 'material', component: MaterialPageComponent },
     { path: 'lobby', component: LobbyOrganizerPageComponent },
     { path: 'play', component: GameplayPlayerPageComponent },
     { path: '**', redirectTo: '/home' },

@@ -15,26 +15,7 @@ export enum MouseButton {
 /* Guards */
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
-export const MATERIAL_PREBUILT_THEMES = [
-    {
-        value: 'indigo-pink-theme',
-        label: 'Indigo & Pink',
-    },
-    {
-        value: 'deeppurple-amber-theme',
-        label: 'Deep Purple & Amber',
-    },
-    {
-        value: 'pink-bluegrey-theme',
-        label: 'Pink & Blue-grey',
-    },
-    {
-        value: 'purple-green-theme',
-        label: 'Purple & Green',
-    },
-];
 
-export const MATERIAL_DEFAULT_PREBUILT_THEME = MATERIAL_PREBUILT_THEMES[0];
 /* Services */
 export const INVALID_INDEX = -1;
 export const MAX_MESSAGE_LENGTH = 200;

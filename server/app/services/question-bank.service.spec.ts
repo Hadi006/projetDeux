@@ -8,7 +8,7 @@ describe('QuestionBankService', () => {
     const MOCK_QUESTION: Question = {
         id: '1',
         text: 'Question 1',
-        type: 'multiple-choices',
+        type: 'QCM',
         points: 10,
         choices: [
             { text: 'Answer 1', isCorrect: true },
@@ -91,7 +91,7 @@ describe('QuestionBankService', () => {
     });
 
     it('should validate an answer for a non multiple-choices question', async () => {
-        const result = await questionBankService.validateAnswer({ ...MOCK_QUESTION, type: 'open' }, [true, false]);
+        const result = await questionBankService.validateAnswer({ ...MOCK_QUESTION, type: 'QRL' }, [true, false]);
         expect(result).to.equal(true);
     });
 });

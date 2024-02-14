@@ -38,14 +38,14 @@ describe('QuestionHandlerService', () => {
                 points: 10,
                 text: '1+1?',
                 choices: answers,
-                type: 'multiple-choices',
+                type: 'QCM',
             },
             {
                 id: '1',
                 points: 10,
                 text: 'What is the capital of France?',
                 choices: [],
-                type: 'text',
+                type: 'QRL',
             },
         ];
 
