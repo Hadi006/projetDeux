@@ -8,29 +8,26 @@ export class QuizBankService {
     constructor(private database: DatabaseService) {}
 
     async getQuizzes(): Promise<Quiz[]> {
-        const RESULT = await this.database.get('quizzes');
-        return RESULT as Quiz[];
+        return await this.database.get<Quiz>('quizzes');
     }
 
     async getVisibleQuizzes(): Promise<Quiz[]> {
-        const RESULT = await this.database.get('quizzes', { visible: true });
-        return RESULT as Quiz[];
+        return await this.database.get<Quiz>('quizzes', { visible: true });
     }
 
     async exportQuiz(quizId: string): Promise<Quiz | undefined> {
-        const RESULT = (await this.database.get('quizzes', { id: quizId }, { visible: 0 })) as Quiz[];
-        let quiz = RESULT[0];
+        const result = (await this.database.get('quizzes', { id: quizId }, { visible: 0 })) as Quiz[];
+        let quiz = result[0];
         quiz = { ...quiz, questions: [] };
-        RESULT[0]?.questions.forEach((question) => {
+        result[0]?.questions.forEach((question) => {
             delete question.id;
             quiz.questions.push(question);
         });
-        return RESULT[0] as Quiz;
+        return result[0] as Quiz;
     }
 
     async addQuiz(quiz: Quiz) {
-        const RESULT = await this.database.get('quizzes', { id: quiz.id });
-        if (RESULT.length > 0) {
+        if ((await this.database.get('quizzes', { id: quiz.id })).length > 0) {
             await this.database.update('quizzes', { id: quiz.id }, [{ $set: quiz }]);
             return;
         }
@@ -38,30 +35,22 @@ export class QuizBankService {
     }
 
     async updateQuiz(quiz: Quiz) {
-        const QUERY = { id: quiz.id };
-        const UPDATE = [{ $set: quiz }];
-        const UPDATED = await this.database.update('quizzes', QUERY, UPDATE);
-        if (!UPDATED) {
+        if (!(await this.database.update('quizzes', { id: quiz.id }, [{ $set: quiz }]))) {
             await this.database.add('quizzes', quiz);
         }
     }
 
     async verifyQuiz(quiz: unknown): Promise<{ quiz: Quiz; errorLog: string }> {
-        const QUIZ = new QuizValidator(quiz, async (query: object) => this.database.get<Quiz>('quizzes', query));
-        const RESULT = await QUIZ.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
-        return { quiz: RESULT.quiz, errorLog: RESULT.compilationError };
+        const quizValidator = new QuizValidator(quiz, async (query: object) => this.database.get<Quiz>('quizzes', query));
+        const result = await quizValidator.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
+        return { quiz: result.quiz, errorLog: result.compilationError };
     }
 
     async changeQuizVisibility(quizId: string): Promise<boolean> {
-        const QUERY = { id: quizId };
-        const UPDATE = [{ $set: { visible: { $not: '$visible' } } }];
-        const UPDATED = await this.database.update('quizzes', QUERY, UPDATE);
-
-        return UPDATED;
+        return await this.database.update('quizzes', { id: quizId }, [{ $set: { visible: { $not: '$visible' } } }]);
     }
 
     async deleteQuiz(quizId: string) {
-        const QUERY = { id: quizId };
-        await this.database.delete('quizzes', QUERY);
+        await this.database.delete('quizzes', { id: quizId });
     }
 }

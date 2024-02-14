@@ -69,6 +69,16 @@ export const MIN_DURATION = 10;
 
 export const MAX_DURATION = 60;
 
+export const INDENTATION = 4;
+
+export const TOKEN_EXPIRATION = 3_600_000;
+
+export const DB_URL = 'mongodb+srv://baiwuli:baiwuli@cluster0.wl2p6f7.mongodb.net/?retryWrites=true&w=majority';
+
+export const POINT_INTERVAL = 10;
+
+export const MIN_CHOICES = 2;
+
 export const BLANK_QUIZ: Quiz = {
     id: '',
     title: '',

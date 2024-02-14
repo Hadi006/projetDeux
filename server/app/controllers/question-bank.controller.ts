@@ -16,61 +16,57 @@ export class QuestionBankController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response) => {
-            const QUESTIONS: Question[] = await this.questionBankService.getQuestions();
-            res.status(QUESTIONS.length === 0 ? httpStatus.NOT_FOUND : httpStatus.OK).json(QUESTIONS);
+            const questions: Question[] = await this.questionBankService.getQuestions();
+            res.status(questions.length === 0 ? httpStatus.NOT_FOUND : httpStatus.OK).json(questions);
         });
 
         this.router.post('/', async (req: Request, res: Response) => {
-            const QUESTION: unknown = req.body.question;
-            const RESULT: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(QUESTION);
-            if (!RESULT.compilationError) {
-                const ADDED = await this.questionBankService.addQuestion(RESULT.question);
-                if (!ADDED) {
-                    RESULT.compilationError = 'Question : text must be unique !';
-                    res.status(httpStatus.BAD_REQUEST).json(RESULT);
+            const result: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(req.body.question);
+            if (!result.compilationError) {
+                const added = await this.questionBankService.addQuestion(result.question);
+                if (!added) {
+                    result.compilationError = 'Question : text must be unique !';
+                    res.status(httpStatus.BAD_REQUEST).json(result);
                     return;
                 }
-                RESULT.question.lastModification = new Date();
+                result.question.lastModification = new Date();
             }
 
-            res.status(RESULT.compilationError ? httpStatus.BAD_REQUEST : httpStatus.CREATED).json(RESULT);
+            res.status(result.compilationError ? httpStatus.BAD_REQUEST : httpStatus.CREATED).json(result);
         });
 
         this.router.post('/validate', async (req: Request, res: Response) => {
-            const QUESTION: unknown = req.body.question;
-            const RESULT: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(QUESTION);
+            const result: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(req.body.question);
 
-            res.status(RESULT.compilationError ? httpStatus.BAD_REQUEST : httpStatus.OK).json(RESULT);
+            res.status(result.compilationError ? httpStatus.BAD_REQUEST : httpStatus.OK).json(result);
         });
 
         this.router.patch('/:questionId', async (req: Request, res: Response) => {
-            const QUESTION: unknown = req.body.question;
-            const RESULT: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(QUESTION);
-            if (!RESULT.compilationError) {
-                RESULT.question.lastModification = new Date();
-                const result = await this.questionBankService.updateQuestion(RESULT.question, req.params.questionId);
-                res.status(result ? httpStatus.OK : httpStatus.NOT_FOUND).json(RESULT);
+            const result: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(req.body.question);
+            if (!result.compilationError) {
+                result.question.lastModification = new Date();
+                const updated = await this.questionBankService.updateQuestion(result.question, req.params.questionId);
+                res.status(updated ? httpStatus.OK : httpStatus.NOT_FOUND).json(result);
                 return;
             }
 
-            res.status(httpStatus.BAD_REQUEST).json(RESULT);
+            res.status(httpStatus.BAD_REQUEST).json(result);
         });
 
         this.router.post('/validate-answer', async (req: Request, res: Response) => {
-            const QUESTION = await this.questionBankService.getQuestion(req.body.text);
-            if (!QUESTION) {
+            const question = await this.questionBankService.getQuestion(req.body.text);
+            if (!question) {
                 res.status(httpStatus.NOT_FOUND).send(false);
                 return;
             }
 
-            const RESULT = await this.questionBankService.validateAnswer(QUESTION, req.body.answer);
-            res.status(httpStatus.OK).send(RESULT);
+            const result = await this.questionBankService.validateAnswer(question, req.body.answer);
+            res.status(httpStatus.OK).send(result);
         });
 
         this.router.delete('/:questionId', async (req: Request, res: Response) => {
-            const QUESTION_ID: string = req.params.questionId;
-            const DELETED = await this.questionBankService.deleteQuestion(QUESTION_ID);
-            res.status(DELETED ? httpStatus.OK : httpStatus.NOT_FOUND).json({});
+            const deleted = await this.questionBankService.deleteQuestion(req.params.questionId);
+            res.status(deleted ? httpStatus.OK : httpStatus.NOT_FOUND).json({});
         });
     }
 }
