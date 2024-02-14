@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { INVALID_INDEX } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Observable } from 'rxjs';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
+import { PromptComponent } from '@app/components/prompt/prompt.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -38,12 +39,12 @@ export class AdminPageComponent implements OnInit {
             }
 
             if (response.errorLog.includes('titre déjà utilisé')) {
-                const newTitle = prompt('Please enter a new title for the quiz');
-                if (!newTitle) {
-                    return;
-                }
-                this.adminService.submitQuiz(response.quiz, newTitle).subscribe();
-                return;
+                this.promptForNewTitle().afterClosed().subscribe((newTitle: string) => {
+                    if (!newTitle) {
+                        return;
+                    }
+                    this.adminService.submitQuiz(response.quiz, newTitle).subscribe();
+                });
             }
 
             this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
@@ -72,5 +73,9 @@ export class AdminPageComponent implements OnInit {
             default:
                 break;
         }
+    }
+
+    private promptForNewTitle(): MatDialogRef<PromptComponent> {
+        return this.dialog.open(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } });
     }
 }

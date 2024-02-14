@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
@@ -9,6 +9,7 @@ import { QuestionBankComponent } from '@app/components/question-bank/question-ba
 import { of } from 'rxjs';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
 import { AdminPageComponent } from './admin-page.component';
+import { PromptComponent } from '@app/components/prompt/prompt.component';
 
 describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
@@ -16,6 +17,7 @@ describe('AdminPageComponent', () => {
     let adminService: jasmine.SpyObj<AdminQuizzesService>;
     let router: jasmine.SpyObj<Router>;
     let dialog: jasmine.SpyObj<MatDialog>;
+    let dialogRefSpy: jasmine.SpyObj<MatDialogRef<PromptComponent>>;
 
     beforeEach(async () => {
         adminService = jasmine.createSpyObj('AdminService', [
@@ -29,6 +31,8 @@ describe('AdminPageComponent', () => {
         ]);
         router = jasmine.createSpyObj('Router', ['navigate']);
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
+        dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+        dialog.open.and.returnValue(dialogRefSpy);
 
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent, QuestionBankComponent],
@@ -89,11 +93,12 @@ describe('AdminPageComponent', () => {
         const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
         const response = { quiz: undefined, errorLog: 'Quiz : titre déjà utilisé !\n' };
         adminService.uploadQuiz.and.returnValue(of(response));
-        spyOn(window, 'prompt').and.returnValue('New title');
+        dialogRefSpy.afterClosed.and.returnValue(of('New title'));
         adminService.submitQuiz.and.returnValue(of());
 
         component.importQuiz(event as unknown as Event);
 
+        expect(dialog.open).toHaveBeenCalledWith(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } });
         expect(adminService.uploadQuiz).toHaveBeenCalledWith(quizFile);
         expect(adminService.submitQuiz).toHaveBeenCalledWith(response.quiz, 'New title');
     });
@@ -103,11 +108,12 @@ describe('AdminPageComponent', () => {
         const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
         const response = { quiz: undefined, errorLog: 'Quiz : titre déjà utilisé !\n' };
         adminService.uploadQuiz.and.returnValue(of(response));
-        spyOn(window, 'prompt').and.returnValue(null);
+        dialogRefSpy.afterClosed.and.returnValue(of(''));
         adminService.submitQuiz.and.returnValue(of());
 
         component.importQuiz(event as unknown as Event);
 
+        expect(dialog.open).toHaveBeenCalledWith(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } });
         expect(adminService.uploadQuiz).toHaveBeenCalledWith(quizFile);
         expect(adminService.submitQuiz).not.toHaveBeenCalled();
     });
