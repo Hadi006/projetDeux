@@ -55,7 +55,7 @@ export class QuizValidator {
 
             const QUIZ = this.quiz as object;
             if (!('title' in QUIZ) || typeof QUIZ.title !== 'string' || QUIZ.title === '') {
-                this.compilationError += 'Quiz : title is missing !\n';
+                this.compilationError += 'Quiz : titre déjà utilisé !\n';
                 return;
             }
 

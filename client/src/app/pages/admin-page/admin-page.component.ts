@@ -37,7 +37,7 @@ export class AdminPageComponent implements OnInit {
                 return;
             }
 
-            if (response.errorLog.includes('title must be unique')) {
+            if (response.errorLog.includes('titre déjà utilisé')) {
                 const newTitle = prompt('Please enter a new title for the quiz');
                 if (!newTitle) {
                     return;
