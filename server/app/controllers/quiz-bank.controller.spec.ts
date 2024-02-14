@@ -128,16 +128,16 @@ describe('QuizBankController', () => {
 
     it('POST / should add a valid quiz to the quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
-        quizBankServiceStub.verifyQuiz.resolves({ quiz: MOCK_QUIZZES[0], errorLog: '' });
+        quizBankServiceStub.verifyQuiz.resolves({ quiz: { ...MOCK_QUIZZES[0], title: 'New title' }, errorLog: '' });
         quizBankServiceStub.addQuiz.resolves();
 
         return supertest(expressApp)
             .post('/api/quizzes')
-            .send({ quiz: expectedQuiz })
+            .send({ quiz: expectedQuiz, newTitle: 'New title' })
             .expect(httpStatus.CREATED)
             .then((response) => {
-                expect(quizBankServiceStub.verifyQuiz.calledOnceWith(expectedQuiz)).to.equal(true);
-                expect(response.body).to.deep.equal({ quiz: expectedQuiz, errorLog: '' });
+                expect(quizBankServiceStub.verifyQuiz.calledOnceWith({ ...expectedQuiz, title: 'New title' })).to.equal(true);
+                expect(response.body).to.deep.equal({ quiz: { ...expectedQuiz, title: 'New title' }, errorLog: '' });
             });
     });
 
