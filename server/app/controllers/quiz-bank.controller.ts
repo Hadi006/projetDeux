@@ -51,7 +51,7 @@ export class QuizBankController {
         this.router.patch('/:quizId', async (req: Request, res: Response) => {
             const result: { quiz: Quiz; errorLog: string } = await this.quizBankService.verifyQuiz(req.body.quiz);
 
-            if (result.errorLog.replace('Quiz : title must be unique !\n', '') === '') {
+            if (result.errorLog.replace('Quiz : titre déjà utilisé !\n', '') === '') {
                 await this.quizBankService.updateQuiz(result.quiz);
                 res.status(httpStatus.OK).json({});
                 return;

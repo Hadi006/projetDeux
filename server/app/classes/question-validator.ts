@@ -1,4 +1,4 @@
-import { LOWER_BOUND, MAX_CHOICES, TEN, UPPER_BOUND } from '@common/constant';
+import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { randomUUID } from 'crypto';
 import { AnswerValidator } from './answer-validator';
@@ -46,13 +46,12 @@ export class QuestionValidator {
                 return;
             }
 
-            const QUESTION = this.question as Question;
-            if (!('text' in QUESTION) || typeof QUESTION.text !== 'string' || QUESTION.text === '') {
-                this.compilationError += 'Question : text is missing !\n';
+            if (!('text' in this.question) || typeof this.question.text !== 'string' || this.question.text === '') {
+                this.compilationError += 'Question : texte manquant !\n';
                 return;
             }
 
-            this.newQuestion.text = QUESTION.text;
+            this.newQuestion.text = this.question.text;
         });
         return this;
     }
@@ -62,16 +61,16 @@ export class QuestionValidator {
             if (!this.isObject) {
                 return;
             }
-            const QUESTION = this.question as Question;
-            if (!('type' in QUESTION) || typeof QUESTION.type !== 'string') {
-                this.compilationError += 'Question : type is missing !\n';
+
+            if (!('type' in this.question) || typeof this.question.type !== 'string') {
+                this.compilationError += 'Question : type manquant !\n';
                 return;
             }
-            if (QUESTION.type !== 'QCM' && QUESTION.type !== 'QRL') {
-                this.compilationError += 'Question : type must be multiple-choices or open-ended !\n';
+            if (this.question.type !== 'QCM' && this.question.type !== 'QRL') {
+                this.compilationError += 'Question : type doit être QCM ou QRL !\n';
                 return;
             }
-            this.newQuestion.type = QUESTION.type;
+            this.newQuestion.type = this.question.type;
         });
         return this;
     }
@@ -81,18 +80,17 @@ export class QuestionValidator {
             if (!this.isObject) {
                 return;
             }
-            const QUESTION = this.question as Question;
-            if (!('points' in QUESTION) || typeof QUESTION.points !== 'number') {
-                this.compilationError += 'Question : points are missing !\n';
-                return;
-            }
-            const POINTS = QUESTION.points;
 
-            if (POINTS % TEN !== 0 || POINTS < LOWER_BOUND || POINTS > UPPER_BOUND) {
-                this.compilationError += 'Question : points must be a multiple of 10 between 10 and 100 !\n';
+            if (!('points' in this.question) || typeof this.question.points !== 'number') {
+                this.compilationError += 'Question : points manquants !\n';
                 return;
             }
-            this.newQuestion.points = POINTS;
+
+            if (this.question.points % POINT_INTERVAL !== 0 || this.question.points < LOWER_BOUND || this.question.points > UPPER_BOUND) {
+                this.compilationError += 'Question: points doit être un multiple de 10 et entre 10 et 100 !\n';
+                return;
+            }
+            this.newQuestion.points = this.question.points;
         });
         return this;
     }
@@ -102,31 +100,30 @@ export class QuestionValidator {
             if (!this.isObject) {
                 return;
             }
-            const QUESTION = this.question as Question;
-            if (!('choices' in QUESTION) || !Array.isArray(QUESTION.choices)) {
-                this.compilationError += 'Question : choices are missing !\n';
+
+            if (!('choices' in this.question) || !Array.isArray(this.question.choices)) {
+                this.compilationError += 'Question : choix manquants !\n';
                 return;
             }
-            const CHOICES = QUESTION.choices as unknown[];
 
-            if (CHOICES.length < 2 || CHOICES.length > MAX_CHOICES) {
-                this.compilationError += 'Question : must have 2-4 choices !\n';
+            if (this.question.choices.length < MIN_CHOICES || this.question.choices.length > MAX_CHOICES) {
+                this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
                 return;
             }
             let hasCorrectAnswer = false;
             let hasIncorrectAnswer = false;
-            for (const CHOICE of CHOICES) {
-                const RESULT: { answer: Answer; compilationError: string } = new AnswerValidator(CHOICE).checkText().checkType().compile();
+            for (const choice of this.question.choices) {
+                const result: { answer: Answer; compilationError: string } = new AnswerValidator(choice).checkText().checkType().compile();
 
-                this.newQuestion.choices.push(RESULT.answer);
-                this.compilationError += RESULT.compilationError;
-                if (!RESULT.compilationError) {
-                    hasCorrectAnswer = hasCorrectAnswer || RESULT.answer.isCorrect;
-                    hasIncorrectAnswer = hasIncorrectAnswer || !RESULT.answer.isCorrect;
+                this.newQuestion.choices.push(result.answer);
+                this.compilationError += result.compilationError;
+                if (!result.compilationError) {
+                    hasCorrectAnswer = hasCorrectAnswer || result.answer.isCorrect;
+                    hasIncorrectAnswer = hasIncorrectAnswer || !result.answer.isCorrect;
                 }
             }
             if (!hasCorrectAnswer || !hasIncorrectAnswer) {
-                this.compilationError += 'Question : must have at least one correct and one incorrect answer !\n';
+                this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
             }
         });
         return this;
@@ -140,7 +137,7 @@ export class QuestionValidator {
     private checkObject(): QuestionValidator {
         this.tasks.push(() => {
             if (!this.question || typeof this.question !== 'object') {
-                this.compilationError += 'Question : must be an object of type Question !\n';
+                this.compilationError += 'Question : doit être un objet !\n';
                 this.isObject = false;
                 return;
             }
