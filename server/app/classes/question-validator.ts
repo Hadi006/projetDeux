@@ -5,14 +5,14 @@ import { AnswerValidator } from './answer-validator';
 
 export class QuestionValidator {
     private tasks: (() => void)[];
-    private question: unknown;
+    private question: Question;
     private newQuestion: Question;
     private compilationError: string;
     private isObject: boolean;
 
     constructor(question: unknown) {
         this.tasks = [];
-        this.question = question;
+        this.question = question as Question;
         this.isObject = false;
         this.compilationError = '';
         this.newQuestion = {
@@ -30,12 +30,12 @@ export class QuestionValidator {
             if (!this.isObject) {
                 return;
             }
-            const QUESTION = this.question as Question;
-            if (!('id' in QUESTION) || !(typeof QUESTION.id === 'string') || QUESTION.id === '') {
+
+            if (!('id' in this.question) || !(typeof this.question.id === 'string') || this.question.id === '') {
                 this.newQuestion.id = randomUUID();
                 return;
             }
-            this.newQuestion.id = QUESTION.id;
+            this.newQuestion.id = this.question.id;
         });
         return this;
     }

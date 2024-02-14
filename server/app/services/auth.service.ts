@@ -1,4 +1,5 @@
 import { AccessToken } from '@common/access-token';
+import { TOKEN_EXPIRATION } from '@common/constant';
 import { randomUUID } from 'crypto';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
@@ -8,9 +9,9 @@ export class AuthService {
     constructor(private database: DatabaseService) {}
 
     async validatePassword(password: unknown): Promise<boolean> {
-        const RESULT = (await this.database.get<object>('password'))[0];
+        const result = (await this.database.get<object>('password'))[0];
 
-        return Boolean(RESULT && 'password' in RESULT && RESULT.password === password);
+        return Boolean(result && 'password' in result && result.password === password);
     }
 
     async validateToken(token: unknown): Promise<boolean> {
@@ -19,17 +20,15 @@ export class AuthService {
         }
 
         await this.database.delete('tokens', { expirationDate: { $lt: Date.now() } });
-        const RESULT = await this.database.get('tokens', { id: token.id });
 
-        return RESULT && RESULT.length > 0;
+        return (await this.database.get('tokens', { id: token.id })).length > 0;
     }
 
     async generateAccessToken(): Promise<AccessToken> {
-        const ONE_HOUR_MS = 3_600_000;
-        const TOKEN = { id: randomUUID(), expirationDate: Date.now() + ONE_HOUR_MS };
-        this.database.add('tokens', TOKEN);
+        const token = { id: randomUUID(), expirationDate: Date.now() + TOKEN_EXPIRATION };
+        this.database.add('tokens', token);
 
-        return TOKEN;
+        return token;
     }
 
     private isObjectToken(obj: unknown): obj is AccessToken {
