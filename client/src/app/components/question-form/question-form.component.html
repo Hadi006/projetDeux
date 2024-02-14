@@ -19,6 +19,7 @@
     </div>
     <div *ngIf="question.type === 'QCM'">
         <label>Drag and drop pour réordonner les réponses</label>
+        <p>Cocher la bonne reponse</p>
         <div cdkDropList (cdkDropListDropped)="drop($event)">
             <div cdkDrag class="form-group" *ngFor="let answer of question.choices; let i = index; trackBy: trackByFn">
                 <label [for]="'text' + i">Réponse(s) {{ i + 1 }} :</label>
