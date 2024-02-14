@@ -25,7 +25,7 @@ describe('AnswerValidator', () => {
         answerValidator = new AnswerValidator('This is a test answer');
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Answer : must be an object of type Answer !\n');
+        expect(compiledAnswer.compilationError).to.equal('Reponse : doit etre un objet !\n');
     });
 
     it('should check if the answer has a text', () => {
@@ -40,7 +40,7 @@ describe('AnswerValidator', () => {
         answerValidator.checkText();
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Answer : text is missing !\n');
+        expect(compiledAnswer.compilationError).to.equal('Reponse : texte manquant !\n');
     });
 
     it('should check if the answer has a text and fail if it is not an object', () => {
@@ -48,7 +48,7 @@ describe('AnswerValidator', () => {
         answerValidator.checkText();
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Answer : must be an object of type Answer !\n');
+        expect(compiledAnswer.compilationError).to.equal('Reponse : doit etre un objet !\n');
     });
 
     it('should check if the answer has a type', () => {
@@ -63,7 +63,7 @@ describe('AnswerValidator', () => {
         answerValidator.checkText().checkType();
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.answer).to.deep.equal({ text: 'This is a test answer', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Answer : type is missing !\n');
+        expect(compiledAnswer.compilationError).to.equal('Reponse : type manquant !\n');
     });
 
     it('should check if the answer has a type and fail if it is not an object', () => {
@@ -71,6 +71,6 @@ describe('AnswerValidator', () => {
         answerValidator.checkText().checkType();
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Answer : must be an object of type Answer !\n');
+        expect(compiledAnswer.compilationError).to.equal('Reponse : doit etre un objet !\n');
     });
 });

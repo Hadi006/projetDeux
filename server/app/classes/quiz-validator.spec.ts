@@ -65,7 +65,7 @@ describe('QuizValidator', () => {
     it('should check if the quiz is an object and fail', async () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : must be an object of type Quiz !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : doit être un objet !\n');
     });
 
     it('should check id', async () => {
@@ -94,7 +94,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({}, getDataStub);
         quizValidator.checkTitle();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : title is missing !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : titre manquant !\n');
         expect(compiledQuiz.quiz.title).to.equal(EMPTY_QUIZ.title);
     });
 
@@ -102,7 +102,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkTitle();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : must be an object of type Quiz !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.quiz.title).to.equal(EMPTY_QUIZ.title);
     });
 
@@ -110,7 +110,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator(MOCK_QUIZ, async (): Promise<Quiz[]> => [MOCK_QUIZ]);
         quizValidator.checkTitle();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : title must be unique !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : titre déjà utilisé !\n');
         expect(compiledQuiz.quiz.title).to.equal(EMPTY_QUIZ.title);
     });
 
@@ -125,7 +125,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({}, getDataStub);
         quizValidator.checkDescription();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : description is missing !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : description manquante !\n');
         expect(compiledQuiz.quiz.description).to.equal(EMPTY_QUIZ.description);
     });
 
@@ -133,7 +133,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkDescription();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : must be an object of type Quiz !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.quiz.description).to.equal(EMPTY_QUIZ.description);
     });
 
@@ -148,7 +148,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({}, getDataStub);
         quizValidator.checkDuration();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : duration is missing !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : durée manquante !\n');
         expect(compiledQuiz.quiz.duration).to.equal(EMPTY_QUIZ.duration);
     });
 
@@ -156,7 +156,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkDuration();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : must be an object of type Quiz !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.quiz.duration).to.equal(EMPTY_QUIZ.duration);
     });
 
@@ -164,7 +164,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({ ...MOCK_QUIZ, duration: 5 }, getDataStub);
         quizValidator.checkDuration();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : duration must be between 10 and 60 !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : durée doit être entre 10 et 60 minutes !\n');
         expect(compiledQuiz.quiz.duration).to.equal(0);
     });
 
@@ -172,7 +172,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({ ...MOCK_QUIZ, duration: 65 }, getDataStub);
         quizValidator.checkDuration();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : duration must be between 10 and 60 !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : durée doit être entre 10 et 60 minutes !\n');
         expect(compiledQuiz.quiz.duration).to.equal(0);
     });
 
@@ -187,7 +187,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({}, getDataStub);
         quizValidator.checkQuestions();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : questions are missing !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : questions manquantes !\n');
         expect(compiledQuiz.quiz.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
 
@@ -195,7 +195,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkQuestions();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : must be an object of type Quiz !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.quiz.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
 
@@ -203,7 +203,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({ ...MOCK_QUIZ, questions: {} }, getDataStub);
         quizValidator.checkQuestions();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : questions are missing !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : questions manquantes !\n');
         expect(compiledQuiz.quiz.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
 
@@ -211,7 +211,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({ ...MOCK_QUIZ, questions: [] }, getDataStub);
         quizValidator.checkQuestions();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Quiz : at least one question is required !\n');
+        expect(compiledQuiz.compilationError).to.equal('Quiz : doit avoir au moins une question !\n');
         expect(compiledQuiz.quiz.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
 
@@ -219,7 +219,7 @@ describe('QuizValidator', () => {
         quizValidator = new QuizValidator({ ...MOCK_QUIZ, questions: ['This is a test question'] }, getDataStub);
         quizValidator.checkQuestions();
         const compiledQuiz = await quizValidator.compile();
-        expect(compiledQuiz.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuiz.compilationError).to.equal('Question : doit être un objet !\n');
         expect(compiledQuiz.quiz.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
 });

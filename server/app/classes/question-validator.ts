@@ -87,7 +87,7 @@ export class QuestionValidator {
             }
 
             if (this.question.points % POINT_INTERVAL !== 0 || this.question.points < LOWER_BOUND || this.question.points > UPPER_BOUND) {
-                this.compilationError += 'Question: points doit être un multiple de 10 et entre 10 et 100 !\n';
+                this.compilationError += 'Question : points doit être un multiple de 10 et entre 10 et 100 !\n';
                 return;
             }
             this.newQuestion.points = this.question.points;

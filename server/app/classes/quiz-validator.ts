@@ -117,7 +117,7 @@ export class QuizValidator {
             }
 
             if ((this.quiz.questions as unknown[]).length < 1) {
-                this.compilationError += 'Quiz : au moins une question est requise !\n';
+                this.compilationError += 'Quiz : doit avoir au moins une question !\n';
                 return;
             }
 
