@@ -82,9 +82,7 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     private getQuestion(index: number): Question {
-        return (
-            this.quiz.questions[index] || BLANK_QUESTION
-        );
+        return this.quiz.questions[index] || BLANK_QUESTION;
     }
 
     private alert(error: string) {

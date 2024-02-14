@@ -25,9 +25,7 @@ export class QuestionBankService {
 
     getQuestion(index: number): Question {
         const QUESTION: Question | undefined = this.questions[index];
-        return (
-            QUESTION || BLANK_QUESTION
-        );
+        return QUESTION || BLANK_QUESTION;
     }
 
     addQuestion(question: Question): Observable<string> {
