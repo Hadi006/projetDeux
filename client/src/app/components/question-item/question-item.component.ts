@@ -15,13 +15,16 @@ export class QuestionItemComponent {
     displayDate: boolean = false;
 
     constructor(private route: ActivatedRoute) {
-        const URL = this.route.snapshot.url.join('/');
-        if (URL === 'home/admin/quizzes') {
+        if (this.joinUrl() === 'home/admin/quizzes') {
             this.displayDate = true;
         }
     }
 
     onAction(actionType: string) {
         this.action.emit({ type: actionType, questionIndex: this.index });
+    }
+
+    private joinUrl(): string {
+        return this.route.snapshot.url.join('/');
     }
 }

@@ -5,13 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
@@ -36,8 +34,6 @@ import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 @NgModule({
     declarations: [
         AppComponent,
-        MainPageComponent,
-        SidebarComponent,
         LobbyOrganizerPageComponent,
         GameCountDownComponent,
         GameChoicePageComponent,

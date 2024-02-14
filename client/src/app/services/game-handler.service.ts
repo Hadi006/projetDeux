@@ -2,44 +2,9 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { GameStateService } from '@app/services/game-state.service';
 import { GameTimersService } from '@app/services/game-timers.service';
 import { GameState, SHOW_ANSWER_DELAY } from '@common/constant';
-import { GameData } from '@common/game-data';
-import { QuestionData } from '@common/question-data';
 import { Quiz } from '@common/quiz';
 import { Subject, Subscription } from 'rxjs';
 import { QuestionHandlerService } from './question-handler.service';
-
-export const QUESTIONS_DATA: QuestionData[] = [
-    {
-        id: 0,
-        points: 1,
-        question: '1+1?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['2'],
-        isMCQ: true,
-    },
-    {
-        id: 1,
-        points: 4,
-        question: 'Open ended question',
-        answers: [],
-        correctAnswers: [],
-        isMCQ: false,
-    },
-    {
-        id: 2,
-        points: 2,
-        question: '2+2?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['4'],
-        isMCQ: true,
-    },
-];
-export const TEST_GAME: GameData = {
-    id: 0,
-    name: 'Math',
-    questions: QUESTIONS_DATA,
-    timePerQuestion: 10,
-};
 
 @Injectable({
     providedIn: 'root',

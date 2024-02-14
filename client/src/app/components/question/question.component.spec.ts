@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Player } from '@app/interfaces/player';
+import { Player } from '@common/player';
 import { GameStateService } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 // import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -11,6 +11,7 @@ import { QuestionComponent } from './question.component';
 
 const TEST_PLAYER: Player = {
     id: 0,
+    name: 'Player 1',
     score: 0,
     answer: [false, true, false, false],
     answerConfirmed: false,

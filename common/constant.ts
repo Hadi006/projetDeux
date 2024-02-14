@@ -1,6 +1,7 @@
 import { AccessToken } from '@common/access-token';
-import { GameData } from '@common/game-data';
-import { QuestionData } from '@common/question-data';
+import { Quiz } from '@common/quiz';
+import { LobbyData } from '@common/lobby-data';
+import { Player } from '@common/player';
 
 /* Components */
 export const COUNTDOWN_TIME = 5;
@@ -17,45 +18,36 @@ export enum MouseButton {
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
 
+const TEST_PLAYER_DATA: Player[] = [
+    {
+        id: 1,
+        name: 'Player 1',
+        score: 0,
+        answer: [],
+        answerConfirmed: false,
+        isCorrect: false,
+    },
+    {
+        id: 2,
+        name: 'Player 2',
+        score: 0,
+        answer: [],
+        answerConfirmed: false,
+        isCorrect: false,
+    },
+];
+
+export const TEST_LOBBY_DATA: LobbyData = {
+    id: 1,
+    players: TEST_PLAYER_DATA,
+    started: false,
+};
+
 /* Services */
 export const INVALID_INDEX = -1;
 export const MAX_MESSAGE_LENGTH = 200;
 export const SHOW_ANSWER_DELAY = 3;
 export const INVALID_TOKEN: AccessToken = { id: '', expirationDate: -1 };
-
-export const QUESTIONS_DATA: QuestionData[] = [
-    {
-        id: 0,
-        points: 1,
-        question: '1+1?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['2'],
-        isMCQ: true,
-    },
-    {
-        id: 1,
-        points: 4,
-        question: 'Open ended question',
-        answers: [],
-        correctAnswers: [],
-        isMCQ: false,
-    },
-    {
-        id: 2,
-        points: 2,
-        question: '2+2?',
-        answers: ['1', '2', '3', '4'],
-        correctAnswers: ['4'],
-        isMCQ: true,
-    },
-];
-
-export const TEST_GAME: GameData = {
-    id: 0,
-    name: 'Math',
-    questions: QUESTIONS_DATA,
-    timePerQuestion: 10,
-};
 
 export const enum GameState {
     ShowQuestion = 0,
@@ -86,3 +78,33 @@ export const DB_URL = 'mongodb+srv://baiwuli:baiwuli@cluster0.wl2p6f7.mongodb.ne
 export const POINT_INTERVAL = 10;
 
 export const MIN_CHOICES = 2;
+
+export const BLANK_QUIZ: Quiz = {
+    id: '',
+    title: '',
+    visible: false,
+    description: '',
+    duration: 10,
+    lastModification: new Date(),
+    questions: [],
+};
+
+export const BLANK_QUESTION = {
+    id: '',
+    text: '',
+    type: 'QCM',
+    points: 0,
+    choices: [
+        { text: '', isCorrect: false },
+        { text: '', isCorrect: false },
+    ],
+};
+
+export const NEW_PLAYER: Player = {
+    id: 0,
+    name: '',
+    score: 0,
+    answer: [],
+    answerConfirmed: false,
+    isCorrect: false,
+};

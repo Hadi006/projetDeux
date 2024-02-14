@@ -103,7 +103,7 @@ describe('GameChoicePageComponent', () => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible');
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
             expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
             expect(navigateSpy).not.toHaveBeenCalled();
         });
@@ -138,7 +138,7 @@ describe('GameChoicePageComponent', () => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible');
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
             expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
             expect(navigateSpy).not.toHaveBeenCalled();
         });
