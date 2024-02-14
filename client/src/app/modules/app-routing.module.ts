@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { authGuard } from '@app/guards/auth.guard';
 import { AdminLoginPageComponent } from '@app/pages/admin-login-page/admin-login-page.component';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
@@ -13,8 +14,8 @@ const routes: Routes = [
     { path: 'home', component: HomePageComponent },
     { path: 'home/create-game', component: GameChoicePageComponent },
     { path: 'home/admin/login', component: AdminLoginPageComponent },
-    { path: 'home/admin/quizzes', component: AdminPageComponent },
-    { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent },
+    { path: 'home/admin/quizzes', component: AdminPageComponent, canActivate: [authGuard] },
+    { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent, canActivate: [authGuard] },
     { path: 'game', component: GameChoicePageComponent },
     { path: 'lobby', component: LobbyOrganizerPageComponent },
     { path: 'play', component: GameplayPlayerPageComponent },
