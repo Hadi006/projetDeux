@@ -120,6 +120,7 @@ describe('AdminQuizzesService', () => {
                 }),
             ),
         );
+        spyOn(service, 'submitQuiz').and.returnValue(of({ quiz: quizListTest[0], errorLog: '' }));
         service.uploadQuiz(mockQuizFile).subscribe({
             next: (response) => {
                 expect(response.quiz).toEqual(quizListTest[0]);
@@ -240,6 +241,22 @@ describe('AdminQuizzesService', () => {
         service.submitQuiz(quizToSubmit).subscribe({
             next: (result) => {
                 expect(result.errorLog).toBe('submission failed');
+                expect(result.quiz).toBeUndefined();
+                expect(service['quizzes']).not.toContain(quizToSubmit);
+            },
+        });
+    });
+
+    it('should not update quizzes if title is not unique', () => {
+        const responseBodyMock = {
+            quiz: { title: quizListTest[0].title },
+            errorLog: '',
+        };
+        service['quizzes'].push(quizListTest[0]);
+        communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
+        service.submitQuiz(quizToSubmit).subscribe({
+            next: (result) => {
+                expect(result.errorLog).toBe('');
                 expect(result.quiz).toBeUndefined();
                 expect(service['quizzes']).not.toContain(quizToSubmit);
             },

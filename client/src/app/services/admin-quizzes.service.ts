@@ -83,6 +83,10 @@ export class AdminQuizzesService {
                     return response.body;
                 }
 
+                if (this.verifyDuplicateTitle(response.body.quiz.title)) {
+                    return { quiz: undefined, errorLog: '' };
+                }
+
                 this.quizzes.push(response.body.quiz);
                 this.quizzes$.next(this.quizzes);
 
@@ -142,11 +146,9 @@ export class AdminQuizzesService {
         if (!quiz) return;
 
         this.http.download(`quizzes/${quiz.id}/download`).subscribe((response: Blob) => {
-            // create a link
             const FILE_LINK = document.createElement('a');
             FILE_LINK.href = window.URL.createObjectURL(response);
             FILE_LINK.download = 'quiz.json';
-            // simulate a click
             document.body.appendChild(FILE_LINK);
             FILE_LINK.click();
             document.body.removeChild(FILE_LINK);
@@ -181,5 +183,9 @@ export class AdminQuizzesService {
 
     private findQuizIndex(quizId: string): number {
         return this.quizzes.findIndex((quiz: Quiz) => quiz.id === quizId);
+    }
+
+    private verifyDuplicateTitle(title: string): boolean {
+        return this.quizzes.some((quiz: Quiz) => quiz.title === title);
     }
 }
