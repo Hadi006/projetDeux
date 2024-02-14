@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Player } from '@app/interfaces/player';
 import { Subject, Observable, map, forkJoin } from 'rxjs';
 import { AnswerValidatorService } from './answer-validator.service';
+import { NEW_PLAYER } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
@@ -22,16 +23,10 @@ export class PlayerHandlerService {
     }
 
     createPlayer(): Player {
-        const player: Player = {
-            id: this.internalPlayers.length,
-            score: 0,
-            answer: [],
-            answerConfirmed: false,
-            isCorrect: false,
-        };
-        this.internalPlayers.push(player);
+        const newPlayer = { ...NEW_PLAYER, id: this.internalPlayers.length };
+        this.internalPlayers.push(newPlayer);
 
-        return player;
+        return newPlayer;
     }
 
     handleKeyUp(event: KeyboardEvent, player: Player): void {

@@ -51,3 +51,11 @@ export const BLANK_QUIZ: Quiz = {
     lastModification: new Date(),
     questions: [],
 };
+
+export const NEW_PLAYER = {
+    score: 0,
+    answer: [],
+    answerConfirmed: false,
+    isCorrect: false,
+};
+
