@@ -28,37 +28,37 @@ export class GameChoicePageComponent implements OnInit {
 
     startGame() {
         this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
-            if (!this.chosenQuiz) {
-                this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+            if (!this.handleChosenQuiz(isAvailable)) {
                 return;
             }
 
-            if (!isAvailable) {
-                this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible');
-                this.chosenQuiz = null;
-                return;
-            }
-
-            this.gameHandlerService.loadQuizData(this.chosenQuiz);
             this.router.navigate(['lobby']);
         });
     }
 
     testGame() {
         this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
-            if (!this.chosenQuiz) {
-                this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+            if (!this.handleChosenQuiz(isAvailable)) {
                 return;
             }
 
-            if (!isAvailable) {
-                this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible');
-                this.chosenQuiz = null;
-                return;
-            }
-
-            this.gameHandlerService.loadQuizData(this.chosenQuiz);
             this.router.navigate(['/play']);
         });
+    }
+
+    private handleChosenQuiz(isAvailable: boolean): boolean {
+        if (!this.chosenQuiz) {
+            this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
+            return false;
+        }
+
+        if (!isAvailable) {
+            this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible, veuillez en choisir un autre');
+            this.chosenQuiz = null;
+            return false;
+        }
+
+        this.gameHandlerService.loadQuizData(this.chosenQuiz);
+        return true;
     }
 }

@@ -9,25 +9,22 @@ export class TimeService {
     private nextId: number = 0;
 
     createTimerById(callback?: () => void): number {
-        const timerId = this.nextId++;
         const timer = new Timer(callback);
-        this.timers.set(timerId, timer);
-        return timerId;
+        this.nextId++;
+        this.timers.set(this.nextId, timer);
+        return this.nextId;
     }
 
     startTimerById(timerId: number, startValue: number) {
-        const timer = this.timers.get(timerId);
-        timer?.start(startValue);
+        this.timers.get(timerId)?.start(startValue);
     }
 
     stopTimerById(timerId: number) {
-        const timer = this.timers.get(timerId);
-        timer?.stop();
+        this.timers.get(timerId)?.stop();
     }
 
     getTimeById(timerId: number): number {
-        const timer = this.timers.get(timerId);
-        return timer?.time ?? 0;
+        return this.timers.get(timerId)?.time ?? 0;
     }
 
     setTimeById(timerId: number, time: number) {

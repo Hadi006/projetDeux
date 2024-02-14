@@ -13,8 +13,7 @@ export class ChatService {
     }
 
     sendMessage(newMessage: string) {
-        const isValidMessage = newMessage.trim() !== '' && newMessage.trim().length <= MAX_MESSAGE_LENGTH;
-        if (!isValidMessage) {
+        if (!this.validateMessage(newMessage)) {
             return;
         }
 
@@ -23,5 +22,9 @@ export class ChatService {
             timestamp: new Date(),
         };
         this.messages.push(newChatMessage);
+    }
+
+    private validateMessage(message: string): boolean {
+        return message.trim() !== '' && message.trim().length <= MAX_MESSAGE_LENGTH;
     }
 }
