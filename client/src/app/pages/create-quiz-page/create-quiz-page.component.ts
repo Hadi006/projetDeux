@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { BLANK_QUESTION } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 
 @Component({
@@ -82,14 +83,7 @@ export class CreateQuizPageComponent implements OnInit {
 
     private getQuestion(index: number): Question {
         return (
-            this.quiz.questions[index] || {
-                id: '',
-                text: '',
-                type: 'QCM',
-                points: 0,
-                lastModification: new Date(),
-                choices: [{ text: '', isCorrect: false }],
-            }
+            this.quiz.questions[index] || BLANK_QUESTION
         );
     }
 
