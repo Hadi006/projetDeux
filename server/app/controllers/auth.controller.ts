@@ -15,23 +15,23 @@ export class AuthController {
         this.router = Router();
 
         this.router.post('/password', async (req: Request, res: Response) => {
-            const ADMIN_PASSWORD: unknown = req.body.password;
+            const adminPassword: unknown = req.body.password;
             let accessToken: unknown = req.body.token;
 
-            const AUTHENTIFICATED = await this.authService.validatePassword(ADMIN_PASSWORD);
-            const AUTHORIZED = await this.authService.validateToken(accessToken);
+            const authenticated = await this.authService.validatePassword(adminPassword);
+            const authorized = await this.authService.validateToken(accessToken);
 
-            if (AUTHENTIFICATED && !AUTHORIZED) {
+            if (authenticated && !authorized) {
                 accessToken = await this.authService.generateAccessToken();
             }
 
-            res.status(AUTHENTIFICATED ? httpStatus.OK : httpStatus.FORBIDDEN).json({ token: accessToken });
+            res.status(authenticated ? httpStatus.OK : httpStatus.FORBIDDEN).json({ token: accessToken });
         });
 
         this.router.post('/token', async (req: Request, res: Response) => {
-            const ACCESS_TOKEN: unknown = req.body.token;
-            const AUTHORIZED = await this.authService.validateToken(ACCESS_TOKEN);
-            res.status(AUTHORIZED ? httpStatus.OK : httpStatus.UNAUTHORIZED).json({ authorized: AUTHORIZED });
+            const accessToken: unknown = req.body.token;
+            const authorized = await this.authService.validateToken(accessToken);
+            res.status(authorized ? httpStatus.OK : httpStatus.UNAUTHORIZED).json({ authorized });
         });
     }
 }

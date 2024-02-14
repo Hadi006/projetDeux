@@ -45,7 +45,7 @@ describe('QuestionValidator', () => {
         questionValidator = new QuestionValidator('This is a test question');
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit être un objet !\n');
     });
 
     it('should check if the question has an id', () => {
@@ -68,7 +68,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkId();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit être un objet !\n');
     });
 
     it('should check if the question has a text', () => {
@@ -83,7 +83,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkText();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : text is missing !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : texte manquant !\n');
     });
 
     it('should check if the question has a text and fail if it is not an object', () => {
@@ -91,7 +91,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkText();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit être un objet !\n');
     });
 
     it('should check if the question has a type', () => {
@@ -106,7 +106,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkType();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : type is missing !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : type manquant !\n');
     });
 
     it('should check if the question has a type and fail if it is not an object', () => {
@@ -114,7 +114,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkType();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit être un objet !\n');
     });
 
     it('should check if the question has a type and fail if the type is not valid', () => {
@@ -122,7 +122,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkType();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : type must be multiple-choices or open-ended !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : type doit être QCM ou QRL !\n');
     });
 
     it('should check if the question has points', () => {
@@ -137,7 +137,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkPoints();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : points are missing !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : points manquants !\n');
     });
 
     it('should check if the question has points and fail if it is not an object', () => {
@@ -145,7 +145,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkPoints();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit être un objet !\n');
     });
 
     it('should check if the question has points and fail if the points are not valid', () => {
@@ -153,7 +153,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkPoints();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : points must be a multiple of 10 between 10 and 100 !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : points doit être un multiple de 10 et entre 10 et 100 !\n');
     });
 
     it('should check if the question has choices', () => {
@@ -168,7 +168,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : choices are missing !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : choix manquants !\n');
     });
 
     it('should check if the question has choices and fail if it is not an object', () => {
@@ -176,7 +176,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must be an object of type Question !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit être un objet !\n');
     });
 
     it('should check if the question has choices and fail if it is not an array', () => {
@@ -184,7 +184,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : choices are missing !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : choix manquants !\n');
     });
 
     it('should check if the question has choices and fail if there are not enough choices', () => {
@@ -197,7 +197,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must have 2-4 choices !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit avoir entre 2 et 4 choix !\n');
     });
 
     it('should check if the question has choices and fail if there are too many choices', () => {
@@ -211,7 +211,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.compilationError).to.equal('Question : must have 2-4 choices !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit avoir entre 2 et 4 choix !\n');
     });
 
     it('should check if the question has choices and fail if there are not enough correct choices', () => {
@@ -224,7 +224,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal({ ...EMPTY_QUESTION, choices: [MOCK_ANSWERS[1], MOCK_ANSWERS[1]] });
-        expect(compiledQuestion.compilationError).to.equal('Question : must have at least one correct and one incorrect answer !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
     });
 
     it('should check if the question has choices and fail if there are not enough incorrect choices', () => {
@@ -237,7 +237,7 @@ describe('QuestionValidator', () => {
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
         expect(compiledQuestion.question).to.deep.equal({ ...EMPTY_QUESTION, choices: [MOCK_ANSWERS[0], MOCK_ANSWERS[0]] });
-        expect(compiledQuestion.compilationError).to.equal('Question : must have at least one correct and one incorrect answer !\n');
+        expect(compiledQuestion.compilationError).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
     });
 
     it("should check if the question has choices and fail if they aren't valid", () => {
@@ -254,7 +254,7 @@ describe('QuestionValidator', () => {
             choices: [MOCK_ANSWERS[0], { text: 'This is another test answer', isCorrect: false }],
         });
         expect(compiledQuestion.compilationError).to.equal(
-            'Answer : type is missing !\nQuestion : must have at least one correct and one incorrect answer !\n',
+            'Reponse : type manquant !\nQuestion : doit avoir au moins une bonne et une mauvaise réponse !\n',
         );
     });
 });

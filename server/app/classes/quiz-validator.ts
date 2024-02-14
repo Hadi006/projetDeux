@@ -5,7 +5,7 @@ import { QuestionValidator } from './question-validator';
 
 export class QuizValidator {
     private tasks: (() => Promise<void>)[];
-    private quiz: unknown;
+    private quiz: Quiz;
     private newQuiz: Quiz;
     private compilationError: string;
     private isObject: boolean;
@@ -13,7 +13,7 @@ export class QuizValidator {
 
     constructor(quiz: unknown, getData: (query: object) => Promise<Quiz[]>) {
         this.tasks = [];
-        this.quiz = quiz;
+        this.quiz = quiz as Quiz;
         this.getData = getData;
         this.isObject = false;
         this.compilationError = '';
@@ -34,14 +34,12 @@ export class QuizValidator {
             if (!this.isObject) {
                 return;
             }
-
-            const QUIZ = this.quiz as object;
-            if (!('id' in QUIZ) || typeof QUIZ.id !== 'string' || QUIZ.id === '') {
+            if (!('id' in this.quiz) || typeof this.quiz.id !== 'string' || this.quiz.id === '') {
                 this.newQuiz.id = randomUUID();
                 return;
             }
 
-            this.newQuiz.id = QUIZ.id as string;
+            this.newQuiz.id = this.quiz.id;
         });
 
         return this;
@@ -53,20 +51,18 @@ export class QuizValidator {
                 return;
             }
 
-            const QUIZ = this.quiz as object;
-            if (!('title' in QUIZ) || typeof QUIZ.title !== 'string' || QUIZ.title === '') {
-                this.compilationError += 'Quiz : title is missing !\n';
+            if (!('title' in this.quiz) || typeof this.quiz.title !== 'string' || this.quiz.title === '') {
+                this.compilationError += 'Quiz : titre manquant !\n';
                 return;
             }
 
-            const TITLE = QUIZ.title as string;
-            const SAME_NAMES = await this.getData({ title: TITLE });
-            if (SAME_NAMES.length > 0 && SAME_NAMES[0].id !== this.newQuiz.id) {
+            const sameNameQuizzes = await this.getData({ title: this.quiz.title });
+            if (sameNameQuizzes.length > 0 && sameNameQuizzes[0].id !== this.newQuiz.id) {
                 this.compilationError += 'Quiz : titre déjà utilisé !\n';
                 return;
             }
 
-            this.newQuiz.title = TITLE;
+            this.newQuiz.title = this.quiz.title;
         });
 
         return this;
@@ -78,12 +74,11 @@ export class QuizValidator {
                 return;
             }
 
-            const QUIZ = this.quiz as object;
-            if (!('description' in QUIZ) || typeof QUIZ.description !== 'string') {
-                this.compilationError += 'Quiz : description is missing !\n';
+            if (!('description' in this.quiz) || typeof this.quiz.description !== 'string') {
+                this.compilationError += 'Quiz : description manquante !\n';
                 return;
             }
-            this.newQuiz.description = QUIZ.description as string;
+            this.newQuiz.description = this.quiz.description;
         });
 
         return this;
@@ -95,17 +90,16 @@ export class QuizValidator {
                 return;
             }
 
-            const QUIZ = this.quiz as object;
-            if (!('duration' in QUIZ) || typeof QUIZ.duration !== 'number') {
-                this.compilationError += 'Quiz : duration is missing !\n';
+            if (!('duration' in this.quiz) || typeof this.quiz.duration !== 'number') {
+                this.compilationError += 'Quiz : durée manquante !\n';
                 return;
             }
 
-            if (!(QUIZ.duration >= MIN_DURATION && QUIZ.duration <= MAX_DURATION)) {
-                this.compilationError += 'Quiz : duration must be between 10 and 60 !\n';
+            if (!(this.quiz.duration >= MIN_DURATION && this.quiz.duration <= MAX_DURATION)) {
+                this.compilationError += 'Quiz : durée doit être entre 10 et 60 minutes !\n';
                 return;
             }
-            this.newQuiz.duration = QUIZ.duration;
+            this.newQuiz.duration = this.quiz.duration;
         });
 
         return this;
@@ -117,29 +111,28 @@ export class QuizValidator {
                 return;
             }
 
-            const QUIZ = this.quiz as object;
-            if (!('questions' in QUIZ) || !Array.isArray(QUIZ.questions)) {
-                this.compilationError += 'Quiz : questions are missing !\n';
+            if (!('questions' in this.quiz) || !Array.isArray(this.quiz.questions)) {
+                this.compilationError += 'Quiz : questions manquantes !\n';
                 return;
             }
 
-            if ((QUIZ.questions as unknown[]).length < 1) {
-                this.compilationError += 'Quiz : at least one question is required !\n';
+            if ((this.quiz.questions as unknown[]).length < 1) {
+                this.compilationError += 'Quiz : doit avoir au moins une question !\n';
                 return;
             }
 
-            for (const QUESTION of QUIZ.questions) {
-                const RESULT: { question: Question; compilationError: string } = new QuestionValidator(QUESTION)
+            for (const question of this.quiz.questions) {
+                const result: { question: Question; compilationError: string } = new QuestionValidator(question)
                     .checkId()
                     .checkText()
                     .checkType()
                     .checkPoints()
                     .checkChoices()
                     .compile();
-                if (RESULT.compilationError) {
-                    this.compilationError += RESULT.compilationError;
+                if (result.compilationError) {
+                    this.compilationError += result.compilationError;
                 } else {
-                    this.newQuiz.questions.push(RESULT.question);
+                    this.newQuiz.questions.push(result.question);
                 }
             }
         });
@@ -148,8 +141,8 @@ export class QuizValidator {
     }
 
     async compile(): Promise<{ quiz: Quiz; compilationError: string }> {
-        for (const TASK of this.tasks) {
-            await TASK();
+        for (const task of this.tasks) {
+            await task();
         }
         this.newQuiz.lastModification = new Date();
         this.newQuiz.visible = false;
@@ -160,7 +153,7 @@ export class QuizValidator {
     private checkType(): QuizValidator {
         this.tasks.push(async () => {
             if (!this.quiz || typeof this.quiz !== 'object') {
-                this.compilationError += 'Quiz : must be an object of type Quiz !\n';
+                this.compilationError += 'Quiz : doit être un objet !\n';
                 this.isObject = false;
                 return;
             }
