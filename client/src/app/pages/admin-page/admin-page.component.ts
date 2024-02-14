@@ -37,6 +37,15 @@ export class AdminPageComponent implements OnInit {
                 return;
             }
 
+            if (response.errorLog.includes('title must be unique')) {
+                const newTitle = prompt('Please enter a new title for the quiz');
+                if (!newTitle) {
+                    return;
+                }
+                this.adminService.submitQuiz(response.quiz, newTitle).subscribe();
+                return;
+            }
+
             this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
         });
     }
