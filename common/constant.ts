@@ -1,5 +1,6 @@
 import { AccessToken } from '@common/access-token';
 import { Quiz } from '@common/quiz';
+import { LobbyData } from '@common/lobby-data';
 
 /* Components */
 export const COUNTDOWN_TIME = 5;
@@ -15,6 +16,17 @@ export enum MouseButton {
 /* Guards */
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
+
+const TEST_PLAYER_DATA = [
+    { id: 1, name: 'Player 1' },
+    { id: 2, name: 'Player 2' },
+];
+
+export const TEST_LOBBY_DATA: LobbyData = {
+    id: 1,
+    players: TEST_PLAYER_DATA,
+    started: false,
+};
 
 /* Services */
 export const INVALID_INDEX = -1;
@@ -53,15 +65,15 @@ export const BLANK_QUIZ: Quiz = {
 };
 
 export const BLANK_QUESTION = {
-                id: '',
-                text: '',
-                type: 'QCM',
-                points: 0,
-                choices: [
-                    { text: '', isCorrect: false },
-                    { text: '', isCorrect: false },
-                ],
-}
+    id: '',
+    text: '',
+    type: 'QCM',
+    points: 0,
+    choices: [
+        { text: '', isCorrect: false },
+        { text: '', isCorrect: false },
+    ],
+};
 
 export const NEW_PLAYER = {
     score: 0,
