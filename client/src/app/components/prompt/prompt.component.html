@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Input Required</h2>
+<mat-dialog-content>
+    <p>{{ data.message }}</p>
+    <mat-form-field>
+        <input matInput [(ngModel)]="userInput" />
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onConfirm()">Confirm</button>
+</mat-dialog-actions>
+

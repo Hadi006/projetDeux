@@ -24,6 +24,7 @@ import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-pa
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
+import { PromptComponent } from './components/prompt/prompt.component';
 
 /**
  * Main module that is used in main.ts.
@@ -51,6 +52,7 @@ import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
         QuestionBankComponent,
         QuestionItemComponent,
         QuestionFormComponent,
+        PromptComponent,
     ],
     imports: [
         AppMaterialModule,
