@@ -14,17 +14,17 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
-import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
 import { QuestionFormComponent } from './components/question-form/question-form.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
 import { QuestionComponent } from './components/question/question.component';
-import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
-import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
-import { HomePageComponent } from './pages/home-page/home-page.component';
-import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
-
+import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
+import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { HomePageComponent } from './pages/home-page/home-page.component';
+import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -51,7 +51,8 @@ import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
         QuestionBankComponent,
         QuestionItemComponent,
         QuestionFormComponent,
-    ],
+        WaitingRoomPageComponent,
+    ]
     imports: [
         AppMaterialModule,
         AppRoutingModule,
