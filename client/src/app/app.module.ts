@@ -24,7 +24,9 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
-import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page';
+import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
+import { SelectNamePageComponent } from './pages/select-name-page/select-name-page.component';
+import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -52,7 +54,9 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
         QuestionItemComponent,
         QuestionFormComponent,
         WaitingRoomPageComponent,
-    ]
+        JoinRoomPageComponent,
+        SelectNamePageComponent,
+    ],
     imports: [
         AppMaterialModule,
         AppRoutingModule,

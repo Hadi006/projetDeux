@@ -1,0 +1,15 @@
+<div class="grid-container">
+    <div class="grid-title">
+        <h2 class="title">Join Room</h2>
+    </div>
+    <form (ngSubmit)="submitNip()" #partyForm="ngForm">
+        <div class="item-1">
+            <label for="partyInput">Enter Room NIP:</label>
+            <input type="text" id="partyInput" [(ngModel)]="partyNIP" placeholder="e.g 0000" required />
+        </div>
+
+        <div class="item-2">
+            <button [disabled]="partyForm.invalid" (click)="onOkButtonClick()" (click)="submitNip()">Ok</button>
+        </div>
+    </form>
+</div>
