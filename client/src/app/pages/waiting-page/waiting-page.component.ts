@@ -7,35 +7,64 @@ import { Component } from '@angular/core';
 })
 export class WaitingPageComponent {
     /**
-     * Charge les données du jeu.
+     * Displays an alert message.
+     */
+    alertMessage(title: string, message: string): void {
+        return;
+    }
+    /**
+     * Configures the basic socket features.
+     */
+    configureBaseSocketFeatures(): void {
+        return;
+    }
+
+    /**
+     * Loads game data.
      */
     loadGameData(): void {
         return;
     }
+    /**
+     * Asks for game data.
+     */
     askGameData(): void {
         return;
     }
+    /**
+     * Sets the timer for game start.
+     */
 
     setTimer(): void {
         return;
     }
-
+    /**
+     * Starts the game.
+     */
     startGame(): void {
         return;
     }
-
+    /**
+     * Toggles room accessibility.
+     */
     toggleRoomAccessibility(): void {
         return;
     }
-
+    /**
+     * Selects a player.
+     */
     selectPlayer(selectedPlayer: Player): void {
         return;
     }
-
+    /**
+     * Bans the selected player.
+     */
     banSelectedPlayer(): void {
         return;
     }
-
+    /**
+     * Confirms quitting the room.
+     */
     confirmQuit(): void {
         return;
     }
