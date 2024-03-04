@@ -140,7 +140,7 @@ describe('PlayerHandlerService', () => {
         });
     });
 
-    it('validatePlayerAnswers should validate the answers of all players', () => {
+    it('validatePlayerAnswers should validate the answers of all players when the status is ok', () => {
         const nPlayers = 3;
         for (let i = 0; i < nPlayers; i++) {
             service.createPlayer();
