@@ -1,17 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-import { GameStateService } from '@app/services/game-state.service';
-import { GameTimersService } from '@app/services/game-timers.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GOOD_ANSWER_MULTIPLIER, GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { Subject, of } from 'rxjs';
+import { GameManagementService } from './game-management.service';
 
 describe('QuestionHandlerService', () => {
     let service: QuestionHandlerService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
-    let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
-    let gameStateService: GameStateService;
+    let gameManagementServiceSpy: jasmine.SpyObj<GameManagementService>;
     let mockSubject: Subject<void>;
     let answers: Answer[];
     let QUESTIONS_DATA: Question[];
@@ -62,9 +60,11 @@ describe('QuestionHandlerService', () => {
             configurable: true,
         });
 
-        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', ['timerEndedSubject']);
+        gameManagementServiceSpy = jasmine.createSpyObj<GameManagementService>('GameManagementService', ['timerEndedSubject'], {
+            gameState: GameState.ShowQuestion,
+        });
         mockSubject = new Subject<void>();
-        Object.defineProperty(gameTimersServiceSpy, 'timerEndedSubject', {
+        Object.defineProperty(gameManagementServiceSpy, 'timerEndedSubject', {
             get: () => {
                 return mockSubject;
             },
@@ -77,15 +77,13 @@ describe('QuestionHandlerService', () => {
             providers: [
                 { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
                 {
-                    provide: GameTimersService,
-                    useValue: gameTimersServiceSpy,
+                    provide: GameManagementService,
+                    useValue: gameManagementServiceSpy,
                 },
-                GameStateService,
             ],
         });
         service = TestBed.inject(QuestionHandlerService);
         service.questionsData = [...QUESTIONS_DATA];
-        gameStateService = TestBed.inject(GameStateService);
     });
 
     it('should be created', () => {
@@ -94,18 +92,18 @@ describe('QuestionHandlerService', () => {
 
     it('should update scores when timer ends', () => {
         spyOn(service, 'updateScores');
-        gameStateService.gameState = GameState.ShowQuestion;
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
         playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
-        gameTimersServiceSpy.timerEndedSubject.next();
+        gameManagementServiceSpy.timerEndedSubject.next();
         expect(service.updateScores).toHaveBeenCalled();
     });
 
     it('should update scores when timer ends and there is no current question', () => {
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
         spyOn(service, 'updateScores');
-        gameStateService.gameState = GameState.ShowQuestion;
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
         playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
-        gameTimersServiceSpy.timerEndedSubject.next();
+        gameManagementServiceSpy.timerEndedSubject.next();
         expect(service.updateScores).toHaveBeenCalled();
     });
 
@@ -164,7 +162,7 @@ describe('QuestionHandlerService', () => {
     it('ngOnDestroy should unsubscribe from the timerEndedSubject', () => {
         spyOn(service, 'updateScores');
         service.ngOnDestroy();
-        gameTimersServiceSpy.timerEndedSubject.next();
+        gameManagementServiceSpy.timerEndedSubject.next();
         expect(service.updateScores).not.toHaveBeenCalled();
     });
 });
