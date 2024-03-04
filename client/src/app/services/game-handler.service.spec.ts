@@ -152,7 +152,6 @@ describe('GameHandlerService', () => {
 
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
         gameManagementServiceSpy.gameState = GameState.ShowAnswer;
-        console.log(gameManagementServiceSpy.gameState);
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_QUIZ.questions[0]);
         service.loadQuizData(TEST_QUIZ);
         service.setUpNextState();
