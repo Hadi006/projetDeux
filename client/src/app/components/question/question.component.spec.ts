@@ -51,7 +51,7 @@ describe('QuestionComponent', () => {
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
-    let gameManagementServiceSpy: jasmine.SpyObj<GameManagementService>;
+    let gameManagementServiceSpy: GameManagementService;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
@@ -71,9 +71,8 @@ describe('QuestionComponent', () => {
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp', 'removePlayer']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
 
-        gameManagementServiceSpy = jasmine.createSpyObj<GameManagementService>('GameManagementService', [], {
-            gameState: GameState.ShowQuestion,
-        });
+        gameManagementServiceSpy = {} as GameManagementService;
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
     });
 
     beforeEach(waitForAsync(() => {
