@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { GameStateService } from '@app/services/game-state.service';
-import { GameTimersService } from '@app/services/game-timers.service';
 import { GameState } from '@common/constant';
 import { Subject } from 'rxjs';
+import { GameManagementService } from './game-management.service';
 import { PlayerHandlerService } from './player-handler.service';
 import { TimeService } from './time.service';
 
@@ -11,9 +10,8 @@ describe('GameTimersService', () => {
     const ANSWER_TIMER_ID = 1;
     const TIME = 10;
 
-    let service: GameTimersService;
+    let service: GameManagementService;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
-    let gameStateService: GameStateService;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
     let mockSubject: Subject<void>;
 
@@ -36,11 +34,9 @@ describe('GameTimersService', () => {
             providers: [
                 { provide: TimeService, useValue: timeServiceSpy },
                 { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
-                GameStateService,
             ],
         });
-        service = TestBed.inject(GameTimersService);
-        gameStateService = TestBed.inject(GameStateService);
+        service = TestBed.inject(GameManagementService);
     });
 
     it('should be created', () => {
@@ -58,7 +54,7 @@ describe('GameTimersService', () => {
     });
 
     it('time getter should return the correct value when game state is ShowQuestion', () => {
-        gameStateService.gameState = GameState.ShowQuestion;
+        service.gameState = GameState.ShowQuestion;
         timeServiceSpy.getTimeById.and.returnValue(TIME);
         expect(service.time).toBe(TIME);
         expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(QUESTION_TIMER_ID);
@@ -66,21 +62,21 @@ describe('GameTimersService', () => {
 
     it('time getter should return the correct value when game state is ShowAnswer', () => {
         const time = 10;
-        gameStateService.gameState = GameState.ShowAnswer;
+        service.gameState = GameState.ShowAnswer;
         timeServiceSpy.getTimeById.and.returnValue(time);
         expect(service.time).toBe(time);
         expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(ANSWER_TIMER_ID);
     });
 
     it('time getter should return 0 when game state is GameEnded', () => {
-        gameStateService.gameState = GameState.GameEnded;
+        service.gameState = GameState.GameEnded;
         expect(service.time).toBe(0);
         expect(timeServiceSpy.getTimeById).not.toHaveBeenCalled();
     });
 
     it('time getter should return 0 when game state is not recognized', () => {
         const unrecognizedState = 100;
-        gameStateService.gameState = unrecognizedState;
+        service.gameState = unrecognizedState;
         expect(service.time).toBe(0);
         expect(timeServiceSpy.getTimeById).not.toHaveBeenCalled();
     });
