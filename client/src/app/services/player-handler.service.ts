@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@common/player';
 import { Subject, Observable, map, forkJoin } from 'rxjs';
-import { AnswerValidatorService } from './answer-validator.service';
 import { NEW_PLAYER } from '@common/constant';
 import { CommunicationService } from './communication.service';
 import { HttpStatusCode } from '@angular/common/http';
@@ -14,7 +13,7 @@ export class PlayerHandlerService {
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
-    constructor(private communicationService: CommunicationService) { }
+    constructor(private communicationService: CommunicationService) {}
 
     get players(): Player[] {
         return this.internalPlayers;
