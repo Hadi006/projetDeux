@@ -2,8 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { GOOD_ANSWER_MULTIPLIER, GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { Subscription } from 'rxjs';
-import { GameStateService } from './game-state.service';
-import { GameTimersService } from './game-timers.service';
+import { GameManagementService } from './game-management.service';
 import { PlayerHandlerService } from './player-handler.service';
 
 @Injectable({
@@ -16,8 +15,7 @@ export class QuestionHandlerService implements OnDestroy {
 
     constructor(
         private playerHandlerService: PlayerHandlerService,
-        private gameTimersService: GameTimersService,
-        private gameStateService: GameStateService,
+        private gameManagementService: GameManagementService,
     ) {
         this.subscribeToTimerEnded();
     }
@@ -54,8 +52,8 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     private subscribeToTimerEnded(): void {
-        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
-            if (this.gameStateService.gameState === GameState.ShowQuestion) {
+        this.timerEndedSubscription = this.gameManagementService.timerEndedSubject.subscribe(() => {
+            if (this.gameManagementService.gameState === GameState.ShowQuestion) {
                 this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.text || '').subscribe(() => {
                     this.updateScores();
                 });
