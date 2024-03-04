@@ -7,7 +7,7 @@ import { PlayerHandlerService } from './player-handler.service';
 @Injectable({
     providedIn: 'root',
 })
-export class GameTimersService implements OnDestroy {
+export class GameManagementService implements OnDestroy {
     gameState: GameState = GameState.ShowQuestion;
 
     private questionTimerId: number;
