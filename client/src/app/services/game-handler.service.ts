@@ -1,9 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { GameStateService } from '@app/services/game-state.service';
-import { GameTimersService } from '@app/services/game-timers.service';
 import { GameState, SHOW_ANSWER_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, Subscription } from 'rxjs';
+import { GameManagementService } from './game-management.service';
 import { QuestionHandlerService } from './question-handler.service';
 
 @Injectable({
@@ -16,8 +15,7 @@ export class GameHandlerService implements OnDestroy {
 
     constructor(
         private questionHandlerService: QuestionHandlerService,
-        private gameTimersService: GameTimersService,
-        private gameStateService: GameStateService,
+        private gameManagementService: GameManagementService,
     ) {
         this.subscribeToTimerEnded();
     }
@@ -41,8 +39,8 @@ export class GameHandlerService implements OnDestroy {
 
         this.questionHandlerService.questionsData = this.internalQuizData.questions;
         this.questionHandlerService.resetAnswers();
-        this.gameTimersService.startQuestionTimer(this.internalQuizData.duration);
-        this.gameStateService.gameState = GameState.ShowQuestion;
+        this.gameManagementService.startQuestionTimer(this.internalQuizData.duration);
+        this.gameManagementService.gameState = GameState.ShowQuestion;
     }
 
     setUpNextState(): void {
@@ -50,24 +48,24 @@ export class GameHandlerService implements OnDestroy {
             return;
         }
 
-        switch (this.gameStateService.gameState) {
+        switch (this.gameManagementService.gameState) {
             case GameState.ShowQuestion:
-                this.gameTimersService.startAnswerTimer(SHOW_ANSWER_DELAY);
-                this.gameStateService.gameState = GameState.ShowAnswer;
+                this.gameManagementService.startAnswerTimer(SHOW_ANSWER_DELAY);
+                this.gameManagementService.gameState = GameState.ShowAnswer;
                 break;
             case GameState.ShowAnswer:
                 this.questionHandlerService.nextQuestion();
                 if (!this.questionHandlerService.currentQuestion) {
                     this.internalGameEnded$.next();
-                    this.gameStateService.gameState = GameState.GameEnded;
+                    this.gameManagementService.gameState = GameState.GameEnded;
                 } else {
-                    this.gameTimersService.startQuestionTimer(this.internalQuizData.duration);
-                    this.gameStateService.gameState = GameState.ShowQuestion;
+                    this.gameManagementService.startQuestionTimer(this.internalQuizData.duration);
+                    this.gameManagementService.gameState = GameState.ShowQuestion;
                 }
                 break;
             default:
                 this.internalGameEnded$.next();
-                this.gameStateService.gameState = GameState.GameEnded;
+                this.gameManagementService.gameState = GameState.GameEnded;
                 break;
         }
     }
@@ -77,7 +75,7 @@ export class GameHandlerService implements OnDestroy {
     }
 
     private subscribeToTimerEnded(): void {
-        this.timerEndedSubscription = this.gameTimersService.timerEndedSubject.subscribe(() => {
+        this.timerEndedSubscription = this.gameManagementService.timerEndedSubject.subscribe(() => {
             this.setUpNextState();
         });
     }
