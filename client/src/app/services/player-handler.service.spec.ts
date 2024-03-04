@@ -159,6 +159,25 @@ describe('PlayerHandlerService', () => {
         });
     });
 
+    it('validatePlayerAnswers should validate the answers of all players when the status is not ok', () => {
+        const nPlayers = 3;
+        for (let i = 0; i < nPlayers; i++) {
+            service.createPlayer();
+        }
+        const questionText = '1234';
+        const httpResponses: HttpResponse<boolean>[] = [
+            new HttpResponse({ status: HttpStatusCode.BadRequest, body: true }),
+            new HttpResponse({ status: HttpStatusCode.BadRequest, body: false }),
+            new HttpResponse({ status: HttpStatusCode.Ok, body: true }),
+        ];
+        communicationServiceSpy.post.and.returnValues(of(httpResponses[0]), of(httpResponses[1]), of(httpResponses[2]));
+        service.validatePlayerAnswers(questionText).subscribe(() => {
+            expect(service.players[0].isCorrect).toBeFalse();
+            expect(service.players[1].isCorrect).toBeFalse();
+            expect(service.players[2].isCorrect).toBeTrue();
+        });
+    });
+
     it('removePlayer should remove the player from the list', () => {
         const player = service.createPlayer();
         const nPlayers = service.players.length;
