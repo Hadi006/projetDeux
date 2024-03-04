@@ -71,12 +71,13 @@ describe('GameHandlerService', () => {
             configurable: true,
         });
 
-        gameManagementServiceSpy = jasmine.createSpyObj<GameManagementService>('GameTimersService', [
+        gameManagementServiceSpy = jasmine.createSpyObj<GameManagementService>('GameManagementService', [
             'startQuestionTimer',
             'startAnswerTimer',
             'stopQuestionTimer',
             'timerEndedSubject',
         ]);
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
         mockSubject = new Subject<void>();
         Object.defineProperty(gameManagementServiceSpy, 'timerEndedSubject', {
             get: () => {
@@ -144,7 +145,6 @@ describe('GameHandlerService', () => {
 
     it('setUpNextState should set the game correctly if state is show question', () => {
         gameManagementServiceSpy.gameState = GameState.ShowQuestion;
-        expect(gameManagementServiceSpy.gameState).toBe(GameState.ShowQuestion);
         service.setUpNextState();
         expect(gameManagementServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
         expect(gameManagementServiceSpy.gameState.valueOf()).toBe(GameState.ShowAnswer.valueOf());
@@ -152,6 +152,7 @@ describe('GameHandlerService', () => {
 
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
         gameManagementServiceSpy.gameState = GameState.ShowAnswer;
+        console.log(gameManagementServiceSpy.gameState);
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_QUIZ.questions[0]);
         service.loadQuizData(TEST_QUIZ);
         service.setUpNextState();
