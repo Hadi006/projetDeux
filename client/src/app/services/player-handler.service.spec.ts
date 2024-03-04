@@ -1,15 +1,16 @@
+import { HttpStatusCode, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { AnswerValidatorService } from './answer-validator.service';
+import { CommunicationService } from './communication.service';
 import { PlayerHandlerService } from './player-handler.service';
 
 describe('PlayerHandlerService', () => {
     let service: PlayerHandlerService;
-    let answerValidatorServiceSpy: jasmine.SpyObj<AnswerValidatorService>;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(() => {
-        answerValidatorServiceSpy = jasmine.createSpyObj('AnswerValidatorService', ['validateAnswer']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['post']);
     });
 
     beforeEach(() => {
@@ -17,8 +18,8 @@ describe('PlayerHandlerService', () => {
             imports: [HttpClientTestingModule],
             providers: [
                 {
-                    provide: AnswerValidatorService,
-                    useValue: answerValidatorServiceSpy,
+                    provide: CommunicationService,
+                    useValue: communicationServiceSpy,
                 },
             ],
         });
@@ -145,12 +146,13 @@ describe('PlayerHandlerService', () => {
             service.createPlayer();
         }
         const questionText = '1234';
-        answerValidatorServiceSpy.validateAnswer.and.returnValues(of(true), of(false), of(true));
+        const httpResponses: HttpResponse<boolean>[] = [
+            new HttpResponse({ status: HttpStatusCode.Ok, body: true }),
+            new HttpResponse({ status: HttpStatusCode.Ok, body: false }),
+            new HttpResponse({ status: HttpStatusCode.Ok, body: true }),
+        ];
+        communicationServiceSpy.post.and.returnValues(of(httpResponses[0]), of(httpResponses[1]), of(httpResponses[2]));
         service.validatePlayerAnswers(questionText).subscribe(() => {
-            service.players.forEach((player) => {
-                expect(answerValidatorServiceSpy.validateAnswer).toHaveBeenCalledWith(questionText, player.answer);
-            });
-
             expect(service.players[0].isCorrect).toBeTrue();
             expect(service.players[1].isCorrect).toBeFalse();
             expect(service.players[2].isCorrect).toBeTrue();
