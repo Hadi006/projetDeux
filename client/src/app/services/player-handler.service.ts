@@ -3,6 +3,8 @@ import { Player } from '@common/player';
 import { Subject, Observable, map, forkJoin } from 'rxjs';
 import { AnswerValidatorService } from './answer-validator.service';
 import { NEW_PLAYER } from '@common/constant';
+import { CommunicationService } from './communication.service';
+import { HttpStatusCode } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +14,7 @@ export class PlayerHandlerService {
     private internalNAnswered: number = 0;
     private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
 
-    constructor(private answerValidatorService: AnswerValidatorService) {}
+    constructor(private communicationService: CommunicationService) { }
 
     get players(): Player[] {
         return this.internalPlayers;
@@ -73,7 +75,7 @@ export class PlayerHandlerService {
         const validationObservables: Observable<boolean>[] = [];
 
         this.internalPlayers.forEach((player) => {
-            const validationObservable = this.answerValidatorService.validateAnswer(questionText, player.answer);
+            const validationObservable = this.validateAnswer(questionText, player.answer);
 
             validationObservables.push(validationObservable);
             validationObservable.subscribe((isCorrect) => {
@@ -90,5 +92,17 @@ export class PlayerHandlerService {
 
     removePlayer(playerId: number): void {
         this.internalPlayers = this.internalPlayers.filter((player) => player.id !== playerId);
+    }
+
+    private validateAnswer(text: string, answer: boolean[]): Observable<boolean> {
+        return this.communicationService.post<boolean>('questions/validate-answer', { answer, text }).pipe(
+            map((response) => {
+                if (response.status !== HttpStatusCode.Ok) {
+                    return false;
+                }
+
+                return response.body || false;
+            }),
+        );
     }
 }
