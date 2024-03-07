@@ -23,7 +23,7 @@ describe('LobbyOrganizerPageComponent', () => {
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
 
     beforeEach(() => {
-        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeLobbyToServer']);
+        lobbyServiceSpy = {} as jasmine.SpyObj<LobbyService>;
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', [], {
             quizData: TEST_QUIZ,
         });
@@ -49,9 +49,11 @@ describe('LobbyOrganizerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('lobbyId should be set lobbyData', () => {
+    it('should return lobbyData from lobbyService', () => {
+        Object.defineProperty(lobbyServiceSpy, 'lobbyData', {
+            get: () => TEST_LOBBY_DATA,
+        });
         expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
-        expect(component.lobbyData.quiz).toEqual(TEST_QUIZ);
     });
 
     it('should set lobbyData.started to true', () => {
