@@ -3,6 +3,7 @@ import { LobbyService } from '@app/services/lobby.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { TEST_LOBBY_DATA } from '@common/constant';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('LobbyService', () => {
     const quizData: Quiz = {
@@ -26,7 +27,9 @@ describe('LobbyService', () => {
     });
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         service = TestBed.inject(LobbyService);
     });
 
