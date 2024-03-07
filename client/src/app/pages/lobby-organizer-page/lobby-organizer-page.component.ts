@@ -11,6 +11,10 @@ export class LobbyOrganizerPageComponent {
         this.lobbyService.subscribeLobbyToServer();
     }
 
+    get lobbyData() {
+        return this.lobbyService.lobbyData;
+    }
+
     startGame() {
         this.lobbyService.lobbyData.started = true;
     }
