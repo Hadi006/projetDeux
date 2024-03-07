@@ -8,21 +8,25 @@ import { GameHandlerService } from '@app/services/game-handler.service';
     providedIn: 'root',
 })
 export class LobbyService {
-    lobbyData: LobbyData;
+    private internalLobbyData: LobbyData;
 
     constructor(
         private readonly socketService: SocketService,
         private gameHandlerService: GameHandlerService,
     ) {
-        this.lobbyData = TEST_LOBBY_DATA;
-        this.lobbyData.quiz = this.gameHandlerService.quizData;
+        this.internalLobbyData = TEST_LOBBY_DATA;
+        this.internalLobbyData.quiz = this.gameHandlerService.quizData;
+    }
+
+    get lobbyData() {
+        return this.internalLobbyData;
     }
 
     subscribeLobbyToServer() {
         this.socketService.filteredDataByType<LobbyData>('lobbyData').subscribe((data) => {
-            if (this.lobbyData.id === data.id) {
-                delete this.lobbyData.quiz;
-                Object.assign(this.lobbyData, data);
+            if (this.internalLobbyData.id === data.id) {
+                delete this.internalLobbyData.quiz;
+                Object.assign(this.internalLobbyData, data);
             }
         });
     }
