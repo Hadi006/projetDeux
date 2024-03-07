@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import { GameHandlerService } from '@app/services/game-handler.service';
 import { LobbyService } from '@app/services/lobby.service';
-import { LobbyData } from '@common/lobby-data';
-import { TEST_LOBBY_DATA } from '@common/constant';
 
 @Component({
     selector: 'app-lobby-organizer-page',
@@ -10,17 +7,13 @@ import { TEST_LOBBY_DATA } from '@common/constant';
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    lobbyData: LobbyData;
+    constructor(public lobbyService: LobbyService) {}
 
-    constructor(
-        private readonly lobbyService: LobbyService,
-        private gameHandlerService: GameHandlerService,
-    ) {
-        this.lobbyData = TEST_LOBBY_DATA;
-        this.lobbyData.quiz = this.gameHandlerService.quizData;
+    get lobbyData() {
+        return this.lobbyService.lobbyData;
     }
 
     startGame() {
-        this.lobbyData.started = true;
+        this.lobbyService.lobbyData.started = true;
     }
 }
