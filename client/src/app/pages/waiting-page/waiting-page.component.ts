@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Player } from '@common/player';
 
 @Component({
     selector: 'app-waiting-page',
