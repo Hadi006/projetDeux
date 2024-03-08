@@ -9,7 +9,7 @@ import { Service } from 'typedi';
 import { AuthController } from './controllers/auth.controller';
 import { QuestionBankController } from './controllers/question-bank.controller';
 import { QuizBankController } from './controllers/quiz-bank.controller';
-import { LobbyController } from './controllers/lobbies.controller';
+import { LobbyController } from './controllers/lobby.controller';
 
 @Service()
 export class Application {
