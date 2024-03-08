@@ -5,17 +5,17 @@ import { LobbiesService } from './lobbies.service';
 import { Inject } from 'typedi';
 
 export class LobbySocketsService {
-    private io: SocketIOServer;
+    private sio: SocketIOServer;
 
     constructor(
         @Inject(() => LobbiesService) private lobbiesService: LobbiesService,
         server: HTTPServer,
     ) {
-        this.io = new SocketIOServer(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
+        this.sio = new SocketIOServer(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
     handleSockets(): void {
-        this.io.on('connection', (socket: Socket) => {
+        this.sio.on('connection', (socket: Socket) => {
             this.createLobby(socket);
             this.joinLobby(socket);
             this.disconnect(socket);
