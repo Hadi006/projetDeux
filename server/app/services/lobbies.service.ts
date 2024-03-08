@@ -9,4 +9,8 @@ export class LobbiesService {
     async getLobbies(): Promise<LobbyData[]> {
         return await this.database.get<LobbyData>('lobbies');
     }
+
+    async getLobby(lobbyId: string): Promise<LobbyData> {
+        return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
+    }
 }
