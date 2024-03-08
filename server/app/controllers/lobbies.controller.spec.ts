@@ -12,17 +12,15 @@ describe('LobbyController', () => {
         {
             id: '1',
             players: [],
-            quiz: { id: '1', title: 'Math', visible: true, description: 'Math quiz', duration: 5, lastModification: new Date(), questions: [] },
             started: false,
         },
         {
             id: '2',
             players: [],
-            quiz: { id: '2', title: 'Math', visible: true, description: 'Math quiz', duration: 5, lastModification: new Date(), questions: [] },
             started: false,
         },
     ];
-    const PARAM_ID = '1';
+    // const PARAM_ID = '1';
 
     let lobbiesServiceStub: SinonStubbedInstance<LobbiesService>;
     let expressApp: Express.Application;
