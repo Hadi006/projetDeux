@@ -19,5 +19,10 @@ export class LobbyController {
             const lobbies: LobbyData[] = await this.lobbiesService.getLobbies();
             res.status(lobbies.length === 0 ? httpStatus.NOT_FOUND : httpStatus.OK).json(lobbies);
         });
+
+        this.router.get('/:lobbyId', async (req: Request, res: Response) => {
+            const lobby: LobbyData = await this.lobbiesService.getLobby(req.params.lobbyId);
+            res.status(lobby ? httpStatus.OK : httpStatus.NOT_FOUND).json(lobby);
+        });
     }
 }
