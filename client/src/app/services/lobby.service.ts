@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
 import { GameSocketsService } from './game-sockets.service';
-import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, TEST_LOBBY_DATA } from '@common/constant';
+import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, NEW_LOBBY } from '@common/constant';
 import { GameHandlerService } from '@app/services/game-handler.service';
 
 @Injectable({
@@ -14,12 +14,19 @@ export class LobbyService implements OnDestroy {
         private gameSocketsService: GameSocketsService,
         private gameHandlerService: GameHandlerService,
     ) {
-        this.internalLobbyData = TEST_LOBBY_DATA;
-        this.internalLobbyData.quiz = this.gameHandlerService.quizData;
+        this.createLobby();
     }
 
     get lobbyData() {
         return this.internalLobbyData;
+    }
+
+    createLobby() {
+        this.internalLobbyData = {
+            ...NEW_LOBBY,
+            id: this.generateLobbyId(),
+            quiz: this.gameHandlerService.quizData,
+        };
     }
 
     ngOnDestroy() {
