@@ -3,6 +3,7 @@ import { GameState, SHOW_ANSWER_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, Subscription } from 'rxjs';
 import { GameManagementService } from './game-management.service';
+import { GameSocketsService } from './game-sockets.service';
 import { QuestionHandlerService } from './question-handler.service';
 
 @Injectable({
@@ -16,7 +17,9 @@ export class GameHandlerService {
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private gameManagementService: GameManagementService,
+        private gameSocketsService: GameSocketsService,
     ) {
+        this.gameSocketsService.connect();
         this.subscribeToTimerEnded();
     }
 
@@ -71,6 +74,7 @@ export class GameHandlerService {
     }
 
     cleanUp() {
+        this.gameSocketsService.disconnect();
         this.timerEndedSubscription.unsubscribe();
     }
 
