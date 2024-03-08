@@ -105,6 +105,17 @@ describe('LobbyController', () => {
             });
     });
 
+    it('PATCH /:id should return not found', async () => {
+        lobbiesServiceStub.updateLobby.resolves(false);
+        return supertest(expressApp)
+            .patch(`/api/lobbies/${PARAM_ID}`)
+            .send(MOCK_LOBBIES[0])
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(response.body).to.equal(false);
+            });
+    });
+
     it('DELETE /:id should delete a lobby', async () => {
         lobbiesServiceStub.deleteLobby.resolves(true);
         return supertest(expressApp)
