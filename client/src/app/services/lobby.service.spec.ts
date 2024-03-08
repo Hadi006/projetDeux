@@ -51,7 +51,7 @@ describe('LobbyService', () => {
 
     it('should update lobbyData when data is received', () => {
         socketServiceSpy.filteredDataByType.and.returnValue(of(newData));
-        service.subscribeLobbyToServer(lobbyData);
+        service.subscribeLobbyToServer();
         expect(socketServiceSpy.filteredDataByType).toHaveBeenCalledWith('lobbyData');
         expect(lobbyData).toEqual(newData);
     });
