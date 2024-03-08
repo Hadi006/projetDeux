@@ -18,5 +18,10 @@ export class GameSocketsService {
 
     createRoom(roomId: string) {
         this.socket.emit('createRoom', roomId);
+        this.joinRoom(roomId);
+    }
+
+    joinRoom(roomId: string) {
+        this.socket.emit('joinRoom', roomId);
     }
 }
