@@ -43,4 +43,8 @@ describe('LobbyService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    it('should connect the game socket', () => {
+        expect(gameSocketServiceSpy.connect).toHaveBeenCalled();
+    });
 });
