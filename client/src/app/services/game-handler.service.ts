@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { GameState, SHOW_ANSWER_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { QuestionHandlerService } from './question-handler.service';
 @Injectable({
     providedIn: 'root',
 })
-export class GameHandlerService implements OnDestroy {
+export class GameHandlerService {
     private internalQuizData: Quiz | undefined;
     private timerEndedSubscription: Subscription;
     private internalGameEnded$: Subject<void> = new Subject<void>();
@@ -70,7 +70,7 @@ export class GameHandlerService implements OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
+    cleanUp() {
         this.timerEndedSubscription.unsubscribe();
     }
 
