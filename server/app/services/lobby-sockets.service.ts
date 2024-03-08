@@ -7,4 +7,10 @@ export class LobbySocketsService {
     constructor(server: HTTPServer) {
         this.io = new SocketIOServer(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
+
+    handleSockets(): void {
+        this.io.on('connection', (socket: Socket) => {
+            return;
+        });
+    }
 }
