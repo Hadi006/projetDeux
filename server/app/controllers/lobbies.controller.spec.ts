@@ -43,4 +43,14 @@ describe('LobbyController', () => {
                 expect(response.body).to.deep.equal(MOCK_LOBBIES);
             });
     });
+
+    it('GET / should return empty array', async () => {
+        lobbiesServiceStub.getLobbies.resolves([]);
+        return supertest(expressApp)
+            .get('/api/lobbies')
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(response.body).to.deep.equal([]);
+            });
+    });
 });
