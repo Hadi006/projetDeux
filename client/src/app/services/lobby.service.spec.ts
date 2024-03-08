@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { LobbyService } from '@app/services/lobby.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
-import { TEST_LOBBY_DATA } from '@common/constant';
 import { GameSocketsService } from './game-sockets.service';
 
 describe('LobbyService', () => {
