@@ -38,7 +38,7 @@ const TEST_PLAYER_DATA: Player[] = [
 ];
 
 export const TEST_LOBBY_DATA: LobbyData = {
-    id: 1,
+    id: '1',
     players: TEST_PLAYER_DATA,
     started: false,
 };
