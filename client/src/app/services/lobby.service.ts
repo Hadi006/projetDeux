@@ -15,8 +15,6 @@ export class LobbyService {
         private gameHandlerService: GameHandlerService,
     ) {
         this.gameSocketsService.connect();
-        this.createLobby();
-        this.gameSocketsService.createRoom(this.internalLobbyData.id);
     }
 
     get lobbyData() {
@@ -29,6 +27,8 @@ export class LobbyService {
             id: this.generateLobbyId(),
             quiz: this.gameHandlerService.quizData,
         };
+
+        this.gameSocketsService.createRoom(this.internalLobbyData.id);
     }
 
     cleanUp() {
