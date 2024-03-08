@@ -47,6 +47,13 @@ describe('LobbiesService', () => {
         expect(databaseServiceStub.add.called).to.equal(false);
     });
 
+    it('should update a lobby', async () => {
+        databaseServiceStub.update.resolves(true);
+        const result = await lobbiesService.updateLobby(MOCK_LOBBY);
+        expect(result).to.equal(true);
+        expect(databaseServiceStub.update.calledWith('lobbies', { id: MOCK_LOBBY.id }, [{ $set: MOCK_LOBBY }])).to.equal(true);
+    });
+
     it('should delete a lobby', async () => {
         databaseServiceStub.delete.resolves(true);
         const result = await lobbiesService.deleteLobby(MOCK_LOBBY.id);
