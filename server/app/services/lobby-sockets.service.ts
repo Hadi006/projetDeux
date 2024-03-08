@@ -21,8 +21,8 @@ export class LobbySocketsService {
     }
 
     private createLobby(socket: Socket): void {
-        socket.on('create-lobby', (lobby: LobbyData) => {
-            this.lobbiesService.addLobby(lobby);
+        socket.on('create-lobby', async (lobby: LobbyData) => {
+            await this.lobbiesService.addLobby(lobby);
         });
     }
 
