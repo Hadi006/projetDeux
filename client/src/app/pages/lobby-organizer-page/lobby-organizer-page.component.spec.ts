@@ -10,7 +10,7 @@ describe('LobbyOrganizerPageComponent', () => {
     let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
 
     beforeEach(() => {
-        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeLobbyToServer']);
+        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby']);
         Object.defineProperty(lobbyServiceSpy, 'lobbyData', { value: TEST_LOBBY_DATA });
     });
 
@@ -29,6 +29,10 @@ describe('LobbyOrganizerPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should call lobbyService.createLobby', () => {
+        expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
     });
 
     it('should return lobbyData from lobbyService', () => {
