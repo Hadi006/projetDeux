@@ -30,6 +30,11 @@ export class LobbyController {
             res.status(added ? httpStatus.CREATED : httpStatus.BAD_REQUEST).json(added);
         });
 
+        this.router.patch('/:lobbyId', async (req: Request, res: Response) => {
+            const updated = await this.lobbiesService.updateLobby(req.body);
+            res.status(updated ? httpStatus.OK : httpStatus.NOT_FOUND).json(updated);
+        });
+
         this.router.delete('/:lobbyId', async (req: Request, res: Response) => {
             const deleted = await this.lobbiesService.deleteLobby(req.params.lobbyId);
             res.status(deleted ? httpStatus.OK : httpStatus.NOT_FOUND).json(deleted);
