@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
 import { GameSocketsService } from './game-sockets.service';
-import { TEST_LOBBY_DATA } from '@common/constant';
+import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, TEST_LOBBY_DATA } from '@common/constant';
 import { GameHandlerService } from '@app/services/game-handler.service';
 
 @Injectable({
@@ -24,5 +24,15 @@ export class LobbyService implements OnDestroy {
 
     ngOnDestroy() {
         this.gameSocketsService.disconnect();
+    }
+
+    private generateLobbyId(): string {
+        let result = '';
+
+        for (let i = 0; i < LOBBY_ID_LENGTH; i++) {
+            result += LOBBY_ID_CHARACTERS.charAt(Math.floor(Math.random() * LOBBY_ID_CHARACTERS.length));
+        }
+
+        return result;
     }
 }
