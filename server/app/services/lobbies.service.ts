@@ -13,4 +13,12 @@ export class LobbiesService {
     async getLobby(lobbyId: string): Promise<LobbyData> {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
+
+    async addLobby(lobby: LobbyData): Promise<boolean> {
+        if (await this.getLobby(lobby.id)) {
+            return false;
+        }
+        await this.database.add('lobbies', lobby);
+        return true;
+    }
 }
