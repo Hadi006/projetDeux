@@ -15,9 +15,9 @@ describe('LobbyService', () => {
         lastModification: new Date(),
         questions: [],
     };
-    const lobbyData: LobbyData = { id: 1, players: [], quiz: quizData, started: true };
+    const lobbyData: LobbyData = { id: '1', players: [], quiz: quizData, started: true };
     const newData: LobbyData = {
-        id: 1,
+        id: '1',
         players: [
             {
                 id: 1,
