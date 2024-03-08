@@ -15,6 +15,7 @@ export class LobbySocketsService {
 
     handleSockets(): void {
         this.io.on('connection', (socket: Socket) => {
+            this.createLobby(socket);
             this.disconnect(socket);
         });
     }
