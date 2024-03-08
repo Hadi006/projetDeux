@@ -4,6 +4,7 @@ import { LobbyService } from '@app/services/lobby.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { TEST_LOBBY_DATA } from '@common/constant';
+import { GameSocketsService } from './game-sockets.service';
 
 describe('LobbyService', () => {
     const quizData: Quiz = {
@@ -17,18 +18,24 @@ describe('LobbyService', () => {
     };
     let service: LobbyService;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
+    let gameSocketServiceSpy: jasmine.SpyObj<GameSocketsService>;
 
     beforeEach(() => {
         gameHandlerServiceSpy = {} as jasmine.SpyObj<GameHandlerService>;
         Object.defineProperty(gameHandlerServiceSpy, 'quizData', {
             get: () => quizData,
         });
+
+        gameSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'createRoom', 'disconnect']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
+            providers: [
+                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
+                { provide: GameSocketsService, useValue: gameSocketServiceSpy },
+            ],
         });
         service = TestBed.inject(LobbyService);
     });
