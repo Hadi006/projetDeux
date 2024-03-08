@@ -16,6 +16,7 @@ export class LobbySocketsService {
     handleSockets(): void {
         this.io.on('connection', (socket: Socket) => {
             this.createLobby(socket);
+            this.joinLobby(socket);
             this.disconnect(socket);
         });
     }
@@ -23,6 +24,14 @@ export class LobbySocketsService {
     private createLobby(socket: Socket): void {
         socket.on('create-lobby', async (lobby: LobbyData) => {
             await this.lobbiesService.addLobby(lobby);
+        });
+    }
+
+    private joinLobby(socket: Socket): void {
+        socket.on('join-lobby', async (lobbyId: string) => {
+            if (await this.lobbiesService.getLobby(lobbyId)) {
+                socket.join(lobbyId);
+            }
         });
     }
 
