@@ -15,4 +15,8 @@ export class GameSocketsService {
     disconnect() {
         this.socket.disconnect();
     }
+
+    createRoom(roomId: string) {
+        this.socket.emit('createRoom', roomId);
+    }
 }
