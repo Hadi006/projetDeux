@@ -17,9 +17,7 @@ export class GameHandlerService {
     constructor(
         private questionHandlerService: QuestionHandlerService,
         private gameManagementService: GameManagementService,
-        private gameSocketsService: GameSocketsService,
     ) {
-        this.gameSocketsService.connect();
         this.subscribeToTimerEnded();
     }
 
@@ -74,7 +72,6 @@ export class GameHandlerService {
     }
 
     cleanUp() {
-        this.gameSocketsService.disconnect();
         this.timerEndedSubscription.unsubscribe();
     }
 
