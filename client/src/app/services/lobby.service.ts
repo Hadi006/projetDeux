@@ -3,6 +3,7 @@ import { LobbyData } from '@common/lobby-data';
 import { GameSocketsService } from './game-sockets.service';
 import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, NEW_LOBBY } from '@common/constant';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { CommunicationService } from './communication.service';
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +12,7 @@ export class LobbyService {
     private internalLobbyData: LobbyData;
 
     constructor(
+        private communicationService: CommunicationService,
         private gameSocketsService: GameSocketsService,
         private gameHandlerService: GameHandlerService,
     ) {
@@ -28,6 +30,7 @@ export class LobbyService {
             quiz: this.gameHandlerService.quizData,
         };
 
+        this.communicationService.post('lobbies', this.internalLobbyData).subscribe();
         this.gameSocketsService.createRoom(this.internalLobbyData.id);
     }
 
