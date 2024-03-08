@@ -103,4 +103,14 @@ describe('LobbyController', () => {
                 expect(response.body).to.equal(true);
             });
     });
+
+    it('DELETE /:id should return not found', async () => {
+        lobbiesServiceStub.deleteLobby.resolves(false);
+        return supertest(expressApp)
+            .delete(`/api/lobbies/${PARAM_ID}`)
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(response.body).to.equal(false);
+            });
+    });
 });
