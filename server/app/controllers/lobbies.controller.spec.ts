@@ -71,4 +71,15 @@ describe('LobbyController', () => {
                 expect(response.body).to.equal('');
             });
     });
+
+    it('POST / should add a lobby', async () => {
+        lobbiesServiceStub.addLobby.resolves(true);
+        return supertest(expressApp)
+            .post('/api/lobbies')
+            .send(MOCK_LOBBIES[0])
+            .expect(httpStatus.CREATED)
+            .then((response) => {
+                expect(response.body).to.equal(true);
+            });
+    });
 });
