@@ -27,6 +27,7 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
 import { SelectNamePageComponent } from './pages/select-name-page/select-name-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
+import { ChatService } from './services/chat.service';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -67,7 +68,7 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
         DragDropModule,
         ReactiveFormsModule,
     ],
-    providers: [],
+    providers: [ChatService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ServerData } from '@common/server-data';
 import { Observable } from 'rxjs';
-import { WebSocketSubject } from 'rxjs/webSocket';
 import { filter, map } from 'rxjs/operators';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 @Injectable({
     providedIn: 'root',
