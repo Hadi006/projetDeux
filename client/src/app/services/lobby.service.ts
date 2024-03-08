@@ -14,6 +14,7 @@ export class LobbyService {
         private gameSocketsService: GameSocketsService,
         private gameHandlerService: GameHandlerService,
     ) {
+        this.gameSocketsService.connect();
         this.createLobby();
         this.gameSocketsService.createRoom(this.internalLobbyData.id);
     }
