@@ -21,6 +21,7 @@ export class LobbyService implements OnDestroy {
     get lobbyData() {
         return this.internalLobbyData;
     }
+
     ngOnDestroy() {
         this.gameSocketsService.disconnect();
     }
