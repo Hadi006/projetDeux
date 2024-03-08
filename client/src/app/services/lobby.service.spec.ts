@@ -59,4 +59,9 @@ describe('LobbyService', () => {
         expect(service.lobbyData.quiz).toEqual(quizData);
         expect(gameSocketServiceSpy.createRoom).toHaveBeenCalledWith(service.lobbyData.id);
     });
+
+    it('should clean up the game socket', () => {
+        service.cleanUp();
+        expect(gameSocketServiceSpy.disconnect).toHaveBeenCalled();
+    });
 });
