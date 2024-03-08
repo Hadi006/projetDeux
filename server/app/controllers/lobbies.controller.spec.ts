@@ -61,4 +61,14 @@ describe('LobbyController', () => {
                 expect(response.body).to.deep.equal(MOCK_LOBBIES[0]);
             });
     });
+
+    it('GET /:id should return not found', async () => {
+        lobbiesServiceStub.getLobby.resolves(undefined);
+        return supertest(expressApp)
+            .get(`/api/lobbies/${PARAM_ID}`)
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(response.body).to.equal('');
+            });
+    });
 });
