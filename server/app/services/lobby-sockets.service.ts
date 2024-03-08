@@ -10,6 +10,12 @@ export class LobbySocketsService {
 
     handleSockets(): void {
         this.io.on('connection', (socket: Socket) => {
+            this.disconnect(socket);
+        });
+    }
+
+    private disconnect(socket: Socket): void {
+        socket.on('disconnect', () => {
             return;
         });
     }
