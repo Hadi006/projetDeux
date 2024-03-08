@@ -23,18 +23,18 @@ export class LobbySocketsService {
     }
 
     private createLobby(socket: Socket): void {
-        socket.on('create-lobby', async (lobby: LobbyData, callback) => {
-            callback({ success: await this.lobbiesService.addLobby(lobby) });
+        socket.on('create-lobby', async (lobby: LobbyData, ack) => {
+            ack({ success: await this.lobbiesService.addLobby(lobby) });
         });
     }
 
     private joinLobby(socket: Socket): void {
-        socket.on('join-lobby', async (lobbyId: string, callback) => {
+        socket.on('join-lobby', async (lobbyId: string, ack) => {
             if (await this.lobbiesService.getLobby(lobbyId)) {
                 socket.join(lobbyId);
-                callback({ success: true });
+                ack({ success: true });
             }
-            callback({ success: false });
+            ack({ success: false });
         });
     }
 
