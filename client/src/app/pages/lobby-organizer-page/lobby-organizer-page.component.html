@@ -14,7 +14,7 @@
 </div>
 
 <footer>
-    <button routerLink="/home">Quitter</button>
+    <button (click)="leaveLobby()">Quitter</button>
 
     <button *ngIf="lobbyData.quiz" (click)="startGame()">Start game</button>
 </footer>
