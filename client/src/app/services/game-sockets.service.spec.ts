@@ -43,4 +43,10 @@ describe('GameSocketsService', () => {
         expect(socketMock.emit).toHaveBeenCalledWith('createRoom', roomId);
         expect(service.joinRoom).toHaveBeenCalledWith(roomId);
     });
+
+    it('should join a room', () => {
+        const roomId = '1234';
+        service.joinRoom(roomId);
+        expect(socketMock.emit).toHaveBeenCalledWith('joinRoom', roomId);
+    });
 });
