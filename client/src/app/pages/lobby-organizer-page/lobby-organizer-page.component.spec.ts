@@ -10,10 +10,8 @@ describe('LobbyOrganizerPageComponent', () => {
     let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
 
     beforeEach(() => {
-        lobbyServiceSpy = {} as jasmine.SpyObj<LobbyService>;
-        Object.defineProperty(lobbyServiceSpy, 'lobbyData', {
-            get: () => TEST_LOBBY_DATA,
-        });
+        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeLobbyToServer']);
+        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { value: TEST_LOBBY_DATA });
     });
 
     beforeEach(waitForAsync(() => {
