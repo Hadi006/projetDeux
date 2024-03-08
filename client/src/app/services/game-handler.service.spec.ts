@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { GameHandlerService } from '@app/services/game-handler.service';
-import { GameStateService } from '@app/services/game-state.service';
-import { GameTimersService } from '@app/services/game-timers.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameState, SHOW_ANSWER_DELAY } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { Subject } from 'rxjs';
+import { GameManagementService } from './game-management.service';
 
 describe('GameHandlerService', () => {
     const TEST_QUIZ: Quiz = {
@@ -49,8 +48,7 @@ describe('GameHandlerService', () => {
     let service: GameHandlerService;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let questionsData: Question[];
-    let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
-    let gameStateService: GameStateService;
+    let gameManagementServiceSpy: jasmine.SpyObj<GameManagementService>;
     let mockSubject: Subject<void>;
 
     beforeEach(() => {
@@ -73,14 +71,15 @@ describe('GameHandlerService', () => {
             configurable: true,
         });
 
-        gameTimersServiceSpy = jasmine.createSpyObj<GameTimersService>('GameTimersService', [
+        gameManagementServiceSpy = jasmine.createSpyObj<GameManagementService>('GameManagementService', [
             'startQuestionTimer',
             'startAnswerTimer',
             'stopQuestionTimer',
             'timerEndedSubject',
         ]);
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
         mockSubject = new Subject<void>();
-        Object.defineProperty(gameTimersServiceSpy, 'timerEndedSubject', {
+        Object.defineProperty(gameManagementServiceSpy, 'timerEndedSubject', {
             get: () => {
                 return mockSubject;
             },
@@ -92,15 +91,13 @@ describe('GameHandlerService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
-                { provide: GameTimersService, useValue: gameTimersServiceSpy },
-                GameStateService,
+                { provide: GameManagementService, useValue: gameManagementServiceSpy },
             ],
         });
         service = TestBed.inject(GameHandlerService);
         const subjectSpy = jasmine.createSpyObj('Subject', ['next']);
         service['internalGameEnded$'] = subjectSpy;
         service.loadQuizData(TEST_QUIZ);
-        gameStateService = TestBed.inject(GameStateService);
     });
 
     it('should be created', () => {
@@ -109,7 +106,7 @@ describe('GameHandlerService', () => {
 
     it('should call setUpNextState when time has ended', () => {
         spyOn(service, 'setUpNextState');
-        gameTimersServiceSpy.timerEndedSubject.next();
+        gameManagementServiceSpy.timerEndedSubject.next();
         expect(service.setUpNextState).toHaveBeenCalled();
     });
 
@@ -134,69 +131,68 @@ describe('GameHandlerService', () => {
         service.startGame();
         expect(questionsData).toEqual(TEST_QUIZ.questions);
         expect(questionHandlerServiceSpy.resetAnswers).toHaveBeenCalled();
-        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
-        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+        expect(gameManagementServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
+        expect(gameManagementServiceSpy.gameState).toBe(GameState.ShowQuestion);
     });
 
     it('startGame should do nothing if quizData is not set', () => {
         service.loadQuizData(undefined);
         service.startGame();
         expect(questionHandlerServiceSpy.resetAnswers).not.toHaveBeenCalled();
-        expect(gameTimersServiceSpy.startQuestionTimer).not.toHaveBeenCalled();
-        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+        expect(gameManagementServiceSpy.startQuestionTimer).not.toHaveBeenCalled();
+        expect(gameManagementServiceSpy.gameState).toBe(GameState.ShowQuestion);
     });
 
     it('setUpNextState should set the game correctly if state is show question', () => {
-        gameStateService.gameState = GameState.ShowQuestion;
-        expect(gameStateService.gameState).toBe(GameState.ShowQuestion);
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
         service.setUpNextState();
-        expect(gameTimersServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
-        expect(gameStateService.gameState.valueOf()).toBe(GameState.ShowAnswer.valueOf());
+        expect(gameManagementServiceSpy.startAnswerTimer).toHaveBeenCalledWith(SHOW_ANSWER_DELAY);
+        expect(gameManagementServiceSpy.gameState.valueOf()).toBe(GameState.ShowAnswer.valueOf());
     });
 
     it('setUpNextState should set the game correctly if state is show answer and the next question exists', () => {
-        gameStateService.gameState = GameState.ShowAnswer;
+        gameManagementServiceSpy.gameState = GameState.ShowAnswer;
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(TEST_QUIZ.questions[0]);
         service.loadQuizData(TEST_QUIZ);
         service.setUpNextState();
-        expect(gameTimersServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
-        expect(gameStateService.gameState.valueOf()).toBe(GameState.ShowQuestion.valueOf());
+        expect(gameManagementServiceSpy.startQuestionTimer).toHaveBeenCalledWith(TEST_QUIZ.duration);
+        expect(gameManagementServiceSpy.gameState.valueOf()).toBe(GameState.ShowQuestion.valueOf());
     });
 
     it('setUpNextState should set the game correctly if state is show answer and the next question does not exist', () => {
-        gameStateService.gameState = GameState.ShowAnswer;
+        gameManagementServiceSpy.gameState = GameState.ShowAnswer;
         spyOnProperty(service, 'gameEnded$', 'get').and.callThrough();
         spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(undefined);
         service.setUpNextState();
         expect(service.gameEnded$.next).toHaveBeenCalled();
-        expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
+        expect(gameManagementServiceSpy.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
     });
 
     it('setUpNextState should set the game correctly if the state is not show answer or show question', () => {
-        gameStateService.gameState = GameState.GameEnded;
+        gameManagementServiceSpy.gameState = GameState.GameEnded;
         spyOnProperty(service, 'gameEnded$', 'get').and.callThrough();
         service.setUpNextState();
         expect(service.gameEnded$.next).toHaveBeenCalled();
-        expect(gameStateService.gameState).toBe(GameState.GameEnded);
+        expect(gameManagementServiceSpy.gameState).toBe(GameState.GameEnded);
         const unrecognizedState = 100;
-        gameStateService.gameState = unrecognizedState;
+        gameManagementServiceSpy.gameState = unrecognizedState;
         service.setUpNextState();
         expect(service.gameEnded$.next).toHaveBeenCalledTimes(2);
-        expect(gameStateService.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
+        expect(gameManagementServiceSpy.gameState.valueOf()).toBe(GameState.GameEnded.valueOf());
     });
 
     it('setUpNextState should do nothing if quizData is not set', () => {
         service.loadQuizData(undefined);
         service.setUpNextState();
-        expect(gameTimersServiceSpy.startAnswerTimer).not.toHaveBeenCalled();
-        expect(gameTimersServiceSpy.startQuestionTimer).not.toHaveBeenCalled();
+        expect(gameManagementServiceSpy.startAnswerTimer).not.toHaveBeenCalled();
+        expect(gameManagementServiceSpy.startQuestionTimer).not.toHaveBeenCalled();
         expect(service.gameEnded$.next).not.toHaveBeenCalled();
     });
 
     it('ngOnDestroy should unsubscribe from timer ended', () => {
         spyOn(service, 'setUpNextState');
         service.ngOnDestroy();
-        gameTimersServiceSpy.timerEndedSubject.next();
+        gameManagementServiceSpy.timerEndedSubject.next();
         expect(service.setUpNextState).not.toHaveBeenCalled();
     });
 });

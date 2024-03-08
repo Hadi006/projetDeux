@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { GameTimersService } from '@app/services/game-timers.service';
+import { GameManagementService } from '@app/services/game-management.service';
 import { GameTimersComponent } from './game-timers.component';
 
 describe('GameTimersComponent', () => {
     let component: GameTimersComponent;
     let fixture: ComponentFixture<GameTimersComponent>;
-    let gameTimersServiceSpy: jasmine.SpyObj<GameTimersService>;
+    let gameManagementServiceSpy: jasmine.SpyObj<GameManagementService>;
 
     beforeEach(() => {
-        gameTimersServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer', 'resetTimers']);
-        Object.defineProperty(gameTimersServiceSpy, 'time', { get: () => 0, configurable: true });
+        gameManagementServiceSpy = jasmine.createSpyObj('GameTimersService', ['startQuestionTimer', 'resetTimers']);
+        Object.defineProperty(gameManagementServiceSpy, 'time', { get: () => 0, configurable: true });
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [GameTimersComponent],
-            providers: [{ provide: GameTimersService, useValue: gameTimersServiceSpy }],
+            providers: [{ provide: GameManagementService, useValue: gameManagementServiceSpy }],
         }).compileComponents();
     }));
 
@@ -31,12 +31,12 @@ describe('GameTimersComponent', () => {
 
     it('should get time from service', () => {
         const time = 10;
-        spyOnProperty(gameTimersServiceSpy, 'time', 'get').and.returnValue(time);
+        spyOnProperty(gameManagementServiceSpy, 'time', 'get').and.returnValue(time);
         expect(component.time).toBe(time);
     });
 
     it('should reset timers on destroy', () => {
         component.ngOnDestroy();
-        expect(gameTimersServiceSpy.resetTimers).toHaveBeenCalled();
+        expect(gameManagementServiceSpy.resetTimers).toHaveBeenCalled();
     });
 });

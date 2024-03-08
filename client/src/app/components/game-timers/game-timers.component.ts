@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { GameTimersService } from '@app/services/game-timers.service';
+import { GameManagementService } from '@app/services/game-management.service';
 
 @Component({
     selector: 'app-game-timers',
@@ -7,13 +7,13 @@ import { GameTimersService } from '@app/services/game-timers.service';
     styleUrls: ['./game-timers.component.scss'],
 })
 export class GameTimersComponent implements OnDestroy {
-    constructor(private gameTimersService: GameTimersService) {}
+    constructor(private gameManagementService: GameManagementService) {}
 
     get time(): number {
-        return this.gameTimersService.time;
+        return this.gameManagementService.time;
     }
 
     ngOnDestroy(): void {
-        this.gameTimersService.resetTimers();
+        this.gameManagementService.resetTimers();
     }
 }

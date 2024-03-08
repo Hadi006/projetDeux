@@ -1,13 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Player } from '@common/player';
-import { GameStateService } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-// import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameState } from '@common/constant';
 import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
-// import { QuestionComponent } from './question.component';
+import { GameManagementService } from '@app/services/game-management.service';
 
 const TEST_PLAYER: Player = {
     id: 0,
@@ -53,7 +51,7 @@ describe('QuestionComponent', () => {
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
-    let gameStateService: GameStateService;
+    let gameManagementServiceSpy: GameManagementService;
 
     beforeEach(() => {
         questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
@@ -72,6 +70,9 @@ describe('QuestionComponent', () => {
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp', 'removePlayer']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
+
+        gameManagementServiceSpy = {} as GameManagementService;
+        gameManagementServiceSpy.gameState = GameState.ShowQuestion;
     });
 
     beforeEach(waitForAsync(() => {
@@ -80,10 +81,9 @@ describe('QuestionComponent', () => {
             providers: [
                 { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
-                GameStateService,
+                { provide: GameManagementService, useValue: gameManagementServiceSpy },
             ],
         }).compileComponents();
-        gameStateService = TestBed.inject(GameStateService);
     }));
 
     beforeEach(() => {
@@ -116,7 +116,7 @@ describe('QuestionComponent', () => {
     });
 
     it('showingAnswer getter should return true when game state is ShowAnswer', () => {
-        gameStateService.gameState = GameState.ShowAnswer;
+        gameManagementServiceSpy.gameState = GameState.ShowAnswer;
         expect(component.showingAnswer).toBeTrue();
     });
 

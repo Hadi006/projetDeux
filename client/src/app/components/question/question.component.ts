@@ -1,10 +1,10 @@
 import { Component, HostListener, OnDestroy } from '@angular/core';
 import { Player } from '@common/player';
-import { GameStateService } from '@app/services/game-state.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
+import { GameManagementService } from '@app/services/game-management.service';
 
 @Component({
     selector: 'app-question',
@@ -17,7 +17,7 @@ export class QuestionComponent implements OnDestroy {
     constructor(
         public playerHandlerService: PlayerHandlerService,
         private questionHandlerService: QuestionHandlerService,
-        private gameStateService: GameStateService,
+        private gameManagementService: GameManagementService,
     ) {
         this.player = this.playerHandlerService.createPlayer();
     }
@@ -35,7 +35,7 @@ export class QuestionComponent implements OnDestroy {
     }
 
     get showingAnswer(): boolean {
-        return this.gameStateService.gameState === GameState.ShowAnswer;
+        return this.gameManagementService.gameState === GameState.ShowAnswer;
     }
 
     @HostListener('window:keyup', ['$event'])
