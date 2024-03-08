@@ -15,6 +15,7 @@ export class LobbyService implements OnDestroy {
         private gameHandlerService: GameHandlerService,
     ) {
         this.createLobby();
+        this.gameSocketsService.createRoom(this.internalLobbyData.id);
     }
 
     get lobbyData() {
