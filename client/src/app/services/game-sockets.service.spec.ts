@@ -35,4 +35,12 @@ describe('GameSocketsService', () => {
         service.disconnect();
         expect(socketMock.disconnect).toHaveBeenCalled();
     });
+
+    it('should create a room and join it', () => {
+        const roomId = '1234';
+        spyOn(service, 'joinRoom');
+        service.createRoom(roomId);
+        expect(socketMock.emit).toHaveBeenCalledWith('createRoom', roomId);
+        expect(service.joinRoom).toHaveBeenCalledWith(roomId);
+    });
 });
