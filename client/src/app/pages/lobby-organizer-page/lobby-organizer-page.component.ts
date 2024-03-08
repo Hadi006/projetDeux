@@ -7,7 +7,9 @@ import { LobbyService } from '@app/services/lobby.service';
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    constructor(private lobbyService: LobbyService) {}
+    constructor(private lobbyService: LobbyService) {
+        this.lobbyService.createLobby();
+    }
 
     get lobbyData() {
         return this.lobbyService.lobbyData;
