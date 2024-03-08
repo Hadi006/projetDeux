@@ -22,6 +22,10 @@ export class LobbiesService {
         return true;
     }
 
+    async updateLobby(lobby: LobbyData): Promise<boolean> {
+        return await this.database.update('lobbies', { id: lobby.id }, [{ $set: lobby }]);
+    }
+
     async deleteLobby(lobbyId: string): Promise<boolean> {
         return await this.database.delete('lobbies', { id: lobbyId });
     }
