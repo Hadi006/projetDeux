@@ -108,3 +108,9 @@ export const NEW_PLAYER: Player = {
     answerConfirmed: false,
     isCorrect: false,
 };
+
+export const NEW_LOBBY: LobbyData = {
+    id: '',
+    players: [],
+    started: false,
+};
