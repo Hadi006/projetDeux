@@ -29,5 +29,10 @@ export class LobbyController {
             const added = await this.lobbiesService.addLobby(req.body);
             res.status(added ? httpStatus.CREATED : httpStatus.BAD_REQUEST).json(added);
         });
+
+        this.router.delete('/:lobbyId', async (req: Request, res: Response) => {
+            const deleted = await this.lobbiesService.deleteLobby(req.params.lobbyId);
+            res.status(deleted ? httpStatus.OK : httpStatus.NOT_FOUND).json(deleted);
+        });
     }
 }
