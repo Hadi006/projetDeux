@@ -8,7 +8,7 @@ import * as supertest from 'supertest';
 import { Container } from 'typedi';
 
 describe('LobbyController', () => {
-    const MOCK_LOBBIES: LobbyData = [
+    const MOCK_LOBBIES: LobbyData[] = [
         {
             id: '1',
             players: [],
@@ -32,5 +32,15 @@ describe('LobbyController', () => {
         const app = Container.get(Application);
         Object.defineProperty(app['lobbyController'], 'lobbiesService', { value: lobbiesServiceStub });
         expressApp = app.app;
+    });
+
+    it('GET / should return lobbies from lobbies service', async () => {
+        lobbiesServiceStub.getLobbies.resolves([...MOCK_LOBBIES]);
+        return supertest(expressApp)
+            .get('/api/lobbies')
+            .expect(httpStatus.OK)
+            .then((response) => {
+                expect(response.body).to.deep.equal(MOCK_LOBBIES);
+            });
     });
 });
