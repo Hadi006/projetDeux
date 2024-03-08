@@ -82,4 +82,15 @@ describe('LobbyController', () => {
                 expect(response.body).to.equal(true);
             });
     });
+
+    it('POST / should return bad request', async () => {
+        lobbiesServiceStub.addLobby.resolves(false);
+        return supertest(expressApp)
+            .post('/api/lobbies')
+            .send(MOCK_LOBBIES[0])
+            .expect(httpStatus.BAD_REQUEST)
+            .then((response) => {
+                expect(response.body).to.equal(false);
+            });
+    });
 });
