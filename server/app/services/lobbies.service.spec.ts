@@ -26,4 +26,10 @@ describe('LobbiesService', () => {
         const result = await lobbiesService.getLobbies();
         expect(result).to.deep.equal(lobbies);
     });
+
+    it('should return a lobby', async () => {
+        databaseServiceStub.get.resolves([MOCK_LOBBY]);
+        const result = await lobbiesService.getLobby(MOCK_LOBBY.id);
+        expect(result).to.deep.equal(MOCK_LOBBY);
+    });
 });
