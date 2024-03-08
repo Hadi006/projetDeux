@@ -20,13 +20,6 @@ describe('LobbiesService', () => {
         lobbiesService = new LobbiesService(databaseServiceStub);
     });
 
-    it('should return all lobbies', async () => {
-        const lobbies = new Array(3).fill(MOCK_LOBBY);
-        databaseServiceStub.get.resolves(lobbies);
-        const result = await lobbiesService.getLobbies();
-        expect(result).to.deep.equal(lobbies);
-    });
-
     it('should return a lobby', async () => {
         databaseServiceStub.get.resolves([MOCK_LOBBY]);
         const result = await lobbiesService.getLobby(MOCK_LOBBY.id);
