@@ -24,5 +24,10 @@ export class LobbyController {
             const lobby: LobbyData = await this.lobbiesService.getLobby(req.params.lobbyId);
             res.status(lobby ? httpStatus.OK : httpStatus.NOT_FOUND).json(lobby);
         });
+
+        this.router.post('/', async (req: Request, res: Response) => {
+            const added = await this.lobbiesService.addLobby(req.body);
+            res.status(added ? httpStatus.CREATED : httpStatus.BAD_REQUEST).json(added);
+        });
     }
 }
