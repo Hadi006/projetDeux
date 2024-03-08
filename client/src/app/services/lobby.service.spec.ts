@@ -29,6 +29,7 @@ describe('LobbyService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
+            providers: [{ provide: GameHandlerService, useValue: gameHandlerServiceSpy }],
         });
         service = TestBed.inject(LobbyService);
     });
