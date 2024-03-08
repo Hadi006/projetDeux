@@ -35,7 +35,8 @@ describe('LobbiesService', () => {
 
     it('should add a lobby', async () => {
         databaseServiceStub.get.resolves([]);
-        await lobbiesService.addLobby(MOCK_LOBBY);
+        const result = await lobbiesService.addLobby(MOCK_LOBBY);
+        expect(result).to.equal(true);
         expect(databaseServiceStub.add.calledWith('lobbies', MOCK_LOBBY)).to.equal(true);
     });
 
