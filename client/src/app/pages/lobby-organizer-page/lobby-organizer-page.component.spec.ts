@@ -11,6 +11,9 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(() => {
         lobbyServiceSpy = {} as jasmine.SpyObj<LobbyService>;
+        Object.defineProperty(lobbyServiceSpy, 'lobbyData', {
+            get: () => TEST_LOBBY_DATA,
+        });
     });
 
     beforeEach(waitForAsync(() => {
@@ -31,9 +34,6 @@ describe('LobbyOrganizerPageComponent', () => {
     });
 
     it('should return lobbyData from lobbyService', () => {
-        Object.defineProperty(lobbyServiceSpy, 'lobbyData', {
-            get: () => TEST_LOBBY_DATA,
-        });
         expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
     });
 
