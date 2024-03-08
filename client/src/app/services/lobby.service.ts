@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { SocketService } from '@app/services/socket.service';
 import { LobbyData } from '@common/lobby-data';
 import { GameSocketsService } from './game-sockets.service';
@@ -6,7 +6,7 @@ import { GameSocketsService } from './game-sockets.service';
 @Injectable({
     providedIn: 'root',
 })
-export class LobbyService {
+export class LobbyService implements OnDestroy {
     constructor(
         private readonly socketService: SocketService,
         private gameSocketsService: GameSocketsService,
@@ -21,5 +21,9 @@ export class LobbyService {
                 Object.assign(lobbyData, data);
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.gameSocketsService.disconnect();
     }
 }
