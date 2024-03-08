@@ -33,6 +33,7 @@ export class LobbyService {
 
     cleanUp() {
         this.gameSocketsService.disconnect();
+        this.gameHandlerService.cleanUp();
     }
 
     private generateLobbyId(): string {
