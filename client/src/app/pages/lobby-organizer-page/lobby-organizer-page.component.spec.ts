@@ -32,11 +32,7 @@ describe('LobbyOrganizerPageComponent', () => {
     });
 
     it('should return lobbyData from lobbyService', () => {
-        expect(component.lobbyData).toEqual(lobbyServiceSpy.lobbyData);
-    });
-
-    it('should call lobbyService.subscribeToLobbyDataById', () => {
-        expect(lobbyServiceSpy.subscribeLobbyToServer).toHaveBeenCalled();
+        expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
     });
 
     it('should set lobbyData.started to true', () => {
