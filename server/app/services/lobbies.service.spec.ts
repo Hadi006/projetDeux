@@ -53,4 +53,11 @@ describe('LobbiesService', () => {
         expect(result).to.equal(true);
         expect(databaseServiceStub.delete.calledWith('lobbies', { id: MOCK_LOBBY.id })).to.equal(true);
     });
+
+    it('should not delete a lobby', async () => {
+        databaseServiceStub.delete.resolves(false);
+        const result = await lobbiesService.deleteLobby(MOCK_LOBBY.id);
+        expect(result).to.equal(false);
+        expect(databaseServiceStub.delete.calledWith('lobbies', { id: MOCK_LOBBY.id })).to.equal(true);
+    });
 });
