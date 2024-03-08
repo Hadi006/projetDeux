@@ -19,4 +19,11 @@ describe('LobbiesService', () => {
         databaseServiceStub = createStubInstance(DatabaseService);
         lobbiesService = new LobbiesService(databaseServiceStub);
     });
-}
+
+    it('should return all lobbies', async () => {
+        const lobbies = new Array(3).fill(MOCK_LOBBY);
+        databaseServiceStub.get.resolves(lobbies);
+        const result = await lobbiesService.getLobbies();
+        expect(result).to.deep.equal(lobbies);
+    });
+});
