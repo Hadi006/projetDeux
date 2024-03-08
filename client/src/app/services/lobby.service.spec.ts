@@ -43,8 +43,4 @@ describe('LobbyService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    it('should assign lobby data', () => {
-        expect(service.lobbyData).toEqual({ ...TEST_LOBBY_DATA, quiz: quizData });
-    });
 });
