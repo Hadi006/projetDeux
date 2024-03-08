@@ -3,7 +3,6 @@ import { GameState, SHOW_ANSWER_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, Subscription } from 'rxjs';
 import { GameManagementService } from './game-management.service';
-import { GameSocketsService } from './game-sockets.service';
 import { QuestionHandlerService } from './question-handler.service';
 
 @Injectable({
