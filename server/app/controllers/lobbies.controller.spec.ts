@@ -20,7 +20,7 @@ describe('LobbyController', () => {
             started: false,
         },
     ];
-    // const PARAM_ID = '1';
+    const PARAM_ID = '1';
 
     let lobbiesServiceStub: SinonStubbedInstance<LobbiesService>;
     let expressApp: Express.Application;
@@ -55,7 +55,7 @@ describe('LobbyController', () => {
     it('GET /:id should return a lobby from lobbies service', async () => {
         lobbiesServiceStub.getLobby.resolves(MOCK_LOBBIES[0]);
         return supertest(expressApp)
-            .get('/api/lobbies/1')
+            .get(`/api/lobbies/${PARAM_ID}`)
             .expect(httpStatus.OK)
             .then((response) => {
                 expect(response.body).to.deep.equal(MOCK_LOBBIES[0]);
