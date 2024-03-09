@@ -21,7 +21,7 @@ describe('LobbyService', () => {
     let gameSocketServiceSpy: jasmine.SpyObj<GameSocketsService>;
 
     beforeEach(() => {
-        gameHandlerServiceSpy = {} as jasmine.SpyObj<GameHandlerService>;
+        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['cleanUp']);
         Object.defineProperty(gameHandlerServiceSpy, 'quizData', {
             get: () => quizData,
         });
@@ -63,5 +63,6 @@ describe('LobbyService', () => {
     it('should clean up the game socket', () => {
         service.cleanUp();
         expect(gameSocketServiceSpy.disconnect).toHaveBeenCalled();
+        expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
     });
 });
