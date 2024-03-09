@@ -17,6 +17,7 @@ export class LobbySocketsService {
         this.sio.on('connection', (socket: Socket) => {
             this.createLobby(socket);
             this.joinLobby(socket);
+            this.deleteLobby(socket);
             this.disconnect(socket);
         });
     }
@@ -34,6 +35,12 @@ export class LobbySocketsService {
                 ack({ success: true });
             }
             ack({ success: false });
+        });
+    }
+
+    private deleteLobby(socket: Socket): void {
+        socket.on('delete-lobby', async (lobbyId: string, ack) => {
+            ack({ success: await this.lobbiesService.deleteLobby(lobbyId) });
         });
     }
 
