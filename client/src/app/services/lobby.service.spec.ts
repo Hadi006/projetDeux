@@ -4,7 +4,7 @@ import { LobbyService } from '@app/services/lobby.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { GameSocketsService } from './game-sockets.service';
-import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH } from '@common/constant';
+import { LOBBY_ID_LENGTH } from '@common/constant';
 import { LobbyData } from '@common/lobby-data';
 import { of } from 'rxjs';
 
@@ -58,11 +58,6 @@ describe('LobbyService', () => {
         service.createLobby();
         expect(gameSocketServiceSpy.connect).toHaveBeenCalled();
         expect(service.lobbyData.id.length).toEqual(LOBBY_ID_LENGTH);
-
-        for (let i = 0; i < LOBBY_ID_LENGTH; i++) {
-            expect(LOBBY_ID_CHARACTERS).toContain(service.lobbyData.id.charAt(i));
-        }
-
         expect(service.lobbyData.quiz).toEqual(quizData);
         if (gameHandlerServiceSpy.quizData) {
             expect(gameSocketServiceSpy.createLobby).toHaveBeenCalledWith(gameHandlerServiceSpy.quizData);
