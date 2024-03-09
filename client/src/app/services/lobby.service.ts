@@ -28,7 +28,7 @@ export class LobbyService {
             quiz: this.gameHandlerService.quizData,
         };
 
-        this.gameSocketsService.createRoom(this.internalLobbyData.id);
+        this.gameSocketsService.createLobby(this.internalLobbyData.id);
     }
 
     cleanUp() {

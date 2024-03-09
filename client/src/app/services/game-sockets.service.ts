@@ -16,12 +16,12 @@ export class GameSocketsService {
         this.socket.disconnect();
     }
 
-    createRoom(roomId: string) {
-        this.socket.emit('createRoom', roomId);
-        this.joinRoom(roomId);
+    createLobby(lobbyId: string) {
+        this.socket.emit('create-lobby', lobbyId);
+        this.joinLobby(lobbyId);
     }
 
-    joinRoom(roomId: string) {
-        this.socket.emit('joinRoom', roomId);
+    joinLobby(roomId: string) {
+        this.socket.emit('join-lobby', roomId);
     }
 }

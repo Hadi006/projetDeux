@@ -39,14 +39,14 @@ describe('GameSocketsService', () => {
     });
 
     it('should create a room and join it', () => {
-        spyOn(service, 'joinRoom');
-        service.createRoom(ROOM_ID);
-        expect(socketMock.emit).toHaveBeenCalledWith('createRoom', ROOM_ID);
-        expect(service.joinRoom).toHaveBeenCalledWith(ROOM_ID);
+        spyOn(service, 'joinLobby');
+        service.createLobby(ROOM_ID);
+        expect(socketMock.emit).toHaveBeenCalledWith('create-lobby', ROOM_ID);
+        expect(service.joinLobby).toHaveBeenCalledWith(ROOM_ID);
     });
 
     it('should join a room', () => {
-        service.joinRoom(ROOM_ID);
-        expect(socketMock.emit).toHaveBeenCalledWith('joinRoom', ROOM_ID);
+        service.joinLobby(ROOM_ID);
+        expect(socketMock.emit).toHaveBeenCalledWith('join-lobby', ROOM_ID);
     });
 });
