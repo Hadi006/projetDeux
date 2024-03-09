@@ -6,6 +6,7 @@ import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
 import { LobbyData } from '@common/lobby-data';
+import { Acknowledgment } from '@common/acknowledgment';
 
 describe('LobbySocketsService', () => {
     let service: LobbySocketsService;
@@ -22,23 +23,25 @@ describe('LobbySocketsService', () => {
     };
 
     beforeEach(async () => {
+        lobbiesServiceStub = createStubInstance(LobbiesService);
+        Container.set(LobbiesService, lobbiesServiceStub);
         server = Container.get(Server);
         server.init();
         service = server['lobbySocketsService'];
-        lobbiesServiceStub = createStubInstance(LobbiesService);
-        service['lobbiesService'] = lobbiesServiceStub;
         clientSocket = ioClient(urlString);
         stub(console, 'log');
     });
 
     afterEach(() => {
         clientSocket.close();
-        service['io'].close();
+        service['sio'].close();
         restore();
     });
 
     it('should create a lobby', (done) => {
-        clientSocket.emit('create-lobby', testLobby, () => {
+        lobbiesServiceStub.addLobby.resolves(true);
+        clientSocket.emit('create-lobby', testLobby, (ack: Acknowledgment) => {
+            expect(ack.success).to.equal(true);
             expect(lobbiesServiceStub.addLobby.calledWith(testLobby)).to.equal(true);
             done();
         });
