@@ -92,7 +92,7 @@ describe('HostService', () => {
         webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
             callback(lobbyData as LobbyData);
         });
-        service.createLobby().subscribe((result) => {
+        service.createLobby().subscribe(() => {
             webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
                 callback(null);
             });
