@@ -24,6 +24,11 @@ export class LobbySocketsService {
 
     private createLobby(socket: Socket): void {
         socket.on('create-lobby', async (quiz: Quiz, ack) => {
+            const lobby = await this.lobbiesService.createLobby(quiz);
+            if (lobby) {
+                socket.join(lobby.id);
+                ack(lobby);
+            }
             ack(await this.lobbiesService.createLobby(quiz));
         });
     }
