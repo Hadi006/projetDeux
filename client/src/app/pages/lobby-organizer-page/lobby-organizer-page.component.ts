@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { LobbyService } from '@app/services/lobby.service';
 
 @Component({
@@ -11,10 +13,12 @@ export class LobbyOrganizerPageComponent {
     constructor(
         private lobbyService: LobbyService,
         private router: Router,
+        private dialog: MatDialog,
     ) {
         this.lobbyService.createLobby();
         if (!this.lobbyData) {
             this.leaveLobby();
+            this.dialog.open(AlertComponent, { data: { message: 'Maximum lobbies reached' } });
         }
     }
 
