@@ -34,7 +34,7 @@ export class LobbySocketsService {
                 socket.join(lobbyId);
                 ack({ success: true });
             }
-            ack({ success: false });
+            ack({ success: false, errorMsg: 'PIN invalide' });
         });
     }
 
