@@ -18,9 +18,9 @@ export class LobbyService {
         return this.internalLobbyData;
     }
 
-    createLobby() {
+    createLobby(): boolean {
         if (!this.gameHandlerService.quizData) {
-            return;
+            return false;
         }
 
         this.gameSocketsService.connect();
@@ -29,6 +29,8 @@ export class LobbyService {
                 this.internalLobbyData = lobbyData;
             }
         });
+
+        return true;
     }
 
     cleanUp() {

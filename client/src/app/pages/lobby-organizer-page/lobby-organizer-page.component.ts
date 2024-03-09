@@ -15,10 +15,9 @@ export class LobbyOrganizerPageComponent {
         private router: Router,
         private dialog: MatDialog,
     ) {
-        this.lobbyService.createLobby();
-        if (!this.lobbyData) {
+        if (!this.lobbyService.createLobby()) {
             this.leaveLobby();
-            this.dialog.open(AlertComponent, { data: { message: 'Maximum lobbies reached' } });
+            this.dialog.open(AlertComponent, { data: { message: 'Failed to create lobby' } });
         }
     }
 
