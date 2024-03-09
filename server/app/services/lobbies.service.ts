@@ -16,10 +16,14 @@ export class LobbiesService {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
 
-    async createLobby(quiz: Quiz): Promise<LobbyData> {
+    async createLobby(quiz: Quiz): Promise<LobbyData | undefined> {
         let id: string;
 
         const lobbies = await this.getLobbies();
+
+        if (lobbies.length >= LOBBY_ID_MAX) {
+            return undefined;
+        }
 
         do {
             id = Math.floor(Math.random() * LOBBY_ID_MAX)
