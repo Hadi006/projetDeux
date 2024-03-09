@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Acknowledgment } from '@common/acknowledgment';
+import { NEW_LOBBY } from '@common/constant';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
@@ -44,7 +45,7 @@ describe('GameSocketsService', () => {
             return socketSpy;
         });
 
-        service.createLobby(LOBBY_ID).subscribe((success) => {
+        service.createLobby({ ...NEW_LOBBY, id: LOBBY_ID }).subscribe((success) => {
             expect(success).toBeTrue();
             expect(service.joinLobby).toHaveBeenCalledWith(LOBBY_ID);
             done();
@@ -59,7 +60,7 @@ describe('GameSocketsService', () => {
             return socketSpy;
         });
 
-        service.createLobby(LOBBY_ID).subscribe((success) => {
+        service.createLobby({ ...NEW_LOBBY, id: LOBBY_ID }).subscribe((success) => {
             expect(success).toBeFalse();
             expect(service.joinLobby).not.toHaveBeenCalled();
             done();
