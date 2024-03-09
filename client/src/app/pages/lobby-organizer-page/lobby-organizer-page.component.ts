@@ -13,6 +13,9 @@ export class LobbyOrganizerPageComponent {
         private router: Router,
     ) {
         this.lobbyService.createLobby();
+        if (!this.lobbyData) {
+            this.leaveLobby();
+        }
     }
 
     get lobbyData() {
