@@ -17,7 +17,7 @@ export class LobbyOrganizerPageComponent {
     ) {
         if (!this.lobbyService.createLobby()) {
             this.leaveLobby();
-            this.dialog.open(AlertComponent, { data: { message: 'Failed to create lobby' } });
+            this.dialog.open(AlertComponent, { data: { message: 'Maximum games reached' } });
         }
     }
 
