@@ -1,7 +1,7 @@
 import { Server } from '@app/server';
 import { LobbySocketsService } from '@app/services/lobby-sockets.service';
 import { expect } from 'chai';
-import { SinonStubbedInstance, createStubInstance, restore /* , stub */ } from 'sinon';
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
@@ -40,7 +40,7 @@ describe('LobbySocketsService', () => {
         server.init();
         service = server['lobbySocketsService'];
         clientSocket = ioClient(urlString);
-        // stub(console, 'log');
+        stub(console, 'log');
     });
 
     afterEach(() => {
@@ -51,7 +51,7 @@ describe('LobbySocketsService', () => {
 
     it('should create a lobby', (done) => {
         lobbiesServiceStub.createLobby.resolves(testLobby);
-        clientSocket.emit('create-lobby', testQuiz, (ack: LobbyData) => {
+        clientSocket.emit('create-lobby', testQuiz, (ack: LobbyData | undefined) => {
             expect(ack.quiz).to.deep.equal({ ...testQuiz, lastModification: testQuiz.lastModification.toISOString() });
             expect(lobbiesServiceStub.createLobby.called).to.equal(true);
             done();

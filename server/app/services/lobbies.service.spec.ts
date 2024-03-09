@@ -1,3 +1,4 @@
+import { LOBBY_ID_MAX } from '@common/constant';
 import { DatabaseService } from './database.service';
 import { LobbiesService } from './lobbies.service';
 import { LobbyData } from '@common/lobby-data';
@@ -31,6 +32,12 @@ describe('LobbiesService', () => {
         lobbiesService = new LobbiesService(databaseServiceStub);
     });
 
+    it('should return lobbies', async () => {
+        databaseServiceStub.get.resolves([MOCK_LOBBY]);
+        const result = await lobbiesService.getLobbies();
+        expect(result).to.deep.equal([MOCK_LOBBY]);
+    });
+
     it('should return a lobby', async () => {
         databaseServiceStub.get.resolves([MOCK_LOBBY]);
         const result = await lobbiesService.getLobby(MOCK_LOBBY.id);
@@ -38,9 +45,23 @@ describe('LobbiesService', () => {
     });
 
     it('should create a lobby', async () => {
-        stub(lobbiesService, 'getLobby').resolves(undefined);
+        stub(lobbiesService, 'getLobbies').resolves([]);
         const result = await lobbiesService.createLobby(MOCK_QUIZ);
         expect(result.quiz).to.deep.equal(MOCK_LOBBY.quiz);
+        expect(databaseServiceStub.add.called).to.equal(true);
+    });
+
+    it('should not create a lobby', async () => {
+        stub(lobbiesService, 'getLobbies').resolves(new Array(LOBBY_ID_MAX).fill(MOCK_LOBBY));
+        const result = await lobbiesService.createLobby(MOCK_QUIZ);
+        expect(result).to.equal(undefined);
+        expect(databaseServiceStub.add.called).to.equal(false);
+    });
+
+    it('should generate a new lobby id', async () => {
+        stub(lobbiesService, 'getLobbies').resolves([MOCK_LOBBY]);
+        const result = await lobbiesService.createLobby(MOCK_QUIZ);
+        expect(result.id).to.not.equal(MOCK_LOBBY.id);
         expect(databaseServiceStub.add.called).to.equal(true);
     });
 

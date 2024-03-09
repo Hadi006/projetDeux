@@ -115,6 +115,6 @@ export const NEW_LOBBY: LobbyData = {
     started: false,
 };
 
-export const LOBBY_ID_CHARACTERS = '0123456789';
+export const LOBBY_ID_MAX = 10000;
 
 export const LOBBY_ID_LENGTH = 4;
