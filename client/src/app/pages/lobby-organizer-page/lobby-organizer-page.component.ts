@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { LobbyService } from '@app/services/lobby.service';
+import { HostService } from '@app/services/host.service';
 
 @Component({
     selector: 'app-lobby-organizer-page',
@@ -11,7 +11,7 @@ import { LobbyService } from '@app/services/lobby.service';
 })
 export class LobbyOrganizerPageComponent {
     constructor(
-        private lobbyService: LobbyService,
+        private lobbyService: HostService,
         private router: Router,
         private dialog: MatDialog,
     ) {

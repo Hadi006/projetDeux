@@ -6,7 +6,7 @@ import { GameHandlerService } from '@app/services/game-handler.service';
 @Injectable({
     providedIn: 'root',
 })
-export class LobbyService {
+export class HostService {
     private internalLobbyData: LobbyData;
 
     constructor(

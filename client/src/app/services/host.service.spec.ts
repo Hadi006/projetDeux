@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { LobbyService } from '@app/services/lobby.service';
+import { HostService } from '@app/services/host.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { GameSocketsService } from './game-sockets.service';
@@ -8,7 +8,7 @@ import { LOBBY_ID_LENGTH } from '@common/constant';
 import { LobbyData } from '@common/lobby-data';
 import { of } from 'rxjs';
 
-describe('LobbyService', () => {
+describe('HostService', () => {
     const quizData: Quiz = {
         id: '0',
         title: 'Math',
@@ -24,7 +24,7 @@ describe('LobbyService', () => {
         started: false,
         quiz: quizData,
     };
-    let service: LobbyService;
+    let service: HostService;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
     let gameSocketServiceSpy: jasmine.SpyObj<GameSocketsService>;
 
@@ -46,7 +46,7 @@ describe('LobbyService', () => {
                 { provide: GameSocketsService, useValue: gameSocketServiceSpy },
             ],
         });
-        service = TestBed.inject(LobbyService);
+        service = TestBed.inject(HostService);
     });
 
     it('should be created', () => {

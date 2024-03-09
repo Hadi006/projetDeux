@@ -4,13 +4,13 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { LobbyService } from '@app/services/lobby.service';
+import { HostService } from '@app/services/host.service';
 import { TEST_LOBBY_DATA } from '@common/constant';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
-    let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
+    let lobbyServiceSpy: jasmine.SpyObj<HostService>;
     let routerServiceSpy: jasmine.SpyObj<Router>;
     let dialogServiceSpy: jasmine.SpyObj<MatDialog>;
 
@@ -27,7 +27,7 @@ describe('LobbyOrganizerPageComponent', () => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
             providers: [
-                { provide: LobbyService, useValue: lobbyServiceSpy },
+                { provide: HostService, useValue: lobbyServiceSpy },
                 { provide: Router, useValue: routerServiceSpy },
                 { provide: MatDialog, useValue: dialogServiceSpy },
             ],
