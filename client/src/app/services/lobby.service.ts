@@ -12,9 +12,7 @@ export class LobbyService {
     constructor(
         private gameSocketsService: GameSocketsService,
         private gameHandlerService: GameHandlerService,
-    ) {
-        this.gameSocketsService.connect();
-    }
+    ) {}
 
     get lobbyData() {
         return this.internalLobbyData;
@@ -25,6 +23,7 @@ export class LobbyService {
             return;
         }
 
+        this.gameSocketsService.connect();
         this.gameSocketsService.createLobby(this.gameHandlerService.quizData).subscribe((lobbyData: LobbyData) => {
             this.internalLobbyData = lobbyData;
         });

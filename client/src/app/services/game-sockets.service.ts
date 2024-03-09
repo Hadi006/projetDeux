@@ -20,7 +20,6 @@ export class GameSocketsService {
     }
 
     createLobby(quiz: Quiz): Observable<LobbyData> {
-        console.log('createLobby', quiz);
         return new Observable<LobbyData>((subscriber) => {
             this.socket.emit('create-lobby', quiz, (lobbyData: LobbyData) => {
                 this.joinLobby(lobbyData.id);
