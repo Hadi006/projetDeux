@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
-import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, NEW_LOBBY } from '@common/constant';
+import { LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 
 @Service()
@@ -16,7 +16,9 @@ export class LobbiesService {
         let id: string;
 
         do {
-            id = this.generateLobbyId();
+            id = Math.floor(Math.random() * LOBBY_ID_MAX)
+                .toString()
+                .padStart(LOBBY_ID_LENGTH, '0');
         } while (await this.getLobby(id));
 
         const newLobby: LobbyData = { ...NEW_LOBBY, id, quiz };
@@ -30,15 +32,5 @@ export class LobbiesService {
 
     async deleteLobby(lobbyId: string): Promise<boolean> {
         return await this.database.delete('lobbies', { id: lobbyId });
-    }
-
-    private generateLobbyId(): string {
-        let result = '';
-
-        for (let i = 0; i < LOBBY_ID_LENGTH; i++) {
-            result += LOBBY_ID_CHARACTERS.charAt(Math.floor(Math.random() * LOBBY_ID_CHARACTERS.length));
-        }
-
-        return result;
     }
 }
