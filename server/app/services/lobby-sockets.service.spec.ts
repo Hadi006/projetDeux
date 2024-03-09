@@ -51,7 +51,7 @@ describe('LobbySocketsService', () => {
 
     it('should create a lobby', (done) => {
         lobbiesServiceStub.createLobby.resolves(testLobby);
-        clientSocket.emit('create-lobby', testQuiz, (ack: LobbyData) => {
+        clientSocket.emit('create-lobby', testQuiz, (ack: LobbyData | undefined) => {
             expect(ack.quiz).to.deep.equal({ ...testQuiz, lastModification: testQuiz.lastModification.toISOString() });
             expect(lobbiesServiceStub.createLobby.called).to.equal(true);
             done();
