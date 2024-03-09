@@ -5,7 +5,6 @@ import { SinonStubbedInstance, createStubInstance, restore /* , stub */ } from '
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
-import { Acknowledgment } from '@common/acknowledgment';
 import { Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
 
@@ -79,8 +78,8 @@ describe('LobbySocketsService', () => {
 
     it('should delete a lobby', (done) => {
         lobbiesServiceStub.deleteLobby.resolves(true);
-        clientSocket.emit('delete-lobby', testLobby.id, (ack: Acknowledgment) => {
-            expect(ack.success).to.equal(true);
+        clientSocket.emit('delete-lobby', testLobby.id, (ack: boolean) => {
+            expect(ack).to.equal(true);
             expect(lobbiesServiceStub.deleteLobby.calledWith(testLobby.id)).to.equal(true);
             done();
         });
@@ -88,8 +87,8 @@ describe('LobbySocketsService', () => {
 
     it('should not delete a lobby', (done) => {
         lobbiesServiceStub.deleteLobby.resolves(false);
-        clientSocket.emit('delete-lobby', testLobby.id, (ack: Acknowledgment) => {
-            expect(ack.success).to.equal(false);
+        clientSocket.emit('delete-lobby', testLobby.id, (ack: boolean) => {
+            expect(ack).to.equal(false);
             expect(lobbiesServiceStub.deleteLobby.calledWith(testLobby.id)).to.equal(true);
             done();
         });
