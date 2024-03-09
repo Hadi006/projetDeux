@@ -18,7 +18,6 @@ describe('LobbySocketsService', () => {
     const testLobby: LobbyData = {
         id: '1',
         players: [],
-        quiz: { id: '1', title: 'Math', visible: true, description: 'Math quiz', duration: 5, lastModification: new Date(), questions: [] },
         started: false,
     };
 
