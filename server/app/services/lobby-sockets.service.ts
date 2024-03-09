@@ -2,13 +2,12 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
 import { LobbyData } from '@common/lobby-data';
 import { LobbiesService } from './lobbies.service';
-import { Inject } from 'typedi';
 
 export class LobbySocketsService {
     private sio: SocketIOServer;
 
     constructor(
-        @Inject(() => LobbiesService) private lobbiesService: LobbiesService,
+        private lobbiesService: LobbiesService,
         server: HTTPServer,
     ) {
         this.sio = new SocketIOServer(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
