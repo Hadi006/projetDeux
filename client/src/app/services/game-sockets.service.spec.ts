@@ -51,6 +51,21 @@ describe('GameSocketsService', () => {
         });
     });
 
+    it('should not create a lobby', (done) => {
+        spyOn(service, 'joinLobby');
+
+        socketSpy.emit.and.callFake((event: string, lobbyId: string, callback: (ack: Acknowledgment) => void) => {
+            callback({ success: false });
+            return socketSpy;
+        });
+
+        service.createLobby(LOBBY_ID).subscribe((success) => {
+            expect(success).toBeFalse();
+            expect(service.joinLobby).not.toHaveBeenCalled();
+            done();
+        });
+    });
+
     it('should join a lobby', () => {
         service.joinLobby(LOBBY_ID);
         expect(socketSpy.emit).toHaveBeenCalledWith('join-lobby', LOBBY_ID);
