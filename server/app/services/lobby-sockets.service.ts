@@ -29,7 +29,7 @@ export class LobbySocketsService {
                 socket.join(lobby.id);
                 ack(lobby);
             }
-            ack(await this.lobbiesService.createLobby(quiz));
+            ack(lobby);
         });
     }
 
