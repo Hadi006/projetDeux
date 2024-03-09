@@ -67,7 +67,13 @@ describe('GameSocketsService', () => {
     });
 
     it('should join a lobby', () => {
-        service.joinLobby(LOBBY_ID);
-        expect(socketSpy.emit).toHaveBeenCalledWith('join-lobby', LOBBY_ID);
+        socketSpy.emit.and.callFake((event: string, roomId: string, callback: (ack: Acknowledgment) => void) => {
+            callback({ success: true });
+            return socketSpy;
+        });
+
+        service.joinLobby(LOBBY_ID).subscribe((success) => {
+            expect(success).toBeTrue();
+        });
     });
 });
