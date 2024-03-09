@@ -78,17 +78,8 @@ describe('LobbySocketsService', () => {
 
     it('should delete a lobby', (done) => {
         lobbiesServiceStub.deleteLobby.resolves(true);
-        clientSocket.emit('delete-lobby', testLobby.id, (ack: boolean) => {
-            expect(ack).to.equal(true);
-            expect(lobbiesServiceStub.deleteLobby.calledWith(testLobby.id)).to.equal(true);
-            done();
-        });
-    });
-
-    it('should not delete a lobby', (done) => {
-        lobbiesServiceStub.deleteLobby.resolves(false);
-        clientSocket.emit('delete-lobby', testLobby.id, (ack: boolean) => {
-            expect(ack).to.equal(false);
+        clientSocket.emit('delete-lobby', testLobby.id, (ack: void) => {
+            expect(ack).to.equal(undefined);
             expect(lobbiesServiceStub.deleteLobby.calledWith(testLobby.id)).to.equal(true);
             done();
         });
