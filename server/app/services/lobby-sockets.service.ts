@@ -32,9 +32,9 @@ export class LobbySocketsService {
         socket.on('join-lobby', async (lobbyId: string, ack) => {
             if (await this.lobbiesService.getLobby(lobbyId)) {
                 socket.join(lobbyId);
-                ack({ success: true });
+                ack('');
             }
-            ack({ success: false, errorMsg: 'PIN invalide' });
+            ack('PIN invalide');
         });
     }
 
