@@ -2,6 +2,8 @@
     position: fixed;
     bottom: 0;
     margin: 10px;
+    max-height: 400px; /* Adjust as needed */
+    overflow-y: auto;
 }
 
 .messages {
