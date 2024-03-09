@@ -1,24 +1,26 @@
-<div *ngIf="lobbyData.quiz" class="title-container">
-    <h2>{{ lobbyData.quiz.title }}</h2>
-</div>
-
-<div>Lobby code: {{ lobbyData.id }}</div>
-
-<div id="nPlayers">Number of players: {{ lobbyData.players.length }}</div>
-
-<div id="players-container">
-    <p>Players:</p>
-    <div class="player-container" *ngFor="let player of lobbyData.players">
-        {{ player.name }}
+<div *ngIf="lobbyData">
+    <div *ngIf="lobbyData.quiz" class="title-container">
+        <h2>{{ lobbyData.quiz.title }}</h2>
     </div>
-</div>
 
-<footer>
-    <button (click)="leaveLobby()">Quitter</button>
+    <div>Lobby code: {{ lobbyData.id }}</div>
 
-    <button *ngIf="lobbyData.quiz" (click)="startGame()">Start game</button>
-</footer>
+    <div id="nPlayers">Number of players: {{ lobbyData.players.length }}</div>
 
-<div *ngIf="lobbyData.started">
-    <app-game-count-down *ngIf="lobbyData.quiz" [gameName]="lobbyData.quiz.title"></app-game-count-down>
+    <div id="players-container">
+        <p>Players:</p>
+        <div class="player-container" *ngFor="let player of lobbyData.players">
+            {{ player.name }}
+        </div>
+    </div>
+
+    <footer>
+        <button (click)="leaveLobby()">Quitter</button>
+
+        <button *ngIf="lobbyData.quiz" (click)="startGame()">Start game</button>
+    </footer>
+
+    <div *ngIf="lobbyData.started">
+        <app-game-count-down *ngIf="lobbyData.quiz" [gameName]="lobbyData.quiz.title"></app-game-count-down>
+    </div>
 </div>
