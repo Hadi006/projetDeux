@@ -17,7 +17,7 @@ export class GameSocketsService {
         this.socket.disconnect();
     }
 
-    createLobby(lobbyId: string): boolean {
+    async createLobby(lobbyId: string): Promise<boolean> {
         let result = false;
 
         this.socket.emit('create-lobby', lobbyId, (ack: Acknowledgment) => {
