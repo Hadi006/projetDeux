@@ -25,7 +25,6 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 import { PromptComponent } from './components/prompt/prompt.component';
-import { WaitingPageComponent } from './pages/waiting-page/waiting-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -54,7 +53,6 @@ import { WaitingPageComponent } from './pages/waiting-page/waiting-page.componen
         QuestionItemComponent,
         QuestionFormComponent,
         PromptComponent,
-        WaitingPageComponent,
     ],
     imports: [
         AppMaterialModule,
