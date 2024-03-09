@@ -8,6 +8,10 @@ import { Quiz } from '@common/quiz';
 export class LobbiesService {
     constructor(private database: DatabaseService) {}
 
+    async getLobbies(): Promise<LobbyData[]> {
+        return await this.database.get<LobbyData>('lobbies');
+    }
+
     async getLobby(lobbyId: string): Promise<LobbyData> {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
