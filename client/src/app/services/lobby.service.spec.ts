@@ -32,6 +32,7 @@ describe('LobbyService', () => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['cleanUp']);
         Object.defineProperty(gameHandlerServiceSpy, 'quizData', {
             get: () => quizData,
+            configurable: true,
         });
 
         gameSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'createLobby', 'disconnect']);
@@ -69,6 +70,15 @@ describe('LobbyService', () => {
         if (gameHandlerServiceSpy.quizData) {
             expect(gameSocketServiceSpy.createLobby).toHaveBeenCalledWith(gameHandlerServiceSpy.quizData);
         }
+    });
+
+    it('should not create a lobby if there is no quiz data', () => {
+        Object.defineProperty(gameHandlerServiceSpy, 'quizData', {
+            get: () => null,
+            configurable: true,
+        });
+        service.createLobby();
+        expect(gameSocketServiceSpy.createLobby).not.toHaveBeenCalled();
     });
 
     it('should clean up the game socket', () => {
