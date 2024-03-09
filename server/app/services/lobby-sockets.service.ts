@@ -1,6 +1,5 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import { LobbyData } from '@common/lobby-data';
 import { LobbiesService } from './lobbies.service';
 import { Quiz } from '@common/quiz';
 
@@ -25,7 +24,7 @@ export class LobbySocketsService {
 
     private createLobby(socket: Socket): void {
         socket.on('create-lobby', async (quiz: Quiz, ack) => {
-            ack({ success: await this.lobbiesService.addLobby(quiz) });
+            ack(await this.lobbiesService.createLobby(quiz));
         });
     }
 
