@@ -35,7 +35,7 @@ describe('LobbyService', () => {
             configurable: true,
         });
 
-        gameSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'createLobby', 'disconnect']);
+        gameSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'createLobby', 'disconnect', 'deleteLobby']);
     });
 
     beforeEach(() => {
@@ -79,7 +79,11 @@ describe('LobbyService', () => {
     });
 
     it('should clean up the game socket', () => {
+        gameSocketServiceSpy.createLobby.and.returnValue(of(lobbyData));
+        gameSocketServiceSpy.deleteLobby.and.returnValue(of());
+        service.createLobby();
         service.cleanUp();
+        expect(gameSocketServiceSpy.deleteLobby).toHaveBeenCalledWith(service.lobbyData.id);
         expect(gameSocketServiceSpy.disconnect).toHaveBeenCalled();
         expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
     });
