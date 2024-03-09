@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
 import { GameSocketsService } from './game-sockets.service';
-import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, NEW_LOBBY } from '@common/constant';
 import { GameHandlerService } from '@app/services/game-handler.service';
 
 @Injectable({
