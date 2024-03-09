@@ -12,15 +12,16 @@ export class LobbiesService {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
 
-    async addLobby(quiz: Quiz): Promise<boolean> {
+    async createLobby(quiz: Quiz): Promise<LobbyData> {
         let id: string;
 
         do {
             id = this.generateLobbyId();
         } while (await this.getLobby(id));
 
-        await this.database.add('lobbies', { ...NEW_LOBBY, id, quiz });
-        return true;
+        const newLobby: LobbyData = { ...NEW_LOBBY, id, quiz };
+        await this.database.add('lobbies', newLobby);
+        return newLobby;
     }
 
     async updateLobby(lobby: LobbyData): Promise<boolean> {
