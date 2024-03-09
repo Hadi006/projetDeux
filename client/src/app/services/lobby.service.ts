@@ -31,6 +31,7 @@ export class LobbyService {
 
     cleanUp() {
         this.gameSocketsService.disconnect();
+        this.gameSocketsService.deleteLobby(this.internalLobbyData.id).subscribe();
         this.gameHandlerService.cleanUp();
     }
 }
