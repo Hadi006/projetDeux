@@ -55,7 +55,7 @@ describe('LobbyService', () => {
 
     it('should create a lobby, connect the socket and call the create room method', () => {
         gameSocketServiceSpy.createLobby.and.returnValue(of(lobbyData));
-        service.createLobby();
+        expect(service.createLobby()).toBeTrue();
         expect(gameSocketServiceSpy.connect).toHaveBeenCalled();
         expect(service.lobbyData.id.length).toEqual(LOBBY_ID_LENGTH);
         expect(service.lobbyData.quiz).toEqual(quizData);
@@ -69,7 +69,7 @@ describe('LobbyService', () => {
             get: () => null,
             configurable: true,
         });
-        service.createLobby();
+        expect(service.createLobby()).toBeFalse();
         expect(gameSocketServiceSpy.createLobby).not.toHaveBeenCalled();
     });
 

@@ -16,6 +16,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(() => {
         lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp']);
+        lobbyServiceSpy.createLobby.and.returnValue(true);
         Object.defineProperty(lobbyServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
 
         routerServiceSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -47,12 +48,12 @@ describe('LobbyOrganizerPageComponent', () => {
         expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
     });
 
-    it('should call leaveLobby if lobbyData is undefined', () => {
-        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { get: () => undefined, configurable: true });
+    it('should call leaveLobby if lobby creation returns false', () => {
+        lobbyServiceSpy.createLobby.and.returnValue(false);
         component = TestBed.createComponent(LobbyOrganizerPageComponent).componentInstance;
         expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
         expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
-        expect(dialogServiceSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: 'Maximum lobbies reached' } });
+        expect(dialogServiceSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: 'Maximum games reached' } });
     });
 
     it('should return lobbyData from lobbyService', () => {
