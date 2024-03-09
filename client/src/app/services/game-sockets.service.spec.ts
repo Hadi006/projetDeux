@@ -94,4 +94,15 @@ describe('GameSocketsService', () => {
             expect(errorMsg).toBe('Error message');
         });
     });
+
+    it('should delete a lobby', () => {
+        socketSpy.emit.and.callFake((event: string, roomId: string, callback: () => void) => {
+            callback();
+            return socketSpy;
+        });
+
+        service.deleteLobby(LOBBY_ID).subscribe(() => {
+            expect(socketSpy.emit).toHaveBeenCalledWith('delete-lobby', LOBBY_ID, jasmine.any(Function));
+        });
+    });
 });
