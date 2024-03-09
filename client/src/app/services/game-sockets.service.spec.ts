@@ -82,7 +82,7 @@ describe('GameSocketsService', () => {
         });
 
         service.createLobby(TEST_QUIZ).subscribe((lobbyData: LobbyData | null) => {
-            expect(lobbyData).toBeUndefined();
+            expect(lobbyData).toBeNull();
             expect(service.joinLobby).not.toHaveBeenCalled();
             done();
         });
