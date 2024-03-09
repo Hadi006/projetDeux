@@ -50,6 +50,13 @@ describe('LobbiesService', () => {
         expect(databaseServiceStub.add.called).to.equal(true);
     });
 
+    it('should generate a new lobby id', async () => {
+        stub(lobbiesService, 'getLobbies').resolves([MOCK_LOBBY]);
+        const result = await lobbiesService.createLobby(MOCK_QUIZ);
+        expect(result.id).to.not.equal(MOCK_LOBBY.id);
+        expect(databaseServiceStub.add.called).to.equal(true);
+    });
+
     it('should update a lobby', async () => {
         databaseServiceStub.update.resolves(true);
         const result = await lobbiesService.updateLobby(MOCK_LOBBY);
