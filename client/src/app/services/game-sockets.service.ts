@@ -19,11 +19,11 @@ export class GameSocketsService {
         this.socket.disconnect();
     }
 
-    createLobby(quiz: Quiz): Observable<LobbyData | undefined> {
-        return new Observable<LobbyData | undefined>((subscriber) => {
-            this.socket.emit('create-lobby', quiz, (lobbyData: LobbyData | undefined) => {
+    createLobby(quiz: Quiz): Observable<LobbyData | null> {
+        return new Observable<LobbyData | null>((subscriber) => {
+            this.socket.emit('create-lobby', quiz, (lobbyData: LobbyData | null) => {
                 if (!lobbyData) {
-                    subscriber.next(undefined);
+                    subscriber.next(null);
                     subscriber.complete();
                     return;
                 } else {

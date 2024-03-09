@@ -24,7 +24,7 @@ export class LobbyService {
         }
 
         this.gameSocketsService.connect();
-        this.gameSocketsService.createLobby(this.gameHandlerService.quizData).subscribe((lobbyData: LobbyData | undefined) => {
+        this.gameSocketsService.createLobby(this.gameHandlerService.quizData).subscribe((lobbyData: LobbyData | null) => {
             if (lobbyData) {
                 this.internalLobbyData = lobbyData;
             }

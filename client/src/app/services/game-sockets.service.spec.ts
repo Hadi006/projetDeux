@@ -61,12 +61,12 @@ describe('GameSocketsService', () => {
     it('should create a lobby and join it', (done) => {
         spyOn(service, 'joinLobby');
 
-        socketSpy.emit.and.callFake((event: string, lobbyId: string, callback: (lobbyData: LobbyData | undefined) => void) => {
+        socketSpy.emit.and.callFake((event: string, lobbyId: string, callback: (lobbyData: LobbyData | null) => void) => {
             callback({ ...NEW_LOBBY, id: LOBBY_ID });
             return socketSpy;
         });
 
-        service.createLobby(TEST_QUIZ).subscribe((lobbyData: LobbyData | undefined) => {
+        service.createLobby(TEST_QUIZ).subscribe((lobbyData: LobbyData | null) => {
             expect(lobbyData).toEqual({ ...NEW_LOBBY, id: LOBBY_ID });
             expect(service.joinLobby).toHaveBeenCalledWith(LOBBY_ID);
             done();
@@ -76,12 +76,12 @@ describe('GameSocketsService', () => {
     it('should not create a lobby', (done) => {
         spyOn(service, 'joinLobby');
 
-        socketSpy.emit.and.callFake((event: string, lobbyId: string, callback: (lobbyData: LobbyData | undefined) => void) => {
-            callback(undefined);
+        socketSpy.emit.and.callFake((event: string, lobbyId: string, callback: (lobbyData: LobbyData | null) => void) => {
+            callback(null);
             return socketSpy;
         });
 
-        service.createLobby(TEST_QUIZ).subscribe((lobbyData: LobbyData | undefined) => {
+        service.createLobby(TEST_QUIZ).subscribe((lobbyData: LobbyData | null) => {
             expect(lobbyData).toBeUndefined();
             expect(service.joinLobby).not.toHaveBeenCalled();
             done();
