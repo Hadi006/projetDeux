@@ -44,7 +44,7 @@ describe('LobbiesService', () => {
     });
 
     it('should create a lobby', async () => {
-        stub(lobbiesService, 'getLobby').resolves(undefined);
+        stub(lobbiesService, 'getLobbies').resolves([]);
         const result = await lobbiesService.createLobby(MOCK_QUIZ);
         expect(result.quiz).to.deep.equal(MOCK_LOBBY.quiz);
         expect(databaseServiceStub.add.called).to.equal(true);
