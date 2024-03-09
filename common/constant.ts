@@ -108,3 +108,15 @@ export const NEW_PLAYER: Player = {
     answerConfirmed: false,
     isCorrect: false,
 };
+
+
+export const NEW_LOBBY: LobbyData = {
+    id: '',
+    players: [],
+    started: false,
+};
+
+
+export const LOBBY_ID_MAX = 10000;
+
+export const LOBBY_ID_LENGTH = 4;

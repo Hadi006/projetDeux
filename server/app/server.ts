@@ -1,7 +1,9 @@
 import { Application } from '@app/app';
 import * as http from 'http';
 import { AddressInfo } from 'net';
-import { Service } from 'typedi';
+import { Service, Container } from 'typedi';
+import { LobbySocketsService } from './services/lobby-sockets.service';
+import { LobbiesService } from './services/lobbies.service';
 
 @Service()
 export class Server {
@@ -9,6 +11,7 @@ export class Server {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
     private server: http.Server;
+    private lobbySocketsService: LobbySocketsService;
 
     constructor(private readonly application: Application) {}
 
@@ -20,6 +23,9 @@ export class Server {
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
+
+        this.lobbySocketsService = new LobbySocketsService(Container.get(LobbiesService), this.server);
+        this.lobbySocketsService.handleSockets();
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));

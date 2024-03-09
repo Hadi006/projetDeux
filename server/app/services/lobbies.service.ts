@@ -1,6 +1,8 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
+import { LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY } from '@common/constant';
+import { Quiz } from '@common/quiz';
 
 @Service()
 export class LobbiesService {
@@ -14,12 +16,24 @@ export class LobbiesService {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
 
-    async addLobby(lobby: LobbyData): Promise<boolean> {
-        if (await this.getLobby(lobby.id)) {
-            return false;
+    async createLobby(quiz: Quiz): Promise<LobbyData | undefined> {
+        let id: string;
+
+        const lobbies = await this.getLobbies();
+
+        if (lobbies.length >= LOBBY_ID_MAX) {
+            return undefined;
         }
-        await this.database.add('lobbies', lobby);
-        return true;
+
+        do {
+            id = Math.floor(Math.random() * LOBBY_ID_MAX)
+                .toString()
+                .padStart(LOBBY_ID_LENGTH, '0');
+        } while (lobbies.some((lobby) => lobby.id === id));
+
+        const newLobby: LobbyData = { ...NEW_LOBBY, id, quiz };
+        await this.database.add('lobbies', newLobby);
+        return newLobby;
     }
 
     async updateLobby(lobby: LobbyData): Promise<boolean> {
