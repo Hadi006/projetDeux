@@ -29,10 +29,10 @@ export class GameSocketsService {
         });
     }
 
-    joinLobby(roomId: string): Observable<boolean> {
-        return new Observable<boolean>((subscriber) => {
-            this.socket.emit('join-lobby', roomId, (ack: Acknowledgment) => {
-                subscriber.next(ack.success);
+    joinLobby(roomId: string): Observable<string> {
+        return new Observable<string>((subscriber) => {
+            this.socket.emit('join-lobby', roomId, (errorMsg: string) => {
+                subscriber.next(errorMsg);
                 subscriber.complete();
             });
         });
