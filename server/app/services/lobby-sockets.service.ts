@@ -1,7 +1,7 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import { LobbyData } from '@common/lobby-data';
 import { LobbiesService } from './lobbies.service';
+import { Quiz } from '@common/quiz';
 
 export class LobbySocketsService {
     private sio: SocketIOServer;
@@ -17,13 +17,14 @@ export class LobbySocketsService {
         this.sio.on('connection', (socket: Socket) => {
             this.createLobby(socket);
             this.joinLobby(socket);
+            this.deleteLobby(socket);
             this.disconnect(socket);
         });
     }
 
     private createLobby(socket: Socket): void {
-        socket.on('create-lobby', async (lobby: LobbyData, ack) => {
-            ack({ success: await this.lobbiesService.addLobby(lobby) });
+        socket.on('create-lobby', async (quiz: Quiz, ack) => {
+            ack(await this.lobbiesService.createLobby(quiz));
         });
     }
 
@@ -31,9 +32,15 @@ export class LobbySocketsService {
         socket.on('join-lobby', async (lobbyId: string, ack) => {
             if (await this.lobbiesService.getLobby(lobbyId)) {
                 socket.join(lobbyId);
-                ack({ success: true });
+                ack('');
             }
-            ack({ success: false });
+            ack('PIN invalide');
+        });
+    }
+
+    private deleteLobby(socket: Socket): void {
+        socket.on('delete-lobby', async (lobbyId: string, ack) => {
+            ack(await this.lobbiesService.deleteLobby(lobbyId));
         });
     }
 
