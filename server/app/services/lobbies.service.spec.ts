@@ -1,3 +1,4 @@
+import { LOBBY_ID_MAX } from '@common/constant';
 import { DatabaseService } from './database.service';
 import { LobbiesService } from './lobbies.service';
 import { LobbyData } from '@common/lobby-data';
@@ -48,6 +49,13 @@ describe('LobbiesService', () => {
         const result = await lobbiesService.createLobby(MOCK_QUIZ);
         expect(result.quiz).to.deep.equal(MOCK_LOBBY.quiz);
         expect(databaseServiceStub.add.called).to.equal(true);
+    });
+
+    it('should not create a lobby', async () => {
+        stub(lobbiesService, 'getLobbies').resolves(new Array(LOBBY_ID_MAX).fill(MOCK_LOBBY));
+        const result = await lobbiesService.createLobby(MOCK_QUIZ);
+        expect(result).to.equal(undefined);
+        expect(databaseServiceStub.add.called).to.equal(false);
     });
 
     it('should generate a new lobby id', async () => {
