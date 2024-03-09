@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
 import { LobbyService } from '@app/services/lobby.service';
@@ -8,16 +9,22 @@ describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
     let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
+    let routerServiceSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby']);
+        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp']);
         Object.defineProperty(lobbyServiceSpy, 'lobbyData', { value: TEST_LOBBY_DATA });
+
+        routerServiceSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
-            providers: [{ provide: LobbyService, useValue: lobbyServiceSpy }],
+            providers: [
+                { provide: LobbyService, useValue: lobbyServiceSpy },
+                { provide: Router, useValue: routerServiceSpy },
+            ],
         }).compileComponents();
     }));
 
@@ -42,5 +49,11 @@ describe('LobbyOrganizerPageComponent', () => {
     it('should set lobbyData.started to true', () => {
         component.startGame();
         expect(component.lobbyData.started).toBeTrue();
+    });
+
+    it('should call lobbyService.cleanUp and navigate to /', () => {
+        component.leaveLobby();
+        expect(lobbyServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 });
