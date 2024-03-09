@@ -54,4 +54,13 @@ describe('LobbySocketsService', () => {
             done();
         });
     });
+
+    it('should join a lobby', (done) => {
+        lobbiesServiceStub.getLobby.resolves(testLobby);
+        clientSocket.emit('join-lobby', testLobby.id, (ack: Acknowledgment) => {
+            expect(ack.success).to.equal(true);
+            expect(lobbiesServiceStub.getLobby.calledWith(testLobby.id)).to.equal(true);
+            done();
+        });
+    });
 });
