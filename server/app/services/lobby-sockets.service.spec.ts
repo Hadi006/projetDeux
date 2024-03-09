@@ -72,4 +72,13 @@ describe('LobbySocketsService', () => {
             done();
         });
     });
+
+    it('should delete a lobby', (done) => {
+        lobbiesServiceStub.deleteLobby.resolves(true);
+        clientSocket.emit('delete-lobby', testLobby.id, (ack: Acknowledgment) => {
+            expect(ack.success).to.equal(true);
+            expect(lobbiesServiceStub.deleteLobby.calledWith(testLobby.id)).to.equal(true);
+            done();
+        });
+    });
 });
