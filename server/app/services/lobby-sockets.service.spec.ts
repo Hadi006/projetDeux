@@ -1,7 +1,7 @@
 import { Server } from '@app/server';
 import { LobbySocketsService } from '@app/services/lobby-sockets.service';
 import { expect } from 'chai';
-import { SinonStubbedInstance, createStubInstance, restore /* , stub */ } from 'sinon';
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
@@ -40,7 +40,7 @@ describe('LobbySocketsService', () => {
         server.init();
         service = server['lobbySocketsService'];
         clientSocket = ioClient(urlString);
-        // stub(console, 'log');
+        stub(console, 'log');
     });
 
     afterEach(() => {
