@@ -11,26 +11,26 @@ import { HostService } from '@app/services/host.service';
 })
 export class LobbyOrganizerPageComponent {
     constructor(
-        private lobbyService: HostService,
+        private hostService: HostService,
         private router: Router,
         private dialog: MatDialog,
     ) {
-        if (!this.lobbyService.createLobby()) {
+        if (!this.hostService.createLobby()) {
             this.leaveLobby();
             this.dialog.open(AlertComponent, { data: { message: 'Maximum games reached' } });
         }
     }
 
     get lobbyData() {
-        return this.lobbyService.lobbyData;
+        return this.hostService.lobbyData;
     }
 
     startGame() {
-        this.lobbyService.lobbyData.started = true;
+        this.hostService.lobbyData.started = true;
     }
 
     leaveLobby() {
-        this.lobbyService.cleanUp();
+        this.hostService.cleanUp();
         this.router.navigate(['/']);
     }
 }

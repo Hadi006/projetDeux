@@ -10,14 +10,14 @@ import { TEST_LOBBY_DATA } from '@common/constant';
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
-    let lobbyServiceSpy: jasmine.SpyObj<HostService>;
+    let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerServiceSpy: jasmine.SpyObj<Router>;
     let dialogServiceSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
-        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp']);
-        lobbyServiceSpy.createLobby.and.returnValue(true);
-        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
+        hostServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp']);
+        hostServiceSpy.createLobby.and.returnValue(true);
+        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
 
         routerServiceSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogServiceSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -27,7 +27,7 @@ describe('LobbyOrganizerPageComponent', () => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
             providers: [
-                { provide: HostService, useValue: lobbyServiceSpy },
+                { provide: HostService, useValue: hostServiceSpy },
                 { provide: Router, useValue: routerServiceSpy },
                 { provide: MatDialog, useValue: dialogServiceSpy },
             ],
@@ -45,13 +45,13 @@ describe('LobbyOrganizerPageComponent', () => {
     });
 
     it('should call lobbyService.createLobby', () => {
-        expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
+        expect(hostServiceSpy.createLobby).toHaveBeenCalled();
     });
 
     it('should call leaveLobby if lobby creation returns false', () => {
-        lobbyServiceSpy.createLobby.and.returnValue(false);
+        hostServiceSpy.createLobby.and.returnValue(false);
         component = TestBed.createComponent(LobbyOrganizerPageComponent).componentInstance;
-        expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
+        expect(hostServiceSpy.createLobby).toHaveBeenCalled();
         expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
         expect(dialogServiceSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: 'Maximum games reached' } });
     });
@@ -67,7 +67,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     it('should call lobbyService.cleanUp and navigate to /', () => {
         component.leaveLobby();
-        expect(lobbyServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 });
