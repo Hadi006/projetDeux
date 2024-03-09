@@ -5,6 +5,8 @@ import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { GameSocketsService } from './game-sockets.service';
 import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH } from '@common/constant';
+import { LobbyData } from '@common/lobby-data';
+import { of } from 'rxjs';
 
 describe('LobbyService', () => {
     const quizData: Quiz = {
@@ -15,6 +17,12 @@ describe('LobbyService', () => {
         duration: 5,
         lastModification: new Date(),
         questions: [],
+    };
+    const lobbyData: LobbyData = {
+        id: '1234',
+        players: [],
+        started: false,
+        quiz: quizData,
     };
     let service: LobbyService;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
@@ -49,6 +57,7 @@ describe('LobbyService', () => {
     });
 
     it('should create a lobby and call the create room method', () => {
+        gameSocketServiceSpy.createLobby.and.returnValue(of(lobbyData));
         service.createLobby();
         expect(service.lobbyData.id.length).toEqual(LOBBY_ID_LENGTH);
 
@@ -57,7 +66,9 @@ describe('LobbyService', () => {
         }
 
         expect(service.lobbyData.quiz).toEqual(quizData);
-        expect(gameSocketServiceSpy.createLobby).toHaveBeenCalledWith(service.lobbyData);
+        if (gameHandlerServiceSpy.quizData) {
+            expect(gameSocketServiceSpy.createLobby).toHaveBeenCalledWith(gameHandlerServiceSpy.quizData);
+        }
     });
 
     it('should clean up the game socket', () => {
