@@ -13,7 +13,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(() => {
         lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp']);
-        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { value: TEST_LOBBY_DATA });
+        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
 
         routerServiceSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -40,6 +40,13 @@ describe('LobbyOrganizerPageComponent', () => {
 
     it('should call lobbyService.createLobby', () => {
         expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
+    });
+
+    it('should call leaveLobby if lobbyData is undefined', () => {
+        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { get: () => undefined, configurable: true });
+        component = TestBed.createComponent(LobbyOrganizerPageComponent).componentInstance;
+        expect(lobbyServiceSpy.createLobby).toHaveBeenCalled();
+        expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('should return lobbyData from lobbyService', () => {
