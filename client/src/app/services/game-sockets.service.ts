@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-import { Acknowledgment } from '@common/acknowledgment';
 import { Observable } from 'rxjs';
 import { LobbyData } from '@common/lobby-data';
+import { Quiz } from '@common/quiz';
 
 @Injectable({
     providedIn: 'root',
@@ -19,15 +19,11 @@ export class GameSocketsService {
         this.socket.disconnect();
     }
 
-    createLobby(lobbyData: LobbyData): Observable<boolean> {
-        return new Observable<boolean>((subscriber) => {
-            this.socket.emit('create-lobby', lobbyData, (ack: Acknowledgment) => {
-                if (ack.success) {
-                    this.joinLobby(lobbyData.id);
-                    subscriber.next(true);
-                } else {
-                    subscriber.next(false);
-                }
+    createLobby(quiz: Quiz): Observable<void> {
+        return new Observable<void>((subscriber) => {
+            this.socket.emit('create-lobby', quiz, (lobbyData: LobbyData) => {
+                this.joinLobby(lobbyData.id);
+                subscriber.next();
                 subscriber.complete();
             });
         });
