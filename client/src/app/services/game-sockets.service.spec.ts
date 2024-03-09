@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Acknowledgment } from '@common/acknowledgment';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
@@ -35,11 +36,19 @@ describe('GameSocketsService', () => {
         expect(socketSpy.disconnect).toHaveBeenCalled();
     });
 
-    it('should create a lobby and join it', () => {
+    it('should create a lobby and join it', (done) => {
         spyOn(service, 'joinLobby');
-        service.createLobby(LOBBY_ID);
-        expect(socketSpy.emit).toHaveBeenCalledWith('create-lobby', LOBBY_ID);
-        expect(service.joinLobby).toHaveBeenCalledWith(LOBBY_ID);
+
+        socketSpy.emit.and.callFake((event: string, lobbyId: string, callback: (ack: Acknowledgment) => void) => {
+            callback({ success: true });
+            return socketSpy;
+        });
+
+        service.createLobby(LOBBY_ID).subscribe((success) => {
+            expect(success).toBeTrue();
+            expect(service.joinLobby).toHaveBeenCalledWith(LOBBY_ID);
+            done();
+        });
     });
 
     it('should join a lobby', () => {
