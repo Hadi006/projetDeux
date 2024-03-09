@@ -22,27 +22,17 @@ export class LobbyService {
     }
 
     createLobby() {
-        this.internalLobbyData = {
-            ...NEW_LOBBY,
-            id: this.generateLobbyId(),
-            quiz: this.gameHandlerService.quizData,
-        };
+        if (!this.gameHandlerService.quizData) {
+            return;
+        }
 
-        this.gameSocketsService.createLobby(this.internalLobbyData).subscribe();
+        this.gameSocketsService.createLobby(this.gameHandlerService.quizData).subscribe((lobbyData: LobbyData) => {
+            this.internalLobbyData = lobbyData;
+        });
     }
 
     cleanUp() {
         this.gameSocketsService.disconnect();
         this.gameHandlerService.cleanUp();
-    }
-
-    private generateLobbyId(): string {
-        let result = '';
-
-        for (let i = 0; i < LOBBY_ID_LENGTH; i++) {
-            result += LOBBY_ID_CHARACTERS.charAt(Math.floor(Math.random() * LOBBY_ID_CHARACTERS.length));
-        }
-
-        return result;
     }
 }
