@@ -15,10 +15,12 @@ export class LobbyOrganizerPageComponent {
         private router: Router,
         private dialog: MatDialog,
     ) {
-        if (!this.hostService.createLobby()) {
-            this.leaveLobby();
-            this.dialog.open(AlertComponent, { data: { message: 'Maximum games reached' } });
-        }
+        this.hostService.createLobby().subscribe((success) => {
+            if (!success) {
+                this.leaveLobby();
+                this.dialog.open(AlertComponent, { data: { message: 'Maximum games reached' } });
+            }
+        });
     }
 
     get lobbyData() {

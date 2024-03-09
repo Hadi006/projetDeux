@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
-import { GameSocketsService } from './game-sockets.service';
 import { GameHandlerService } from '@app/services/game-handler.service';
+import { WebSocketService } from './web-socket.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -10,7 +11,7 @@ export class HostService {
     private internalLobbyData: LobbyData;
 
     constructor(
-        private gameSocketsService: GameSocketsService,
+        private webSocketService: WebSocketService,
         private gameHandlerService: GameHandlerService,
     ) {}
 
@@ -18,24 +19,42 @@ export class HostService {
         return this.internalLobbyData;
     }
 
-    createLobby(): boolean {
+    createLobby(): Observable<boolean> {
         if (!this.gameHandlerService.quizData) {
-            return false;
+            return of(false);
         }
 
-        this.gameSocketsService.connect();
-        this.gameSocketsService.createLobby(this.gameHandlerService.quizData).subscribe((lobbyData: LobbyData | null) => {
-            if (lobbyData) {
-                this.internalLobbyData = lobbyData;
-            }
-        });
-
-        return true;
+        this.webSocketService.connect();
+        return this.emitCreateLobby();
     }
 
     cleanUp() {
-        this.gameSocketsService.deleteLobby(this.internalLobbyData.id).subscribe();
-        this.gameSocketsService.disconnect();
+        this.emitDeleteLobby().subscribe();
+        this.webSocketService.disconnect();
         this.gameHandlerService.cleanUp();
+    }
+
+    private emitCreateLobby(): Observable<boolean> {
+        return new Observable<boolean>((subscriber) => {
+            this.webSocketService.emit('create-lobby', this.gameHandlerService.quizData, (lobbyData: unknown) => {
+                if (lobbyData) {
+                    this.internalLobbyData = lobbyData as LobbyData;
+                    subscriber.next(true);
+                    subscriber.complete();
+                } else {
+                    subscriber.next(false);
+                    subscriber.complete();
+                }
+            });
+        });
+    }
+
+    private emitDeleteLobby(): Observable<void> {
+        return new Observable<void>((subscriber) => {
+            this.webSocketService.emit('delete-lobby', this.internalLobbyData.id, () => {
+                subscriber.next();
+                subscriber.complete();
+            });
+        });
     }
 }

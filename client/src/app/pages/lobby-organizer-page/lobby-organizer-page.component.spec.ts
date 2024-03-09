@@ -6,6 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
 import { HostService } from '@app/services/host.service';
 import { TEST_LOBBY_DATA } from '@common/constant';
+import { of } from 'rxjs';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
@@ -16,7 +17,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp']);
-        hostServiceSpy.createLobby.and.returnValue(true);
+        hostServiceSpy.createLobby.and.returnValue(of(true));
         Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
 
         routerServiceSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -49,7 +50,7 @@ describe('LobbyOrganizerPageComponent', () => {
     });
 
     it('should call leaveLobby if lobby creation returns false', () => {
-        hostServiceSpy.createLobby.and.returnValue(false);
+        hostServiceSpy.createLobby.and.returnValue(of(false));
         component = TestBed.createComponent(LobbyOrganizerPageComponent).componentInstance;
         expect(hostServiceSpy.createLobby).toHaveBeenCalled();
         expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);

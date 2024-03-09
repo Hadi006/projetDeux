@@ -3,10 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { HostService } from '@app/services/host.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
-import { GameSocketsService } from './game-sockets.service';
 import { LOBBY_ID_LENGTH } from '@common/constant';
 import { LobbyData } from '@common/lobby-data';
-import { of } from 'rxjs';
+import { WebSocketService } from './web-socket.service';
 
 describe('HostService', () => {
     const quizData: Quiz = {
@@ -26,7 +25,7 @@ describe('HostService', () => {
     };
     let service: HostService;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
-    let gameSocketServiceSpy: jasmine.SpyObj<GameSocketsService>;
+    let webSocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['cleanUp']);
@@ -35,7 +34,7 @@ describe('HostService', () => {
             configurable: true,
         });
 
-        gameSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'createLobby', 'disconnect', 'deleteLobby']);
+        webSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'onEvent', 'emit', 'disconnect']);
     });
 
     beforeEach(() => {
@@ -43,7 +42,7 @@ describe('HostService', () => {
             imports: [HttpClientTestingModule],
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
-                { provide: GameSocketsService, useValue: gameSocketServiceSpy },
+                { provide: WebSocketService, useValue: webSocketServiceSpy },
             ],
         });
         service = TestBed.inject(HostService);
@@ -53,15 +52,18 @@ describe('HostService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should create a lobby, connect the socket and call the create room method', () => {
-        gameSocketServiceSpy.createLobby.and.returnValue(of(lobbyData));
-        expect(service.createLobby()).toBeTrue();
-        expect(gameSocketServiceSpy.connect).toHaveBeenCalled();
-        expect(service.lobbyData.id.length).toEqual(LOBBY_ID_LENGTH);
-        expect(service.lobbyData.quiz).toEqual(quizData);
-        if (gameHandlerServiceSpy.quizData) {
-            expect(gameSocketServiceSpy.createLobby).toHaveBeenCalledWith(gameHandlerServiceSpy.quizData);
-        }
+    it('should create a lobby, connect the socket and call the create room method', (done) => {
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        service.createLobby().subscribe((result) => {
+            expect(result).toBeTrue();
+            expect(webSocketServiceSpy.connect).toHaveBeenCalled();
+            expect(service.lobbyData.id.length).toEqual(LOBBY_ID_LENGTH);
+            expect(service.lobbyData.quiz).toEqual(quizData);
+            expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('create-lobby', quizData, jasmine.any(Function));
+            done();
+        });
     });
 
     it('should not create a lobby if there is no quiz data', () => {
@@ -69,17 +71,35 @@ describe('HostService', () => {
             get: () => null,
             configurable: true,
         });
-        expect(service.createLobby()).toBeFalse();
-        expect(gameSocketServiceSpy.createLobby).not.toHaveBeenCalled();
+        service.createLobby().subscribe((result) => {
+            expect(result).toBeFalse();
+            expect(webSocketServiceSpy.connect).not.toHaveBeenCalled();
+        });
+    });
+
+    it('should not create a lobby if creation was unsuccessful', () => {
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(null);
+        });
+        service.createLobby().subscribe((result) => {
+            expect(result).toBeFalse();
+            expect(webSocketServiceSpy.connect).toHaveBeenCalled();
+            expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('create-lobby', quizData, jasmine.any(Function));
+        });
     });
 
     it('should clean up the game socket', () => {
-        gameSocketServiceSpy.createLobby.and.returnValue(of(lobbyData));
-        gameSocketServiceSpy.deleteLobby.and.returnValue(of());
-        service.createLobby();
-        service.cleanUp();
-        expect(gameSocketServiceSpy.deleteLobby).toHaveBeenCalledWith(service.lobbyData.id);
-        expect(gameSocketServiceSpy.disconnect).toHaveBeenCalled();
-        expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        service.createLobby().subscribe((result) => {
+            webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+                callback(null);
+            });
+            service.cleanUp();
+            expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('delete-lobby', service.lobbyData.id, jasmine.any(Function));
+            expect(webSocketServiceSpy.disconnect).toHaveBeenCalled();
+            expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
+        });
     });
 });
