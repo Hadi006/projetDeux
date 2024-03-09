@@ -19,11 +19,13 @@ export class LobbiesService {
     async createLobby(quiz: Quiz): Promise<LobbyData> {
         let id: string;
 
+        const lobbies = await this.getLobbies();
+
         do {
             id = Math.floor(Math.random() * LOBBY_ID_MAX)
                 .toString()
                 .padStart(LOBBY_ID_LENGTH, '0');
-        } while (await this.getLobby(id));
+        } while (lobbies.some((lobby) => lobby.id === id));
 
         const newLobby: LobbyData = { ...NEW_LOBBY, id, quiz };
         await this.database.add('lobbies', newLobby);
