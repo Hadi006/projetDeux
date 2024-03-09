@@ -53,13 +53,10 @@ describe('LobbyService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should connect the game socket', () => {
-        expect(gameSocketServiceSpy.connect).toHaveBeenCalled();
-    });
-
-    it('should create a lobby and call the create room method', () => {
+    it('should create a lobby, connect the socket and call the create room method', () => {
         gameSocketServiceSpy.createLobby.and.returnValue(of(lobbyData));
         service.createLobby();
+        expect(gameSocketServiceSpy.connect).toHaveBeenCalled();
         expect(service.lobbyData.id.length).toEqual(LOBBY_ID_LENGTH);
 
         for (let i = 0; i < LOBBY_ID_LENGTH; i++) {
