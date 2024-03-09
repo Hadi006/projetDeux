@@ -108,3 +108,7 @@ export const NEW_PLAYER: Player = {
     answerConfirmed: false,
     isCorrect: false,
 };
+
+export const LOBBY_ID_CHARACTERS = '0123456789';
+
+export const LOBBY_ID_LENGTH = 4;
