@@ -40,7 +40,7 @@ export class LobbySocketsService {
 
     private deleteLobby(socket: Socket): void {
         socket.on('delete-lobby', async (lobbyId: string, ack) => {
-            ack({ success: await this.lobbiesService.deleteLobby(lobbyId) });
+            ack(await this.lobbiesService.deleteLobby(lobbyId));
         });
     }
 
