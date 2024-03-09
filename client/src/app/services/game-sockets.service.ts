@@ -37,4 +37,13 @@ export class GameSocketsService {
             });
         });
     }
+
+    deleteLobby(roomId: string): Observable<void> {
+        return new Observable<void>((subscriber) => {
+            this.socket.emit('delete-lobby', roomId, () => {
+                subscriber.next();
+                subscriber.complete();
+            });
+        });
+    }
 }
