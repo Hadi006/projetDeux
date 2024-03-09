@@ -59,6 +59,7 @@ describe('LobbySocketsService', () => {
         lobbiesServiceStub.getLobby.resolves(testLobby);
         clientSocket.emit('join-lobby', testLobby.id, (ack: Acknowledgment) => {
             expect(ack.success).to.equal(true);
+            expect(ack.errorMsg).to.equal(undefined);
             expect(lobbiesServiceStub.getLobby.calledWith(testLobby.id)).to.equal(true);
             done();
         });
@@ -68,6 +69,7 @@ describe('LobbySocketsService', () => {
         lobbiesServiceStub.getLobby.resolves(undefined);
         clientSocket.emit('join-lobby', testLobby.id, (ack: Acknowledgment) => {
             expect(ack.success).to.equal(false);
+            expect(ack.errorMsg).to.equal('PIN invalide');
             expect(lobbiesServiceStub.getLobby.calledWith(testLobby.id)).to.equal(true);
             done();
         });
