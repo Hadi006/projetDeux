@@ -32,7 +32,12 @@ export class GameSocketsService {
         });
     }
 
-    joinLobby(roomId: string) {
-        this.socket.emit('join-lobby', roomId);
+    joinLobby(roomId: string): Observable<boolean> {
+        return new Observable<boolean>((subscriber) => {
+            this.socket.emit('join-lobby', roomId, (ack: Acknowledgment) => {
+                subscriber.next(ack.success);
+                subscriber.complete();
+            });
+        });
     }
 }
