@@ -19,12 +19,18 @@ export class GameSocketsService {
         this.socket.disconnect();
     }
 
-    createLobby(quiz: Quiz): Observable<LobbyData> {
-        return new Observable<LobbyData>((subscriber) => {
-            this.socket.emit('create-lobby', quiz, (lobbyData: LobbyData) => {
-                this.joinLobby(lobbyData.id);
-                subscriber.next(lobbyData);
-                subscriber.complete();
+    createLobby(quiz: Quiz): Observable<LobbyData | undefined> {
+        return new Observable<LobbyData | undefined>((subscriber) => {
+            this.socket.emit('create-lobby', quiz, (lobbyData: LobbyData | undefined) => {
+                if (!lobbyData) {
+                    subscriber.next(undefined);
+                    subscriber.complete();
+                    return;
+                } else {
+                    this.joinLobby(lobbyData.id);
+                    subscriber.next(lobbyData);
+                    subscriber.complete();
+                }
             });
         });
     }
