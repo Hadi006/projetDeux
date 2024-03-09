@@ -45,4 +45,13 @@ describe('LobbySocketsService', () => {
             done();
         });
     });
+
+    it('should not create a lobby', (done) => {
+        lobbiesServiceStub.addLobby.resolves(false);
+        clientSocket.emit('create-lobby', testLobby, (ack: Acknowledgment) => {
+            expect(ack.success).to.equal(false);
+            expect(lobbiesServiceStub.addLobby.calledWith(testLobby)).to.equal(true);
+            done();
+        });
+    });
 });
