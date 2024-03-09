@@ -28,7 +28,7 @@ export class LobbyService {
             quiz: this.gameHandlerService.quizData,
         };
 
-        this.gameSocketsService.createLobby(this.internalLobbyData);
+        this.gameSocketsService.createLobby(this.internalLobbyData).subscribe();
     }
 
     cleanUp() {
