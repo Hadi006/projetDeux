@@ -1,7 +1,8 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
-import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH } from '@common/constant';
+import { LOBBY_ID_CHARACTERS, LOBBY_ID_LENGTH, NEW_LOBBY } from '@common/constant';
+import { Quiz } from '@common/quiz';
 
 @Service()
 export class LobbiesService {
@@ -11,12 +12,14 @@ export class LobbiesService {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
 
-    async addLobby(lobby: LobbyData): Promise<boolean> {
-        if (await this.getLobby(lobby.id)) {
-            return false;
-        }
-        await this.database.add('lobbies', lobby);
-        return true;
+    async addLobby(quiz: Quiz) {
+        let id: string;
+
+        do {
+            id = this.generateLobbyId();
+        } while (await this.getLobby(id));
+
+        await this.database.add('lobbies', { ...NEW_LOBBY, id, quiz });
     }
 
     async updateLobby(lobby: LobbyData): Promise<boolean> {
