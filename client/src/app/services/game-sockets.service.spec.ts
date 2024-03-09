@@ -5,19 +5,16 @@ import { environment } from 'src/environments/environment';
 import { GameSocketsService } from './game-sockets.service';
 
 describe('GameSocketsService', () => {
-    const ROOM_ID = 'room-id';
+    const LOBBY_ID = 'lobby-id';
 
     let service: GameSocketsService;
-    let socketMock: Socket;
+    let socketSpy: jasmine.SpyObj<Socket>;
     let ioSpy: jasmine.Spy;
 
     beforeEach(() => {
-        socketMock = {
-            emit: jasmine.createSpy('emit'),
-            disconnect: jasmine.createSpy('disconnect'),
-        } as unknown as Socket;
+        socketSpy = jasmine.createSpyObj('Socket', ['emit', 'disconnect']);
 
-        ioSpy = jasmine.createSpy('io').and.returnValue(socketMock);
+        ioSpy = jasmine.createSpy('io').and.returnValue(socketSpy);
     });
 
     beforeEach(() => {
@@ -35,18 +32,18 @@ describe('GameSocketsService', () => {
 
     it('should disconnect the socket', () => {
         service.disconnect();
-        expect(socketMock.disconnect).toHaveBeenCalled();
+        expect(socketSpy.disconnect).toHaveBeenCalled();
     });
 
-    it('should create a room and join it', () => {
+    it('should create a lobby and join it', () => {
         spyOn(service, 'joinLobby');
-        service.createLobby(ROOM_ID);
-        expect(socketMock.emit).toHaveBeenCalledWith('create-lobby', ROOM_ID);
-        expect(service.joinLobby).toHaveBeenCalledWith(ROOM_ID);
+        service.createLobby(LOBBY_ID);
+        expect(socketSpy.emit).toHaveBeenCalledWith('create-lobby', LOBBY_ID);
+        expect(service.joinLobby).toHaveBeenCalledWith(LOBBY_ID);
     });
 
-    it('should join a room', () => {
-        service.joinLobby(ROOM_ID);
-        expect(socketMock.emit).toHaveBeenCalledWith('join-lobby', ROOM_ID);
+    it('should join a lobby', () => {
+        service.joinLobby(LOBBY_ID);
+        expect(socketSpy.emit).toHaveBeenCalledWith('join-lobby', LOBBY_ID);
     });
 });
