@@ -116,7 +116,7 @@ describe('HostService', () => {
             callback(lobbyData as LobbyData);
         });
         service.createLobby().subscribe(() => {
-            webSocketServiceSpy.emit.and.callFake((event, data) => {
+            webSocketServiceSpy.emit.and.callFake(() => {
                 return;
             });
             service.startCountdown(START_GAME_COUNTDOWN);
@@ -146,7 +146,7 @@ describe('HostService', () => {
             callback(lobbyData as LobbyData);
         });
         service.createLobby().subscribe(() => {
-            webSocketServiceSpy.emit.and.callFake((event, data) => {
+            webSocketServiceSpy.emit.and.callFake(() => {
                 return;
             });
             service.startGame();
