@@ -53,7 +53,7 @@ export class LobbySocketsService {
     }
 
     private startCountdown(socket: Socket): void {
-        socket.on('start-countdown', (lobbyId: string, time: number) => {
+        socket.on('start-countdown', ({ lobbyId, time }) => {
             this.sio.to(lobbyId).emit('start-countdown', time);
         });
     }
