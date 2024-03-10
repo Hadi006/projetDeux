@@ -28,6 +28,10 @@ export class HostService {
         return this.emitCreateLobby();
     }
 
+    startCountdown(time: number) {
+        this.emitStartCountdown(time);
+    }
+
     cleanUp() {
         this.emitDeleteLobby().subscribe();
         this.webSocketService.disconnect();
@@ -56,5 +60,9 @@ export class HostService {
                 subscriber.complete();
             });
         });
+    }
+
+    private emitStartCountdown(time: number) {
+        this.webSocketService.emit('start-countdown', { lobbyId: this.internalLobbyData.id, time });
     }
 }
