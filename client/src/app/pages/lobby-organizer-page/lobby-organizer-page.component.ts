@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { HostService } from '@app/services/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
@@ -13,7 +12,6 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
 export class LobbyOrganizerPageComponent {
     constructor(
         public hostService: HostService,
-        private router: Router,
         private dialog: MatDialog,
     ) {
         this.hostService.handleSockets();
@@ -35,6 +33,5 @@ export class LobbyOrganizerPageComponent {
 
     leaveLobby() {
         this.hostService.cleanUp();
-        this.router.navigate(['/']);
     }
 }
