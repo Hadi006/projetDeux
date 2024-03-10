@@ -97,12 +97,12 @@ describe('LobbySocketsService', () => {
     it('should broadcast a countdown if in the lobby', (done) => {
         const countdown = 5;
         lobbiesServiceStub.getLobby.resolves(testLobby);
-        clientSocket.emit('join-lobby', testLobby.id, (ack: string) => {
+        clientSocket.emit('join-lobby', testLobby.id, () => {
             clientSocket.on('start-countdown', (time: number) => {
                 expect(time).to.equal(countdown);
                 done();
             });
-            clientSocket.emit('start-countdown', testLobby.id, countdown);
+            clientSocket.emit('start-countdown', { lobbyId: testLobby.id, time: countdown });
         });
     });
 });
