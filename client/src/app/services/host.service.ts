@@ -25,6 +25,7 @@ export class HostService {
         }
 
         this.webSocketService.connect();
+        this.onStartCountdown();
         return this.emitCreateLobby();
     }
 
@@ -64,5 +65,11 @@ export class HostService {
 
     private emitStartCountdown(time: number) {
         this.webSocketService.emit('start-countdown', { lobbyId: this.internalLobbyData.id, time });
+    }
+
+    private onStartCountdown() {
+        this.webSocketService.onEvent('start-countdown', () => {
+            this.lobbyData.started = true;
+        });
     }
 }
