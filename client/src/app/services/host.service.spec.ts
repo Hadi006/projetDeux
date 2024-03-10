@@ -134,7 +134,7 @@ describe('HostService', () => {
         service.createLobby().subscribe(() => {
             service.handleSockets();
             webSocketServiceSpy.onEvent.calls.mostRecent().args[1](null);
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+            expect(service.lobbyData.started).toBeTrue();
             done();
         });
     });
