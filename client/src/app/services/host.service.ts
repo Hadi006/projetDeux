@@ -71,7 +71,7 @@ export class HostService {
 
     private onStartGame() {
         this.webSocketService.onEvent('start-game', () => {
-            this.router.navigate(['/']);
+            this.internalLobbyData.started = true;
         });
     }
 }
