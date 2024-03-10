@@ -3,6 +3,7 @@ import { LobbyData } from '@common/lobby-data';
 import { GameHandlerService } from '@app/services/game-handler.service';
 import { WebSocketService } from './web-socket.service';
 import { Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -14,6 +15,7 @@ export class HostService {
     constructor(
         private webSocketService: WebSocketService,
         private gameHandlerService: GameHandlerService,
+        private router: Router,
     ) {}
 
     get lobbyData() {
@@ -46,6 +48,7 @@ export class HostService {
         this.emitDeleteLobby().subscribe();
         this.webSocketService.disconnect();
         this.gameHandlerService.cleanUp();
+        this.router.navigate(['/']);
     }
 
     private emitCreateLobby(): Observable<boolean> {
@@ -89,7 +92,7 @@ export class HostService {
 
     private onStartGame() {
         this.webSocketService.onEvent('start-game', () => {
-            this.gameHandlerService.startGame();
+            this.router.navigate(['/']);
         });
     }
 }
