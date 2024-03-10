@@ -18,7 +18,6 @@ export class LobbySocketsService {
             this.createLobby(socket);
             this.joinLobby(socket);
             this.deleteLobby(socket);
-            this.startCountdown(socket);
             this.startGame(socket);
             this.disconnect(socket);
         });
@@ -50,12 +49,6 @@ export class LobbySocketsService {
         socket.on('delete-lobby', async (lobbyId: string, ack) => {
             await this.lobbiesService.deleteLobby(lobbyId);
             ack();
-        });
-    }
-
-    private startCountdown(socket: Socket): void {
-        socket.on('start-countdown', ({ lobbyId, time }) => {
-            this.sio.to(lobbyId).emit('start-countdown', time);
         });
     }
 

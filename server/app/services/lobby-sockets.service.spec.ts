@@ -94,18 +94,6 @@ describe('LobbySocketsService', () => {
         });
     });
 
-    it('should broadcast a countdown if in the lobby', (done) => {
-        const countdown = 5;
-        lobbiesServiceStub.getLobby.resolves(testLobby);
-        clientSocket.emit('join-lobby', testLobby.id, () => {
-            clientSocket.on('start-countdown', (time: number) => {
-                expect(time).to.equal(countdown);
-                done();
-            });
-            clientSocket.emit('start-countdown', { lobbyId: testLobby.id, time: countdown });
-        });
-    });
-
     it('should broadcast a start game if in the lobby', (done) => {
         lobbiesServiceStub.getLobby.resolves(testLobby);
         const toSpy = spy(service['sio'], 'to');
