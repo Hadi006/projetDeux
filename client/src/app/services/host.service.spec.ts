@@ -53,6 +53,7 @@ describe('HostService', () => {
     });
 
     it('should create a lobby, connect the socket and call the create room method', (done) => {
+        service.handleSockets();
         webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
             callback(lobbyData as LobbyData);
         });
@@ -78,6 +79,7 @@ describe('HostService', () => {
     });
 
     it('should not create a lobby if creation was unsuccessful', () => {
+        service.handleSockets();
         webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
             callback(null);
         });
@@ -104,6 +106,7 @@ describe('HostService', () => {
     });
 
     it('should emit a start countdown', () => {
+        service.handleSockets();
         webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
             callback(lobbyData as LobbyData);
         });
@@ -117,18 +120,32 @@ describe('HostService', () => {
     });
 
     it('should listen to the countdown event', (done) => {
-        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
-            callback(lobbyData as LobbyData);
-        });
         webSocketServiceSpy.onEvent.and.callFake((event, action) => {
             const countdownAction = action as (time: number) => void;
             countdownAction(START_GAME_COUNTDOWN);
         });
-        service.createLobby().subscribe(() => {
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        service.createLobby().subscribe((success: boolean) => {
+            service.handleSockets();
             webSocketServiceSpy.onEvent.calls.mostRecent().args[1](START_GAME_COUNTDOWN);
             expect(service.lobbyData.started).toBeTrue();
             expect(service.countdownTime).toEqual(START_GAME_COUNTDOWN);
             done();
+        });
+    });
+
+    it('should emit a start game event', () => {
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        service.createLobby().subscribe(() => {
+            webSocketServiceSpy.emit.and.callFake((event, data) => {
+                return;
+            });
+            service.startGame();
+            expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('start-game', service.lobbyData.id);
         });
     });
 });
