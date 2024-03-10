@@ -74,6 +74,10 @@ export class HostService {
 
     private onStartCountdown() {
         this.webSocketService.onEvent('start-countdown', (time: number) => {
+            if (!this.lobbyData) {
+                return;
+            }
+
             this.lobbyData.started = true;
             this.internalCountdownTime = time;
         });

@@ -115,4 +115,20 @@ describe('HostService', () => {
             expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('start-countdown', { lobbyId: service.lobbyData.id, time: START_GAME_COUNTDOWN });
         });
     });
+
+    it('should listen to the countdown event', (done) => {
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        webSocketServiceSpy.onEvent.and.callFake((event, action) => {
+            const countdownAction = action as (time: number) => void;
+            countdownAction(START_GAME_COUNTDOWN);
+        });
+        service.createLobby().subscribe(() => {
+            webSocketServiceSpy.onEvent.calls.mostRecent().args[1](START_GAME_COUNTDOWN);
+            expect(service.lobbyData.started).toBeTrue();
+            expect(service.countdownTime).toEqual(START_GAME_COUNTDOWN);
+            done();
+        });
+    });
 });
