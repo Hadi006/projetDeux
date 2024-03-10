@@ -4,7 +4,6 @@ import { LobbyData } from '@common/lobby-data';
 import { Player } from '@common/player';
 
 /* Components */
-export const COUNTDOWN_TIME = 5;
 export const DEFAULT_WIDTH = 200;
 export const DEFAULT_HEIGHT = 200;
 export enum MouseButton {
@@ -118,3 +117,5 @@ export const NEW_LOBBY: LobbyData = {
 export const LOBBY_ID_MAX = 10000;
 
 export const LOBBY_ID_LENGTH = 4;
+
+export const START_GAME_COUNTDOWN = 5;

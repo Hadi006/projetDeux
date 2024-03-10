@@ -21,6 +21,10 @@
     </footer>
 
     <div *ngIf="lobbyData.started">
-        <app-game-count-down *ngIf="lobbyData.quiz" [gameName]="lobbyData.quiz.title"></app-game-count-down>
+        <app-game-count-down
+            *ngIf="lobbyData.quiz"
+            [gameName]="lobbyData.quiz.title"
+            [countdownTime]="hostService.countdownTime"
+        ></app-game-count-down>
     </div>
 </div>

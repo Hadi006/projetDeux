@@ -12,7 +12,7 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
 })
 export class LobbyOrganizerPageComponent {
     constructor(
-        private hostService: HostService,
+        public hostService: HostService,
         private router: Router,
         private dialog: MatDialog,
     ) {

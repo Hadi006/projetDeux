@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
     providedIn: 'root',
 })
 export class HostService {
+    private internalCountdownTime: number;
     private internalLobbyData: LobbyData;
 
     constructor(
@@ -17,6 +18,10 @@ export class HostService {
 
     get lobbyData() {
         return this.internalLobbyData;
+    }
+
+    get countdownTime() {
+        return this.internalCountdownTime;
     }
 
     createLobby(): Observable<boolean> {
@@ -68,8 +73,9 @@ export class HostService {
     }
 
     private onStartCountdown() {
-        this.webSocketService.onEvent('start-countdown', () => {
+        this.webSocketService.onEvent('start-countdown', (time: number) => {
             this.lobbyData.started = true;
+            this.internalCountdownTime = time;
         });
     }
 }
