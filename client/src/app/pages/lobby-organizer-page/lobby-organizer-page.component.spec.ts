@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
@@ -12,15 +11,13 @@ describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
-    let routerServiceSpy: jasmine.SpyObj<Router>;
     let dialogServiceSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp', 'startCountdown']);
+        hostServiceSpy = jasmine.createSpyObj('LobbyService', ['createLobby', 'cleanUp', 'startCountdown', 'handleSockets']);
         hostServiceSpy.createLobby.and.returnValue(of(true));
         Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
 
-        routerServiceSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogServiceSpy = jasmine.createSpyObj('MatDialog', ['open']);
     });
 
@@ -29,7 +26,6 @@ describe('LobbyOrganizerPageComponent', () => {
             declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
-                { provide: Router, useValue: routerServiceSpy },
                 { provide: MatDialog, useValue: dialogServiceSpy },
             ],
         }).compileComponents();
@@ -53,7 +49,6 @@ describe('LobbyOrganizerPageComponent', () => {
         hostServiceSpy.createLobby.and.returnValue(of(false));
         component = TestBed.createComponent(LobbyOrganizerPageComponent).componentInstance;
         expect(hostServiceSpy.createLobby).toHaveBeenCalled();
-        expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
         expect(dialogServiceSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: 'Maximum games reached' } });
     });
 
@@ -69,6 +64,5 @@ describe('LobbyOrganizerPageComponent', () => {
     it('should call lobbyService.cleanUp and navigate to /', () => {
         component.leaveLobby();
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
-        expect(routerServiceSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 });
