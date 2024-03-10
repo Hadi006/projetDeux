@@ -132,7 +132,7 @@ describe('HostService', () => {
         webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
             callback(lobbyData as LobbyData);
         });
-        service.createLobby().subscribe((success: boolean) => {
+        service.createLobby().subscribe(() => {
             service.handleSockets();
             webSocketServiceSpy.onEvent.calls.mostRecent().args[1](START_GAME_COUNTDOWN);
             expect(service.lobbyData.started).toBeTrue();
