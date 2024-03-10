@@ -16,6 +16,7 @@ export class LobbyOrganizerPageComponent {
         private router: Router,
         private dialog: MatDialog,
     ) {
+        this.hostService.handleSockets();
         this.hostService.createLobby().subscribe((success) => {
             if (!success) {
                 this.leaveLobby();

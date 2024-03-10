@@ -24,13 +24,17 @@ export class HostService {
         return this.internalCountdownTime;
     }
 
+    handleSockets() {
+        this.webSocketService.connect();
+        this.onStartCountdown();
+        this.onStartGame();
+    }
+
     createLobby(): Observable<boolean> {
         if (!this.gameHandlerService.quizData) {
             return of(false);
         }
 
-        this.webSocketService.connect();
-        this.onStartCountdown();
         return this.emitCreateLobby();
     }
 
@@ -80,6 +84,12 @@ export class HostService {
 
             this.lobbyData.started = true;
             this.internalCountdownTime = time;
+        });
+    }
+
+    private onStartGame() {
+        this.webSocketService.onEvent('start-game', () => {
+            this.gameHandlerService.startGame();
         });
     }
 }
