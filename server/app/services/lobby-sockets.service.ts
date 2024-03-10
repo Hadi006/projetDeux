@@ -39,8 +39,9 @@ export class LobbySocketsService {
             if (await this.lobbiesService.getLobby(lobbyId)) {
                 socket.join(lobbyId);
                 ack('');
+            } else {
+                ack('PIN invalide');
             }
-            ack('PIN invalide');
         });
     }
 
@@ -52,7 +53,9 @@ export class LobbySocketsService {
     }
 
     private startCountdown(socket: Socket): void {
-        socket.on('start-countdown', (lobbyId: string, time: number) => this.sio.to(lobbyId).emit('start-countdown', time));
+        socket.on('start-countdown', (lobbyId: string, time: number) => {
+            this.sio.to(lobbyId).emit('start-countdown', time);
+        });
     }
 
     private disconnect(socket: Socket): void {

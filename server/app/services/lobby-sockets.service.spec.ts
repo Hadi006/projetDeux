@@ -1,7 +1,7 @@
 import { Server } from '@app/server';
 import { LobbySocketsService } from '@app/services/lobby-sockets.service';
 import { expect } from 'chai';
-import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { SinonStubbedInstance, createStubInstance, restore /* , stub */ } from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
@@ -40,7 +40,7 @@ describe('LobbySocketsService', () => {
         server.init();
         service = server['lobbySocketsService'];
         clientSocket = ioClient(urlString);
-        stub(console, 'log');
+        // stub(console, 'log');
     });
 
     afterEach(() => {
@@ -91,6 +91,18 @@ describe('LobbySocketsService', () => {
             expect(ack).to.equal(undefined);
             expect(lobbiesServiceStub.deleteLobby.calledWith(testLobby.id)).to.equal(true);
             done();
+        });
+    });
+
+    it('should broadcast a countdown if in the lobby', (done) => {
+        const countdown = 5;
+        lobbiesServiceStub.getLobby.resolves(testLobby);
+        clientSocket.emit('join-lobby', testLobby.id, (ack: string) => {
+            clientSocket.on('start-countdown', (time: number) => {
+                expect(time).to.equal(countdown);
+                done();
+            });
+            clientSocket.emit('start-countdown', testLobby.id, countdown);
         });
     });
 });
