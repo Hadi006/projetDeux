@@ -8,6 +8,7 @@ import { LobbiesService } from './lobbies.service';
 import { Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
 
+const RESPONSE_DELAY = 200;
 describe('LobbySocketsService', () => {
     let service: LobbySocketsService;
     let lobbiesServiceStub: SinonStubbedInstance<LobbiesService>;
@@ -104,5 +105,17 @@ describe('LobbySocketsService', () => {
             });
             clientSocket.emit('start-countdown', { lobbyId: testLobby.id, time: countdown });
         });
+    });
+
+    it('should not broadcast a countdown if not in the lobby', (done) => {
+        const countdown = 5;
+        lobbiesServiceStub.getLobby.resolves(undefined);
+        clientSocket.on('start-countdown', () => {
+            done(new Error('Should not have received the countdown'));
+        });
+        clientSocket.emit('start-countdown', { lobbyId: testLobby.id, time: countdown });
+        setTimeout(() => {
+            done();
+        }, RESPONSE_DELAY);
     });
 });
