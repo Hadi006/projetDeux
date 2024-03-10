@@ -6,6 +6,7 @@ import { GameHandlerService } from '@app/services/game-handler.service';
 import { LOBBY_ID_LENGTH, START_GAME_COUNTDOWN } from '@common/constant';
 import { LobbyData } from '@common/lobby-data';
 import { WebSocketService } from './web-socket.service';
+import { Router } from '@angular/router';
 
 describe('HostService', () => {
     const quizData: Quiz = {
@@ -26,6 +27,7 @@ describe('HostService', () => {
     let service: HostService;
     let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
     let webSocketServiceSpy: jasmine.SpyObj<WebSocketService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
         gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['cleanUp']);
@@ -35,6 +37,7 @@ describe('HostService', () => {
         });
 
         webSocketServiceSpy = jasmine.createSpyObj('GameSocketsService', ['connect', 'onEvent', 'emit', 'disconnect']);
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(() => {
@@ -43,6 +46,7 @@ describe('HostService', () => {
             providers: [
                 { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
                 { provide: WebSocketService, useValue: webSocketServiceSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         });
         service = TestBed.inject(HostService);
@@ -146,6 +150,22 @@ describe('HostService', () => {
             });
             service.startGame();
             expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('start-game', service.lobbyData.id);
+        });
+    });
+
+    it('should listen to the start game event', (done) => {
+        webSocketServiceSpy.onEvent.and.callFake((event, action) => {
+            const startGameAction = action as () => void;
+            startGameAction();
+        });
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        service.createLobby().subscribe(() => {
+            service.handleSockets();
+            webSocketServiceSpy.onEvent.calls.mostRecent().args[1](null);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+            done();
         });
     });
 });
