@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { HostService } from '@app/services/host.service';
 import { TimeService } from '@app/services/time.service';
 
 @Component({
@@ -12,8 +13,11 @@ export class GameCountDownComponent implements OnInit {
 
     private timerId: number;
 
-    constructor(private timeService: TimeService) {
-        this.timerId = this.timeService.createTimerById();
+    constructor(
+        private timeService: TimeService,
+        private hostService: HostService,
+    ) {
+        this.timerId = this.timeService.createTimerById(this.hostService.startGame.bind(this.hostService));
     }
 
     get time() {

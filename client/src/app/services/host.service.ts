@@ -41,7 +41,11 @@ export class HostService {
     }
 
     startCountdown(time: number) {
-        this.emitStartCountdown(time);
+        this.webSocketService.emit('start-countdown', { lobbyId: this.internalLobbyData.id, time });
+    }
+
+    startGame() {
+        this.webSocketService.emit('start-game', this.internalLobbyData.id);
     }
 
     cleanUp() {
@@ -73,10 +77,6 @@ export class HostService {
                 subscriber.complete();
             });
         });
-    }
-
-    private emitStartCountdown(time: number) {
-        this.webSocketService.emit('start-countdown', { lobbyId: this.internalLobbyData.id, time });
     }
 
     private onStartCountdown() {
