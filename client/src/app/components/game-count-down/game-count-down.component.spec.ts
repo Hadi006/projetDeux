@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TimeService } from '@app/services/time.service';
-import { COUNTDOWN_TIME } from '@common/constant';
 import { GameCountDownComponent } from './game-count-down.component';
+import { START_GAME_COUNTDOWN } from '@common/constant';
 
 describe('GameCountDownComponent', () => {
     const TEST_ID = 1;
@@ -22,6 +22,7 @@ describe('GameCountDownComponent', () => {
         });
         fixture = TestBed.createComponent(GameCountDownComponent);
         component = fixture.componentInstance;
+        component.countdownTime = START_GAME_COUNTDOWN;
         fixture.detectChanges();
     });
 
@@ -34,7 +35,7 @@ describe('GameCountDownComponent', () => {
     });
 
     it('ngOnInit should call startTimerById', () => {
-        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(TEST_ID, COUNTDOWN_TIME);
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(TEST_ID, START_GAME_COUNTDOWN);
     });
 
     it('time getter should call getTimeById', () => {
