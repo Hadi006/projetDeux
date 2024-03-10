@@ -106,6 +106,7 @@ describe('HostService', () => {
             expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('delete-lobby', service.lobbyData.id, jasmine.any(Function));
             expect(webSocketServiceSpy.disconnect).toHaveBeenCalled();
             expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
         });
     });
 
