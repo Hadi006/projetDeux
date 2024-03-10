@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { HostService } from '@app/services/host.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
-import { LOBBY_ID_LENGTH } from '@common/constant';
+import { LOBBY_ID_LENGTH, START_GAME_COUNTDOWN } from '@common/constant';
 import { LobbyData } from '@common/lobby-data';
 import { WebSocketService } from './web-socket.service';
 
@@ -100,6 +100,19 @@ describe('HostService', () => {
             expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('delete-lobby', service.lobbyData.id, jasmine.any(Function));
             expect(webSocketServiceSpy.disconnect).toHaveBeenCalled();
             expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
+        });
+    });
+
+    it('should emit a start countdown', () => {
+        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
+            callback(lobbyData as LobbyData);
+        });
+        service.createLobby().subscribe(() => {
+            webSocketServiceSpy.emit.and.callFake((event, data) => {
+                return;
+            });
+            service.startCountdown(START_GAME_COUNTDOWN);
+            expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('start-countdown', { lobbyId: service.lobbyData.id, time: START_GAME_COUNTDOWN });
         });
     });
 });
