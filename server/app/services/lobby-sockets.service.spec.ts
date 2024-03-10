@@ -1,7 +1,7 @@
 import { Server } from '@app/server';
 import { LobbySocketsService } from '@app/services/lobby-sockets.service';
 import { expect } from 'chai';
-import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { SinonStubbedInstance, createStubInstance, restore, spy /* , stub */ } from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
@@ -41,7 +41,7 @@ describe('LobbySocketsService', () => {
         server.init();
         service = server['lobbySocketsService'];
         clientSocket = ioClient(urlString);
-        stub(console, 'log');
+        // stub(console, 'log');
     });
 
     afterEach(() => {
@@ -110,11 +110,10 @@ describe('LobbySocketsService', () => {
     it('should not broadcast a countdown if not in the lobby', (done) => {
         const countdown = 5;
         lobbiesServiceStub.getLobby.resolves(undefined);
-        clientSocket.on('start-countdown', () => {
-            done(new Error('Should not have received the countdown'));
-        });
+        const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('start-countdown', { lobbyId: testLobby.id, time: countdown });
         setTimeout(() => {
+            expect(toSpy.called).to.equal(false);
             done();
         }, RESPONSE_DELAY);
     });
