@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
     providedIn: 'root',
 })
 export class HostService {
-    private internalCountdownTime: number;
     private internalLobbyData: LobbyData;
 
     constructor(
@@ -22,13 +21,8 @@ export class HostService {
         return this.internalLobbyData;
     }
 
-    get countdownTime() {
-        return this.internalCountdownTime;
-    }
-
     handleSockets() {
         this.webSocketService.connect();
-        this.onStartCountdown();
         this.onStartGame();
     }
 
@@ -38,10 +32,6 @@ export class HostService {
         }
 
         return this.emitCreateLobby();
-    }
-
-    startCountdown(time: number) {
-        this.webSocketService.emit('start-countdown', { lobbyId: this.internalLobbyData.id, time });
     }
 
     startGame() {
@@ -76,13 +66,6 @@ export class HostService {
                 subscriber.next();
                 subscriber.complete();
             });
-        });
-    }
-
-    private onStartCountdown() {
-        this.webSocketService.onEvent('start-countdown', (time: number) => {
-            this.lobbyData.started = true;
-            this.internalCountdownTime = time;
         });
     }
 

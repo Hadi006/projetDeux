@@ -31,7 +31,6 @@ describe('GameCountDownComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(GameCountDownComponent);
         component = fixture.componentInstance;
-        component.countdownTime = START_GAME_COUNTDOWN;
         fixture.detectChanges();
     });
 

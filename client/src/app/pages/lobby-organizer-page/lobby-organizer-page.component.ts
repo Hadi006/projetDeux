@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { HostService } from '@app/services/host.service';
-import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
     selector: 'app-lobby-organizer-page',
@@ -28,7 +27,7 @@ export class LobbyOrganizerPageComponent {
     }
 
     startGame() {
-        this.hostService.startCountdown(START_GAME_COUNTDOWN);
+        this.hostService.startGame();
     }
 
     leaveLobby() {

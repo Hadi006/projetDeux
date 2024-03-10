@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { HostService } from '@app/services/host.service';
 import { TimeService } from '@app/services/time.service';
+import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
     selector: 'app-game-count-down',
@@ -9,7 +10,6 @@ import { TimeService } from '@app/services/time.service';
 })
 export class GameCountDownComponent implements OnInit {
     @Input() gameName: string;
-    @Input() countdownTime: number;
 
     private timerId: number;
 
@@ -25,6 +25,6 @@ export class GameCountDownComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.timeService.startTimerById(this.timerId, this.countdownTime);
+        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN);
     }
 }

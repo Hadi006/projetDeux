@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { HostService } from '@app/services/host.service';
 import { Quiz } from '@common/quiz';
 import { GameHandlerService } from '@app/services/game-handler.service';
-import { LOBBY_ID_LENGTH, START_GAME_COUNTDOWN } from '@common/constant';
+import { LOBBY_ID_LENGTH } from '@common/constant';
 import { LobbyData } from '@common/lobby-data';
 import { WebSocketService } from './web-socket.service';
 import { Router } from '@angular/router';
@@ -107,37 +107,6 @@ describe('HostService', () => {
             expect(webSocketServiceSpy.disconnect).toHaveBeenCalled();
             expect(gameHandlerServiceSpy.cleanUp).toHaveBeenCalled();
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
-        });
-    });
-
-    it('should emit a start countdown', () => {
-        service.handleSockets();
-        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
-            callback(lobbyData as LobbyData);
-        });
-        service.createLobby().subscribe(() => {
-            webSocketServiceSpy.emit.and.callFake(() => {
-                return;
-            });
-            service.startCountdown(START_GAME_COUNTDOWN);
-            expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('start-countdown', { lobbyId: service.lobbyData.id, time: START_GAME_COUNTDOWN });
-        });
-    });
-
-    it('should listen to the countdown event', (done) => {
-        webSocketServiceSpy.onEvent.and.callFake((event, action) => {
-            const countdownAction = action as (time: number) => void;
-            countdownAction(START_GAME_COUNTDOWN);
-        });
-        webSocketServiceSpy.emit.and.callFake((event, data, callback: (lobbyData: unknown) => void) => {
-            callback(lobbyData as LobbyData);
-        });
-        service.createLobby().subscribe(() => {
-            service.handleSockets();
-            webSocketServiceSpy.onEvent.calls.mostRecent().args[1](START_GAME_COUNTDOWN);
-            expect(service.lobbyData.started).toBeTrue();
-            expect(service.countdownTime).toEqual(START_GAME_COUNTDOWN);
-            done();
         });
     });
 
