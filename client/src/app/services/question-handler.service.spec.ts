@@ -160,4 +160,3 @@ describe('QuestionHandlerService', () => {
         expect(service.updateScores).not.toHaveBeenCalled();
     });
 });
-

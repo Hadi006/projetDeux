@@ -220,4 +220,3 @@ describe('PlayerHandlerService', () => {
         expect(service.players).not.toContain(player);
     });
 });
-
