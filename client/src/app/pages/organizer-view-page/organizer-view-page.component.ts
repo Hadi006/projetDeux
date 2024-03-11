@@ -33,5 +33,4 @@ export class OrganizerViewPageComponent implements OnInit {
     movePlayerToNextQuestion(): void {
         this.currentQuestionIndex++;
     }
-
 }
