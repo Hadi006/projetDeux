@@ -24,17 +24,18 @@ export const PLAYERS_TEST: Player[] = [
         name: 'Player 1',
         score: 0,
         questions: QUESTION_TEST,
-        answerConfirmed: false,
+        answerConfirmed: true,
         isCorrect: false,
     },
     {
         name: 'Player 2',
         score: 0,
         questions: QUESTION_TEST,
-        answerConfirmed: false,
+        answerConfirmed: true,
         isCorrect: false,
     },
 ];
+
 
 export const TEST_LOBBY_DATA: LobbyData = {
     id: '1',

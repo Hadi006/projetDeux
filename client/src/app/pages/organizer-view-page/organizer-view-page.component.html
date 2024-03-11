@@ -1,1 +1,54 @@
-<p>organizer-view-page works!</p>
+<body>
+    <div class="container">
+        <div class="organizer-container">
+            <app-chatbox id="sidebar"></app-chatbox>
+            <div class="question-display" *ngIf="gameData.questions[currentQuestionIndex]">
+                <h1>{{ gameData.questions[currentQuestionIndex].text }}</h1>
+                <p>Points: + {{ gameData.questions[currentQuestionIndex].points }}</p>
+                <button
+                    *ngIf="allPlayerSubmitted && this.currentQuestionIndex < this.gameData.questions.length - 1"
+                    (click)="movePlayerToNextQuestion()"
+                >
+                    Allez à la prochaine question
+                </button>
+                <button
+                    *ngIf="allPlayerSubmitted && this.currentQuestionIndex === this.gameData.questions.length - 1"
+                    (click)="movePlayerToNextQuestion()"
+                >
+                    Allez à la page des résultats
+                </button>
+                <div class="histogram-container">Histpgram</div>
+                <div class="answers">
+                    <p *ngFor="let choice of gameData.questions[currentQuestionIndex].choices; let i = index" >
+                        {{ i + 1 }}. {{ choice.text }}
+                    </p>
+                </div>
+
+                <button *ngIf="playerScores.size === playerList.length - 1">
+                    Envoyer les scores aux joueurs
+                </button>
+            </div>
+            <div class="countdown">
+                <mat-card class="timer-card">
+                    <mat-card-content>
+                        <mat-icon class="timer-icon">timer</mat-icon>
+                        <p *ngIf="gameData.duration && time" class="timer-text">{{ time }}</p>
+                    </mat-card-content>
+                    <div class="timer-container">
+                        <button class="button-timer" [hidden]="allPlayerSubmitted">
+                           
+                        </button>
+                    </div>
+                </mat-card>
+                <div class="players-container">
+                    <section class="playerCardContainer">
+                        <div *ngFor="let player of playerList; let i = index">
+                            <h1>{{ playerList[i].name }}</h1>
+                            <h1>{{ playerList[i].score }}</h1>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

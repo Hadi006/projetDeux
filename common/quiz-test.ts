@@ -13,12 +13,12 @@ const QUESTION_TEST_1: Question = {
 
 const QUESTION_TEST_2: Question = {
     id: '30',
-    text: 'LOUNA RA& TNAFIKH SHFEFA?',
+    text: 'your name',
     type: 'QCM',
     points: 50,
     choices: [
-        { text: 'LAA MA BTAAMELA', isCorrect: false },
-        { text: 'EH W RAH TEKOL BLOCK', isCorrect: true },
+        { text: 'ali', isCorrect: false },
+        { text: 'hadi', isCorrect: true },
     ],
 };
 export const QUESTION_TEST = [QUESTION_TEST_1, QUESTION_TEST_2];
