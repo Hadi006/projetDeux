@@ -1,8 +1,9 @@
+import { Question } from '@common/quiz';
+
 export interface Player {
-    id: number;
     name: string;
     score: number;
-    answer: boolean[];
-    answerConfirmed: boolean;
+    questions: Question[];
     isCorrect: boolean;
 }
+

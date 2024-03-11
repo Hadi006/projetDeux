@@ -5,6 +5,7 @@ import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { GameManagementService } from '@app/services/game-management.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-question',
@@ -13,6 +14,9 @@ import { GameManagementService } from '@app/services/game-management.service';
 })
 export class QuestionComponent implements OnDestroy {
     player: Player;
+    answerConfirmed = false;
+
+    private answerConfirmedSubscription: Subscription;
 
     constructor(
         public playerHandlerService: PlayerHandlerService,
@@ -20,6 +24,7 @@ export class QuestionComponent implements OnDestroy {
         private gameManagementService: GameManagementService,
     ) {
         this.player = this.playerHandlerService.createPlayer();
+        this.subscribeToAnswerConfirmed();
     }
 
     get questionData(): Question | undefined {
@@ -31,7 +36,7 @@ export class QuestionComponent implements OnDestroy {
     }
 
     get isChecked(): boolean[] {
-        return this.player.answer;
+        return this.playerHandlerService.getPlayerBooleanAnswers();
     }
 
     get showingAnswer(): boolean {
@@ -49,10 +54,16 @@ export class QuestionComponent implements OnDestroy {
     }
 
     canEditAnswer(): boolean {
-        return !this.player.answerConfirmed && !this.showingAnswer;
+        return !this.answerConfirmed && !this.showingAnswer;
     }
 
     ngOnDestroy(): void {
-        this.playerHandlerService.removePlayer(this.player.id);
+        this.answerConfirmedSubscription.unsubscribe();
+    }
+
+    private subscribeToAnswerConfirmed(): void {
+        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe((answerConfirmed) => {
+            this.answerConfirmed = answerConfirmed;
+        });
     }
 }

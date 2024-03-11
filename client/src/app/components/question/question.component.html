@@ -6,7 +6,7 @@
     <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let choice of questionData.choices; let i = index">
             <label>
-                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="player.answer[i]" />
+                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="playerHandlerService.getPlayerAnswers()[i].isCorrect" />
                 {{ i + 1 }} ) {{ choice.text }}
             </label>
         </div>

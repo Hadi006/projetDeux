@@ -34,17 +34,16 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     resetAnswers(): void {
-        const nAnswers = this.currentQuestion?.choices.length || 0;
-        this.playerHandlerService.resetPlayerAnswers(nAnswers);
+        if (!this.currentQuestion) {
+            return;
+        }
+
+        this.playerHandlerService.resetPlayerAnswers(this.currentQuestion);
     }
 
     nextQuestion(): void {
         this.currentQuestionIndex++;
         this.resetAnswers();
-    }
-
-    updateScores(): void {
-        this.playerHandlerService.updateScores(this.calculateQuestionPoints());
     }
 
     ngOnDestroy(): void {
@@ -54,9 +53,7 @@ export class QuestionHandlerService implements OnDestroy {
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameManagementService.timerEndedSubject.subscribe(() => {
             if (this.gameManagementService.gameState === GameState.ShowQuestion) {
-                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.text || '').subscribe(() => {
-                    this.updateScores();
-                });
+                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.text || '', this.calculateQuestionPoints());
             }
         });
     }

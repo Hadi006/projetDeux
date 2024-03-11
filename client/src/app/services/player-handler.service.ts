@@ -1,31 +1,44 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@common/player';
-import { Subject, Observable, map, forkJoin } from 'rxjs';
+import { Subject, Observable, map } from 'rxjs';
 import { NEW_PLAYER } from '@common/constant';
 import { CommunicationService } from './communication.service';
 import { HttpStatusCode } from '@angular/common/http';
+import { Answer, Question } from '@common/quiz';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerHandlerService {
-    private internalPlayers: Player[] = [];
-    private internalNAnswered: number = 0;
-    private internalAllAnsweredSubject: Subject<void> = new Subject<void>();
+    private internalPlayer: Player;
+    private internalConfirmedSubject: Subject<boolean> = new Subject<boolean>();
+    private internalAnsweredSubject: Subject<void> = new Subject<void>();
 
     constructor(private communicationService: CommunicationService) {}
 
-    get players(): Player[] {
-        return this.internalPlayers;
+    get player(): Player {
+        return this.internalPlayer;
+    }
+
+    get answerConfirmedSubject(): Subject<boolean> {
+        return this.internalConfirmedSubject;
     }
 
     get allAnsweredSubject(): Subject<void> {
-        return this.internalAllAnsweredSubject;
+        return this.internalAnsweredSubject;
+    }
+
+    getPlayerAnswers(): Answer[] {
+        return this.internalPlayer.questions[this.internalPlayer.questions.length - 1].choices;
+    }
+
+    getPlayerBooleanAnswers(): boolean[] {
+        return this.getPlayerAnswers().map((answer) => answer.isCorrect);
     }
 
     createPlayer(): Player {
-        const newPlayer = { ...NEW_PLAYER, id: this.internalPlayers.length };
-        this.internalPlayers.push(newPlayer);
+        const newPlayer = { ...NEW_PLAYER };
+        this.internalPlayer = newPlayer;
 
         return newPlayer;
     }
@@ -36,8 +49,8 @@ export class PlayerHandlerService {
         }
 
         const key = parseInt(event.key, 10) - 1;
-        if (key >= 0 && key < player.answer.length) {
-            player.answer[key] = !player.answer[key];
+        if (key >= 0 && key < this.getPlayerAnswers().length) {
+            this.getPlayerAnswers()[key].isCorrect = !this.getPlayerAnswers()[key].isCorrect;
         }
     }
 
@@ -46,51 +59,23 @@ export class PlayerHandlerService {
             return;
         }
 
-        player.answerConfirmed = true;
-
-        if (++this.internalNAnswered >= this.internalPlayers.length) {
-            this.internalAllAnsweredSubject.next();
-            this.internalNAnswered = 0;
-        }
+        this.internalConfirmedSubject.next(true);
+        this.internalAnsweredSubject.next();
     }
 
-    updateScores(points: number): void {
-        this.internalPlayers.forEach((player) => {
-            if (player.isCorrect) {
-                player.score += points;
-            }
+    resetPlayerAnswers(question: Question): void {
+        const resetQuestion = { ...question };
+        resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
+        this.internalPlayer.questions.push(resetQuestion);
+        this.internalConfirmedSubject.next(false);
+        this.internalPlayer.isCorrect = false;
+    }
+
+    validatePlayerAnswers(questionText: string, points: number): void {
+        this.validateAnswer(questionText, this.getPlayerBooleanAnswers()).subscribe((isCorrect) => {
+            this.internalPlayer.isCorrect = isCorrect;
+            this.internalPlayer.score += isCorrect ? points : 0;
         });
-    }
-
-    resetPlayerAnswers(newAnswersLength: number): void {
-        this.internalPlayers.forEach((player) => {
-            player.answer = new Array(newAnswersLength).fill(false);
-            player.answerConfirmed = false;
-            player.isCorrect = false;
-        });
-    }
-
-    validatePlayerAnswers(questionText: string): Observable<null> {
-        const validationObservables: Observable<boolean>[] = [];
-
-        this.internalPlayers.forEach((player) => {
-            const validationObservable = this.validateAnswer(questionText, player.answer);
-
-            validationObservables.push(validationObservable);
-            validationObservable.subscribe((isCorrect) => {
-                player.isCorrect = isCorrect;
-            });
-        });
-
-        return forkJoin(validationObservables).pipe(
-            map(() => {
-                return null;
-            }),
-        );
-    }
-
-    removePlayer(playerId: number): void {
-        this.internalPlayers = this.internalPlayers.filter((player) => player.id !== playerId);
     }
 
     private validateAnswer(text: string, answer: boolean[]): Observable<boolean> {

@@ -19,19 +19,15 @@ export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 
 const TEST_PLAYER_DATA: Player[] = [
     {
-        id: 1,
         name: 'Player 1',
         score: 0,
-        answer: [],
-        answerConfirmed: false,
+        questions: [],
         isCorrect: false,
     },
     {
-        id: 2,
         name: 'Player 2',
         score: 0,
-        answer: [],
-        answerConfirmed: false,
+        questions: [],
         isCorrect: false,
     },
 ];
@@ -100,11 +96,9 @@ export const BLANK_QUESTION = {
 };
 
 export const NEW_PLAYER: Player = {
-    id: 0,
     name: '',
     score: 0,
-    answer: [],
-    answerConfirmed: false,
+    questions: [],
     isCorrect: false,
 };
 

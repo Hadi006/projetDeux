@@ -6,13 +6,12 @@ import { GameState } from '@common/constant';
 import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
 import { GameManagementService } from '@app/services/game-management.service';
+import { Subject } from 'rxjs';
 
 const TEST_PLAYER: Player = {
-    id: 0,
     name: 'Player 1',
     score: 0,
-    answer: [false, true, false, false],
-    answerConfirmed: false,
+    questions: [],
     isCorrect: false,
 };
 
@@ -68,8 +67,18 @@ describe('QuestionComponent', () => {
             configurable: true,
         });
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp', 'removePlayer']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
+            'createPlayer',
+            'handleKeyUp',
+            'getPlayerBooleanAnswers',
+        ]);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
+        Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmedSubject', {
+            get: () => {
+                return new Subject<boolean>();
+            },
+            configurable: true,
+        });
 
         gameManagementServiceSpy = {} as GameManagementService;
         gameManagementServiceSpy.gameState = GameState.ShowQuestion;
@@ -112,7 +121,7 @@ describe('QuestionComponent', () => {
     });
 
     it('isChecked getter should return the players answer', () => {
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
+        expect(component.isChecked).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
 
     it('showingAnswer getter should return true when game state is ShowAnswer', () => {
@@ -126,7 +135,6 @@ describe('QuestionComponent', () => {
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should do nothing if question is open ended', () => {
@@ -136,7 +144,6 @@ describe('QuestionComponent', () => {
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should do nothing if answer cant be edited', () => {
@@ -146,7 +153,6 @@ describe('QuestionComponent', () => {
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should call playerHandlerService.handleKeyUp', () => {
@@ -160,7 +166,7 @@ describe('QuestionComponent', () => {
     });
 
     it('canEditAnswer should return false if answer is confirmed', () => {
-        component.player.answerConfirmed = true;
+        component.answerConfirmed = true;
         const showingAnswerSpy = spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         expect(component.canEditAnswer()).toBeFalse();
         showingAnswerSpy.and.returnValue(true);
@@ -168,21 +174,18 @@ describe('QuestionComponent', () => {
     });
 
     it('canEditAnswer should return false if showingAnswer is true', () => {
+        component.answerConfirmed = false;
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(true);
-        component.player.answerConfirmed = false;
+        component.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeFalse();
-        component.player.answerConfirmed = true;
+        component.answerConfirmed = true;
         expect(component.canEditAnswer()).toBeFalse();
     });
 
     it('canEditAnswer should return true if answer is not confirmed and showingAnswer is false', () => {
+        component.answerConfirmed = false;
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
-        component.player.answerConfirmed = false;
+        component.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
-    });
-
-    it('ngOnDestroy should remove the player', () => {
-        component.ngOnDestroy();
-        expect(playerHandlerServiceSpy.removePlayer).toHaveBeenCalledWith(TEST_PLAYER.id);
     });
 });
