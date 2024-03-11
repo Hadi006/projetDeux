@@ -32,16 +32,6 @@ export class OrganizerViewPageComponent implements OnInit {
 
     movePlayerToNextQuestion(): void {
         this.currentQuestionIndex++;
-        this.updatePlayerScore();
     }
 
-    updatePlayerScore(): void {
-        let j = 0;
-        for (const player of this.playerList) {
-            if (player.questions[j].choices[j].isCorrect) {
-                player.score += this.gameData.questions[j].points;
-            }
-            j++;
-        }
-    }
 }
