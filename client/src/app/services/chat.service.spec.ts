@@ -48,15 +48,22 @@ describe('ChatService', () => {
         expect(chatService['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH + 1))).toBe(false); // Message exceeding max length should return false
     });
 
-    // it('should add received message to internal messages', (done) => {
-    //     const testMessage = { text: 'Test Message', timestamp: new Date() };
-    //     service.messagesSubjectGetter.subscribe(() => {
-    //         expect(service.messages.length).toBe(1);
-    //         expect(service.messages[0]).toEqual(testMessage);
-    //         done();
-    //     });
-    //     (service as any).socket.emit('message-received', testMessage);
-    // });
+    // it('should update internalMessages and notify subscribers when message is received', fakeAsync(() => {
+    //     // Arrange
+    //     const message: ChatMessage = {
+    //         text: 'Test message',
+    //         timestamp: new Date(),
+    //     };
+
+    //     // Act
+    //     service['setupSocket'](); // Call the private method setupSocket
+    //     service['socket'].emit('message-received', message); // Emit the simulated message event
+    //     tick(); // Wait for the asynchronous operation
+
+    //     // Assert
+    //     expect(service['internalMessages'].length).toBe(1); // Check the length of internalMessages
+    //     expect(service['internalMessages'][0]).toEqual(message); // Check the received message
+    // }));
 
     it('should send valid messages through the socket', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
