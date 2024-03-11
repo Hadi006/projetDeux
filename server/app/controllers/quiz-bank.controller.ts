@@ -26,6 +26,11 @@ export class QuizBankController {
             res.status(quizzes ? httpStatus.OK : httpStatus.NOT_FOUND).json(quizzes);
         });
 
+        this.router.get('/:quizId', async (req: Request, res: Response) => {
+            const quiz: Quiz | null = await this.quizBankService.getQuiz(req.params.quizId);
+            res.status(quiz ? httpStatus.OK : httpStatus.NOT_FOUND).json(quiz);
+        });
+
         this.router.get('/:quizId/download', async (req: Request, res: Response) => {
             const quiz: Quiz | null = await this.quizBankService.exportQuiz(req.params.quizId);
             if (!quiz) {

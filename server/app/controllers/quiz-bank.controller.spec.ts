@@ -74,6 +74,29 @@ describe('QuizBankController', () => {
             });
     });
 
+    it('GET /:quizId should return a quiz from quiz service', async () => {
+        const expectedQuiz = EXPECTED_QUIZZES[0];
+        quizBankServiceStub.getQuiz.resolves(JSON.parse(JSON.stringify(MOCK_QUIZZES[0])));
+
+        return supertest(expressApp)
+            .get(`/api/quizzes/${expectedQuiz.id}`)
+            .expect(httpStatus.OK)
+            .then((response) => {
+                expect(response.body).to.deep.equal(expectedQuiz);
+            });
+    });
+
+    it('GET /:quizId should return 404 when no quiz is found', async () => {
+        quizBankServiceStub.getQuiz.resolves(null);
+
+        return supertest(expressApp)
+            .get('/api/quizzes/1')
+            .expect(httpStatus.NOT_FOUND)
+            .then((response) => {
+                expect(response.body).to.deep.equal(null);
+            });
+    });
+
     it('GET /visible should return visible quizzes from quiz service', async () => {
         quizBankServiceStub.getVisibleQuizzes.resolves(MOCK_QUIZZES);
 
