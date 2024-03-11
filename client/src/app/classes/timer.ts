@@ -1,37 +1,56 @@
-export class Timer {
-    time: number = 0;
+import { TIMER_TICK_RATE } from '@common/constant';
 
-    private readonly tick: number = 1000;
+export class Timer {
+    time: number;
     private interval: number | undefined;
+    private tickRate: number;
+    private callback: () => void;
 
     constructor(
-        private onTimerEndCallback: () => void = () => {
+        callback: () => void = () => {
             return;
         },
-    ) {}
+        tickRate: number = TIMER_TICK_RATE,
+    ) {
+        this.time = 0;
+        this.interval = undefined;
+        this.tickRate = tickRate;
+        this.callback = callback;
+    }
 
-    start(startValue: number): void {
+    start(time: number, callback?: () => void) {
         if (this.interval) {
             return;
         }
 
-        this.time = startValue < 0 ? 0 : startValue;
-        this.interval = window.setInterval(() => {
-            if (this.time > 0) {
-                this.time--;
-            } else {
-                this.stop();
-                this.onTimerEndCallback();
-            }
-        }, this.tick);
+        this.time = time > 0 ? time : 0;
+        this.callback = callback || this.callback;
+        this.resume();
     }
 
-    stop(): void {
+    stop() {
         if (!this.interval) {
             return;
         }
 
         clearInterval(this.interval);
+        this.time = 0;
         this.interval = undefined;
     }
+
+    pause() {
+        clearInterval(this.interval);
+    }
+
+    resume() {
+        this.interval = window.setInterval(() => {
+            if (this.time > 0) {
+                this.time--;
+            } else {
+                this.stop();
+                this.callback();
+            }
+        }, this.tickRate);
+    }
 }
+

@@ -15,8 +15,8 @@ export class TimeService {
         return this.nextId;
     }
 
-    startTimerById(timerId: number, startValue: number) {
-        this.timers.get(timerId)?.start(startValue);
+    startTimerById(timerId: number, startValue: number, callback?: () => void) {
+        this.timers.get(timerId)?.start(startValue, callback);
     }
 
     stopTimerById(timerId: number) {
@@ -32,5 +32,13 @@ export class TimeService {
         if (timer) {
             timer.time = time;
         }
+    }
+
+    pauseTimerById(timerId: number) {
+        this.timers.get(timerId)?.pause();
+    }
+
+    resumeTimerById(timerId: number) {
+        this.timers.get(timerId)?.resume();
     }
 }

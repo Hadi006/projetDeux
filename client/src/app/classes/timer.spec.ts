@@ -113,4 +113,23 @@ describe('Timer', () => {
         expect(spy).not.toHaveBeenCalled();
         discardPeriodicTasks();
     }));
+
+    it('pauseTimer should call clearInterval', fakeAsync(() => {
+        const spy = spyOn(window, 'clearInterval');
+        timerTest.start(TIMEOUT);
+        timerTest.pause();
+
+        expect(spy).toHaveBeenCalled();
+        discardPeriodicTasks();
+    }));
+
+    it('resumeTimer should call setInterval', fakeAsync(() => {
+        const spy = spyOn(window, 'setInterval');
+        timerTest.start(TIMEOUT);
+        timerTest.pause();
+        timerTest.resume();
+
+        expect(spy).toHaveBeenCalled();
+        discardPeriodicTasks();
+    }));
 });
