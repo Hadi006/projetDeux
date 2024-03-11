@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '@app/services/chat.service';
+import { Subscription } from 'rxjs';
 
 // import * as io from 'socket.io-client';
 
@@ -8,7 +9,7 @@ import { ChatService } from '@app/services/chat.service';
     templateUrl: './chatbox.component.html',
     styleUrls: ['./chatbox.component.scss'],
 })
-export class ChatboxComponent {
+export class ChatboxComponent implements OnInit, OnDestroy {
     showChat = false;
     newMessage = '';
     // message: string = '';
@@ -16,17 +17,22 @@ export class ChatboxComponent {
     // socket: any;
     messages: string[] = [];
     // messages: ChatMessage[] = [];
+    private messagesSubscription: Subscription;
 
     constructor(
         public chatService: ChatService,
-        private cdRef: ChangeDetectorRef, // private socketService: SocketService,
+        private cdRef: ChangeDetectorRef, // private socketService: SocketService,, ChangeDetectorRef
     ) {}
 
-    // ngOnInit() {
-    //     this.chatService.getMessages().subscribe((message: string) => {
-    //         this.messages.push(message);
-    //     });
-    // }
+    ngOnInit() {
+        this.messagesSubscription = this.chatService.messagesSubjectGetter.subscribe(() => {
+            this.handleMessagesUpdate();
+        });
+    }
+
+    ngOnDestroy() {
+        this.messagesSubscription.unsubscribe();
+    }
 
     toggleChat() {
         this.showChat = !this.showChat;
