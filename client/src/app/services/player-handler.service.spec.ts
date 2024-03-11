@@ -64,7 +64,7 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
         const player = service.createPlayer();
-        player.questions = TEST_QUESTIONS;
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         spyOn(service, 'confirmPlayerAnswer');
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'Enter' }), player);
         expect(service.confirmPlayerAnswer).toHaveBeenCalled();
@@ -72,7 +72,7 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should toggle the answer if a number key is pressed', () => {
         const player = service.createPlayer();
-        player.questions = TEST_QUESTIONS;
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         player.questions[0].choices.forEach((choice) => {
             choice.isCorrect = false;
         });
@@ -84,7 +84,7 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should not toggle the answer if a number key is pressed out of range', () => {
         const player = service.createPlayer();
-        player.questions = TEST_QUESTIONS;
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '0' }), player);
         expect(player.questions[0].choices[0].isCorrect).toBeFalse();
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '4' }), player);
@@ -93,7 +93,7 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should not toggle the answer if a non-number key is pressed', () => {
         const player = service.createPlayer();
-        player.questions = TEST_QUESTIONS;
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         player.questions[0].choices.forEach((choice) => {
             choice.isCorrect = true;
         });
@@ -176,8 +176,8 @@ describe('PlayerHandlerService', () => {
     it('validatePlayerAnswers should validate the answers of all players when the status is ok', () => {
         const nPlayers = 3;
         for (let i = 0; i < nPlayers; i++) {
-            service.createPlayer();
-            service.players[i].questions = TEST_QUESTIONS;
+            const player = service.createPlayer();
+            player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         }
         const questionText = '1234';
         const httpResponses: HttpResponse<boolean>[] = [
@@ -196,7 +196,8 @@ describe('PlayerHandlerService', () => {
     it('validatePlayerAnswers should validate the answers of all players when the status is not ok', () => {
         const nPlayers = 3;
         for (let i = 0; i < nPlayers; i++) {
-            service.createPlayer();
+            const player = service.createPlayer();
+            player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         }
         const questionText = '1234';
         const httpResponses: HttpResponse<boolean>[] = [
