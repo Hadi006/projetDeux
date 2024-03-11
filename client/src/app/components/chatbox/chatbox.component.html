@@ -4,10 +4,16 @@
         <span *ngIf="!showChat">Open chat</span>
     </button>
     <div *ngIf="showChat" class="chat-container">
+        <h4 id="username">{{ playerName }}</h4>
         <div class="messages">
             <div *ngFor="let message of chatService.messages" class="message">
-                <span>{{ message.text }}</span>
-                <span class="timestamp"> {{ message.timestamp | date: 'mediumTime' }}</span>
+                <div class="message-header">
+                    <span class="author">{{ playerName }} :</span>
+                    <span class="timestamp">{{ message.timestamp | date: 'mediumTime' }}</span>
+                </div>
+                <div class="message-body">
+                    <span>{{ message.text }}</span>
+                </div>
             </div>
         </div>
         <div class="input-container">

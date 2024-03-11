@@ -1,8 +1,6 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '@app/services/chat.service';
 import { Subscription } from 'rxjs';
-
-// import * as io from 'socket.io-client';
 
 @Component({
     selector: 'app-chatbox',
@@ -10,18 +8,16 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./chatbox.component.scss'],
 })
 export class ChatboxComponent implements OnInit, OnDestroy {
+    @Input() playerName: string;
+
     showChat = false;
     newMessage = '';
-    // message: string = '';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // socket: any;
     messages: string[] = [];
-    // messages: ChatMessage[] = [];
     private messagesSubscription: Subscription;
 
     constructor(
         public chatService: ChatService,
-        private cdRef: ChangeDetectorRef, // private socketService: SocketService,, ChangeDetectorRef
+        private cdRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit() {
@@ -38,11 +34,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
         this.showChat = !this.showChat;
     }
 
-    // sendMessage() {
-    //     this.chatService.sendMessage(this.newMessage);
-    //     this.socketService.sendMessage(this.newMessage);
-    //     this.newMessage = '';
-    // }
     sendMessage() {
         this.chatService.sendMessage(this.newMessage);
         this.newMessage = '';
