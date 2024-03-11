@@ -6,12 +6,12 @@ import { GameState } from '@common/constant';
 import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
 import { GameManagementService } from '@app/services/game-management.service';
+import { Subject } from 'rxjs';
 
 const TEST_PLAYER: Player = {
     name: 'Player 1',
     score: 0,
     questions: [],
-    answerConfirmed: false,
     isCorrect: false,
 };
 
@@ -73,6 +73,12 @@ describe('QuestionComponent', () => {
             'getPlayerBooleanAnswers',
         ]);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
+        Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmedSubject', {
+            get: () => {
+                return new Subject<boolean>();
+            },
+            configurable: true,
+        });
 
         gameManagementServiceSpy = {} as GameManagementService;
         gameManagementServiceSpy.gameState = GameState.ShowQuestion;
@@ -160,7 +166,7 @@ describe('QuestionComponent', () => {
     });
 
     it('canEditAnswer should return false if answer is confirmed', () => {
-        component.player.answerConfirmed = true;
+        component.answerConfirmed = true;
         const showingAnswerSpy = spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         expect(component.canEditAnswer()).toBeFalse();
         showingAnswerSpy.and.returnValue(true);
@@ -168,16 +174,18 @@ describe('QuestionComponent', () => {
     });
 
     it('canEditAnswer should return false if showingAnswer is true', () => {
+        component.answerConfirmed = false;
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(true);
-        component.player.answerConfirmed = false;
+        component.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeFalse();
-        component.player.answerConfirmed = true;
+        component.answerConfirmed = true;
         expect(component.canEditAnswer()).toBeFalse();
     });
 
     it('canEditAnswer should return true if answer is not confirmed and showingAnswer is false', () => {
+        component.answerConfirmed = false;
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
-        component.player.answerConfirmed = false;
+        component.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
     });
 });

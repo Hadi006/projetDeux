@@ -102,11 +102,9 @@ describe('PlayerHandlerService', () => {
     });
 
     it('confirmPlayerAnswer should do nothing if player is undefined', () => {
-        const player = service.createPlayer();
-        player.answerConfirmed = false;
+        service.createPlayer();
         spyOn(service.allAnsweredSubject, 'next');
         service.confirmPlayerAnswer(undefined);
-        expect(player.answerConfirmed).toBeFalse();
         expect(service.allAnsweredSubject.next).not.toHaveBeenCalled();
     });
 
@@ -114,7 +112,6 @@ describe('PlayerHandlerService', () => {
         service.createPlayer();
         spyOn(service.allAnsweredSubject, 'next');
         service.confirmPlayerAnswer(service.player);
-        expect(service.player.answerConfirmed).toBeTrue();
         expect(service.allAnsweredSubject.next).toHaveBeenCalled();
     });
 
@@ -128,13 +125,11 @@ describe('PlayerHandlerService', () => {
     });
 
     it('resetPlayerAnswers should reset all players answers and answerConfirmed', () => {
-        const player = service.createPlayer();
-        player.answerConfirmed = true;
+        service.createPlayer();
         service.resetPlayerAnswers(TEST_QUESTIONS[0]);
         service.player.questions[0].choices.forEach((choice) => {
             expect(choice.isCorrect).toBeFalse();
         });
-        expect(player.answerConfirmed).toBeFalse();
     });
 
     it('validatePlayerAnswers increase the score when status is ok', () => {

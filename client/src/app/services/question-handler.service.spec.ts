@@ -135,6 +135,12 @@ describe('QuestionHandlerService', () => {
         expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(QUESTIONS_DATA[0]);
     });
 
+    it('resetAnswers should not reset the answers of the players if there is no current question', () => {
+        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
+        service.resetAnswers();
+        expect(playerHandlerServiceSpy.resetPlayerAnswers).not.toHaveBeenCalled();
+    });
+
     it('nextQuestion should load the next question', () => {
         service.nextQuestion();
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);

@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnDestroy } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -12,10 +12,11 @@ import { Subscription } from 'rxjs';
     templateUrl: './question.component.html',
     styleUrls: ['./question.component.scss'],
 })
-export class QuestionComponent {
+export class QuestionComponent implements OnDestroy {
     player: Player;
     answerConfirmed = false;
-    answerConfirmedSubscription: Subscription;
+
+    private answerConfirmedSubscription: Subscription;
 
     constructor(
         public playerHandlerService: PlayerHandlerService,
@@ -54,6 +55,10 @@ export class QuestionComponent {
 
     canEditAnswer(): boolean {
         return !this.answerConfirmed && !this.showingAnswer;
+    }
+
+    ngOnDestroy(): void {
+        this.answerConfirmedSubscription.unsubscribe();
     }
 
     private subscribeToAnswerConfirmed(): void {
