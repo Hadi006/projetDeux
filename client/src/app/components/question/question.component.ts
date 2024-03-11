@@ -31,7 +31,7 @@ export class QuestionComponent implements OnDestroy {
     }
 
     get isChecked(): boolean[] {
-        return this.player.answer;
+        return this.playerHandlerService.getPlayerBooleanAnswers(this.player);
     }
 
     get showingAnswer(): boolean {
@@ -53,6 +53,6 @@ export class QuestionComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.playerHandlerService.removePlayer(this.player.id);
+        this.playerHandlerService.removePlayer(this.player.name);
     }
 }

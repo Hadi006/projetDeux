@@ -34,8 +34,11 @@ export class QuestionHandlerService implements OnDestroy {
     }
 
     resetAnswers(): void {
-        const nAnswers = this.currentQuestion?.choices.length || 0;
-        this.playerHandlerService.resetPlayerAnswers(nAnswers);
+        if (!this.currentQuestion) {
+            return;
+        }
+
+        this.playerHandlerService.resetPlayerAnswers(this.currentQuestion);
     }
 
     nextQuestion(): void {

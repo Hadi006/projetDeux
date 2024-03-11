@@ -1,11 +1,35 @@
 import { HttpStatusCode, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Question } from '@common/quiz';
 import { of } from 'rxjs';
 import { CommunicationService } from './communication.service';
 import { PlayerHandlerService } from './player-handler.service';
 
 describe('PlayerHandlerService', () => {
+    const TEST_QUESTIONS: Question[] = [
+        {
+            id: '0',
+            points: 10,
+            text: '1+1?',
+            choices: [
+                {
+                    text: '1',
+                    isCorrect: false,
+                },
+                {
+                    text: '2',
+                    isCorrect: false,
+                },
+                {
+                    text: '3',
+                    isCorrect: false,
+                },
+            ],
+            type: 'QCM',
+        },
+    ];
+
     let service: PlayerHandlerService;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
@@ -40,6 +64,7 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
         const player = service.createPlayer();
+        player.questions = TEST_QUESTIONS;
         spyOn(service, 'confirmPlayerAnswer');
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'Enter' }), player);
         expect(service.confirmPlayerAnswer).toHaveBeenCalled();
@@ -47,27 +72,35 @@ describe('PlayerHandlerService', () => {
 
     it('handleKeyUp should toggle the answer if a number key is pressed', () => {
         const player = service.createPlayer();
-        player.answer = [false, false, false];
+        player.questions = TEST_QUESTIONS;
+        player.questions[0].choices.forEach((choice) => {
+            choice.isCorrect = false;
+        });
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '1' }), player);
-        expect(player.answer).toEqual([true, false, false]);
+        expect(player.questions[0].choices[0].isCorrect).toBeTrue();
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '1' }), player);
-        expect(player.answer).toEqual([false, false, false]);
+        expect(player.questions[0].choices[0].isCorrect).toBeFalse();
     });
 
     it('handleKeyUp should not toggle the answer if a number key is pressed out of range', () => {
         const player = service.createPlayer();
-        player.answer = [false, false, false];
+        player.questions = TEST_QUESTIONS;
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '0' }), player);
-        expect(player.answer).toEqual([false, false, false]);
+        expect(player.questions[0].choices[0].isCorrect).toBeFalse();
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '4' }), player);
-        expect(player.answer).toEqual([false, false, false]);
+        expect(player.questions[0].choices[0].isCorrect).toBeFalse();
     });
 
     it('handleKeyUp should not toggle the answer if a non-number key is pressed', () => {
         const player = service.createPlayer();
-        player.answer = [false, false, false];
+        player.questions = TEST_QUESTIONS;
+        player.questions[0].choices.forEach((choice) => {
+            choice.isCorrect = true;
+        });
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'a' }), player);
-        expect(player.answer).toEqual([false, false, false]);
+        player.questions[0].choices.forEach((choice) => {
+            expect(choice.isCorrect).toBeTrue();
+        });
     });
 
     it('confirmPlayerAnswer should do nothing if player is undefined', () => {
@@ -127,15 +160,15 @@ describe('PlayerHandlerService', () => {
 
     it('resetPlayerAnswers should reset all players answers and answerConfirmed', () => {
         const nPlayers = 3;
-        const nAnswers = 4;
         for (let i = 0; i < nPlayers; i++) {
             const player = service.createPlayer();
-            player.answer = new Array(nAnswers).fill(true);
             player.answerConfirmed = true;
         }
-        service.resetPlayerAnswers(nAnswers);
+        service.resetPlayerAnswers(TEST_QUESTIONS[0]);
         service.players.forEach((player) => {
-            expect(player.answer).toEqual(new Array(nAnswers).fill(false));
+            player.questions[0].choices.forEach((choice) => {
+                expect(choice.isCorrect).toBeFalse();
+            });
             expect(player.answerConfirmed).toBeFalse();
         });
     });
@@ -144,6 +177,7 @@ describe('PlayerHandlerService', () => {
         const nPlayers = 3;
         for (let i = 0; i < nPlayers; i++) {
             service.createPlayer();
+            service.players[i].questions = TEST_QUESTIONS;
         }
         const questionText = '1234';
         const httpResponses: HttpResponse<boolean>[] = [
@@ -181,8 +215,9 @@ describe('PlayerHandlerService', () => {
     it('removePlayer should remove the player from the list', () => {
         const player = service.createPlayer();
         const nPlayers = service.players.length;
-        service.removePlayer(player.id);
+        service.removePlayer(player.name);
         expect(service.players.length).toBe(nPlayers - 1);
         expect(service.players).not.toContain(player);
     });
 });
+

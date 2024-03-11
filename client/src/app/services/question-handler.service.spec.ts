@@ -134,13 +134,7 @@ describe('QuestionHandlerService', () => {
     it('resetAnswers should reset the answers of the players', () => {
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue({ ...QUESTIONS_DATA[0] });
         service.resetAnswers();
-        expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(3);
-    });
-
-    it('resetAnswers should call resetPlayerAnswers with 0 if there is no current question', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-        service.resetAnswers();
-        expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(0);
+        expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(QUESTIONS_DATA[0]);
     });
 
     it('updateScores should update the scores of the players', () => {
@@ -166,3 +160,4 @@ describe('QuestionHandlerService', () => {
         expect(service.updateScores).not.toHaveBeenCalled();
     });
 });
+
