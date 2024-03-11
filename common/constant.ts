@@ -117,3 +117,6 @@ export const NEW_LOBBY: LobbyData = {
 export const LOBBY_ID_MAX = 10000;
 
 export const LOBBY_ID_LENGTH = 4;
+
+/* Classes */
+export const TIMER_TICK_RATE = 1000;
