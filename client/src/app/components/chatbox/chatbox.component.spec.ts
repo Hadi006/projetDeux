@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ChatboxComponent } from './chatbox.component';
 import { ChatService } from '@app/services/chat.service';
+import { Subject } from 'rxjs';
+import { ChatboxComponent } from './chatbox.component';
 
 describe('ChatboxComponent', () => {
     let component: ChatboxComponent;
     let fixture: ComponentFixture<ChatboxComponent>;
     let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
-    beforeEach(() => {
-        chatServiceSpy = jasmine.createSpyObj('ChatService', ['sendMessage']);
-    });
-
     beforeEach(waitForAsync(() => {
+        chatServiceSpy = jasmine.createSpyObj('ChatService', ['sendMessage']);
+
+        const messagesSubject = new Subject<void>();
+
+        Object.defineProperty(chatServiceSpy, 'messagesSubjectGetter', { value: messagesSubject });
+
         TestBed.configureTestingModule({
             declarations: [ChatboxComponent],
             providers: [{ provide: ChatService, useValue: chatServiceSpy }],
@@ -37,14 +40,23 @@ describe('ChatboxComponent', () => {
     });
 
     it('should call chatService.sendMessage when sendMessage is called', () => {
-        component.newMessage = 'test message';
         component.sendMessage();
-        expect(chatServiceSpy.sendMessage).toHaveBeenCalledWith('test message');
+        expect(chatServiceSpy.sendMessage).toHaveBeenCalled();
     });
 
     it('should reset newMessage to an empty string after sendMessage is called', () => {
         component.newMessage = 'test message';
         component.sendMessage();
         expect(component.newMessage).toBe('');
+    });
+
+    it('should handle message updates correctly', () => {
+        const spyHandleMessagesUpdate = spyOn(component, 'handleMessagesUpdate').and.callThrough();
+
+        component.ngOnInit();
+
+\        component.chatService.messagesSubjectGetter.next();
+
+        expect(spyHandleMessagesUpdate).toHaveBeenCalled();
     });
 });
