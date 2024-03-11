@@ -41,10 +41,17 @@ describe('ChatService', () => {
     });
 
     it('should add a message to the messages array when sendMessage is called with a valid message', () => {
+        // Arrange
+        const service = TestBed.inject(ChatService);
         const initialMessagesLength = service.messages.length; // Get the initial length of messages array
+
+        // Act
         service.sendMessage('test message');
+
+        // Assert
         const updatedMessagesLength = service.messages.length; // Get the updated length of messages array
         expect(updatedMessagesLength).toBe(initialMessagesLength + 1); // Expect the length to increase by 1
+        // expect(service.messages[updatedMessagesLength - 1]).toBe('test message'); // Expect the last message to be 'test message'
     });
 
     it('should add received message to messages array', fakeAsync(() => {
@@ -66,18 +73,15 @@ describe('ChatService', () => {
         expect(subjectEmitted).toBe(true);
     }));
 
-    it('should handle message validation correctly', () => {
-        // Test message with maximum length
-        expect(service['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH))).toBe(true);
+    it('should validate message correctly', () => {
+        // Arrange
+        const chatService = TestBed.inject(ChatService);
 
-        // Test message longer than maximum length
-        expect(service['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH + 1))).toBe(false);
-
-        // Test message with only whitespace
-        expect(service['validateMessage']('   ')).toBe(false);
-
-        // Test valid message
-        expect(service['validateMessage']('Valid message')).toBe(true);
+        // Act & Assert
+        expect(chatService['validateMessage']('')).toBe(false); // Empty message should return false
+        expect(chatService['validateMessage']('   ')).toBe(false); // Only whitespace message should return false
+        expect(chatService['validateMessage']('valid message')).toBe(true); // Valid message should return true
+        expect(chatService['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH + 1))).toBe(false); // Message exceeding max length should return false
     });
 
     it('should handle unsuccessful message sending', () => {
