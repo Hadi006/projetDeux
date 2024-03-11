@@ -14,6 +14,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
+import { HistogramComponent } from './components/histogram/histogram.component';
 import { PromptComponent } from './components/prompt/prompt.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
 import { QuestionFormComponent } from './components/question-form/question-form.component';
@@ -26,7 +27,7 @@ import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-pa
 import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { OrganizerViewPageComponent } from './pages/organizer-view-page/organizer-view-page.component';
-
+import { ChartModule } from '@syncfusion/ej2-angular-charts';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -55,6 +56,7 @@ import { OrganizerViewPageComponent } from './pages/organizer-view-page/organize
         QuestionFormComponent,
         PromptComponent,
         OrganizerViewPageComponent,
+        HistogramComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -65,6 +67,7 @@ import { OrganizerViewPageComponent } from './pages/organizer-view-page/organize
         HttpClientModule,
         DragDropModule,
         ReactiveFormsModule,
+        ChartModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
