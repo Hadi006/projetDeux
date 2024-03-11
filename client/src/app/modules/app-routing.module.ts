@@ -8,6 +8,7 @@ import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
+import { OrganizerViewPageComponent } from '@app/pages/organizer-view-page/organizer-view-page.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -19,6 +20,7 @@ const routes: Routes = [
     { path: 'game', component: GameChoicePageComponent },
     { path: 'lobby', component: LobbyOrganizerPageComponent },
     { path: 'play', component: GameplayPlayerPageComponent },
+    { path: 'organizer', component: OrganizerViewPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

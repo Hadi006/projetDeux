@@ -2,6 +2,7 @@ import { AccessToken } from '@common/access-token';
 import { Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
 import { Player } from '@common/player';
+import {QUESTION_TEST} from '@common/quiz-test';
 
 /* Components */
 export const COUNTDOWN_TIME = 5;
@@ -18,18 +19,18 @@ export enum MouseButton {
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
 
-const TEST_PLAYER_DATA: Player[] = [
+export const PLAYERS_TEST: Player[] = [
     {
         name: 'Player 1',
         score: 0,
-        questions: [],
+        questions: QUESTION_TEST,
         answerConfirmed: false,
         isCorrect: false,
     },
     {
         name: 'Player 2',
         score: 0,
-        questions: [],
+        questions: QUESTION_TEST,
         answerConfirmed: false,
         isCorrect: false,
     },
@@ -37,7 +38,7 @@ const TEST_PLAYER_DATA: Player[] = [
 
 export const TEST_LOBBY_DATA: LobbyData = {
     id: '1',
-    players: TEST_PLAYER_DATA,
+    players: PLAYERS_TEST,
     started: false,
 };
 
