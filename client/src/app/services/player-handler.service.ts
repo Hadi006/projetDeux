@@ -4,6 +4,7 @@ import { Subject, Observable, map, forkJoin } from 'rxjs';
 import { NEW_PLAYER } from '@common/constant';
 import { CommunicationService } from './communication.service';
 import { HttpStatusCode } from '@angular/common/http';
+import { Answer, Question } from '@common/quiz';
 
 @Injectable({
     providedIn: 'root',
@@ -23,6 +24,14 @@ export class PlayerHandlerService {
         return this.internalAllAnsweredSubject;
     }
 
+    getPlayerAnswers(player: Player): Answer[] {
+        return player.questions[player.questions.length - 1].choices;
+    }
+
+    getPlayerBooleanAnswers(player: Player): boolean[] {
+        return this.getPlayerAnswers(player).map((answer) => answer.isCorrect);
+    }
+
     createPlayer(): Player {
         const newPlayer = { ...NEW_PLAYER, id: this.internalPlayers.length };
         this.internalPlayers.push(newPlayer);
@@ -36,8 +45,8 @@ export class PlayerHandlerService {
         }
 
         const key = parseInt(event.key, 10) - 1;
-        if (key >= 0 && key < player.answer.length) {
-            player.answer[key] = !player.answer[key];
+        if (key >= 0 && key < this.getPlayerAnswers(player).length) {
+            this.getPlayerAnswers(player)[key].isCorrect = !this.getPlayerAnswers(player)[key].isCorrect;
         }
     }
 
@@ -62,9 +71,11 @@ export class PlayerHandlerService {
         });
     }
 
-    resetPlayerAnswers(newAnswersLength: number): void {
+    resetPlayerAnswers(question: Question): void {
         this.internalPlayers.forEach((player) => {
-            player.answer = new Array(newAnswersLength).fill(false);
+            const resetQuestion = { ...question };
+            resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
+            player.questions.push(resetQuestion);
             player.answerConfirmed = false;
             player.isCorrect = false;
         });
@@ -74,7 +85,7 @@ export class PlayerHandlerService {
         const validationObservables: Observable<boolean>[] = [];
 
         this.internalPlayers.forEach((player) => {
-            const validationObservable = this.validateAnswer(questionText, player.answer);
+            const validationObservable = this.validateAnswer(questionText, this.getPlayerBooleanAnswers(player));
 
             validationObservables.push(validationObservable);
             validationObservable.subscribe((isCorrect) => {
@@ -89,8 +100,8 @@ export class PlayerHandlerService {
         );
     }
 
-    removePlayer(playerId: number): void {
-        this.internalPlayers = this.internalPlayers.filter((player) => player.id !== playerId);
+    removePlayer(playerName: string): void {
+        this.internalPlayers = this.internalPlayers.filter((player) => player.name !== playerName);
     }
 
     private validateAnswer(text: string, answer: boolean[]): Observable<boolean> {

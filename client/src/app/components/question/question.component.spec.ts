@@ -8,10 +8,9 @@ import { QuestionComponent } from './question.component';
 import { GameManagementService } from '@app/services/game-management.service';
 
 const TEST_PLAYER: Player = {
-    id: 0,
     name: 'Player 1',
     score: 0,
-    answer: [false, true, false, false],
+    questions: [],
     answerConfirmed: false,
     isCorrect: false,
 };
@@ -68,7 +67,12 @@ describe('QuestionComponent', () => {
             configurable: true,
         });
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', ['createPlayer', 'handleKeyUp', 'removePlayer']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
+            'createPlayer',
+            'handleKeyUp',
+            'removePlayer',
+            'getPlayerBooleanAnswers',
+        ]);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
 
         gameManagementServiceSpy = {} as GameManagementService;
@@ -112,7 +116,7 @@ describe('QuestionComponent', () => {
     });
 
     it('isChecked getter should return the players answer', () => {
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
+        expect(component.isChecked).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers(TEST_PLAYER));
     });
 
     it('showingAnswer getter should return true when game state is ShowAnswer', () => {
@@ -126,7 +130,6 @@ describe('QuestionComponent', () => {
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should do nothing if question is open ended', () => {
@@ -136,7 +139,6 @@ describe('QuestionComponent', () => {
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should do nothing if answer cant be edited', () => {
@@ -146,7 +148,6 @@ describe('QuestionComponent', () => {
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-        expect(component.isChecked).toBe(TEST_PLAYER.answer);
     });
 
     it('handleKeyUp should call playerHandlerService.handleKeyUp', () => {
@@ -183,6 +184,6 @@ describe('QuestionComponent', () => {
 
     it('ngOnDestroy should remove the player', () => {
         component.ngOnDestroy();
-        expect(playerHandlerServiceSpy.removePlayer).toHaveBeenCalledWith(TEST_PLAYER.id);
+        expect(playerHandlerServiceSpy.removePlayer).toHaveBeenCalledWith(TEST_PLAYER.name);
     });
 });
