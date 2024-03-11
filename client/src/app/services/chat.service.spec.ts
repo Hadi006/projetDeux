@@ -42,7 +42,7 @@ describe('ChatService', () => {
 
     it('should add a message to the messages array when sendMessage is called with a valid message', () => {
         // Arrange
-        const service = TestBed.inject(ChatService);
+        // const service = TestBed.inject(ChatService);
         const initialMessagesLength = service.messages.length; // Get the initial length of messages array
 
         // Act
@@ -85,10 +85,15 @@ describe('ChatService', () => {
     });
 
     it('should handle unsuccessful message sending', () => {
-        // To test unsuccessful message sending, you may mock the socket.emit method to throw an error
+        // Arrange
         spyOn(socket, 'emit').and.throwError('Socket error');
-        service.sendMessage('Test message');
-        expect(socket.emit).toHaveBeenCalled();
+
+        // Act & Assert
+        expect(() => {
+            service.sendMessage('Test message');
+        }).toThrowError('Socket error');
+
+        // Vérifie également que la longueur des messages reste à 0
         expect(service.messages.length).toBe(0);
     });
 });
