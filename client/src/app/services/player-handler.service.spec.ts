@@ -54,12 +54,10 @@ describe('PlayerHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('createPlayer should create a player and increment nPlayers', () => {
-        const nPlayers = service.players.length;
+    it('createPlayer should create a player', () => {
         const player = service.createPlayer();
         expect(player).toBeTruthy();
-        expect(service.players.length).toBe(nPlayers + 1);
-        expect(service.players[nPlayers]).toEqual(player);
+        expect(service.player).toEqual(player);
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
@@ -112,112 +110,65 @@ describe('PlayerHandlerService', () => {
         expect(service.allAnsweredSubject.next).not.toHaveBeenCalled();
     });
 
-    it('confirmPlayerAnswer should confirm the answer and notify the subscribers if all players confirmed', () => {
-        const nPlayers = 3;
-        for (let i = 0; i < nPlayers; i++) {
-            service.createPlayer();
-        }
+    it('confirmPlayerAnswer should confirm the answer and notify the subscribers', () => {
+        service.createPlayer();
         spyOn(service.allAnsweredSubject, 'next');
-        for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players[i]);
-            expect(service.players[i].answerConfirmed).toBeTrue();
-        }
+        service.confirmPlayerAnswer(service.player);
+        expect(service.player.answerConfirmed).toBeTrue();
         expect(service.allAnsweredSubject.next).toHaveBeenCalled();
     });
 
     it('confirmPlayerAnswer should increment nAnswered and reset it if all players confirmed', () => {
-        const nPlayers = 3;
-        for (let i = 0; i < nPlayers; i++) {
-            service.createPlayer();
-        }
+        service.createPlayer();
         spyOn(service.allAnsweredSubject, 'next');
-        for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players[i]);
-        }
+        service.confirmPlayerAnswer(service.player);
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(1);
-        for (let i = 0; i < nPlayers; i++) {
-            service.confirmPlayerAnswer(service.players[i]);
-        }
+        service.confirmPlayerAnswer(service.player);
         expect(service.allAnsweredSubject.next).toHaveBeenCalledTimes(2);
     });
 
-    it('updateScores should update the scores of all players', () => {
-        const nPlayers = 3;
-        const points = 10;
-        for (let i = 0; i < nPlayers; i++) {
-            const player = service.createPlayer();
-            player.isCorrect = i % 2 === 0;
-        }
-        service.updateScores(points);
-        service.players.forEach((player) => {
-            if (player.isCorrect) {
-                expect(player.score).toBe(points);
-            } else {
-                expect(player.score).toBe(0);
-            }
-        });
-    });
-
     it('resetPlayerAnswers should reset all players answers and answerConfirmed', () => {
-        const nPlayers = 3;
-        for (let i = 0; i < nPlayers; i++) {
-            const player = service.createPlayer();
-            player.answerConfirmed = true;
-        }
-        service.resetPlayerAnswers(TEST_QUESTIONS[0]);
-        service.players.forEach((player) => {
-            player.questions[0].choices.forEach((choice) => {
-                expect(choice.isCorrect).toBeFalse();
-            });
-            expect(player.answerConfirmed).toBeFalse();
-        });
-    });
-
-    it('validatePlayerAnswers should validate the answers of all players when the status is ok', () => {
-        const nPlayers = 3;
-        for (let i = 0; i < nPlayers; i++) {
-            const player = service.createPlayer();
-            player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
-        }
-        const questionText = '1234';
-        const httpResponses: HttpResponse<boolean>[] = [
-            new HttpResponse({ status: HttpStatusCode.Ok, body: true }),
-            new HttpResponse({ status: HttpStatusCode.Ok, body: false }),
-            new HttpResponse({ status: HttpStatusCode.Ok, body: true }),
-        ];
-        communicationServiceSpy.post.and.returnValues(of(httpResponses[0]), of(httpResponses[1]), of(httpResponses[2]));
-        service.validatePlayerAnswers(questionText).subscribe(() => {
-            expect(service.players[0].isCorrect).toBeTrue();
-            expect(service.players[1].isCorrect).toBeFalse();
-            expect(service.players[2].isCorrect).toBeTrue();
-        });
-    });
-
-    it('validatePlayerAnswers should validate the answers of all players when the status is not ok', () => {
-        const nPlayers = 3;
-        for (let i = 0; i < nPlayers; i++) {
-            const player = service.createPlayer();
-            player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
-        }
-        const questionText = '1234';
-        const httpResponses: HttpResponse<boolean>[] = [
-            new HttpResponse({ status: HttpStatusCode.BadRequest, body: true }),
-            new HttpResponse({ status: HttpStatusCode.BadRequest, body: false }),
-            new HttpResponse({ status: HttpStatusCode.Ok, body: true }),
-        ];
-        communicationServiceSpy.post.and.returnValues(of(httpResponses[0]), of(httpResponses[1]), of(httpResponses[2]));
-        service.validatePlayerAnswers(questionText).subscribe(() => {
-            expect(service.players[0].isCorrect).toBeFalse();
-            expect(service.players[1].isCorrect).toBeFalse();
-            expect(service.players[2].isCorrect).toBeTrue();
-        });
-    });
-
-    it('removePlayer should remove the player from the list', () => {
         const player = service.createPlayer();
-        const nPlayers = service.players.length;
-        service.removePlayer(player.name);
-        expect(service.players.length).toBe(nPlayers - 1);
-        expect(service.players).not.toContain(player);
+        player.answerConfirmed = true;
+        service.resetPlayerAnswers(TEST_QUESTIONS[0]);
+        service.player.questions[0].choices.forEach((choice) => {
+            expect(choice.isCorrect).toBeFalse();
+        });
+        expect(player.answerConfirmed).toBeFalse();
+    });
+
+    it('validatePlayerAnswers increase the score when status is ok', () => {
+        const points = 10;
+        const player = service.createPlayer();
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        const questionText = '1234';
+        const httpResponse: HttpResponse<boolean> = new HttpResponse({ status: HttpStatusCode.Ok, body: true });
+        communicationServiceSpy.post.and.returnValues(of(httpResponse));
+        service.validatePlayerAnswers(questionText, points);
+        expect(service.player.score).toBe(points);
+    });
+
+    it('validatePlayerAnswers should not increase the score if status is not ok', () => {
+        const points = 10;
+        const player = service.createPlayer();
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        const questionText = '1234';
+        const httpResponse: HttpResponse<boolean> = new HttpResponse({ status: HttpStatusCode.BadRequest, body: true });
+        communicationServiceSpy.post.and.returnValues(of(httpResponse));
+        service.validatePlayerAnswers(questionText, points);
+        expect(service.player.isCorrect).toBeFalse();
+        expect(service.player.score).toBe(0);
+    });
+
+    it('validatePlayerAnswers should not increase the score if body is false', () => {
+        const points = 10;
+        const player = service.createPlayer();
+        player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        const questionText = '1234';
+        const httpResponse: HttpResponse<boolean> = new HttpResponse({ status: HttpStatusCode.Ok, body: false });
+        communicationServiceSpy.post.and.returnValues(of(httpResponse));
+        service.validatePlayerAnswers(questionText, points);
+        expect(service.player.isCorrect).toBeFalse();
+        expect(service.player.score).toBe(0);
     });
 });

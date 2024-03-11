@@ -70,7 +70,6 @@ describe('QuestionComponent', () => {
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
             'createPlayer',
             'handleKeyUp',
-            'removePlayer',
             'getPlayerBooleanAnswers',
         ]);
         playerHandlerServiceSpy.createPlayer.and.returnValue(TEST_PLAYER);
@@ -116,7 +115,7 @@ describe('QuestionComponent', () => {
     });
 
     it('isChecked getter should return the players answer', () => {
-        expect(component.isChecked).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers(TEST_PLAYER));
+        expect(component.isChecked).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
 
     it('showingAnswer getter should return true when game state is ShowAnswer', () => {
@@ -180,10 +179,5 @@ describe('QuestionComponent', () => {
         spyOnProperty(component, 'showingAnswer', 'get').and.returnValue(false);
         component.player.answerConfirmed = false;
         expect(component.canEditAnswer()).toBeTrue();
-    });
-
-    it('ngOnDestroy should remove the player', () => {
-        component.ngOnDestroy();
-        expect(playerHandlerServiceSpy.removePlayer).toHaveBeenCalledWith(TEST_PLAYER.name);
     });
 });

@@ -3,7 +3,7 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GOOD_ANSWER_MULTIPLIER, GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
-import { Subject, of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { GameManagementService } from './game-management.service';
 
 describe('QuestionHandlerService', () => {
@@ -48,10 +48,9 @@ describe('QuestionHandlerService', () => {
         ];
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
-            'players',
+            'player',
             'resetPlayerAnswers',
             'validatePlayerAnswers',
-            'updateScores',
         ]);
         Object.defineProperty(playerHandlerServiceSpy, 'players', {
             get: () => {
@@ -90,21 +89,20 @@ describe('QuestionHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should update scores when timer ends', () => {
-        spyOn(service, 'updateScores');
+    it('should validate answers when timer ends', () => {
         gameManagementServiceSpy.gameState = GameState.ShowQuestion;
-        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
         gameManagementServiceSpy.timerEndedSubject.next();
-        expect(service.updateScores).toHaveBeenCalled();
+        expect(playerHandlerServiceSpy.validatePlayerAnswers).toHaveBeenCalledWith(
+            QUESTIONS_DATA[0].text,
+            QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER,
+        );
     });
 
-    it('should update scores when timer ends and there is no current question', () => {
+    it('should validate answers when timer ends and there is no current question', () => {
         spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-        spyOn(service, 'updateScores');
         gameManagementServiceSpy.gameState = GameState.ShowQuestion;
-        playerHandlerServiceSpy.validatePlayerAnswers.and.returnValue(of(null));
         gameManagementServiceSpy.timerEndedSubject.next();
-        expect(service.updateScores).toHaveBeenCalled();
+        expect(playerHandlerServiceSpy.validatePlayerAnswers).toHaveBeenCalledWith('', 0);
     });
 
     it('currentQuestion getter should return the current question', () => {
@@ -137,26 +135,8 @@ describe('QuestionHandlerService', () => {
         expect(playerHandlerServiceSpy.resetPlayerAnswers).toHaveBeenCalledWith(QUESTIONS_DATA[0]);
     });
 
-    it('updateScores should update the scores of the players', () => {
-        service.updateScores();
-        expect(playerHandlerServiceSpy.updateScores).toHaveBeenCalledWith(QUESTIONS_DATA[0].points * GOOD_ANSWER_MULTIPLIER);
-    });
-
-    it('updateScores should not update the scores if there is no current question', () => {
-        spyOnProperty(service, 'currentQuestion', 'get').and.returnValue(undefined);
-        service.updateScores();
-        expect(playerHandlerServiceSpy.updateScores).toHaveBeenCalledWith(0);
-    });
-
     it('nextQuestion should load the next question', () => {
         service.nextQuestion();
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[1]);
-    });
-
-    it('ngOnDestroy should unsubscribe from the timerEndedSubject', () => {
-        spyOn(service, 'updateScores');
-        service.ngOnDestroy();
-        gameManagementServiceSpy.timerEndedSubject.next();
-        expect(service.updateScores).not.toHaveBeenCalled();
     });
 });

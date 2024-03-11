@@ -46,10 +46,6 @@ export class QuestionHandlerService implements OnDestroy {
         this.resetAnswers();
     }
 
-    updateScores(): void {
-        this.playerHandlerService.updateScores(this.calculateQuestionPoints());
-    }
-
     ngOnDestroy(): void {
         this.timerEndedSubscription.unsubscribe();
     }
@@ -57,9 +53,7 @@ export class QuestionHandlerService implements OnDestroy {
     private subscribeToTimerEnded(): void {
         this.timerEndedSubscription = this.gameManagementService.timerEndedSubject.subscribe(() => {
             if (this.gameManagementService.gameState === GameState.ShowQuestion) {
-                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.text || '').subscribe(() => {
-                    this.updateScores();
-                });
+                this.playerHandlerService.validatePlayerAnswers(this.currentQuestion?.text || '', this.calculateQuestionPoints());
             }
         });
     }

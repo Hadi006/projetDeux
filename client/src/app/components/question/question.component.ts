@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -11,7 +11,7 @@ import { GameManagementService } from '@app/services/game-management.service';
     templateUrl: './question.component.html',
     styleUrls: ['./question.component.scss'],
 })
-export class QuestionComponent implements OnDestroy {
+export class QuestionComponent {
     player: Player;
 
     constructor(
@@ -31,7 +31,7 @@ export class QuestionComponent implements OnDestroy {
     }
 
     get isChecked(): boolean[] {
-        return this.playerHandlerService.getPlayerBooleanAnswers(this.player);
+        return this.playerHandlerService.getPlayerBooleanAnswers();
     }
 
     get showingAnswer(): boolean {
@@ -50,9 +50,5 @@ export class QuestionComponent implements OnDestroy {
 
     canEditAnswer(): boolean {
         return !this.player.answerConfirmed && !this.showingAnswer;
-    }
-
-    ngOnDestroy(): void {
-        this.playerHandlerService.removePlayer(this.player.name);
     }
 }
