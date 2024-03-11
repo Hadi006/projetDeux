@@ -5,6 +5,7 @@ import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { GameState } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { GameManagementService } from '@app/services/game-management.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-question',
@@ -13,6 +14,8 @@ import { GameManagementService } from '@app/services/game-management.service';
 })
 export class QuestionComponent {
     player: Player;
+    answerConfirmed = false;
+    answerConfirmedSubscription: Subscription;
 
     constructor(
         public playerHandlerService: PlayerHandlerService,
@@ -20,6 +23,7 @@ export class QuestionComponent {
         private gameManagementService: GameManagementService,
     ) {
         this.player = this.playerHandlerService.createPlayer();
+        this.subscribeToAnswerConfirmed();
     }
 
     get questionData(): Question | undefined {
@@ -49,6 +53,12 @@ export class QuestionComponent {
     }
 
     canEditAnswer(): boolean {
-        return !this.player.answerConfirmed && !this.showingAnswer;
+        return !this.answerConfirmed && !this.showingAnswer;
+    }
+
+    private subscribeToAnswerConfirmed(): void {
+        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe((answerConfirmed) => {
+            this.answerConfirmed = answerConfirmed;
+        });
     }
 }

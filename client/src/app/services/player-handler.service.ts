@@ -11,12 +11,17 @@ import { Answer, Question } from '@common/quiz';
 })
 export class PlayerHandlerService {
     private internalPlayer: Player;
+    private internalConfirmedSubject: Subject<boolean> = new Subject<boolean>();
     private internalAnsweredSubject: Subject<void> = new Subject<void>();
 
     constructor(private communicationService: CommunicationService) {}
 
     get player(): Player {
         return this.internalPlayer;
+    }
+
+    get answerConfirmedSubject(): Subject<boolean> {
+        return this.internalConfirmedSubject;
     }
 
     get allAnsweredSubject(): Subject<void> {
@@ -54,7 +59,7 @@ export class PlayerHandlerService {
             return;
         }
 
-        player.answerConfirmed = true;
+        this.internalConfirmedSubject.next(true);
         this.internalAnsweredSubject.next();
     }
 
@@ -62,7 +67,7 @@ export class PlayerHandlerService {
         const resetQuestion = { ...question };
         resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
         this.internalPlayer.questions.push(resetQuestion);
-        this.internalPlayer.answerConfirmed = false;
+        this.internalConfirmedSubject.next(false);
         this.internalPlayer.isCorrect = false;
     }
 
