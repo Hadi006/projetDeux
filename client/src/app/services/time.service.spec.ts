@@ -151,4 +151,56 @@ describe('TimeService', () => {
 
         expect(mockTimer['time']).toEqual(TIMEOUT);
     });
+
+    it('pauseTimer should pause the timer with the correct id', () => {
+        const mockTimer = jasmine.createSpyObj('Timer', ['pause']);
+        spyOn(service, 'createTimerById').and.callFake(() => {
+            service['timers'].set(TIMER_ID, mockTimer);
+            return TIMER_ID;
+        });
+
+        const timerId = service.createTimerById();
+        service.pauseTimerById(timerId);
+
+        expect(mockTimer.pause).toHaveBeenCalled();
+    });
+
+    it('pauseTimer should not pause the timer with the incorrect id', () => {
+        const mockTimer = jasmine.createSpyObj('Timer', ['pause']);
+        spyOn(service, 'createTimerById').and.callFake(() => {
+            service['timers'].set(TIMER_ID, mockTimer);
+            return TIMER_ID;
+        });
+
+        const timerId = service.createTimerById();
+        service.pauseTimerById(timerId + 1);
+
+        expect(mockTimer.pause).not.toHaveBeenCalled();
+    });
+
+    it('resumeTimer should resume the timer with the correct id', () => {
+        const mockTimer = jasmine.createSpyObj('Timer', ['resume']);
+        spyOn(service, 'createTimerById').and.callFake(() => {
+            service['timers'].set(TIMER_ID, mockTimer);
+            return TIMER_ID;
+        });
+
+        const timerId = service.createTimerById();
+        service.resumeTimerById(timerId);
+
+        expect(mockTimer.resume).toHaveBeenCalled();
+    });
+
+    it('resumeTimer should not resume the timer with the incorrect id', () => {
+        const mockTimer = jasmine.createSpyObj('Timer', ['resume']);
+        spyOn(service, 'createTimerById').and.callFake(() => {
+            service['timers'].set(TIMER_ID, mockTimer);
+            return TIMER_ID;
+        });
+
+        const timerId = service.createTimerById();
+        service.resumeTimerById(timerId + 1);
+
+        expect(mockTimer.resume).not.toHaveBeenCalled();
+    });
 });

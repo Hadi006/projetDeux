@@ -113,3 +113,5 @@ export const LOBBY_ID_MAX = 10000;
 export const LOBBY_ID_LENGTH = 4;
 
 export const START_GAME_COUNTDOWN = 5;
+/* Classes */
+export const TIMER_TICK_RATE = 1000;
