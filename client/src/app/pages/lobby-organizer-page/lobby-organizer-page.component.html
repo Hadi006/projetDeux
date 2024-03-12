@@ -20,7 +20,7 @@
         <button *ngIf="lobbyData.quiz" (click)="startGame()">Start game</button>
     </footer>
 
-    <div *ngIf="lobbyData.started">
+    <div *ngIf="lobbyData.locked">
         <app-game-count-down *ngIf="lobbyData.quiz" [gameName]="lobbyData.quiz.title"></app-game-count-down>
     </div>
 </div>

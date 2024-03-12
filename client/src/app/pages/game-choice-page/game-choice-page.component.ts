@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameHandlerService } from '@app/services/game-handler.service';
+import { HostService } from '@app/services/host.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { Quiz } from '@common/quiz';
+import { map, Observable, of } from 'rxjs';
 
 @Component({
     selector: 'app-game-choice-page',
@@ -15,7 +16,7 @@ export class GameChoicePageComponent implements OnInit {
     constructor(
         public publicQuizzesService: PublicQuizzesService,
         private router: Router,
-        private gameHandlerService: GameHandlerService,
+        private hostService: HostService,
     ) {}
 
     ngOnInit() {
@@ -28,37 +29,44 @@ export class GameChoicePageComponent implements OnInit {
 
     startGame() {
         this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
-            if (!this.handleChosenQuiz(isAvailable)) {
-                return;
-            }
-
-            this.router.navigate(['lobby']);
+            this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
+                if (success) {
+                    this.router.navigate(['lobby']);
+                }
+            });
         });
     }
 
     testGame() {
         this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
-            if (!this.handleChosenQuiz(isAvailable)) {
-                return;
-            }
-
-            this.router.navigate(['/play']);
+            this.handleChosenQuiz(isAvailable).subscribe((success) => {
+                if (success) {
+                    this.router.navigate(['test']);
+                }
+            });
         });
     }
 
-    private handleChosenQuiz(isAvailable: boolean): boolean {
+    private handleChosenQuiz(isAvailable: boolean): Observable<boolean> {
         if (!this.chosenQuiz) {
             this.publicQuizzesService.alertNoQuizAvailable('Aucun quiz sélectionné');
-            return false;
+            return of(false);
         }
 
         if (!isAvailable) {
             this.publicQuizzesService.alertNoQuizAvailable('Quiz non disponible, veuillez en choisir un autre');
             this.chosenQuiz = null;
-            return false;
+            return of(false);
         }
 
-        this.gameHandlerService.loadQuizData(this.chosenQuiz);
-        return true;
+        this.hostService.connect();
+        return this.hostService.createLobby(this.chosenQuiz).pipe(
+            map((success: boolean) => {
+                if (!success) {
+                    this.publicQuizzesService.alertNoQuizAvailable('Nombre maximum de jeux atteint');
+                }
+                return success;
+            }),
+        );
     }
 }

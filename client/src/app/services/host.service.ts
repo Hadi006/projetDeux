@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
-import { GameHandlerService } from '@app/services/game-handler.service';
 import { WebSocketService } from './web-socket.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { QuestionHandlerService } from './question-handler.service';
+import { Quiz } from '@common/quiz';
 
 @Injectable({
     providedIn: 'root',
@@ -13,7 +14,7 @@ export class HostService {
 
     constructor(
         private webSocketService: WebSocketService,
-        private gameHandlerService: GameHandlerService,
+        private questionHandlerService: QuestionHandlerService,
         private router: Router,
     ) {}
 
@@ -22,34 +23,37 @@ export class HostService {
     }
 
     handleSockets() {
-        this.webSocketService.connect();
         this.onStartGame();
     }
 
-    createLobby(): Observable<boolean> {
-        if (!this.gameHandlerService.quizData) {
-            return of(false);
-        }
+    connect() {
+        this.webSocketService.connect();
+    }
 
-        return this.emitCreateLobby();
+    createLobby(quiz: Quiz): Observable<boolean> {
+        return this.emitCreateLobby(quiz);
     }
 
     startGame() {
         this.webSocketService.emit('start-game', this.internalLobbyData.id);
     }
 
+    nextQuestion() {
+        this.emitNextQuestion();
+    }
+
     cleanUp() {
         this.emitDeleteLobby().subscribe();
         this.webSocketService.disconnect();
-        this.gameHandlerService.cleanUp();
         this.router.navigate(['/']);
     }
 
-    private emitCreateLobby(): Observable<boolean> {
+    private emitCreateLobby(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
-            this.webSocketService.emit('create-lobby', this.gameHandlerService.quizData, (lobbyData: unknown) => {
+            this.webSocketService.emit('create-lobby', quiz, (lobbyData: unknown) => {
                 if (lobbyData) {
                     this.internalLobbyData = lobbyData as LobbyData;
+                    this.questionHandlerService.questionsData = quiz.questions;
                     subscriber.next(true);
                     subscriber.complete();
                 } else {
@@ -69,9 +73,18 @@ export class HostService {
         });
     }
 
+    private emitNextQuestion() {
+        this.webSocketService.emit('next-question', {
+            lobbyId: this.internalLobbyData.id,
+            question: this.questionHandlerService.currentQuestion,
+            countdown: this.lobbyData.quiz?.duration,
+        });
+        this.questionHandlerService.nextQuestion();
+    }
+
     private onStartGame() {
         this.webSocketService.onEvent('start-game', () => {
-            this.internalLobbyData.started = true;
+            this.internalLobbyData.locked = true;
         });
     }
 }

@@ -1,34 +1,32 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameHandlerService } from '@app/services/game-handler.service';
-import { Subscription } from 'rxjs';
+import { HostService } from '@app/services/host.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { Player } from '@common/player';
 
 @Component({
     selector: 'app-gameplay-player-page',
     templateUrl: './gameplay-player-page.component.html',
     styleUrls: ['./gameplay-player-page.component.scss'],
 })
-export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
-    private gameEndedSubscription: Subscription;
+export class GameplayPlayerPageComponent implements OnInit {
+    player: Player;
 
     constructor(
-        public gameHandlerService: GameHandlerService,
+        private hostService: HostService,
+        private playerHandlerService: PlayerHandlerService,
         private router: Router,
-    ) {
-        this.gameEndedSubscription = this.gameHandlerService.gameEnded$.subscribe(() => {
-            this.router.navigate(['game']);
-        });
-    }
+    ) {}
 
     ngOnInit(): void {
-        if (!this.gameHandlerService.quizData) {
+        if (!this.hostService.lobbyData.quiz) {
             this.router.navigate(['game']);
         }
 
-        this.gameHandlerService.startGame();
-    }
-
-    ngOnDestroy(): void {
-        this.gameEndedSubscription.unsubscribe();
+        this.playerHandlerService.connect();
+        this.playerHandlerService.createPlayer(this.hostService.lobbyData.id, 'Test').subscribe(() => {
+            this.player = this.playerHandlerService.player;
+            this.hostService.nextQuestion();
+        });
     }
 }

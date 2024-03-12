@@ -18,7 +18,7 @@ const routes: Routes = [
     { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent, canActivate: [authGuard] },
     { path: 'game', component: GameChoicePageComponent },
     { path: 'lobby', component: LobbyOrganizerPageComponent },
-    { path: 'play', component: GameplayPlayerPageComponent },
+    { path: 'test', component: GameplayPlayerPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

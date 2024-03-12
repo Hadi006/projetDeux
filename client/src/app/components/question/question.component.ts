@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent implements OnDestroy {
-    player: Player;
+    @Input() player: Player | undefined;
     answerConfirmed = false;
 
     private answerConfirmedSubscription: Subscription;
@@ -23,12 +23,15 @@ export class QuestionComponent implements OnDestroy {
         private questionHandlerService: QuestionHandlerService,
         private gameManagementService: GameManagementService,
     ) {
-        this.player = this.playerHandlerService.createPlayer();
         this.subscribeToAnswerConfirmed();
     }
 
     get questionData(): Question | undefined {
-        return this.questionHandlerService.currentQuestion;
+        if (!this.player) {
+            return undefined;
+        }
+
+        return this.player.questions[this.player.questions.length - 1];
     }
 
     get correctAnswers(): Answer[] {
@@ -45,6 +48,10 @@ export class QuestionComponent implements OnDestroy {
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
+        if (!this.player) {
+            return;
+        }
+
         if (!this.questionData || !(this.questionData.type === 'QCM') || !this.canEditAnswer()) {
             return;
         }

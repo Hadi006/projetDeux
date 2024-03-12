@@ -1,12 +1,12 @@
-<div *ngIf="questionData">
+<div *ngIf="questionData && player">
     <h2>{{ questionData.text }}</h2>
 
     <p>Valeur de la question: {{ questionData.points }} points</p>
 
     <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
-        <div *ngFor="let choice of questionData.choices; let i = index">
+        <div *ngFor="let choice of playerHandlerService.player.questions[0].choices; let i = index">
             <label>
-                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="playerHandlerService.getPlayerAnswers()[i].isCorrect" />
+                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="choice.isCorrect" />
                 {{ i + 1 }} ) {{ choice.text }}
             </label>
         </div>
@@ -26,5 +26,5 @@
             <p>Bonne réponse!</p>
         </div>
     </div>
+    <button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>
 </div>
-<button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>

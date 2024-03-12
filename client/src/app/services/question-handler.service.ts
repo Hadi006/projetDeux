@@ -33,17 +33,8 @@ export class QuestionHandlerService implements OnDestroy {
         this.currentQuestionIndex = 0;
     }
 
-    resetAnswers(): void {
-        if (!this.currentQuestion) {
-            return;
-        }
-
-        this.playerHandlerService.resetPlayerAnswers(this.currentQuestion);
-    }
-
     nextQuestion(): void {
         this.currentQuestionIndex++;
-        this.resetAnswers();
     }
 
     ngOnDestroy(): void {

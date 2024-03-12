@@ -38,7 +38,6 @@ export class GameHandlerService {
         }
 
         this.questionHandlerService.questionsData = this.internalQuizData.questions;
-        this.questionHandlerService.resetAnswers();
         this.gameManagementService.startQuestionTimer(this.internalQuizData.duration);
         this.gameManagementService.gameState = GameState.ShowQuestion;
     }

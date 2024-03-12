@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { AlertComponent } from '@app/components/alert/alert.component';
 import { HostService } from '@app/services/host.service';
 
 @Component({
@@ -9,17 +7,8 @@ import { HostService } from '@app/services/host.service';
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    constructor(
-        public hostService: HostService,
-        private dialog: MatDialog,
-    ) {
+    constructor(public hostService: HostService) {
         this.hostService.handleSockets();
-        this.hostService.createLobby().subscribe((success) => {
-            if (!success) {
-                this.leaveLobby();
-                this.dialog.open(AlertComponent, { data: { message: 'Maximum games reached' } });
-            }
-        });
     }
 
     get lobbyData() {
