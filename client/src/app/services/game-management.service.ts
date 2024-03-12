@@ -2,7 +2,6 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { GameState } from '@common/constant';
 import { Subject, Subscription } from 'rxjs';
-import { PlayerHandlerService } from './player-handler.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,15 +14,9 @@ export class GameManagementService implements OnDestroy {
     private internalTimerEndedSubject: Subject<void> = new Subject<void>();
     private internalAllAnsweredSubscription: Subscription;
 
-    constructor(
-        private timeService: TimeService,
-        private playerHandlerService: PlayerHandlerService,
-    ) {
+    constructor(private timeService: TimeService) {
         this.questionTimerId = this.timeService.createTimerById(this.stopQuestionTimer.bind(this));
         this.answerTimerId = this.timeService.createTimerById(this.stopAnswerTimer.bind(this));
-        this.internalAllAnsweredSubscription = this.playerHandlerService.allAnsweredSubject.subscribe(() => {
-            this.stopQuestionTimer();
-        });
     }
 
     get time(): number {

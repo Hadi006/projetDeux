@@ -59,7 +59,7 @@ export class GameChoicePageComponent implements OnInit {
             return of(false);
         }
 
-        this.hostService.connect();
+        this.hostService.handleSockets();
         return this.hostService.createLobby(this.chosenQuiz).pipe(
             map((success: boolean) => {
                 if (!success) {

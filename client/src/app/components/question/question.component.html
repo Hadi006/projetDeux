@@ -6,19 +6,24 @@
     <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
         <div *ngFor="let choice of playerHandlerService.player.questions[0].choices; let i = index">
             <label>
-                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="choice.isCorrect" />
+                <input
+                    [disabled]="this.playerHandlerService.answerConfirmed"
+                    type="checkbox"
+                    [(ngModel)]="choice.isCorrect"
+                    (ngModelChange)="playerHandlerService.updatePlayer()"
+                />
                 {{ i + 1 }} ) {{ choice.text }}
             </label>
         </div>
     </div>
 
     <div *ngIf="questionData.type === 'QRL'" id="question-container">
-        <textarea [disabled]="showingAnswer" placeholder="Tapez votre réponse ici..."></textarea>
+        <textarea [disabled]="this.playerHandlerService.answerConfirmed" placeholder="Tapez votre réponse ici..."></textarea>
     </div>
 
     <div>Score: {{ player.score }}</div>
 
-    <div *ngIf="showingAnswer" id="grade-container">
+    <div *ngIf="this.playerHandlerService.showingAnswer" id="grade-container">
         <span *ngFor="let correctAnswer of correctAnswers; let i = index">
             <p>Réponse(s): {{ correctAnswer.text }}</p>
         </span>
@@ -26,5 +31,5 @@
             <p>Bonne réponse!</p>
         </div>
     </div>
-    <button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>
+    <button [disabled]="this.playerHandlerService.answerConfirmed" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>
 </div>

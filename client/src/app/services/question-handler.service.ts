@@ -9,8 +9,9 @@ import { PlayerHandlerService } from './player-handler.service';
     providedIn: 'root',
 })
 export class QuestionHandlerService implements OnDestroy {
+    currentQuestionIndex = 0;
+
     private internalQuestions: Question[];
-    private currentQuestionIndex = 0;
     private timerEndedSubscription: Subscription;
 
     constructor(
@@ -31,10 +32,6 @@ export class QuestionHandlerService implements OnDestroy {
     set questionsData(data: Question[]) {
         this.internalQuestions = data;
         this.currentQuestionIndex = 0;
-    }
-
-    nextQuestion(): void {
-        this.currentQuestionIndex++;
     }
 
     ngOnDestroy(): void {

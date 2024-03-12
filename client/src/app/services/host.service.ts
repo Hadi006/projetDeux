@@ -1,41 +1,49 @@
 import { Injectable } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
 import { WebSocketService } from './web-socket.service';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { Observable /* , Subject */ } from 'rxjs';
 import { QuestionHandlerService } from './question-handler.service';
 import { Quiz } from '@common/quiz';
+import { TimeService } from './time.service';
+import { TRANSITION_DELAY } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
 })
 export class HostService {
     private internalLobbyData: LobbyData;
+    private nAnswered = 0;
+    private timerId: number;
+    // private internalEndQuestionSubject: Subject<void> = new Subject<void>();
 
     constructor(
         private webSocketService: WebSocketService,
         private questionHandlerService: QuestionHandlerService,
-        private router: Router,
-    ) {}
+        private timeService: TimeService,
+    ) {
+        this.timerId = timeService.createTimerById();
+    }
 
     get lobbyData() {
         return this.internalLobbyData;
     }
 
     handleSockets() {
-        this.onStartGame();
-    }
-
-    connect() {
         this.webSocketService.connect();
+        this.onStartGame();
+        this.onConfirmPlayerAnswer();
+        this.onNextQuestion();
     }
 
     createLobby(quiz: Quiz): Observable<boolean> {
         return this.emitCreateLobby(quiz);
     }
 
-    startGame() {
-        this.webSocketService.emit('start-game', this.internalLobbyData.id);
+    startGame(countdown: number) {
+        this.webSocketService.emit('start-game', {
+            lobbyId: this.internalLobbyData.id,
+            countdown,
+        });
     }
 
     nextQuestion() {
@@ -43,9 +51,9 @@ export class HostService {
     }
 
     cleanUp() {
-        this.emitDeleteLobby().subscribe();
+        this.emitDeleteLobby();
         this.webSocketService.disconnect();
-        this.router.navigate(['/']);
+        this.timeService.stopTimerById(this.timerId);
     }
 
     private emitCreateLobby(quiz: Quiz): Observable<boolean> {
@@ -64,13 +72,8 @@ export class HostService {
         });
     }
 
-    private emitDeleteLobby(): Observable<void> {
-        return new Observable<void>((subscriber) => {
-            this.webSocketService.emit('delete-lobby', this.internalLobbyData.id, () => {
-                subscriber.next();
-                subscriber.complete();
-            });
-        });
+    private emitDeleteLobby(): void {
+        this.webSocketService.emit('delete-lobby', this.internalLobbyData.id);
     }
 
     private emitNextQuestion() {
@@ -79,12 +82,39 @@ export class HostService {
             question: this.questionHandlerService.currentQuestion,
             countdown: this.lobbyData.quiz?.duration,
         });
-        this.questionHandlerService.nextQuestion();
+    }
+
+    private emitEndQuestion() {
+        this.webSocketService.emit('end-question', this.internalLobbyData.id);
+        this.webSocketService.emit('update-scores', {
+            lobbyId: this.internalLobbyData.id,
+            questionIndex: this.questionHandlerService.currentQuestionIndex - 1,
+        });
     }
 
     private onStartGame() {
-        this.webSocketService.onEvent('start-game', () => {
+        this.webSocketService.onEvent('start-game', (countdown: number) => {
             this.internalLobbyData.locked = true;
+            this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
+        });
+    }
+
+    private onNextQuestion() {
+        this.webSocketService.onEvent('next-question', ({ countdown }: { question: unknown; countdown: number }) => {
+            this.questionHandlerService.currentQuestionIndex++;
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, () => {
+                this.timeService.startTimerById(this.timerId, countdown, this.emitEndQuestion.bind(this));
+            });
+        });
+    }
+
+    private onConfirmPlayerAnswer() {
+        this.webSocketService.onEvent('confirm-player-answer', () => {
+            if (++this.nAnswered >= this.internalLobbyData.players.length) {
+                this.timeService.stopTimerById(this.timerId);
+                this.emitEndQuestion();
+                this.nAnswered = 0;
+            }
         });
     }
 }

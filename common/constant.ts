@@ -35,7 +35,7 @@ const TEST_PLAYER_DATA: Player[] = [
 export const TEST_LOBBY_DATA: LobbyData = {
     id: '1',
     players: TEST_PLAYER_DATA,
-    started: false,
+    locked: false,
 };
 
 /* Services */
@@ -105,7 +105,7 @@ export const NEW_PLAYER: Player = {
 export const NEW_LOBBY: LobbyData = {
     id: '',
     players: [],
-    started: false,
+    locked: false,
 };
 
 export const LOBBY_ID_MAX = 10000;
@@ -113,5 +113,7 @@ export const LOBBY_ID_MAX = 10000;
 export const LOBBY_ID_LENGTH = 4;
 
 export const START_GAME_COUNTDOWN = 5;
+
+export const TRANSITION_DELAY = 3;
 /* Classes */
 export const TIMER_TICK_RATE = 1000;

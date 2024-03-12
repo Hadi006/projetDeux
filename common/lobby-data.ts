@@ -5,5 +5,5 @@ export interface LobbyData {
     id: string;
     players: Player[];
     quiz?: Quiz;
-    started: boolean;
+    locked: boolean;
 }

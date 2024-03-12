@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@common/player';
-import { Subject, Observable, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { CommunicationService } from './communication.service';
 import { HttpStatusCode } from '@angular/common/http';
 import { Answer, Question } from '@common/quiz';
 import { WebSocketService } from './web-socket.service';
 import { TimeService } from './time.service';
+import { TRANSITION_DELAY } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerHandlerService {
     private internalPlayer: Player;
+    private pin: string;
     private timerId: number;
     private internalPlayers: string[] = [];
-    private internalConfirmedSubject: Subject<boolean> = new Subject<boolean>();
-    private internalAnsweredSubject: Subject<void> = new Subject<void>();
+    private internalAnswerConfirmed: boolean = false;
+    private internalShowingAnswer: boolean = false;
 
     constructor(
         private communicationService: CommunicationService,
@@ -33,16 +35,12 @@ export class PlayerHandlerService {
         return this.internalPlayers;
     }
 
-    get answerConfirmedSubject(): Subject<boolean> {
-        return this.internalConfirmedSubject;
+    get answerConfirmed(): boolean {
+        return this.internalAnswerConfirmed;
     }
 
-    get allAnsweredSubject(): Subject<void> {
-        return this.internalAnsweredSubject;
-    }
-
-    connect() {
-        this.webSocketService.connect();
+    get showingAnswer(): boolean {
+        return this.internalShowingAnswer;
     }
 
     getPlayerAnswers(): Answer[] {
@@ -54,8 +52,11 @@ export class PlayerHandlerService {
     }
 
     handleSockets() {
+        this.webSocketService.connect();
         this.onStartGame();
+        this.onEndQuestion();
         this.onNextQuestion();
+        this.onNewScore();
     }
 
     joinGame(pin: string): Observable<string> {
@@ -75,6 +76,7 @@ export class PlayerHandlerService {
                 if (!responseData.error) {
                     this.internalPlayer = responseData.player;
                     this.internalPlayers = responseData.players;
+                    this.pin = pin;
                     this.handleSockets();
                 }
 
@@ -82,6 +84,10 @@ export class PlayerHandlerService {
                 observer.complete();
             });
         });
+    }
+
+    updatePlayer(): void {
+        this.webSocketService.emit('update-player', { lobbyId: this.pin, player: this.internalPlayer });
     }
 
     handleKeyUp(event: KeyboardEvent, player: Player): void {
@@ -100,8 +106,7 @@ export class PlayerHandlerService {
             return;
         }
 
-        this.internalConfirmedSubject.next(true);
-        this.internalAnsweredSubject.next();
+        this.webSocketService.emit('confirm-player-answer', this.pin);
     }
 
     validatePlayerAnswers(questionText: string, points: number): void {
@@ -111,12 +116,22 @@ export class PlayerHandlerService {
         });
     }
 
+    time(): number {
+        return this.timeService.getTimeById(this.timerId);
+    }
+
+    cleanUp(): void {
+        this.webSocketService.disconnect();
+        this.timeService.stopTimerById(this.timerId);
+    }
+
     private resetPlayerAnswers(question: Question): void {
         const resetQuestion = { ...question };
         resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
         this.internalPlayer.questions.push(resetQuestion);
-        this.internalConfirmedSubject.next(false);
+        this.internalAnswerConfirmed = false;
         this.internalPlayer.isCorrect = false;
+        this.updatePlayer();
     }
 
     private validateAnswer(text: string, answer: boolean[]): Observable<boolean> {
@@ -132,15 +147,34 @@ export class PlayerHandlerService {
     }
 
     private onStartGame() {
-        this.webSocketService.onEvent<number>('start-game', (countdown: number) => {
+        this.webSocketService.onEvent<number>('start-game', (countdown) => {
             this.timeService.startTimerById(this.timerId, countdown);
+        });
+    }
+
+    private onEndQuestion() {
+        this.webSocketService.onEvent<void>('end-question', () => {
+            this.internalAnswerConfirmed = true;
+            this.timeService.setTimeById(this.timerId, 0);
         });
     }
 
     private onNextQuestion() {
         this.webSocketService.onEvent<{ question: Question; countdown: number }>('next-question', ({ question, countdown }) => {
-            this.resetPlayerAnswers(question);
-            this.timeService.startTimerById(this.timerId, countdown);
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, () => {
+                this.resetPlayerAnswers(question);
+                this.timeService.startTimerById(this.timerId, countdown, () => {
+                    return;
+                });
+            });
+        });
+    }
+
+    private onNewScore() {
+        this.webSocketService.onEvent<Player>('new-score', (player) => {
+            if (player.name === this.internalPlayer.name) {
+                this.internalPlayer = player;
+            }
         });
     }
 }

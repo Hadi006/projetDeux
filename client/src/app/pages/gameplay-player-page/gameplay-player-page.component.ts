@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
@@ -9,12 +9,12 @@ import { Player } from '@common/player';
     templateUrl: './gameplay-player-page.component.html',
     styleUrls: ['./gameplay-player-page.component.scss'],
 })
-export class GameplayPlayerPageComponent implements OnInit {
+export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     player: Player;
 
     constructor(
+        public playerHandlerService: PlayerHandlerService,
         private hostService: HostService,
-        private playerHandlerService: PlayerHandlerService,
         private router: Router,
     ) {}
 
@@ -23,10 +23,15 @@ export class GameplayPlayerPageComponent implements OnInit {
             this.router.navigate(['game']);
         }
 
-        this.playerHandlerService.connect();
+        this.playerHandlerService.handleSockets();
         this.playerHandlerService.createPlayer(this.hostService.lobbyData.id, 'Test').subscribe(() => {
             this.player = this.playerHandlerService.player;
-            this.hostService.nextQuestion();
+            this.hostService.startGame(0);
         });
+    }
+
+    ngOnDestroy(): void {
+        this.hostService.cleanUp();
+        this.playerHandlerService.cleanUp();
     }
 }

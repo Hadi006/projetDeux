@@ -1,8 +1,9 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
-import { LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY } from '@common/constant';
+import { LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY, NEW_PLAYER } from '@common/constant';
 import { Quiz } from '@common/quiz';
+import { Player } from '@common/player';
 
 @Service()
 export class LobbiesService {
@@ -42,5 +43,80 @@ export class LobbiesService {
 
     async deleteLobby(lobbyId: string): Promise<boolean> {
         return await this.database.delete('lobbies', { id: lobbyId });
+    }
+
+    async checkLobbyAvailability(lobbyId: string): Promise<string> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return 'Le NIP est invalide';
+        }
+        if (lobby.locked) {
+            return 'La partie est verouillée';
+        }
+        return '';
+    }
+
+    async addPlayer(lobbyId: string, playerName: string): Promise<{ player: Player; players: string[]; error: string }> {
+        const lobby = await this.getLobby(lobbyId);
+        const player: Player = { ...NEW_PLAYER, name: playerName };
+        const lowerCasePlayerName = playerName.toLocaleLowerCase();
+
+        if (!lobby || lobby.id !== lobbyId) {
+            return { player, players: [], error: 'Le NIP est invalide' };
+        }
+
+        if (lobby.locked) {
+            return { player, players: [], error: 'La partie est verrouillée' };
+        }
+
+        if (lobby.players.some((lobbyPlayer) => lobbyPlayer.name.toLocaleLowerCase() === lowerCasePlayerName)) {
+            return { player, players: [], error: 'Ce nom est déjà utilisé' };
+        }
+
+        if (lowerCasePlayerName === 'organisateur') {
+            return { player, players: [], error: 'Pseudo interdit' };
+        }
+
+        lobby.players.push(player);
+        await this.updateLobby(lobby);
+
+        return { player, players: lobby.players.map((lobbyPlayer) => lobbyPlayer.name), error: '' };
+    }
+
+    async updatePlayer(lobbyId: string, player: Player): Promise<boolean> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return false;
+        }
+
+        lobby.players.forEach((lobbyPlayer, index) => {
+            if (lobbyPlayer.name === player.name) {
+                lobby.players[index] = player;
+            }
+        });
+
+        return await this.updateLobby(lobby);
+    }
+
+    async updateScores(lobbyId: string, questionIndex: number): Promise<void> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return;
+        }
+
+        const question = lobby.quiz?.questions[questionIndex];
+        if (!question) {
+            return;
+        }
+
+        lobby.players.forEach((player) => {
+            const isCorrect = player.questions[questionIndex].choices.every(
+                (playerAnswer, index) => playerAnswer.isCorrect === question.choices[index].isCorrect,
+            );
+            player.score += isCorrect ? question.points : 0;
+            player.isCorrect = isCorrect;
+        });
+
+        await this.updateLobby(lobby);
     }
 }

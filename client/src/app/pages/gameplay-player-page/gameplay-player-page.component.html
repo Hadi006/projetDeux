@@ -1,5 +1,5 @@
 <app-game-timers></app-game-timers>
-<app-question [player]="player"></app-question>
+<app-question [player]="this.playerHandlerService.player"></app-question>
 
 <div id="controls-container">
     <button routerLink="/home/create-game">Leave</button>

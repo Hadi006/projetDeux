@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HostService } from '@app/services/host.service';
+import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
     selector: 'app-lobby-organizer-page',
@@ -16,7 +17,7 @@ export class LobbyOrganizerPageComponent {
     }
 
     startGame() {
-        this.hostService.startGame();
+        this.hostService.startGame(START_GAME_COUNTDOWN);
     }
 
     leaveLobby() {
