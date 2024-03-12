@@ -77,16 +77,20 @@ export class LobbiesService {
             return { player, players: [], error: 'Pseudo interdit' };
         }
 
+        if (lowerCasePlayerName.trim() === '') {
+            return { player, players: [], error: 'Pseudo invalide' };
+        }
+
         lobby.players.push(player);
         await this.updateLobby(lobby);
 
         return { player, players: lobby.players.map((lobbyPlayer) => lobbyPlayer.name), error: '' };
     }
 
-    async updatePlayer(lobbyId: string, player: Player): Promise<boolean> {
+    async updatePlayer(lobbyId: string, player: Player): Promise<void> {
         const lobby = await this.getLobby(lobbyId);
         if (!lobby || lobby.id !== lobbyId) {
-            return false;
+            return;
         }
 
         lobby.players.forEach((lobbyPlayer, index) => {
@@ -95,7 +99,7 @@ export class LobbiesService {
             }
         });
 
-        return await this.updateLobby(lobby);
+        this.updateLobby(lobby);
     }
 
     async updateScores(lobbyId: string, questionIndex: number): Promise<void> {

@@ -21,7 +21,7 @@ describe('LobbiesService', () => {
         id: '1',
         players: [],
         quiz: MOCK_QUIZ,
-        started: false,
+        locked: false,
     };
 
     let lobbiesService: LobbiesService;

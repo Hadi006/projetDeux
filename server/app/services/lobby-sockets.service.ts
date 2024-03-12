@@ -60,11 +60,11 @@ export class LobbySocketsService {
     }
 
     private addPlayer(socket: Socket): void {
-        socket.on('create-player', async (data: { pin: string; playerName: string }, callback) => {
-            const result: { player: Player; players: string[]; error: string } = await this.lobbiesService.addPlayer(data.pin, data.playerName);
+        socket.on('create-player', async ({ pin, playerName }, callback) => {
+            const result: { player: Player; players: string[]; error: string } = await this.lobbiesService.addPlayer(pin, playerName);
             if (!result.error) {
-                socket.join(data.pin);
-                this.sio.to(data.pin).emit('player-joined', result.player.name);
+                socket.join(pin);
+                this.sio.to(pin).emit('player-joined', result.player.name);
             }
             callback(result);
         });
