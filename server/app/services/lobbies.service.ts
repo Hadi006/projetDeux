@@ -87,6 +87,21 @@ export class LobbiesService {
         return { player, players: lobby.players.map((lobbyPlayer) => lobbyPlayer.name), error: '' };
     }
 
+    async updatePlayer(lobbyId: string, player: Player): Promise<void> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return;
+        }
+
+        lobby.players.forEach((lobbyPlayer, index) => {
+            if (lobbyPlayer.name === player.name) {
+                lobby.players[index] = player;
+            }
+        });
+
+        await this.updateLobby(lobby);
+    }
+
     async updateScores(lobbyId: string, questionIndex: number): Promise<void> {
         const lobby = await this.getLobby(lobbyId);
         if (!lobby || lobby.id !== lobbyId) {

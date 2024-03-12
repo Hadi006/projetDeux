@@ -22,6 +22,7 @@ export class LobbySocketsService {
             this.startGame(socket);
             this.addPlayer(socket);
             this.nextQuestion(socket);
+            this.updatePlayer(socket);
             this.updateScores(socket);
             this.endQuestion(socket);
             this.confirmPlayerAnswer(socket);
@@ -75,6 +76,11 @@ export class LobbySocketsService {
         });
     }
 
+    private updatePlayer(socket: Socket): void {
+        socket.on('update-player', async ({ lobbyId, player }) => {
+            await this.lobbiesService.updatePlayer(lobbyId, player);
+        });
+    }
     private updateScores(socket: Socket): void {
         socket.on('update-scores', async ({ lobbyId, questionIndex }) => {
             await this.lobbiesService.updateScores(lobbyId, questionIndex);

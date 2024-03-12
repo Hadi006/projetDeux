@@ -174,6 +174,14 @@ describe('LobbySocketsService', () => {
         });
     });
 
+    it('should update player', (done) => {
+        clientSocket.emit('update-player', { lobbyId: testLobby.id, player: testLobby.players[0] });
+        setTimeout(() => {
+            expect(lobbiesServiceStub.updatePlayer.calledWith(testLobby.id, testLobby.players[0])).to.equal(true);
+            done();
+        }, RESPONSE_DELAY);
+    });
+
     it('should update scores', (done) => {
         const questionIndex = 0;
         lobbiesServiceStub.createLobby.resolves(testLobby);
