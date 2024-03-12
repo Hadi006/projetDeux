@@ -23,7 +23,6 @@ export class LobbySocketsService {
             this.addPlayer(socket);
             this.nextQuestion(socket);
             this.updateScores(socket);
-            this.updatePlayer(socket);
             this.endQuestion(socket);
             this.confirmPlayerAnswer(socket);
             this.disconnect(socket);
@@ -73,12 +72,6 @@ export class LobbySocketsService {
     private nextQuestion(socket: Socket): void {
         socket.on('next-question', ({ lobbyId, question, countdown }) => {
             this.sio.to(lobbyId).emit('next-question', { question, countdown });
-        });
-    }
-
-    private updatePlayer(socket: Socket): void {
-        socket.on('update-player', async ({ lobbyId, player }) => {
-            await this.lobbiesService.updatePlayer(lobbyId, player);
         });
     }
 

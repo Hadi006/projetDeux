@@ -174,17 +174,6 @@ describe('LobbySocketsService', () => {
         });
     });
 
-    it('should update player', (done) => {
-        const player = { ...NEW_PLAYER };
-        lobbiesServiceStub.updatePlayer.resolves();
-        clientSocket.emit('update-player', { lobbyId: testLobby.id, player });
-
-        setTimeout(() => {
-            expect(lobbiesServiceStub.updatePlayer.calledWith(testLobby.id, player)).to.equal(true);
-            done();
-        }, RESPONSE_DELAY);
-    });
-
     it('should update scores', (done) => {
         const questionIndex = 0;
         lobbiesServiceStub.createLobby.resolves(testLobby);
