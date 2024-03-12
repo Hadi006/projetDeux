@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TimeService } from '@app/services/time.service';
 import { GameCountDownComponent } from './game-count-down.component';
 import { START_GAME_COUNTDOWN } from '@common/constant';
-import { HostService } from '@app/services/host.service';
+import { Router } from '@angular/router';
 
 describe('GameCountDownComponent', () => {
     const TEST_ID = 1;
@@ -10,12 +10,12 @@ describe('GameCountDownComponent', () => {
     let component: GameCountDownComponent;
     let fixture: ComponentFixture<GameCountDownComponent>;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
-    let hostServiceSpy: jasmine.SpyObj<HostService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'getTimeById', 'startTimerById']);
         timeServiceSpy.createTimerById.and.returnValue(TEST_ID);
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame']);
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -23,7 +23,7 @@ describe('GameCountDownComponent', () => {
             declarations: [GameCountDownComponent],
             providers: [
                 { provide: TimeService, useValue: timeServiceSpy },
-                { provide: HostService, useValue: hostServiceSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         });
     }));
@@ -52,5 +52,10 @@ describe('GameCountDownComponent', () => {
         timeServiceSpy.getTimeById.and.returnValue(time);
         expect(component.time).toBe(timeServiceSpy.getTimeById(time));
         expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(TEST_ID);
+    });
+
+    it('should navigate to root on start game', () => {
+        component['startGame']();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 });
