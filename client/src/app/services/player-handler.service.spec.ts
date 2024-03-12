@@ -237,10 +237,10 @@ describe('PlayerHandlerService', () => {
         expect(service.answerConfirmed).toBeTrue();
     });
 
-    it('time should return get time from the service', () => {
+    it('getTime should return get time from the service', () => {
         const time = 10;
         timeServiceSpy.getTimeById.and.returnValue(time);
-        expect(service.time()).toEqual(time);
+        expect(service.getTime()).toEqual(time);
         expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(1);
     });
 

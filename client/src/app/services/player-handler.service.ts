@@ -99,7 +99,7 @@ export class PlayerHandlerService {
         this.internalAnswerConfirmed = true;
     }
 
-    time(): number {
+    getTime(): number {
         return this.timeService.getTimeById(this.timerId);
     }
 

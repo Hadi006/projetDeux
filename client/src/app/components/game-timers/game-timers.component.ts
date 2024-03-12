@@ -10,6 +10,6 @@ export class GameTimersComponent {
     constructor(private playerHandlerService: PlayerHandlerService) {}
 
     get time(): number {
-        return this.playerHandlerService.time();
+        return this.playerHandlerService.getTime();
     }
 }
