@@ -1,8 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
+import { HostService } from '@app/services/host.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { Quiz } from '@common/quiz';
 import { Subject, of } from 'rxjs';
@@ -11,8 +10,9 @@ import { GameChoicePageComponent } from './game-choice-page.component';
 describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
-    let router: Router;
     let publicQuizzesServiceSpy: jasmine.SpyObj<PublicQuizzesService>;
+    let routerSpy: jasmine.SpyObj<Router>;
+    let hostServiceSpy: jasmine.SpyObj<HostService>;
     let mockQuiz: Quiz;
 
     beforeEach(async () => {
@@ -30,20 +30,29 @@ describe('GameChoicePageComponent', () => {
             'checkQuizAvailability',
             'alertNoQuizAvailable',
         ]);
-        publicQuizzesServiceSpy.fetchVisibleQuizzes.and.returnValue(of());
+        publicQuizzesServiceSpy.fetchVisibleQuizzes.and.returnValue(of(undefined));
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
             value: new Subject<Quiz[]>(),
         });
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'createLobby', 'handleSockets']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientTestingModule],
             declarations: [GameChoicePageComponent, DescriptionPanelComponent],
             providers: [
                 {
                     provide: PublicQuizzesService,
                     useValue: publicQuizzesServiceSpy,
+                },
+                {
+                    provide: HostService,
+                    useValue: hostServiceSpy,
+                },
+                {
+                    provide: Router,
+                    useValue: routerSpy,
                 },
             ],
         }).compileComponents();
@@ -52,7 +61,6 @@ describe('GameChoicePageComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(GameChoicePageComponent);
         component = fixture.componentInstance;
-        router = TestBed.inject(Router);
         fixture.detectChanges();
     });
 
@@ -60,8 +68,11 @@ describe('GameChoicePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call fetchVisibleQuizzes on init', () => {
-        expect(publicQuizzesServiceSpy.fetchVisibleQuizzes).toHaveBeenCalled();
+    it('should call fetchVisibleQuizzes on init', (done) => {
+        publicQuizzesServiceSpy.fetchVisibleQuizzes().subscribe(() => {
+            expect(publicQuizzesServiceSpy.fetchVisibleQuizzes).toHaveBeenCalled();
+            done();
+        });
     });
 
     it('should set chosenGame on chooseQuiz call', () => {
@@ -69,68 +80,88 @@ describe('GameChoicePageComponent', () => {
         expect(component.chosenQuiz).toEqual(mockQuiz);
     });
 
-    it('should navigate on startGame call', (done) => {
-        const navigateSpy = spyOn(router, 'navigate');
-        component.chooseQuiz(mockQuiz);
+    it('should start game', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.chooseQuiz(mockQuiz);
+        hostServiceSpy.createLobby.and.returnValue(of(true));
         component.startGame();
+        expect(publicQuizzesServiceSpy.checkQuizAvailability).toHaveBeenCalled();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).not.toHaveBeenCalled();
-            expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['lobby']);
             done();
         });
     });
 
-    it('should alert if no quiz is selected on startGame call', () => {
-        const navigateSpy = spyOn(router, 'navigate');
+    it('should not start game if no quiz is chosen', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.startGame();
+        hostServiceSpy.createLobby.and.returnValue(of(true));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
-            expect(navigateSpy).not.toHaveBeenCalled();
+            done();
         });
     });
 
-    it('should alert if game is no longer available on startGame call', () => {
-        const navigateSpy = spyOn(router, 'navigate');
-        component.chooseQuiz(mockQuiz);
+    it('should not start game if quiz is not available', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
+        component.chooseQuiz(mockQuiz);
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
-            expect(navigateSpy).not.toHaveBeenCalled();
+            done();
         });
     });
 
-    it('should navigate on testGame call', () => {
-        component.chooseQuiz(mockQuiz);
-        const navigateSpy = spyOn(router, 'navigate');
+    it('should not start game if lobby creation fails', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.chooseQuiz(mockQuiz);
+        hostServiceSpy.createLobby.and.returnValue(of(false));
+        component.startGame();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Nombre maximum de jeux atteint');
+            done();
+        });
+    });
+
+    it('should test game', (done) => {
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.chooseQuiz(mockQuiz);
+        hostServiceSpy.createLobby.and.returnValue(of(true));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).not.toHaveBeenCalled();
-            expect(navigateSpy).toHaveBeenCalledWith(['/play']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['test']);
+            done();
         });
     });
 
-    it('should alert if no quiz is selected on testGame call', () => {
-        const navigateSpy = spyOn(router, 'navigate');
+    it('should not test game if no quiz is chosen', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
-            expect(navigateSpy).not.toHaveBeenCalled();
+            done();
         });
     });
 
-    it('should alert if game is no longer available on testGame call', () => {
-        const navigateSpy = spyOn(router, 'navigate');
-        component.chooseQuiz(mockQuiz);
+    it('should not test game if quiz is not available', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
+        component.chooseQuiz(mockQuiz);
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
-            expect(navigateSpy).not.toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('should not test game if lobby creation fails', (done) => {
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.chooseQuiz(mockQuiz);
+        hostServiceSpy.createLobby.and.returnValue(of(false));
+        component.testGame();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Nombre maximum de jeux atteint');
+            done();
         });
     });
 });
