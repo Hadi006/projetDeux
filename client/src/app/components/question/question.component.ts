@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
@@ -10,12 +10,14 @@ import { Answer, Question } from '@common/quiz';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent {
-    @Input() player: Player | undefined;
-
     constructor(
         public playerHandlerService: PlayerHandlerService,
         private questionHandlerService: QuestionHandlerService,
     ) {}
+
+    get player(): Player {
+        return this.playerHandlerService.player;
+    }
 
     get questionData(): Question | undefined {
         if (!this.player) {
@@ -44,7 +46,7 @@ export class QuestionComponent {
         }
 
         event.stopPropagation();
-        this.playerHandlerService.handleKeyUp(event, this.player);
+        this.playerHandlerService.handleKeyUp(event);
     }
 
     private canEditAnswer(): boolean {

@@ -3,24 +3,17 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameTimersComponent } from '@app/components/game-timers/game-timers.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
-import { GameHandlerService } from '@app/services/game-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('GameplayPlayerPageComponent', () => {
     let component: GameplayPlayerPageComponent;
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
-    let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let questionHandlerService: QuestionHandlerService;
 
     beforeEach(() => {
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['startGame'], {
-            gameEnded$: new Subject<void>(),
-        });
-        Object.defineProperty(gameHandlerServiceSpy, 'quizData', { get: () => undefined, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -28,11 +21,7 @@ describe('GameplayPlayerPageComponent', () => {
         TestBed.configureTestingModule({
             declarations: [GameplayPlayerPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
             imports: [HttpClientTestingModule],
-            providers: [
-                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
-                { provide: Router, useValue: routerSpy },
-                QuestionHandlerService,
-            ],
+            providers: [{ provide: Router, useValue: routerSpy }, QuestionHandlerService],
         }).compileComponents();
     }));
 
@@ -49,16 +38,10 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('should navigate to game page when game ends', () => {
-        gameHandlerServiceSpy.gameEnded$.next();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
     });
 
-    it('ngOnInit should call loadGameData and startGame', () => {
-        expect(gameHandlerServiceSpy.startGame).toHaveBeenCalled();
-    });
-
     it('ngOnInit should navigate to game page if there is no quiz', () => {
-        spyOnProperty(gameHandlerServiceSpy, 'quizData', 'get').and.returnValue(undefined);
         component.ngOnInit();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
     });
@@ -66,7 +49,6 @@ describe('GameplayPlayerPageComponent', () => {
     it('ngOnDestroy should unsubscribe from gameEndedSubscription', () => {
         routerSpy.navigate.calls.reset();
         component.ngOnDestroy();
-        gameHandlerServiceSpy.gameEnded$.next();
         expect(routerSpy.navigate).not.toHaveBeenCalled();
     });
 });

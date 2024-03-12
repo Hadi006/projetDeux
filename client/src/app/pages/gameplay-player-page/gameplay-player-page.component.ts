@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host.service';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { Player } from '@common/player';
 
 @Component({
     selector: 'app-gameplay-player-page',
@@ -10,8 +9,6 @@ import { Player } from '@common/player';
     styleUrls: ['./gameplay-player-page.component.scss'],
 })
 export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
-    player: Player;
-
     constructor(
         public playerHandlerService: PlayerHandlerService,
         private hostService: HostService,
@@ -25,7 +22,6 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
 
         this.playerHandlerService.handleSockets();
         this.playerHandlerService.createPlayer(this.hostService.lobbyData.id, 'Test').subscribe(() => {
-            this.player = this.playerHandlerService.player;
             this.hostService.startGame(0);
         });
     }

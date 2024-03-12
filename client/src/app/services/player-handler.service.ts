@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@common/player';
-import { Observable, map } from 'rxjs';
-import { CommunicationService } from './communication.service';
-import { HttpStatusCode } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Answer, Question } from '@common/quiz';
 import { WebSocketService } from './web-socket.service';
 import { TimeService } from './time.service';
@@ -12,7 +10,8 @@ import { TRANSITION_DELAY } from '@common/constant';
     providedIn: 'root',
 })
 export class PlayerHandlerService {
-    private internalPlayer: Player;
+    player: Player;
+
     private pin: string;
     private timerId: number;
     private internalPlayers: string[] = [];
@@ -20,15 +19,10 @@ export class PlayerHandlerService {
     private internalShowingAnswer: boolean = false;
 
     constructor(
-        private communicationService: CommunicationService,
         private webSocketService: WebSocketService,
         private timeService: TimeService,
     ) {
         this.timerId = timeService.createTimerById();
-    }
-
-    get player(): Player {
-        return this.internalPlayer;
     }
 
     get players(): string[] {
@@ -44,7 +38,7 @@ export class PlayerHandlerService {
     }
 
     getPlayerAnswers(): Answer[] {
-        return this.internalPlayer.questions[this.internalPlayer.questions.length - 1].choices;
+        return this.player.questions[this.player.questions.length - 1].choices;
     }
 
     getPlayerBooleanAnswers(): boolean[] {
@@ -61,7 +55,6 @@ export class PlayerHandlerService {
 
     joinGame(pin: string): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.connect();
             this.webSocketService.emit('join-game', pin, (response) => {
                 observer.next(response as string);
                 observer.complete();
@@ -74,7 +67,7 @@ export class PlayerHandlerService {
             this.webSocketService.emit('create-player', { pin, playerName }, (response: unknown) => {
                 const responseData = response as { player: Player; players: string[]; error: string };
                 if (!responseData.error) {
-                    this.internalPlayer = responseData.player;
+                    this.player = responseData.player;
                     this.internalPlayers = responseData.players;
                     this.pin = pin;
                     this.handleSockets();
@@ -87,12 +80,12 @@ export class PlayerHandlerService {
     }
 
     updatePlayer(): void {
-        this.webSocketService.emit('update-player', { lobbyId: this.pin, player: this.internalPlayer });
+        this.webSocketService.emit('update-player', { lobbyId: this.pin, player: this.player });
     }
 
-    handleKeyUp(event: KeyboardEvent, player: Player): void {
+    handleKeyUp(event: KeyboardEvent): void {
         if (event.key === 'Enter') {
-            this.confirmPlayerAnswer(player);
+            this.confirmPlayerAnswer();
         }
 
         const key = parseInt(event.key, 10) - 1;
@@ -101,19 +94,9 @@ export class PlayerHandlerService {
         }
     }
 
-    confirmPlayerAnswer(player: Player | undefined): void {
-        if (!player) {
-            return;
-        }
-
+    confirmPlayerAnswer(): void {
         this.webSocketService.emit('confirm-player-answer', this.pin);
-    }
-
-    validatePlayerAnswers(questionText: string, points: number): void {
-        this.validateAnswer(questionText, this.getPlayerBooleanAnswers()).subscribe((isCorrect) => {
-            this.internalPlayer.isCorrect = isCorrect;
-            this.internalPlayer.score += isCorrect ? points : 0;
-        });
+        this.internalAnswerConfirmed = true;
     }
 
     time(): number {
@@ -128,22 +111,10 @@ export class PlayerHandlerService {
     private resetPlayerAnswers(question: Question): void {
         const resetQuestion = { ...question };
         resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
-        this.internalPlayer.questions.push(resetQuestion);
+        this.player.questions.push(resetQuestion);
         this.internalAnswerConfirmed = false;
-        this.internalPlayer.isCorrect = false;
+        this.player.isCorrect = false;
         this.updatePlayer();
-    }
-
-    private validateAnswer(text: string, answer: boolean[]): Observable<boolean> {
-        return this.communicationService.post<boolean>('questions/validate-answer', { answer, text }).pipe(
-            map((response) => {
-                if (response.status !== HttpStatusCode.Ok) {
-                    return false;
-                }
-
-                return response.body || false;
-            }),
-        );
     }
 
     private onStartGame() {
@@ -155,26 +126,27 @@ export class PlayerHandlerService {
     private onEndQuestion() {
         this.webSocketService.onEvent<void>('end-question', () => {
             this.internalAnswerConfirmed = true;
+            this.internalShowingAnswer = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
     }
 
     private onNextQuestion() {
         this.webSocketService.onEvent<{ question: Question; countdown: number }>('next-question', ({ question, countdown }) => {
-            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, () => {
-                this.resetPlayerAnswers(question);
-                this.timeService.startTimerById(this.timerId, countdown, () => {
-                    return;
-                });
-            });
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });
     }
 
     private onNewScore() {
         this.webSocketService.onEvent<Player>('new-score', (player) => {
-            if (player.name === this.internalPlayer.name) {
-                this.internalPlayer = player;
+            if (player.name === this.player.name) {
+                this.player = player;
             }
         });
+    }
+
+    private setupNextQuestion(question: Question, countdown: number): void {
+        this.resetPlayerAnswers(question);
+        this.timeService.startTimerById(this.timerId, countdown);
     }
 }

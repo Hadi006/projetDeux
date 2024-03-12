@@ -14,7 +14,6 @@ export class HostService {
     private internalLobbyData: LobbyData;
     private nAnswered = 0;
     private timerId: number;
-    // private internalEndQuestionSubject: Subject<void> = new Subject<void>();
 
     constructor(
         private webSocketService: WebSocketService,

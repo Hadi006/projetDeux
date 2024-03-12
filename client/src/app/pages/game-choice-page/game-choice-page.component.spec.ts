@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
-import { GameHandlerService } from '@app/services/game-handler.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { Quiz } from '@common/quiz';
 import { Subject, of } from 'rxjs';
@@ -13,7 +12,6 @@ describe('GameChoicePageComponent', () => {
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let router: Router;
-    let gameHandlerServiceSpy: jasmine.SpyObj<GameHandlerService>;
     let publicQuizzesServiceSpy: jasmine.SpyObj<PublicQuizzesService>;
     let mockQuiz: Quiz;
 
@@ -27,7 +25,6 @@ describe('GameChoicePageComponent', () => {
             lastModification: new Date(),
             questions: [],
         };
-        gameHandlerServiceSpy = jasmine.createSpyObj('GameHandlerService', ['loadQuizData']);
         publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
             'fetchVisibleQuizzes',
             'checkQuizAvailability',
@@ -44,7 +41,6 @@ describe('GameChoicePageComponent', () => {
             imports: [RouterTestingModule, HttpClientTestingModule],
             declarations: [GameChoicePageComponent, DescriptionPanelComponent],
             providers: [
-                { provide: GameHandlerService, useValue: gameHandlerServiceSpy },
                 {
                     provide: PublicQuizzesService,
                     useValue: publicQuizzesServiceSpy,
@@ -80,7 +76,6 @@ describe('GameChoicePageComponent', () => {
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).not.toHaveBeenCalled();
-            expect(gameHandlerServiceSpy.loadQuizData).toHaveBeenCalledWith(mockQuiz);
             expect(navigateSpy).toHaveBeenCalledWith(['lobby']);
             done();
         });
@@ -92,7 +87,6 @@ describe('GameChoicePageComponent', () => {
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
-            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
             expect(navigateSpy).not.toHaveBeenCalled();
         });
     });
@@ -104,7 +98,6 @@ describe('GameChoicePageComponent', () => {
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
-            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
             expect(navigateSpy).not.toHaveBeenCalled();
         });
     });
@@ -116,7 +109,6 @@ describe('GameChoicePageComponent', () => {
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).not.toHaveBeenCalled();
-            expect(gameHandlerServiceSpy.loadQuizData).toHaveBeenCalledWith(mockQuiz);
             expect(navigateSpy).toHaveBeenCalledWith(['/play']);
         });
     });
@@ -127,7 +119,6 @@ describe('GameChoicePageComponent', () => {
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
-            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
             expect(navigateSpy).not.toHaveBeenCalled();
         });
     });
@@ -139,7 +130,6 @@ describe('GameChoicePageComponent', () => {
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
-            expect(gameHandlerServiceSpy.loadQuizData).not.toHaveBeenCalled();
             expect(navigateSpy).not.toHaveBeenCalled();
         });
     });

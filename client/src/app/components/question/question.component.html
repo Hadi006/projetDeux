@@ -1,4 +1,4 @@
-<div *ngIf="questionData && player">
+<div *ngIf="questionData && this.player">
     <h2>{{ questionData.text }}</h2>
 
     <p>Valeur de la question: {{ questionData.points }} points</p>
@@ -31,5 +31,5 @@
             <p>Bonne réponse!</p>
         </div>
     </div>
-    <button [disabled]="this.playerHandlerService.answerConfirmed" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>
+    <button [disabled]="this.playerHandlerService.answerConfirmed" (click)="playerHandlerService.confirmPlayerAnswer()">Confirmer</button>
 </div>
