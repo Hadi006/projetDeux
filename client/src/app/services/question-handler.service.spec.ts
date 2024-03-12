@@ -44,7 +44,7 @@ describe('QuestionHandlerService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(QuestionHandlerService);
-        service.questionsData = [...QUESTIONS_DATA];
+        service.questions = [...QUESTIONS_DATA];
     });
 
     it('should be created', () => {
@@ -71,7 +71,7 @@ describe('QuestionHandlerService', () => {
 
     it('questionsData setter should reset the currentQuestionIndex', () => {
         service.currentQuestionIndex = 1;
-        service.questionsData = [...QUESTIONS_DATA];
+        service.questions = [...QUESTIONS_DATA];
         expect(service.currentQuestion).toEqual(QUESTIONS_DATA[0]);
     });
 

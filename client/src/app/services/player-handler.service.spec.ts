@@ -135,21 +135,16 @@ describe('PlayerHandlerService', () => {
         socketHelper.peerSideEmit('next-question', { countdown });
     });
 
-    it('should update scores on newScore', (done) => {
-        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback({ ...PLAYER_RESPONSE });
-        });
-        service.createPlayer('1', TEST_PLAYER.name).subscribe(() => {
-            const player = { ...TEST_PLAYER, score: 10 };
-            service.handleSockets();
+    it('should update scores on newScore', () => {
+        service.player = { ...TEST_PLAYER };
+        const player = { ...TEST_PLAYER, score: 10 };
+        service.handleSockets();
 
-            socketHelper.on('new-score', (newPlayer) => {
-                expect(newPlayer).toEqual(player);
-                done();
-                return {};
-            });
-            socketHelper.peerSideEmit('new-score', player);
+        socketHelper.on('new-score', (newPlayer) => {
+            expect(newPlayer).toEqual(player);
+            return {};
         });
+        socketHelper.peerSideEmit('new-score', player);
     });
 
     it('should join game and return errors', (done) => {

@@ -7,21 +7,16 @@ import { Subscription } from 'rxjs';
 })
 export class QuestionHandlerService implements OnDestroy {
     currentQuestionIndex = 0;
+    questions: Question[];
 
-    private internalQuestions: Question[];
     private timerEndedSubscription: Subscription;
 
     get currentQuestion(): Question | undefined {
-        return this.internalQuestions[this.currentQuestionIndex];
+        return this.questions[this.currentQuestionIndex];
     }
 
     get currentAnswers(): Answer[] {
         return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
-    }
-
-    set questionsData(data: Question[]) {
-        this.internalQuestions = data;
-        this.currentQuestionIndex = 0;
     }
 
     ngOnDestroy(): void {

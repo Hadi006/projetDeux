@@ -12,7 +12,7 @@ import { TRANSITION_DELAY } from '@common/constant';
 })
 export class HostService {
     private internalLobbyData: LobbyData;
-    private nAnswered = 0;
+    private internalNAnswered = 0;
     private timerId: number;
 
     constructor(
@@ -25,6 +25,10 @@ export class HostService {
 
     get lobbyData() {
         return this.internalLobbyData;
+    }
+
+    get nAnswered() {
+        return this.internalNAnswered;
     }
 
     handleSockets() {
@@ -60,7 +64,8 @@ export class HostService {
             this.webSocketService.emit('create-lobby', quiz, (lobbyData: unknown) => {
                 if (lobbyData) {
                     this.internalLobbyData = lobbyData as LobbyData;
-                    this.questionHandlerService.questionsData = quiz.questions;
+                    this.questionHandlerService.questions = quiz.questions;
+                    this.questionHandlerService.currentQuestionIndex = 0;
                     subscriber.next(true);
                     subscriber.complete();
                 } else {
@@ -101,19 +106,21 @@ export class HostService {
     private onNextQuestion() {
         this.webSocketService.onEvent('next-question', ({ countdown }: { question: unknown; countdown: number }) => {
             this.questionHandlerService.currentQuestionIndex++;
-            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, () => {
-                this.timeService.startTimerById(this.timerId, countdown, this.emitEndQuestion.bind(this));
-            });
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, countdown));
         });
     }
 
     private onConfirmPlayerAnswer() {
         this.webSocketService.onEvent('confirm-player-answer', () => {
-            if (++this.nAnswered >= this.internalLobbyData.players.length) {
+            if (++this.internalNAnswered >= this.internalLobbyData.players.length) {
                 this.timeService.stopTimerById(this.timerId);
                 this.emitEndQuestion();
-                this.nAnswered = 0;
+                this.internalNAnswered = 0;
             }
         });
+    }
+
+    private setupNextQuestion(countdown: number) {
+        this.timeService.startTimerById(this.timerId, countdown, this.emitEndQuestion.bind(this));
     }
 }
