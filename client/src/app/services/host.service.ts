@@ -14,6 +14,7 @@ export class HostService {
     private internalNAnswered = 0;
     private timerId: number;
     private internalQuestionEndedSubject = new Subject<void>();
+    private internalGameEndedSubject = new Subject<void>();
     private currentQuestionIndex: number;
 
     constructor(
@@ -33,6 +34,10 @@ export class HostService {
 
     get questionEndedSubject() {
         return this.internalQuestionEndedSubject;
+    }
+
+    get gameEndedSubject() {
+        return this.internalGameEndedSubject;
     }
 
     handleSockets() {
@@ -62,6 +67,11 @@ export class HostService {
         this.emitUpdateScores();
         this.emitAnswer();
         this.internalQuestionEndedSubject.next();
+    }
+
+    endGame() {
+        this.emitEndGame();
+        this.internalGameEndedSubject.next();
     }
 
     cleanUp() {
