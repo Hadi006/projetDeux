@@ -32,6 +32,8 @@ export class GameChoicePageComponent implements OnInit {
             this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
                 if (success) {
                     this.router.navigate(['lobby']);
+                } else {
+                    this.hostService.cleanUp();
                 }
             });
         });
@@ -42,6 +44,8 @@ export class GameChoicePageComponent implements OnInit {
             this.handleChosenQuiz(isAvailable).subscribe((success) => {
                 if (success) {
                     this.router.navigate(['test']);
+                } else {
+                    this.hostService.cleanUp();
                 }
             });
         });

@@ -5,7 +5,8 @@
         <p>Valeur de la question: {{ questionData.points }} points</p>
 
         <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
-            <div *ngFor="let choice of playerHandlerService.player.questions[0].choices; let i = index">
+            <div
+                *ngFor="let choice of playerHandlerService.player.questions[playerHandlerService.player.questions.length - 1].choices; let i = index">
                 <label>
                     <input [disabled]="this.playerHandlerService.answerConfirmed" type="checkbox"
                         [(ngModel)]="choice.isCorrect" (ngModelChange)="playerHandlerService.updatePlayer()" />
@@ -21,13 +22,11 @@
 
         <div>Score: {{ player.score }}</div>
 
-        <div *ngIf="this.playerHandlerService.showingAnswer" id="grade-container">
-            <span *ngFor="let correctAnswer of questionHandlerService.getCurrentAnswers(); let i = index">
-                <p>Réponse(s): {{ correctAnswer.text }}</p>
-            </span>
-            <div *ngIf="player.isCorrect">
-                <p>Bonne réponse!</p>
-            </div>
+        <div *ngFor="let correctAnswer of playerHandlerService.answer; let i = index">
+            <p>Réponse(s): {{ correctAnswer.text }}</p>
+        </div>
+        <div *ngIf="player.isCorrect">
+            <p>Bonne réponse!</p>
         </div>
         <button [disabled]="this.playerHandlerService.answerConfirmed"
             (click)="playerHandlerService.confirmPlayerAnswer()">Confirmer</button>

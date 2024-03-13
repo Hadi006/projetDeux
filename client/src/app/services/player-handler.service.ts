@@ -16,7 +16,7 @@ export class PlayerHandlerService {
     private timerId: number;
     private internalPlayers: string[] = [];
     private internalAnswerConfirmed: boolean = false;
-    private internalShowingAnswer: boolean = false;
+    private internalAnswer: Answer[];
 
     constructor(
         private webSocketService: WebSocketService,
@@ -33,8 +33,8 @@ export class PlayerHandlerService {
         return this.internalAnswerConfirmed;
     }
 
-    get showingAnswer(): boolean {
-        return this.internalShowingAnswer;
+    get answer(): Answer[] {
+        return this.internalAnswer;
     }
 
     getPlayerAnswers(): Answer[] {
@@ -51,11 +51,12 @@ export class PlayerHandlerService {
         this.onEndQuestion();
         this.onNextQuestion();
         this.onNewScore();
+        this.onAnswer();
     }
 
     joinGame(pin: string): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.emit('join-game', pin, (response) => {
+            this.webSocketService.emit('joingame', pin, (response) => {
                 observer.next(response as string);
                 observer.complete();
             });
@@ -126,13 +127,13 @@ export class PlayerHandlerService {
     private onEndQuestion() {
         this.webSocketService.onEvent<void>('end-question', () => {
             this.internalAnswerConfirmed = true;
-            this.internalShowingAnswer = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
     }
 
     private onNextQuestion() {
         this.webSocketService.onEvent<{ question: Question; countdown: number }>('next-question', ({ question, countdown }) => {
+            this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });
     }
@@ -145,8 +146,16 @@ export class PlayerHandlerService {
         });
     }
 
+    private onAnswer() {
+        this.webSocketService.onEvent<Answer[]>('answer', (answer) => {
+            this.internalAnswer = answer;
+        });
+    }
+
     private setupNextQuestion(question: Question, countdown: number): void {
+        this.internalAnswer = [];
         this.resetPlayerAnswers(question);
+        this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
     }
 }

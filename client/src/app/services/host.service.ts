@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { LobbyData } from '@common/lobby-data';
 import { WebSocketService } from './web-socket.service';
-import { Observable /* , Subject */ } from 'rxjs';
-import { QuestionHandlerService } from './question-handler.service';
-import { Quiz } from '@common/quiz';
+import { Observable /* , Subject */, Subject } from 'rxjs';
+import { Answer, Question, Quiz } from '@common/quiz';
 import { TimeService } from './time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 
@@ -14,10 +13,11 @@ export class HostService {
     private internalLobbyData: LobbyData;
     private internalNAnswered = 0;
     private timerId: number;
+    private internalQuestionEndedSubject = new Subject<void>();
+    private currentQuestionIndex: number;
 
     constructor(
         private webSocketService: WebSocketService,
-        private questionHandlerService: QuestionHandlerService,
         private timeService: TimeService,
     ) {
         this.timerId = timeService.createTimerById();
@@ -29,6 +29,10 @@ export class HostService {
 
     get nAnswered() {
         return this.internalNAnswered;
+    }
+
+    get questionEndedSubject() {
+        return this.internalQuestionEndedSubject;
     }
 
     handleSockets() {
@@ -53,6 +57,13 @@ export class HostService {
         this.emitNextQuestion();
     }
 
+    endQuestion() {
+        this.emitEndQuestion();
+        this.emitUpdateScores();
+        this.emitAnswer();
+        this.internalQuestionEndedSubject.next();
+    }
+
     cleanUp() {
         this.emitDeleteLobby();
         this.webSocketService.disconnect();
@@ -64,8 +75,7 @@ export class HostService {
             this.webSocketService.emit('create-lobby', quiz, (lobbyData: unknown) => {
                 if (lobbyData) {
                     this.internalLobbyData = lobbyData as LobbyData;
-                    this.questionHandlerService.questions = quiz.questions;
-                    this.questionHandlerService.currentQuestionIndex = 0;
+                    this.currentQuestionIndex = 0;
                     subscriber.next(true);
                     subscriber.complete();
                 } else {
@@ -83,29 +93,40 @@ export class HostService {
     private emitNextQuestion() {
         this.webSocketService.emit('next-question', {
             lobbyId: this.internalLobbyData.id,
-            question: this.questionHandlerService.getCurrentQuestion(),
+            question: this.getCurrentQuestion(),
             countdown: this.lobbyData.quiz?.duration,
         });
     }
 
     private emitEndQuestion() {
         this.webSocketService.emit('end-question', this.internalLobbyData.id);
+    }
+
+    private emitUpdateScores() {
         this.webSocketService.emit('update-scores', {
             lobbyId: this.internalLobbyData.id,
-            questionIndex: this.questionHandlerService.currentQuestionIndex - 1,
+            questionIndex: this.currentQuestionIndex - 1,
+        });
+    }
+
+    private emitAnswer() {
+        this.webSocketService.emit('answer', {
+            lobbyId: this.internalLobbyData.id,
+            answer: this.getCurrentAnswer(),
         });
     }
 
     private onStartGame() {
         this.webSocketService.onEvent('start-game', (countdown: number) => {
             this.internalLobbyData.locked = true;
+            this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
         });
     }
 
     private onNextQuestion() {
         this.webSocketService.onEvent('next-question', ({ countdown }: { question: unknown; countdown: number }) => {
-            this.questionHandlerService.currentQuestionIndex++;
+            this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, countdown));
         });
     }
@@ -114,13 +135,23 @@ export class HostService {
         this.webSocketService.onEvent('confirm-player-answer', () => {
             if (++this.internalNAnswered >= this.internalLobbyData.players.length) {
                 this.timeService.stopTimerById(this.timerId);
-                this.emitEndQuestion();
+                this.endQuestion();
                 this.internalNAnswered = 0;
             }
         });
     }
 
+    private getCurrentQuestion(): Question | undefined {
+        return this.internalLobbyData.quiz?.questions[this.currentQuestionIndex];
+    }
+
+    private getCurrentAnswer(): Answer[] {
+        return this.getCurrentQuestion()?.choices.filter((answer) => answer.isCorrect) || [];
+    }
+
     private setupNextQuestion(countdown: number) {
-        this.timeService.startTimerById(this.timerId, countdown, this.emitEndQuestion.bind(this));
+        this.currentQuestionIndex++;
+        this.timeService.stopTimerById(this.timerId);
+        this.timeService.startTimerById(this.timerId, countdown, this.endQuestion.bind(this));
     }
 }

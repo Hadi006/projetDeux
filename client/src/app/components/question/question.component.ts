@@ -1,7 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Question } from '@common/quiz';
 
 @Component({
@@ -10,10 +9,7 @@ import { Question } from '@common/quiz';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent {
-    constructor(
-        public playerHandlerService: PlayerHandlerService,
-        public questionHandlerService: QuestionHandlerService,
-    ) {}
+    constructor(public playerHandlerService: PlayerHandlerService) {}
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
