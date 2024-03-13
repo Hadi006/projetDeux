@@ -22,13 +22,11 @@ const TEST_PLAYER_DATA: Player[] = [
         name: 'Player 1',
         score: 0,
         questions: [],
-        isCorrect: false,
     },
     {
         name: 'Player 2',
         score: 0,
         questions: [],
-        isCorrect: false,
     },
 ];
 
@@ -93,7 +91,6 @@ export const NEW_PLAYER: Player = {
     name: '',
     score: 0,
     questions: [],
-    isCorrect: false,
 };
 
 export const NEW_LOBBY: LobbyData = {
