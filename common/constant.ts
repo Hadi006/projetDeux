@@ -2,6 +2,8 @@ import { AccessToken } from '@common/access-token';
 import { Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
 import { Player } from '@common/player';
+import { Question } from '@common/quiz';
+import { Answer } from '@common/quiz';
 
 /* Components */
 export const DEFAULT_WIDTH = 200;
@@ -16,25 +18,6 @@ export enum MouseButton {
 /* Guards */
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
-
-const TEST_PLAYER_DATA: Player[] = [
-    {
-        name: 'Player 1',
-        score: 0,
-        questions: [],
-    },
-    {
-        name: 'Player 2',
-        score: 0,
-        questions: [],
-    },
-];
-
-export const TEST_LOBBY_DATA: LobbyData = {
-    id: '1',
-    players: TEST_PLAYER_DATA,
-    locked: false,
-};
 
 /* Services */
 export const INVALID_INDEX = -1;
@@ -106,5 +89,79 @@ export const LOBBY_ID_LENGTH = 4;
 export const START_GAME_COUNTDOWN = 5;
 
 export const TRANSITION_DELAY = 3;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
+
+/* Tests */
+export const TEST_ANSWERS: Answer[] = [
+    {
+        text: 'Test Answer 1',
+        isCorrect: false,
+    },
+    {
+        text: 'Test Answer 2',
+        isCorrect: false,
+    },
+];
+
+export const TEST_QUESTIONS: Question[] = [
+    {
+        id: '1',
+        text: 'Test Question',
+        type: 'QCM',
+        points: 10,
+        lastModification: new Date(),
+        choices: TEST_ANSWERS,
+    },
+    {
+        id: '2',
+        text: 'Test Question 2',
+        type: 'QRL',
+        points: 10,
+        lastModification: new Date(),
+        choices: TEST_ANSWERS,
+    }
+];
+
+export const TEST_QUIZZES: Quiz[] = [
+    {
+        id: '1',
+        title: 'Test Quiz',
+        visible: true,
+        description: 'Test Quiz Description',
+        duration: 10,
+        lastModification: new Date(),
+        questions: TEST_QUESTIONS,
+    },
+    {
+        id: '2',
+        title: 'Test Quiz 2',
+        visible: true,
+        description: 'Test Quiz Description 2',
+        duration: 10,
+        lastModification: new Date(),
+        questions: TEST_QUESTIONS,
+    },
+];
+
+export const TEST_PLAYERS: Player[] = [
+    {
+        name: 'Player 1',
+        score: 0,
+        questions: TEST_QUESTIONS,
+    },
+    {
+        name: 'Player 2',
+        score: 0,
+        questions: TEST_QUESTIONS,
+    },
+];
+
+export const TEST_LOBBY_DATA: LobbyData = {
+    id: '1',
+    players: TEST_PLAYERS,
+    quiz: TEST_QUIZZES[0],
+    locked: false,
+};
+

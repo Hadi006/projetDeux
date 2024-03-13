@@ -5,30 +5,22 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { TEST_QUESTIONS } from '@common/constant';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';
 
 describe('QuestionFormComponent', () => {
+    let testQuestion: Question;
+
     let component: QuestionFormComponent;
     let fixture: ComponentFixture<QuestionFormComponent>;
     let adminQuizzesServiceSpy: jasmine.SpyObj<AdminQuizzesService>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<QuestionFormComponent>>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
 
-    const TEST_QUESTION: Question = {
-        id: '1',
-        text: 'Test Question 1',
-        type: 'QCM',
-        points: 10,
-        choices: [
-            { text: 'Choice 1', isCorrect: true },
-            { text: 'Choice 2', isCorrect: false },
-            { text: 'Choice 3', isCorrect: false },
-            { text: 'Choice 4', isCorrect: false },
-        ],
-    };
-
     beforeEach(() => {
+        testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
+
         adminQuizzesServiceSpy = jasmine.createSpyObj('AdminQuizzesService', ['submitQuestion']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -49,7 +41,7 @@ describe('QuestionFormComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(QuestionFormComponent);
         component = fixture.componentInstance;
-        component.question = { ...TEST_QUESTION, choices: [...TEST_QUESTION.choices] };
+        component.question = { ...testQuestion, choices: [...testQuestion.choices] };
         fixture.detectChanges();
     });
 
@@ -58,20 +50,21 @@ describe('QuestionFormComponent', () => {
     });
 
     it('should initialize question from data', () => {
-        expect(component.question).toEqual(TEST_QUESTION);
+        expect(component.question).toEqual(testQuestion);
     });
 
     it('should add choice', () => {
         component.addChoice();
-        expect(component.question.choices).toEqual([...TEST_QUESTION.choices, { text: '', isCorrect: false }]);
+        expect(component.question.choices).toEqual([...testQuestion.choices, { text: '', isCorrect: false }]);
     });
 
     it('should remove choice', () => {
         component.removeChoice(0);
         expect(component.question.choices).toEqual([
-            { text: 'Choice 2', isCorrect: false },
-            { text: 'Choice 3', isCorrect: false },
-            { text: 'Choice 4', isCorrect: false },
+            {
+                text: 'Test Answer 2',
+                isCorrect: false,
+            },
         ]);
     });
 
@@ -85,17 +78,21 @@ describe('QuestionFormComponent', () => {
         cdkDragDropSpy.currentIndex = 1;
         component.drop(cdkDragDropSpy);
         expect(component.question.choices).toEqual([
-            { text: 'Choice 2', isCorrect: false },
-            { text: 'Choice 1', isCorrect: true },
-            { text: 'Choice 3', isCorrect: false },
-            { text: 'Choice 4', isCorrect: false },
+            {
+                text: 'Test Answer 2',
+                isCorrect: false,
+            },
+            {
+                text: 'Test Answer 1',
+                isCorrect: false,
+            },
         ]);
     });
 
     it('should subscribe to submitted question', () => {
         adminQuizzesServiceSpy.submitQuestion.and.returnValue(of(''));
         component.submit();
-        expect(dialogRefSpy.close).toHaveBeenCalledWith(TEST_QUESTION);
+        expect(dialogRefSpy.close).toHaveBeenCalledWith(testQuestion);
         const errorMsg = 'error';
         adminQuizzesServiceSpy.submitQuestion.and.returnValue(of(errorMsg));
         component.submit();

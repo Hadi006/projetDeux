@@ -7,6 +7,7 @@ import { TimeService } from './time.service';
 import { WebSocketService } from '@app/services/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
+import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -15,36 +16,9 @@ class WebSocketServiceMock extends WebSocketService {
 }
 
 describe('PlayerHandlerService', () => {
-    const TEST_QUESTIONS: Question[] = [
-        {
-            id: '0',
-            points: 10,
-            text: '1+1?',
-            choices: [
-                {
-                    text: '1',
-                    isCorrect: false,
-                },
-                {
-                    text: '2',
-                    isCorrect: false,
-                },
-            ],
-            type: 'QCM',
-        },
-    ];
-
-    const TEST_PLAYER: Player = {
-        name: 'test',
-        score: 0,
-        questions: [...TEST_QUESTIONS],
-    };
-
-    const PLAYER_RESPONSE = {
-        player: { ...TEST_PLAYER },
-        players: [],
-        error: '',
-    };
+    let testQuestions: Question[];
+    let testPlayer: Player;
+    let playerResponse: { player: Player; players: string[]; error: string };
 
     let service: PlayerHandlerService;
     let webSocketServiceMock: WebSocketServiceMock;
@@ -52,6 +26,14 @@ describe('PlayerHandlerService', () => {
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
     beforeEach(async () => {
+        testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        playerResponse = {
+            player: { ...testPlayer },
+            players: [],
+            error: '',
+        };
+
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
@@ -85,13 +67,13 @@ describe('PlayerHandlerService', () => {
     });
 
     it('get player answers as an array of Answers', () => {
-        service.player = { ...TEST_PLAYER };
-        expect(service.getPlayerAnswers()).toEqual(TEST_QUESTIONS[0].choices);
+        service.player = testPlayer;
+        expect(service.getPlayerAnswers()).toEqual(testQuestions[0].choices);
     });
 
     it('get player boolean answers', () => {
-        service.player = { ...TEST_PLAYER };
-        expect(service.getPlayerBooleanAnswers()).toEqual(TEST_QUESTIONS[0].choices.map((choice) => choice.isCorrect));
+        service.player = testPlayer;
+        expect(service.getPlayerBooleanAnswers()).toEqual(testQuestions[0].choices.map((choice) => choice.isCorrect));
     });
 
     it('handleSockets should connect to the web socket', () => {
@@ -134,8 +116,8 @@ describe('PlayerHandlerService', () => {
     });
 
     it('should update scores on newScore', () => {
-        service.player = { ...TEST_PLAYER };
-        const player = { ...TEST_PLAYER, score: 10 };
+        service.player = testPlayer;
+        const player = { ...testPlayer, score: 10 };
         service.handleSockets();
 
         socketHelper.on('new-score', (newPlayer) => {
@@ -159,20 +141,20 @@ describe('PlayerHandlerService', () => {
     it('createPlayer should create a player', (done) => {
         spyOn(service, 'handleSockets');
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback({ ...PLAYER_RESPONSE });
+            callback(playerResponse);
         });
         service.createPlayer('1', 'test').subscribe((error) => {
             expect(webSocketServiceMock.emit).toHaveBeenCalledWith('create-player', { pin: '1', playerName: 'test' }, jasmine.any(Function));
             expect(error).toBeFalsy();
-            expect(service.player).toEqual(PLAYER_RESPONSE.player);
-            expect(service.players).toEqual(PLAYER_RESPONSE.players);
+            expect(service.player).toEqual(playerResponse.player);
+            expect(service.players).toEqual(playerResponse.players);
             expect(service.handleSockets).toHaveBeenCalled();
             done();
         });
     });
 
     it('should not create a player if there is an error', (done) => {
-        const response = { ...PLAYER_RESPONSE, error: 'Error' };
+        const response = { ...playerResponse, error: 'Error' };
         spyOn(service, 'handleSockets');
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(response);
@@ -194,36 +176,36 @@ describe('PlayerHandlerService', () => {
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
-        service.player = { ...TEST_PLAYER };
-        service.player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        service.player = testPlayer;
+        service.player.questions = testQuestions;
         spyOn(service, 'confirmPlayerAnswer');
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'Enter' }));
         expect(service.confirmPlayerAnswer).toHaveBeenCalled();
     });
 
     it('handleKeyUp should toggle the answer if a number key is pressed', () => {
-        service.player = { ...TEST_PLAYER };
-        service.player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        service.player = testPlayer;
+        service.player.questions = JSON.parse(JSON.stringify(testQuestions));
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '1' }));
-        expect(service.player.questions[0].choices[0].isCorrect).toBeTrue();
+        expect(service.player.questions[service.player.questions.length - 1].choices[0].isCorrect).toBeTrue();
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '1' }));
-        expect(service.player.questions[0].choices[0].isCorrect).toBeFalse();
+        expect(service.player.questions[service.player.questions.length - 1].choices[0].isCorrect).toBeFalse();
     });
 
     it('handleKeyUp should not toggle the answer if a number key is pressed out of range', () => {
-        service.player = { ...TEST_PLAYER };
-        service.player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        service.player = testPlayer;
+        service.player.questions = JSON.parse(JSON.stringify(testQuestions));
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '0' }));
-        expect(service.player.questions[0].choices[0].isCorrect).toBeFalse();
+        expect(service.player.questions[service.player.questions.length - 1].choices[0].isCorrect).toBeFalse();
         service.handleKeyUp(new KeyboardEvent('keyup', { key: '4' }));
-        expect(service.player.questions[0].choices[0].isCorrect).toBeFalse();
+        expect(service.player.questions[service.player.questions.length - 1].choices[0].isCorrect).toBeFalse();
     });
 
     it('handleKeyUp should not toggle the answer if a non-number key is pressed', () => {
-        service.player = { ...TEST_PLAYER };
-        service.player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        service.player = testPlayer;
+        service.player.questions = JSON.parse(JSON.stringify(testQuestions));
         service.handleKeyUp(new KeyboardEvent('keyup', { key: 'a' }));
-        service.player.questions[0].choices.forEach((choice) => {
+        service.player.questions[service.player.questions.length - 1].choices.forEach((choice) => {
             expect(choice.isCorrect).toBeFalse();
         });
     });
@@ -252,12 +234,13 @@ describe('PlayerHandlerService', () => {
     it('setUpNextQuestion should reset the player answers', () => {
         const countdown = 10;
         spyOn(service, 'updatePlayer');
-        service.player = { ...TEST_PLAYER };
-        service.player.questions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        service.player = testPlayer;
+        const initialLength = service.player.questions.length;
+        service.player.questions = testQuestions;
         service['internalAnswerConfirmed'] = true;
-        service['setupNextQuestion'](TEST_QUESTIONS[0], countdown);
-        expect(service.player.questions.length).toEqual(2);
-        expect(service.player.questions[1]).toEqual(TEST_QUESTIONS[0]);
+        service['setupNextQuestion'](testQuestions[0], countdown);
+        expect(service.player.questions.length).toEqual(initialLength + 1);
+        expect(service.player.questions[service.player.questions.length - 1]).toEqual(testQuestions[0]);
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();

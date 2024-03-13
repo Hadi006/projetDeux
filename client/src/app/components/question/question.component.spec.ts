@@ -4,49 +4,20 @@ import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
 import { of } from 'rxjs';
 import { Player } from '@common/player';
+import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 
 describe('QuestionComponent', () => {
-    const QUESTIONS_DATA: Question[] = [
-        {
-            id: '0',
-            points: 1,
-            text: '1+1?',
-            choices: [
-                {
-                    text: '1',
-                    isCorrect: false,
-                },
-                {
-                    text: '2',
-                    isCorrect: true,
-                },
-                {
-                    text: '3',
-                    isCorrect: false,
-                },
-            ],
-            type: 'QCM',
-        },
-        {
-            id: '1',
-            points: 1,
-            text: 'What is the capital of France?',
-            choices: [],
-            type: 'QRL',
-        },
-    ];
-
-    const TEST_PLAYER: Player = {
-        name: 'Player 1',
-        score: 0,
-        questions: [...QUESTIONS_DATA],
-    };
+    let testQuestions: Question[];
+    let testPlayer: Player;
 
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
+        testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
             'createPlayer',
             'handleKeyUp',
@@ -90,8 +61,8 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should do nothing if question is open ended', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
-        spyOn(component, 'getQuestionData').and.returnValue(QUESTIONS_DATA[1]);
+        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
+        spyOn(component, 'getQuestionData').and.returnValue(testQuestions[1]);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
@@ -100,7 +71,7 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should do nothing if answer is confirmed', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
+        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
         spyOnProperty(playerHandlerServiceSpy, 'answerConfirmed', 'get').and.returnValue(true);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
@@ -110,21 +81,23 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should call playerHandlerService.handleKeyUp', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'getQuestionData').and.returnValue(QUESTIONS_DATA[0]);
-        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
+        spyOn(component, 'getQuestionData').and.returnValue(testQuestions[0]);
+        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).toHaveBeenCalledWith(mockEvent);
     });
 
     it('getPlayer should return the player', () => {
-        playerHandlerServiceSpy.player = { ...TEST_PLAYER };
-        expect(component.getPlayer()).toEqual(TEST_PLAYER);
+        playerHandlerServiceSpy.player = { ...testPlayer };
+        expect(component.getPlayer()).toEqual(testPlayer);
     });
 
     it('getQuestionData should return currentQuestion', () => {
-        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
-        expect(component.getQuestionData()).toBe(QUESTIONS_DATA[1]);
+        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
+        console.log(component.getQuestionData());
+        console.log(testQuestions[testPlayer.questions.length - 1]);
+        expect(component.getQuestionData()).toEqual(testQuestions[testPlayer.questions.length - 1]);
     });
 
     it('getQuestionData should return undefined if there is no player', () => {

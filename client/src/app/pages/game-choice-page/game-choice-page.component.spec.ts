@@ -3,28 +3,23 @@ import { Router } from '@angular/router';
 import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 import { HostService } from '@app/services/host.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { TEST_QUIZZES } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, of } from 'rxjs';
 import { GameChoicePageComponent } from './game-choice-page.component';
 
 describe('GameChoicePageComponent', () => {
+    let testQuiz: Quiz;
+
     let component: GameChoicePageComponent;
     let fixture: ComponentFixture<GameChoicePageComponent>;
     let publicQuizzesServiceSpy: jasmine.SpyObj<PublicQuizzesService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
-    let mockQuiz: Quiz;
 
     beforeEach(async () => {
-        mockQuiz = {
-            id: '1',
-            title: 'Math',
-            visible: true,
-            description: 'Math quiz',
-            duration: 10,
-            lastModification: new Date(),
-            questions: [],
-        };
+        testQuiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
+
         publicQuizzesServiceSpy = jasmine.createSpyObj('PublicQuizzesService', [
             'fetchVisibleQuizzes',
             'checkQuizAvailability',
@@ -76,13 +71,13 @@ describe('GameChoicePageComponent', () => {
     });
 
     it('should set chosenGame on chooseQuiz call', () => {
-        component.chooseQuiz(mockQuiz);
-        expect(component.chosenQuiz).toEqual(mockQuiz);
+        component.chooseQuiz(testQuiz);
+        expect(component.chosenQuiz).toEqual(testQuiz);
     });
 
     it('should start game', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
-        component.chooseQuiz(mockQuiz);
+        component.chooseQuiz(testQuiz);
         hostServiceSpy.createLobby.and.returnValue(of(true));
         component.startGame();
         expect(publicQuizzesServiceSpy.checkQuizAvailability).toHaveBeenCalled();
@@ -105,7 +100,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should not start game if quiz is not available', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
-        component.chooseQuiz(mockQuiz);
+        component.chooseQuiz(testQuiz);
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
@@ -115,7 +110,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should not start game if lobby creation fails', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
-        component.chooseQuiz(mockQuiz);
+        component.chooseQuiz(testQuiz);
         hostServiceSpy.createLobby.and.returnValue(of(false));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
@@ -126,7 +121,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should test game', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
-        component.chooseQuiz(mockQuiz);
+        component.chooseQuiz(testQuiz);
         hostServiceSpy.createLobby.and.returnValue(of(true));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
@@ -146,7 +141,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should not test game if quiz is not available', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(false));
-        component.chooseQuiz(mockQuiz);
+        component.chooseQuiz(testQuiz);
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Quiz non disponible, veuillez en choisir un autre');
@@ -156,7 +151,7 @@ describe('GameChoicePageComponent', () => {
 
     it('should not test game if lobby creation fails', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
-        component.chooseQuiz(mockQuiz);
+        component.chooseQuiz(testQuiz);
         hostServiceSpy.createLobby.and.returnValue(of(false));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {

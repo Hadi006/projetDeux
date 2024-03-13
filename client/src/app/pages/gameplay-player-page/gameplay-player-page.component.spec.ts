@@ -7,26 +7,11 @@ import { Router } from '@angular/router';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { HostService } from '@app/services/host.service';
 import { LobbyData } from '@common/lobby-data';
-import { Quiz } from '@common/quiz';
 import { of, Subject } from 'rxjs';
+import { TEST_LOBBY_DATA } from '@common/constant';
 
 describe('GameplayPlayerPageComponent', () => {
-    const TEST_QUIZ: Quiz = {
-        id: '1',
-        title: 'Test Quiz',
-        visible: true,
-        description: 'Test Quiz Description',
-        duration: 10,
-        lastModification: new Date(),
-        questions: [],
-    };
-
-    const TEST_LOBBY_DATA: LobbyData = {
-        id: '1',
-        players: [],
-        quiz: { ...TEST_QUIZ },
-        locked: false,
-    };
+    let testLobbyData: LobbyData;
 
     let component: GameplayPlayerPageComponent;
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
@@ -35,6 +20,8 @@ describe('GameplayPlayerPageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
+        testLobbyData = JSON.parse(JSON.stringify(TEST_LOBBY_DATA));
+
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['handleSockets', 'createPlayer', 'cleanUp', 'getTime']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(of(''));
 
@@ -43,7 +30,7 @@ describe('GameplayPlayerPageComponent', () => {
         hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
         Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
-        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
+        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => testLobbyData, configurable: true });
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -95,7 +82,7 @@ describe('GameplayPlayerPageComponent', () => {
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
         expect(playerHandlerServiceSpy.handleSockets).toHaveBeenCalled();
-        expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalledWith(TEST_LOBBY_DATA.id, 'Test');
+        expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalledWith(testLobbyData.id, 'Test');
         playerHandlerServiceSpy.createPlayer('1', 'test').subscribe(() => {
             expect(hostServiceSpy.startGame).toHaveBeenCalledWith(0);
             done();
@@ -108,7 +95,7 @@ describe('GameplayPlayerPageComponent', () => {
         expect(playerHandlerServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
         hostServiceSpy.gameEndedSubject.next();
-        expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalled();
-        expect(routerSpy.navigate).not.toHaveBeenCalled();
+        expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);
+        expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
     });
 });

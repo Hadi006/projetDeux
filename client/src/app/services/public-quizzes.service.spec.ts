@@ -7,14 +7,18 @@ import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
+import { TEST_QUIZZES } from '@common/constant';
 
 describe('PublicQuizzesService', () => {
+    let testQuizzes: Quiz[];
+
     let service: PublicQuizzesService;
-    let quizListTest: Quiz[];
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
+        testQuizzes = JSON.parse(JSON.stringify(TEST_QUIZZES));
+
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['get']);
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     });
@@ -30,35 +34,6 @@ describe('PublicQuizzesService', () => {
             ],
         });
         service = TestBed.inject(PublicQuizzesService);
-        quizListTest = [
-            {
-                id: '1',
-                title: 'Questionnaire sur le JS',
-                duration: 60,
-                description: 'Un questionnaire sur vos connaissances en Javascript',
-                visible: true,
-                lastModification: new Date('2018-11-13T20:20:39+00:00'),
-                questions: [
-                    {
-                        id: '20',
-                        type: 'QCM',
-                        text: "Est-ce qu'on le code suivant lance une erreur : const a = 1/NaN; ? ",
-                        points: 20,
-                        lastModification: new Date('2018-11-13T20:20:39+00:00'),
-                        choices: [
-                            {
-                                text: 'Non',
-                                isCorrect: true,
-                            },
-                            {
-                                text: 'Oui',
-                                isCorrect: false,
-                            },
-                        ],
-                    },
-                ],
-            },
-        ];
     });
 
     it('should be created', () => {
@@ -66,9 +41,9 @@ describe('PublicQuizzesService', () => {
     });
 
     it('fetchVisibleQuizzes() should make GET request and update list', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: testQuizzes })));
         service.fetchVisibleQuizzes().subscribe(() => {
-            expect(service.quizzes).toEqual(quizListTest);
+            expect(service.quizzes).toEqual(testQuizzes);
             done();
         });
     });
@@ -90,8 +65,8 @@ describe('PublicQuizzesService', () => {
     });
 
     it('checkQuizAvailability() should return true if quiz is available', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...quizListTest[0] } })));
-        service.checkQuizAvailability(quizListTest[0].id).subscribe((isAvailable) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...testQuizzes[0] } })));
+        service.checkQuizAvailability(testQuizzes[0].id).subscribe((isAvailable) => {
             expect(isAvailable).toBeTrue();
             done();
         });
@@ -99,9 +74,9 @@ describe('PublicQuizzesService', () => {
 
     it('checkQuizAvailability() should return false if quiz is not available', (done) => {
         communicationServiceSpy.get.and.returnValue(
-            of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...quizListTest[0], visible: false } })),
+            of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...testQuizzes[0], visible: false } })),
         );
-        service.checkQuizAvailability(quizListTest[0].id).subscribe((isAvailable) => {
+        service.checkQuizAvailability(testQuizzes[0].id).subscribe((isAvailable) => {
             expect(isAvailable).toBeFalse();
             done();
         });

@@ -2,30 +2,19 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
-import { Answer, Question } from '@common/quiz';
+import { TEST_QUESTIONS } from '@common/constant';
+import { Question } from '@common/quiz';
 
 describe('QuestionItemComponent', () => {
-    const TEST_ANSWERS: Answer[] = [
-        { text: 'Paris', isCorrect: true },
-        { text: 'London', isCorrect: false },
-        { text: 'Berlin', isCorrect: false },
-        { text: 'Madrid', isCorrect: false },
-    ];
-
-    const TEST_QUESTION: Question = {
-        id: '1',
-        text: 'What is the capital of France ?',
-        type: 'QCM',
-        points: 5,
-        lastModification: new Date(),
-        choices: TEST_ANSWERS,
-    };
+    let testQuestion: Question;
 
     let component: QuestionItemComponent;
     let fixture: ComponentFixture<QuestionItemComponent>;
     let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
 
     beforeEach(() => {
+        testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
+
         activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot'], { snapshot: { url: ['home', 'admin', 'quizzes'] } });
     });
 
@@ -40,7 +29,7 @@ describe('QuestionItemComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(QuestionItemComponent);
         component = fixture.componentInstance;
-        component.question = TEST_QUESTION;
+        component.question = testQuestion;
         component.index = 0;
         fixture.detectChanges();
     });
