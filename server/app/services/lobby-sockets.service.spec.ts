@@ -229,4 +229,18 @@ describe('LobbySocketsService', () => {
             }, RESPONSE_DELAY);
         });
     });
+
+    it('should answer', (done) => {
+        const playerName = 'John Doe';
+        const answer = { playerName, choices: [true, false, false, false] };
+        lobbiesServiceStub.createLobby.resolves(testLobby);
+        clientSocket.emit('create-lobby', testLobby.quiz, () => {
+            const toSpy = spy(service['sio'], 'to');
+            clientSocket.emit('answer', { lobbyId: testLobby.id, answer });
+            setTimeout(() => {
+                expect(toSpy.calledWith(testLobby.id)).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
 });
