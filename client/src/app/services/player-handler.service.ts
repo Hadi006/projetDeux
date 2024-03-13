@@ -104,7 +104,7 @@ export class PlayerHandlerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.webSocketService.emit('confirm-player-answer', this.pin);
+        this.webSocketService.emit('confirm-player-answer', { lobbyId: this.pin, player: this.player });
         this.internalAnswerConfirmed = true;
     }
 
