@@ -46,11 +46,10 @@ export class PlayerHandlerService {
     }
 
     handleSockets() {
-        if (this.webSocketService.isSocketAlive()) {
-            return;
+        if (!this.webSocketService.isSocketAlive()) {
+            this.webSocketService.connect();
         }
 
-        this.webSocketService.connect();
         this.onStartGame();
         this.onEndQuestion();
         this.onNextQuestion();

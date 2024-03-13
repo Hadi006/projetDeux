@@ -41,11 +41,10 @@ export class HostService {
     }
 
     handleSockets() {
-        if (this.webSocketService.isSocketAlive()) {
-            return;
+        if (!this.webSocketService.isSocketAlive()) {
+            this.webSocketService.connect();
         }
 
-        this.webSocketService.connect();
         this.onStartGame();
         this.onConfirmPlayerAnswer();
         this.onNextQuestion();
@@ -169,6 +168,12 @@ export class HostService {
 
     private setupNextQuestion(countdown: number) {
         this.currentQuestionIndex++;
+
+        if (!this.getCurrentQuestion()) {
+            this.endGame();
+            return;
+        }
+
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.endQuestion.bind(this));
     }
