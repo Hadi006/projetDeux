@@ -224,7 +224,7 @@ describe('PlayerHandlerService', () => {
     it('confirmPlayerAnswer should confirm the answer', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.confirmPlayerAnswer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', undefined);
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { lobbyId: undefined, player: undefined });
         expect(service.answerConfirmed).toBeTrue();
     });
 
