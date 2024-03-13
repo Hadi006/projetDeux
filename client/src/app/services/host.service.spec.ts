@@ -209,27 +209,43 @@ describe('HostService', () => {
     });
 
     it('should start timer when setting up next question', (done) => {
-        const countdown = 10;
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
         });
         service.createLobby(testQuiz).subscribe(() => {
-            service['setupNextQuestion'](countdown);
-            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
+            service['setupNextQuestion']();
+            if (!testLobbyData.quiz) {
+                fail('No quiz');
+                done();
+                return;
+            }
+            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, testLobbyData.quiz.duration, jasmine.any(Function));
             done();
         });
     });
 
     it('should end game when setting up next question', (done) => {
-        const countdown = 10;
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testLobbyData);
+        });
+        service.createLobby(testQuiz).subscribe(() => {
+            spyOn(service, 'endGame');
+            service.lobbyData.quiz = JSON.parse(JSON.stringify({ ...testLobbyData.quiz, questions: [] }));
+            service['setupNextQuestion']();
+            expect(service.endGame).toHaveBeenCalled();
+            done();
+        });
+    });
+
+    it('should do nothing when setting up next question', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
         });
         service.createLobby(testQuiz).subscribe(() => {
             spyOn(service, 'endGame');
             service.lobbyData.quiz = undefined;
-            service['setupNextQuestion'](countdown);
-            expect(service.endGame).toHaveBeenCalled();
+            service['setupNextQuestion']();
+            expect(service.endGame).not.toHaveBeenCalled();
             done();
         });
     });

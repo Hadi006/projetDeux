@@ -157,12 +157,12 @@ export class HostService {
     }
 
     private setupNextQuestion() {
-        if (!this.getCurrentQuestion()) {
-            this.endGame();
+        if (!this.internalLobbyData.quiz) {
             return;
         }
 
-        if (!this.internalLobbyData.quiz) {
+        if (!this.getCurrentQuestion()) {
+            this.endGame();
             return;
         }
 
