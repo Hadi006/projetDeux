@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { HostService } from '@app/services/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
@@ -8,7 +9,10 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    constructor(private hostService: HostService) {
+    constructor(
+        private hostService: HostService,
+        private router: Router,
+    ) {
         this.hostService.handleSockets();
     }
 
@@ -22,5 +26,6 @@ export class LobbyOrganizerPageComponent {
 
     leaveLobby() {
         this.hostService.cleanUp();
+        this.router.navigate(['/']);
     }
 }
