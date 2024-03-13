@@ -5,7 +5,9 @@
         <p>Valeur de la question: {{ questionData.points }} points</p>
 
         <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
-            <div *ngFor="let choice of playerHandlerService.player.questions[0].choices; let i = index">
+            <div
+                *ngFor="let choice of playerHandlerService.player.questions[playerHandlerService.player.questions.length - 1].choices; let i = index"
+            >
                 <label>
                     <input
                         [disabled]="this.playerHandlerService.answerConfirmed"
