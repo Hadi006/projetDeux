@@ -114,12 +114,12 @@ export class LobbiesService {
         }
 
         const sortedPlayers = lobby.players.sort((a, b) => {
-            const dateA = new Date(a.questions[questionIndex].lastModification || 0);
-            const dateB = new Date(b.questions[questionIndex].lastModification || 0);
+            const dateA = new Date(a.questions[questionIndex].lastModification);
+            const dateB = new Date(b.questions[questionIndex].lastModification);
             return dateA.getTime() - dateB.getTime();
         });
 
-        const isUniqueOldest = sortedPlayers.length > 0 && this.isOldestUnique(sortedPlayers);
+        const isOldestUnique = this.isOldestUnique(sortedPlayers, questionIndex);
 
         sortedPlayers.forEach((player, playerIndex) => {
             const playerAnswer = player.questions[questionIndex];
@@ -127,22 +127,22 @@ export class LobbiesService {
 
             player.score += isCorrect ? question.points : 0;
 
-            if (isCorrect && isUniqueOldest && playerIndex === 0) {
+            if (isCorrect && isOldestUnique && playerIndex === 0) {
                 player.score += question.points * GOOD_ANSWER_BONUS;
             }
         });
         await this.updateLobby(lobby);
     }
 
-    private oldestModificationDate(sortedPlayers: Player[] | undefined): Date | undefined {
-        return sortedPlayers[0]?.questions[0]?.lastModification;
+    private oldestModificationDate(sortedPlayers: Player[], questionIndex: number): Date {
+        return sortedPlayers[0].questions[questionIndex].lastModification;
     }
 
-    private isOldestUnique(sortedPlayers: Player[]): boolean {
+    private isOldestUnique(sortedPlayers: Player[], questionIndex: number): boolean {
         if (sortedPlayers.length === 1) {
             return true;
         }
 
-        return this.oldestModificationDate(sortedPlayers) !== sortedPlayers[1]?.questions[0]?.lastModification;
+        return this.oldestModificationDate(sortedPlayers, questionIndex) !== sortedPlayers[1].questions[questionIndex].lastModification;
     }
 }

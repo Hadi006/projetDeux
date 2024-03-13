@@ -1,4 +1,4 @@
-import { LOBBY_ID_MAX, NEW_PLAYER, TEST_LOBBY_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { GOOD_ANSWER_BONUS, LOBBY_ID_MAX, NEW_PLAYER, TEST_LOBBY_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { DatabaseService } from './database.service';
 import { LobbiesService } from './lobbies.service';
 import { LobbyData } from '@common/lobby-data';
@@ -220,5 +220,29 @@ describe('LobbiesService', () => {
         await lobbiesService.updateScores(testLobbyData.id, 1);
         expect(databaseServiceStub.get.calledWith('lobbies', { id: testLobbyData.id })).to.equal(true);
         expect(updateStub.called).to.equal(false);
+    });
+
+    it('should give bonus points if player is the first to answer correctly', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        const testLobby: LobbyData = { ...testLobbyData, players: testPlayers };
+        const getStub = stub(lobbiesService, 'getLobby').resolves(testLobby);
+        const updateStub = stub(lobbiesService, 'updateLobby').resolves(true);
+        await lobbiesService.updateScores(testLobby.id, 0);
+        expect(getStub.calledWith(testLobby.id)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+        expect(testPlayers[1].score).to.equal(testQuestion.points);
+    });
+
+    it('should give points if there is only 1 player and he answers correctly', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify([TEST_PLAYERS[0]]));
+        const testLobby: LobbyData = { ...testLobbyData, players: testPlayers };
+        const getStub = stub(lobbiesService, 'getLobby').resolves(testLobby);
+        const updateStub = stub(lobbiesService, 'updateLobby').resolves(true);
+        await lobbiesService.updateScores(testLobby.id, 0);
+        expect(getStub.calledWith(testLobby.id)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
     });
 });
