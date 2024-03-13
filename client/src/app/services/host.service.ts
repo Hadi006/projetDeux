@@ -46,7 +46,6 @@ export class HostService {
         }
 
         this.onConfirmPlayerAnswer();
-        this.onNextQuestion();
     }
 
     createLobby(quiz: Quiz): Observable<boolean> {
@@ -66,6 +65,9 @@ export class HostService {
 
     nextQuestion() {
         this.emitNextQuestion();
+
+        this.timeService.stopTimerById(this.timerId);
+        this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
     endQuestion() {
@@ -136,13 +138,6 @@ export class HostService {
         this.webSocketService.emit('end-game', this.internalLobbyData.id);
     }
 
-    private onNextQuestion() {
-        this.webSocketService.onEvent('next-question', ({ countdown }: { question: unknown; countdown: number }) => {
-            this.timeService.stopTimerById(this.timerId);
-            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, countdown));
-        });
-    }
-
     private onConfirmPlayerAnswer() {
         this.webSocketService.onEvent('confirm-player-answer', () => {
             if (++this.internalNAnswered >= this.internalLobbyData.players.length) {
@@ -161,14 +156,18 @@ export class HostService {
         return this.getCurrentQuestion()?.choices.filter((answer) => answer.isCorrect) || [];
     }
 
-    private setupNextQuestion(countdown: number) {
+    private setupNextQuestion() {
         if (!this.getCurrentQuestion()) {
             this.endGame();
             return;
         }
 
+        if (!this.internalLobbyData.quiz) {
+            return;
+        }
+
         this.currentQuestionIndex++;
         this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, countdown, this.endQuestion.bind(this));
+        this.timeService.startTimerById(this.timerId, this.internalLobbyData.quiz?.duration, this.endQuestion.bind(this));
     }
 }

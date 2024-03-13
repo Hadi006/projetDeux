@@ -58,13 +58,6 @@ describe('HostService', () => {
         expect(webSocketServiceMock.connect).toHaveBeenCalled();
     });
 
-    it('should start timer on nextQuestion', () => {
-        const countdown = 10;
-        service.handleSockets();
-        socketHelper.peerSideEmit('next-question', countdown);
-        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
-    });
-
     it('should increment nAnswered on confirmPlayerAnswer', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
@@ -141,6 +134,7 @@ describe('HostService', () => {
                 question: service.lobbyData.quiz?.questions[0],
                 countdown: service.lobbyData.quiz?.duration,
             });
+            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
         });
     });
 
