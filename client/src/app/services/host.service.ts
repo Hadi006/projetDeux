@@ -41,6 +41,10 @@ export class HostService {
     }
 
     handleSockets() {
+        if (this.webSocketService.isSocketAlive()) {
+            return;
+        }
+
         this.webSocketService.connect();
         this.onStartGame();
         this.onConfirmPlayerAnswer();
