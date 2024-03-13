@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
 import { of } from 'rxjs';
@@ -41,20 +40,13 @@ describe('QuestionComponent', () => {
         name: 'Player 1',
         score: 0,
         questions: [...QUESTIONS_DATA],
-        isCorrect: false,
     };
 
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
-    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
-        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', [
-            'getCurrentQuestion',
-            'getCurrentAnswers',
-        ]);
-
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
             'createPlayer',
             'handleKeyUp',
@@ -72,10 +64,7 @@ describe('QuestionComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [
-                { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
-                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
-            ],
+            providers: [{ provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }],
         }).compileComponents();
     }));
 
@@ -135,7 +124,6 @@ describe('QuestionComponent', () => {
 
     it('getQuestionData should return currentQuestion', () => {
         spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
-        questionHandlerServiceSpy.questions = [...QUESTIONS_DATA];
         expect(component.getQuestionData()).toBe(QUESTIONS_DATA[1]);
     });
 
