@@ -122,6 +122,7 @@ export class PlayerHandlerService {
         resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
         this.player.questions.push(resetQuestion);
         this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
         this.internalIsCorrect = false;
         this.updatePlayer();
     }
@@ -164,7 +165,6 @@ export class PlayerHandlerService {
     }
 
     private setupNextQuestion(question: Question, countdown: number): void {
-        this.internalAnswer = [];
         this.resetPlayerAnswers(question);
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
