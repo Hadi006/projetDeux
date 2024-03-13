@@ -8,6 +8,10 @@ import { environment } from 'src/environments/environment';
 export class WebSocketService {
     private socket: Socket;
 
+    isSocketAlive() {
+        return this.socket && this.socket.connected;
+    }
+
     connect() {
         this.socket = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
     }
