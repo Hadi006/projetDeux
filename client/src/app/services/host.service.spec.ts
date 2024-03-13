@@ -161,18 +161,21 @@ describe('HostService', () => {
             callback(testLobbyData);
         });
         service.createLobby(testQuiz).subscribe(() => {
+            service.questionEndedSubject.subscribe(() => {
+                expect(emitSpy).toHaveBeenCalledWith('end-question', service.lobbyData.id);
+                expect(emitSpy).toHaveBeenCalledWith('update-scores', {
+                    lobbyId: service.lobbyData.id,
+                    questionIndex: -1,
+                });
+                expect(emitSpy).toHaveBeenCalledWith('answer', {
+                    lobbyId: service.lobbyData.id,
+                    answer: [],
+                });
+                done();
+            });
+
             emitSpy.and.stub();
             service.endQuestion();
-            expect(emitSpy).toHaveBeenCalledWith('end-question', service.lobbyData.id);
-            expect(emitSpy).toHaveBeenCalledWith('update-scores', {
-                lobbyId: service.lobbyData.id,
-                questionIndex: -1,
-            });
-            expect(emitSpy).toHaveBeenCalledWith('answer', {
-                lobbyId: service.lobbyData.id,
-                answer: [],
-            });
-            done();
         });
     });
 
@@ -212,6 +215,20 @@ describe('HostService', () => {
         service.createLobby(testQuiz).subscribe(() => {
             service['setupNextQuestion'](countdown);
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
+            done();
+        });
+    });
+
+    it('should end game when setting up next question', (done) => {
+        const countdown = 10;
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testLobbyData);
+        });
+        service.createLobby(testQuiz).subscribe(() => {
+            spyOn(service, 'endGame');
+            service.lobbyData.quiz = undefined;
+            service['setupNextQuestion'](countdown);
+            expect(service.endGame).toHaveBeenCalled();
             done();
         });
     });
