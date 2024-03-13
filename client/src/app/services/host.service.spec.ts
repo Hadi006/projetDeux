@@ -58,20 +58,6 @@ describe('HostService', () => {
         expect(webSocketServiceMock.connect).toHaveBeenCalled();
     });
 
-    it('should lock lobby and start timer on startGame', (done) => {
-        const countdown = 10;
-        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
-        });
-        service.createLobby(testQuiz).subscribe(() => {
-            service.handleSockets();
-            socketHelper.peerSideEmit('start-game', countdown);
-            expect(service.lobbyData.locked).toBeTrue();
-            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
-            done();
-        });
-    });
-
     it('should start timer on nextQuestion', () => {
         const countdown = 10;
         service.handleSockets();
@@ -137,6 +123,8 @@ describe('HostService', () => {
             emitSpy.and.stub();
             service.startGame(countdown);
             expect(emitSpy).toHaveBeenCalledWith('start-game', { lobbyId: service.lobbyData.id, countdown });
+            expect(service.lobbyData.locked).toBeTrue();
+            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
             done();
         });
     });

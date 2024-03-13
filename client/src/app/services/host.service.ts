@@ -45,7 +45,6 @@ export class HostService {
             this.webSocketService.connect();
         }
 
-        this.onStartGame();
         this.onConfirmPlayerAnswer();
         this.onNextQuestion();
     }
@@ -59,6 +58,10 @@ export class HostService {
             lobbyId: this.internalLobbyData.id,
             countdown,
         });
+
+        this.internalLobbyData.locked = true;
+        this.timeService.stopTimerById(this.timerId);
+        this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }
 
     nextQuestion() {
@@ -131,14 +134,6 @@ export class HostService {
 
     private emitEndGame() {
         this.webSocketService.emit('end-game', this.internalLobbyData.id);
-    }
-
-    private onStartGame() {
-        this.webSocketService.onEvent('start-game', (countdown: number) => {
-            this.internalLobbyData.locked = true;
-            this.timeService.stopTimerById(this.timerId);
-            this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
-        });
     }
 
     private onNextQuestion() {
