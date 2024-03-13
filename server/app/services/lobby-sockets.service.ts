@@ -93,7 +93,9 @@ export class LobbySocketsService {
     }
 
     private confirmPlayerAnswer(socket: Socket): void {
-        socket.on('confirm-player-answer', (lobbyId: string) => {
+        socket.on('confirm-player-answer', async ({ lobbyId, player }) => {
+            player.questions[player.questions.length - 1].lastModification = new Date();
+            await this.lobbiesService.updatePlayer(lobbyId, player);
             this.sio.to(lobbyId).emit('confirm-player-answer');
         });
     }
