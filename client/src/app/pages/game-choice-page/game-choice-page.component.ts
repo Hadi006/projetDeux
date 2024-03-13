@@ -28,7 +28,7 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
+        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
             this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
                 if (success) {
                     this.router.navigate(['lobby']);
@@ -40,7 +40,7 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     testGame() {
-        this.publicQuizzesService.checkQuizAvailability().subscribe((isAvailable) => {
+        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
             this.handleChosenQuiz(isAvailable).subscribe((success) => {
                 if (success) {
                     this.router.navigate(['test']);
