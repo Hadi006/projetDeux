@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
-import { LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY, NEW_PLAYER } from '@common/constant';
+import { GOOD_ANSWER_BONUS, LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY, NEW_PLAYER } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
@@ -113,13 +113,36 @@ export class LobbiesService {
             return;
         }
 
-        lobby.players.forEach((player) => {
-            const isCorrect = player.questions[questionIndex].choices.every(
-                (playerAnswer, index) => playerAnswer.isCorrect === question.choices[index].isCorrect,
-            );
-            player.score += isCorrect ? question.points : 0;
+        const sortedPlayers = lobby.players.sort((a, b) => {
+            const dateA = new Date(a.questions[questionIndex].lastModification || 0);
+            const dateB = new Date(b.questions[questionIndex].lastModification || 0);
+            return dateA.getTime() - dateB.getTime();
         });
 
+        const isUniqueOldest = sortedPlayers.length > 0 && this.isOldestUnique(sortedPlayers);
+
+        sortedPlayers.forEach((player, playerIndex) => {
+            const playerAnswer = player.questions[questionIndex];
+            const isCorrect = playerAnswer.choices.every((choice, choiceIndex) => choice.isCorrect === question.choices[choiceIndex].isCorrect);
+
+            player.score += isCorrect ? question.points : 0;
+
+            if (isCorrect && isUniqueOldest && playerIndex === 0) {
+                player.score += question.points * GOOD_ANSWER_BONUS;
+            }
+        });
         await this.updateLobby(lobby);
+    }
+
+    private oldestModificationDate(sortedPlayers: Player[] | undefined): Date | undefined {
+        return sortedPlayers[0]?.questions[0]?.lastModification;
+    }
+
+    private isOldestUnique(sortedPlayers: Player[]): boolean {
+        if (sortedPlayers.length === 1) {
+            return true;
+        }
+
+        return this.oldestModificationDate(sortedPlayers) !== sortedPlayers[1]?.questions[0]?.lastModification;
     }
 }

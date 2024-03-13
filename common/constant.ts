@@ -25,7 +25,7 @@ export const MAX_MESSAGE_LENGTH = 200;
 export const SHOW_ANSWER_DELAY = 3;
 export const INVALID_TOKEN: AccessToken = { id: '', expirationDate: -1 };
 
-export const GOOD_ANSWER_MULTIPLIER = 1.2;
+export const GOOD_ANSWER_BONUS = 0.2;
 
 export const TEN = 10;
 
