@@ -118,7 +118,6 @@ export class LobbiesService {
                 (playerAnswer, index) => playerAnswer.isCorrect === question.choices[index].isCorrect,
             );
             player.score += isCorrect ? question.points : 0;
-            player.isCorrect = isCorrect;
         });
 
         await this.updateLobby(lobby);

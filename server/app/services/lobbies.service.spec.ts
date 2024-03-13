@@ -192,7 +192,6 @@ describe('LobbiesService', () => {
     it('should update a player', async () => {
         const player: Player = JSON.parse(JSON.stringify(NEW_PLAYER));
         stub(lobbiesService, 'getLobby').resolves({ ...MOCK_LOBBY, players: [NEW_PLAYER] });
-        player.isCorrect = true;
         const updateStub = stub(lobbiesService, 'updateLobby').resolves(true);
         await lobbiesService.updatePlayer(MOCK_LOBBY.id, player);
         expect(updateStub.calledWith({ ...MOCK_LOBBY, players: [player] })).to.equal(true);
@@ -225,9 +224,7 @@ describe('LobbiesService', () => {
         expect(databaseServiceStub.get.calledWith('lobbies', { id: MOCK_LOBBY.id })).to.equal(true);
         expect(updateStub.called).to.equal(true);
         expect(testPlayers[0].score).to.equal(MOCK_QUESTION.points);
-        expect(testPlayers[0].isCorrect).to.equal(true);
         expect(testPlayers[1].score).to.equal(0);
-        expect(testPlayers[1].isCorrect).to.equal(false);
     });
 
     it('should not update scores if lobby is invalid', async () => {
