@@ -116,6 +116,10 @@ export class HostService {
         });
     }
 
+    private emitEndGame() {
+        this.webSocketService.emit('end-game', this.internalLobbyData.id);
+    }
+
     private onStartGame() {
         this.webSocketService.onEvent('start-game', (countdown: number) => {
             this.internalLobbyData.locked = true;
