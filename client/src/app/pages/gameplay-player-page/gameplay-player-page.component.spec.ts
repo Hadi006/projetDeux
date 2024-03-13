@@ -37,10 +37,14 @@ describe('GameplayPlayerPageComponent', () => {
     beforeEach(() => {
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['handleSockets', 'createPlayer', 'cleanUp', 'getTime']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(of(''));
+
+        const questionEndedSubject = new Subject<void>();
+        const gameEndedSubject = new Subject<void>();
         hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
+        Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
+        Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
         Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
-        Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => new Subject(), configurable: true });
-        Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => new Subject(), configurable: true });
+
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -63,6 +67,24 @@ describe('GameplayPlayerPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should navigate to the next question on question ended', (done) => {
+        hostServiceSpy.questionEndedSubject.subscribe(() => {
+            expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
+            done();
+        });
+
+        hostServiceSpy.questionEndedSubject.next();
+    });
+
+    it('should navigate to game page on game ended', (done) => {
+        hostServiceSpy.gameEndedSubject.subscribe(() => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
+            done();
+        });
+
+        hostServiceSpy.gameEndedSubject.next();
     });
 
     it('ngOnInit should navigate to game page if there is no quiz', () => {
