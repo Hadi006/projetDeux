@@ -26,6 +26,8 @@ export class LobbySocketsService {
             this.updateScores(socket);
             this.endQuestion(socket);
             this.confirmPlayerAnswer(socket);
+            this.answer(socket);
+            this.endGame(socket);
             this.disconnect(socket);
         });
     }
@@ -99,6 +101,18 @@ export class LobbySocketsService {
     private endQuestion(socket: Socket): void {
         socket.on('end-question', (lobbyId: string) => {
             this.sio.to(lobbyId).emit('end-question');
+        });
+    }
+
+    private answer(socket: Socket): void {
+        socket.on('answer', ({ lobbyId, answer }) => {
+            this.sio.to(lobbyId).emit('answer', answer);
+        });
+    }
+
+    private endGame(socket: Socket): void {
+        socket.on('end-game', (lobbyId: string) => {
+            this.sio.to(lobbyId).emit('end-game');
         });
     }
 
