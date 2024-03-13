@@ -20,9 +20,4 @@ describe('GameTimersComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('should get time from service', () => {
-        const time = 10;
-        expect(component.time).toBe(time);
-    });
 });

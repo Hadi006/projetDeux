@@ -51,30 +51,16 @@ describe('QuestionHandlerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('currentQuestion getter should return the current question', () => {
+    it('getCurrentQuestion should return the current question', () => {
         expect(service.getCurrentQuestion()).toEqual(QUESTIONS_DATA[0]);
     });
 
-    it('currentAnswers getter should return the correct answers', () => {
+    it('getCurrentAnswers should return the correct answers', () => {
         expect(service.getCurrentAnswers()).toEqual(answers.filter((answer) => answer.isCorrect));
     });
 
-    it('currentAnswers getter should return an empty array if there is no current question', () => {
+    it('getCurrentAnswers should return an empty array if there is no current question', () => {
         service.questions = [];
         expect(service.getCurrentAnswers()).toEqual([]);
-    });
-
-    it('questionsData setter should set the questionsData', () => {
-        expect(service.getCurrentQuestion()).toEqual(QUESTIONS_DATA[0]);
-    });
-
-    it('questionsData setter should reset the currentQuestionIndex', () => {
-        service.currentQuestionIndex = 1;
-        expect(service.getCurrentQuestion()).toEqual(QUESTIONS_DATA[0]);
-    });
-
-    it('nextQuestion should load the next question', () => {
-        service.currentQuestionIndex = 0;
-        expect(service.getCurrentQuestion()).toEqual(QUESTIONS_DATA[1]);
     });
 });

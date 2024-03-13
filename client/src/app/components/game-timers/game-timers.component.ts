@@ -7,9 +7,5 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
     styleUrls: ['./game-timers.component.scss'],
 })
 export class GameTimersComponent {
-    constructor(private playerHandlerService: PlayerHandlerService) {}
-
-    get time(): number {
-        return this.playerHandlerService.getTime();
-    }
+    constructor(public playerHandlerService: PlayerHandlerService) {}
 }
