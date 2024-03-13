@@ -122,7 +122,7 @@ export class PlayerHandlerService {
         resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
         this.player.questions.push(resetQuestion);
         this.internalAnswerConfirmed = false;
-        this.player.isCorrect = false;
+        this.internalIsCorrect = false;
         this.updatePlayer();
     }
 
@@ -150,7 +150,7 @@ export class PlayerHandlerService {
         this.webSocketService.onEvent<Player>('new-score', (player) => {
             if (player.name === this.player.name) {
                 if (player.score > this.player.score) {
-                    this.player = player;
+                    this.internalIsCorrect = true;
                 }
                 this.player = player;
             }
