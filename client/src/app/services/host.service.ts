@@ -167,13 +167,12 @@ export class HostService {
     }
 
     private setupNextQuestion(countdown: number) {
-        this.currentQuestionIndex++;
-
         if (!this.getCurrentQuestion()) {
             this.endGame();
             return;
         }
 
+        this.currentQuestionIndex++;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.endQuestion.bind(this));
     }
