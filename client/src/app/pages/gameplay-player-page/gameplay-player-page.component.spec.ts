@@ -8,7 +8,7 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { HostService } from '@app/services/host.service';
 import { LobbyData } from '@common/lobby-data';
 import { Quiz } from '@common/quiz';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 describe('GameplayPlayerPageComponent', () => {
     const TEST_QUIZ: Quiz = {
@@ -37,8 +37,10 @@ describe('GameplayPlayerPageComponent', () => {
     beforeEach(() => {
         playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['handleSockets', 'createPlayer', 'cleanUp', 'getTime']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(of(''));
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
         Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
+        Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => new Subject(), configurable: true });
+        Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => new Subject(), configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -82,5 +84,9 @@ describe('GameplayPlayerPageComponent', () => {
         component.ngOnDestroy();
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(playerHandlerServiceSpy.cleanUp).toHaveBeenCalled();
+        hostServiceSpy.questionEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next();
+        expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
     });
 });
