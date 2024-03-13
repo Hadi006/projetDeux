@@ -8,7 +8,7 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    constructor(public hostService: HostService) {
+    constructor(private hostService: HostService) {
         this.hostService.handleSockets();
     }
 
