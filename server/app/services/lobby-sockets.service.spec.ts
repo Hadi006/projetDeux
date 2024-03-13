@@ -243,4 +243,16 @@ describe('LobbySocketsService', () => {
             }, RESPONSE_DELAY);
         });
     });
+
+    it('should end game', (done) => {
+        lobbiesServiceStub.createLobby.resolves(testLobby);
+        clientSocket.emit('create-lobby', testLobby.quiz, () => {
+            const toSpy = spy(service['sio'], 'to');
+            clientSocket.emit('end-game', testLobby.id);
+            setTimeout(() => {
+                expect(toSpy.calledWith(testLobby.id)).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
 });
