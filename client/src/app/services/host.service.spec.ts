@@ -156,6 +156,25 @@ describe('HostService', () => {
         });
     });
 
+    it('should emit end-question, update-scores and answer on endQuestion', () => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testLobbyData);
+        });
+        service.createLobby(testQuiz).subscribe(() => {
+            emitSpy.and.stub();
+            service.endQuestion();
+            expect(emitSpy).toHaveBeenCalledWith('end-question', service.lobbyData.id);
+            expect(emitSpy).toHaveBeenCalledWith('update-scores', {
+                lobbyId: service.lobbyData.id,
+                questionIndex: -1,
+            });
+            expect(emitSpy).toHaveBeenCalledWith('answer', {
+                lobbyId: service.lobbyData.id,
+                answer: [],
+            });
+        });
+    });
+
     it('should emit delete-lobby, disconnect and stop timer on cleanUp', () => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
