@@ -4,7 +4,7 @@ import { CommunicationService } from '@app/services/communication.service';
 import { Quiz } from '@common/quiz';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { MatDialog } from '@angular/material/dialog';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -32,13 +32,16 @@ export class PublicQuizzesService {
         );
     }
 
-    checkQuizAvailability(): Observable<boolean> {
-        return this.fetchVisibleQuizzes().pipe(
-            map(() => {
-                if (this.quizzes.length === 0) {
+    checkQuizAvailability(quizId?: string): Observable<boolean> {
+        if (!quizId) {
+            return of(false);
+        }
+
+        return this.http.get<Quiz>(`quizzes/${quizId}`).pipe(
+            map((response: HttpResponse<Quiz>) => {
+                if (!response.body || response.status !== HttpStatusCode.Ok || !response.body.visible) {
                     return false;
                 }
-
                 return true;
             }),
         );

@@ -89,18 +89,25 @@ describe('PublicQuizzesService', () => {
         });
     });
 
-    it('checkQuizAvailability() should return true if quiz is in list', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: quizListTest })));
-        service.fetchVisibleQuizzes().subscribe();
-        service.checkQuizAvailability().subscribe((isAvailable) => {
+    it('checkQuizAvailability() should return true if quiz is available', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...quizListTest[0] } })));
+        service.checkQuizAvailability(quizListTest[0].id).subscribe((isAvailable) => {
             expect(isAvailable).toBeTrue();
             done();
         });
     });
 
-    it('checkQuizAvailability() should return false if quiz is not in list', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
-        service.fetchVisibleQuizzes().subscribe();
+    it('checkQuizAvailability() should return false if quiz is not available', (done) => {
+        communicationServiceSpy.get.and.returnValue(
+            of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...quizListTest[0], visible: false } })),
+        );
+        service.checkQuizAvailability(quizListTest[0].id).subscribe((isAvailable) => {
+            expect(isAvailable).toBeFalse();
+            done();
+        });
+    });
+
+    it('checkQuizAvailability() should return false if quiz id is undefined', (done) => {
         service.checkQuizAvailability().subscribe((isAvailable) => {
             expect(isAvailable).toBeFalse();
             done();
