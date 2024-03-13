@@ -59,7 +59,7 @@ describe('HostService', () => {
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
-        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', [''], {
+        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['getCurrentQuestion'], {
             questions: [],
         });
         questionHandlerServiceSpy.currentQuestionIndex = 0;
@@ -188,7 +188,7 @@ describe('HostService', () => {
             service.nextQuestion();
             expect(emitSpy).toHaveBeenCalledWith('next-question', {
                 lobbyId: service.lobbyData.id,
-                question: questionHandlerServiceSpy.currentQuestion,
+                question: questionHandlerServiceSpy.getCurrentQuestion(),
                 countdown: service.lobbyData.quiz?.duration,
             });
         });

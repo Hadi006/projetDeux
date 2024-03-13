@@ -1,17 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
 import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
-import { of, Subject } from 'rxjs';
-
-const TEST_PLAYER: Player = {
-    name: 'Player 1',
-    score: 0,
-    questions: [],
-    isCorrect: false,
-};
+import { of } from 'rxjs';
+import { Player } from '@common/player';
 
 describe('QuestionComponent', () => {
     const QUESTIONS_DATA: Question[] = [
@@ -44,25 +37,23 @@ describe('QuestionComponent', () => {
         },
     ];
 
+    const TEST_PLAYER: Player = {
+        name: 'Player 1',
+        score: 0,
+        questions: [...QUESTIONS_DATA],
+        isCorrect: false,
+    };
+
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
     let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
 
     beforeEach(() => {
-        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', ['currentQuestion']);
-        Object.defineProperty(questionHandlerServiceSpy, 'currentQuestion', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
-        Object.defineProperty(questionHandlerServiceSpy, 'currentAnswers', {
-            get: () => {
-                return [];
-            },
-            configurable: true,
-        });
+        questionHandlerServiceSpy = jasmine.createSpyObj<QuestionHandlerService>('QuestionHandlerService', [
+            'getCurrentQuestion',
+            'getCurrentAnswers',
+        ]);
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
             'createPlayer',
@@ -70,9 +61,9 @@ describe('QuestionComponent', () => {
             'getPlayerBooleanAnswers',
         ]);
         playerHandlerServiceSpy.createPlayer.and.returnValue(of(''));
-        Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmedSubject', {
+        Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
             get: () => {
-                return new Subject<boolean>();
+                return false;
             },
             configurable: true,
         });
@@ -98,28 +89,10 @@ describe('QuestionComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('player should be created', () => {
-        expect(playerHandlerServiceSpy.createPlayer).toHaveBeenCalled();
-        expect(component.player).toEqual(TEST_PLAYER);
-    });
-
-    it('questionData getter should return currentQuestion', () => {
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
-        expect(component.questionData).toBe(QUESTIONS_DATA[0]);
-    });
-
-    it('correctAnswers getter should return the correct answers', () => {
-        spyOnProperty(questionHandlerServiceSpy, 'currentAnswers', 'get').and.returnValue([{ ...QUESTIONS_DATA[0].choices[1] }]);
-        expect(component.correctAnswers).toEqual([QUESTIONS_DATA[0].choices[1]]);
-    });
-
-    it('isChecked getter should return the players answer', () => {
-        expect(component.isChecked).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
-    });
-
-    it('handleKeyUp should do nothing if there is no question data', () => {
+    it('handleKeyUp should do nothing if there is no player', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'getPlayer').and.returnValue(undefined);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
@@ -128,15 +101,18 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should do nothing if question is open ended', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[1]);
+        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
+        spyOn(component, 'getQuestionData').and.returnValue(QUESTIONS_DATA[1]);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
     });
 
-    it('handleKeyUp should do nothing if answer cant be edited', () => {
+    it('handleKeyUp should do nothing if answer is confirmed', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
+        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
+        spyOnProperty(playerHandlerServiceSpy, 'answerConfirmed', 'get').and.returnValue(true);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
@@ -145,9 +121,30 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should call playerHandlerService.handleKeyUp', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOnProperty(questionHandlerServiceSpy, 'currentQuestion', 'get').and.returnValue(QUESTIONS_DATA[0]);
+        spyOn(component, 'getQuestionData').and.returnValue(QUESTIONS_DATA[0]);
+        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).toHaveBeenCalledWith(mockEvent);
+    });
+
+    it('getPlayer should return the player', () => {
+        playerHandlerServiceSpy.player = { ...TEST_PLAYER };
+        expect(component.getPlayer()).toEqual(TEST_PLAYER);
+    });
+
+    it('getQuestionData should return currentQuestion', () => {
+        spyOn(component, 'getPlayer').and.returnValue({ ...TEST_PLAYER });
+        questionHandlerServiceSpy.questions = [...QUESTIONS_DATA];
+        expect(component.getQuestionData()).toBe(QUESTIONS_DATA[1]);
+    });
+
+    it('getQuestionData should return undefined if there is no player', () => {
+        spyOn(component, 'getPlayer').and.returnValue(undefined);
+        expect(component.getQuestionData()).toBeUndefined();
+    });
+
+    it('getIsChecked should return the players answer', () => {
+        expect(component.getIsChecked()).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
 });

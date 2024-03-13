@@ -2,7 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { Answer, Question } from '@common/quiz';
+import { Question } from '@common/quiz';
 
 @Component({
     selector: 'app-question',
@@ -12,32 +12,12 @@ import { Answer, Question } from '@common/quiz';
 export class QuestionComponent {
     constructor(
         public playerHandlerService: PlayerHandlerService,
-        private questionHandlerService: QuestionHandlerService,
+        public questionHandlerService: QuestionHandlerService,
     ) {}
-
-    get player(): Player {
-        return this.playerHandlerService.player;
-    }
-
-    get questionData(): Question | undefined {
-        if (!this.player) {
-            return undefined;
-        }
-
-        return this.player.questions[this.player.questions.length - 1];
-    }
-
-    get correctAnswers(): Answer[] {
-        return this.questionHandlerService.currentAnswers;
-    }
-
-    get isChecked(): boolean[] {
-        return this.playerHandlerService.getPlayerBooleanAnswers();
-    }
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.player) {
+        if (!this.getPlayer()) {
             return;
         }
 
@@ -49,8 +29,26 @@ export class QuestionComponent {
         this.playerHandlerService.handleKeyUp(event);
     }
 
+    getPlayer(): Player | undefined {
+        return this.playerHandlerService.player;
+    }
+
+    getQuestionData(): Question | undefined {
+        const player = this.getPlayer();
+
+        if (!player) {
+            return;
+        }
+
+        return player.questions[player.questions.length - 1];
+    }
+
+    getIsChecked(): boolean[] {
+        return this.playerHandlerService.getPlayerBooleanAnswers();
+    }
+
     private canEditAnswer(): boolean {
-        if (this.questionData && this.questionData.type === 'QCM' && !this.playerHandlerService.answerConfirmed) {
+        if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerHandlerService.answerConfirmed) {
             return true;
         }
 

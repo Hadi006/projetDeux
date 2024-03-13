@@ -8,11 +8,11 @@ export class QuestionHandlerService {
     currentQuestionIndex = 0;
     questions: Question[];
 
-    get currentQuestion(): Question | undefined {
+    getCurrentQuestion(): Question | undefined {
         return this.questions[this.currentQuestionIndex];
     }
 
-    get currentAnswers(): Answer[] {
-        return this.currentQuestion?.choices.filter((choice) => choice.isCorrect) || [];
+    getCurrentAnswers(): Answer[] {
+        return this.getCurrentQuestion()?.choices.filter((choice) => choice.isCorrect) || [];
     }
 }

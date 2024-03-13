@@ -83,7 +83,7 @@ export class HostService {
     private emitNextQuestion() {
         this.webSocketService.emit('next-question', {
             lobbyId: this.internalLobbyData.id,
-            question: this.questionHandlerService.currentQuestion,
+            question: this.questionHandlerService.getCurrentQuestion(),
             countdown: this.lobbyData.quiz?.duration,
         });
     }
