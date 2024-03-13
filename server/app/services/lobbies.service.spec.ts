@@ -232,6 +232,7 @@ describe('LobbiesService', () => {
         expect(getStub.calledWith(testLobby.id)).to.equal(true);
         expect(updateStub.called).to.equal(true);
         expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+        expect(testPlayers[0].fastestResponseCount).to.equal(1);
         expect(testPlayers[1].score).to.equal(testQuestion.points);
     });
 
@@ -244,5 +245,6 @@ describe('LobbiesService', () => {
         expect(getStub.calledWith(testLobby.id)).to.equal(true);
         expect(updateStub.called).to.equal(true);
         expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+        expect(testPlayers[0].fastestResponseCount).to.equal(1);
     });
 });

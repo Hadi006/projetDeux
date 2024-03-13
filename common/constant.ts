@@ -74,6 +74,7 @@ export const NEW_PLAYER: Player = {
     name: '',
     score: 0,
     questions: [],
+    fastestResponseCount: 0,
 };
 
 export const NEW_LOBBY: LobbyData = {
@@ -150,11 +151,13 @@ export const TEST_PLAYERS: Player[] = [
         name: 'Player 1',
         score: 0,
         questions: TEST_QUESTIONS,
+        fastestResponseCount: 0,
     },
     {
         name: 'Player 2',
         score: 0,
         questions: TEST_QUESTIONS,
+        fastestResponseCount: 0,
     },
 ];
 

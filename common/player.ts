@@ -4,5 +4,6 @@ export interface Player {
     name: string;
     score: number;
     questions: Question[];
+    fastestResponseCount: number;
 }
 

@@ -129,6 +129,7 @@ export class LobbiesService {
 
             if (isCorrect && isOldestUnique && playerIndex === 0) {
                 player.score += question.points * GOOD_ANSWER_BONUS;
+                player.fastestResponseCount++;
             }
         });
         await this.updateLobby(lobby);
