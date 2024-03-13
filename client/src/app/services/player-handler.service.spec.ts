@@ -127,6 +127,17 @@ describe('PlayerHandlerService', () => {
         socketHelper.peerSideEmit('new-score', player);
     });
 
+    it('should update answer on answer', () => {
+        service.player = testPlayer;
+        service.handleSockets();
+        const answer = testQuestions[0].choices;
+        socketHelper.on('answer', (newAnswer) => {
+            expect(service.answer).toEqual(newAnswer);
+            return {};
+        });
+        socketHelper.peerSideEmit('answer', answer);
+    });
+
     it('should join game and return errors', (done) => {
         const response = '';
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
