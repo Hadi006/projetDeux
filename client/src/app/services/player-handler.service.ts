@@ -17,6 +17,7 @@ export class PlayerHandlerService {
     private internalPlayers: string[] = [];
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
+    private internalIsCorrect: boolean = false;
 
     constructor(
         private webSocketService: WebSocketService,
@@ -35,6 +36,10 @@ export class PlayerHandlerService {
 
     get answer(): Answer[] {
         return this.internalAnswer;
+    }
+
+    get isCorrect(): boolean {
+        return this.internalIsCorrect;
     }
 
     getPlayerAnswers(): Answer[] {
@@ -144,6 +149,9 @@ export class PlayerHandlerService {
     private onNewScore() {
         this.webSocketService.onEvent<Player>('new-score', (player) => {
             if (player.name === this.player.name) {
+                if (player.score > this.player.score) {
+                    this.player = player;
+                }
                 this.player = player;
             }
         });

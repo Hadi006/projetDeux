@@ -5,19 +5,21 @@
         <p>Valeur de la question: {{ questionData.points }} points</p>
 
         <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
-            <div
-                *ngFor="let choice of playerHandlerService.player.questions[playerHandlerService.player.questions.length - 1].choices; let i = index">
+            <div *ngFor="let choice of playerHandlerService.player.questions[0].choices; let i = index">
                 <label>
-                    <input [disabled]="this.playerHandlerService.answerConfirmed" type="checkbox"
-                        [(ngModel)]="choice.isCorrect" (ngModelChange)="playerHandlerService.updatePlayer()" />
+                    <input
+                        [disabled]="this.playerHandlerService.answerConfirmed"
+                        type="checkbox"
+                        [(ngModel)]="choice.isCorrect"
+                        (ngModelChange)="playerHandlerService.updatePlayer()"
+                    />
                     {{ i + 1 }} ) {{ choice.text }}
                 </label>
             </div>
         </div>
 
         <div *ngIf="questionData.type === 'QRL'" id="question-container">
-            <textarea [disabled]="this.playerHandlerService.answerConfirmed"
-                placeholder="Tapez votre réponse ici..."></textarea>
+            <textarea [disabled]="this.playerHandlerService.answerConfirmed" placeholder="Tapez votre réponse ici..."></textarea>
         </div>
 
         <div>Score: {{ player.score }}</div>
@@ -25,10 +27,9 @@
         <div *ngFor="let correctAnswer of playerHandlerService.answer; let i = index">
             <p>Réponse(s): {{ correctAnswer.text }}</p>
         </div>
-        <div *ngIf="player.isCorrect">
+        <div *ngIf="playerHandlerService.isCorrect">
             <p>Bonne réponse!</p>
         </div>
-        <button [disabled]="this.playerHandlerService.answerConfirmed"
-            (click)="playerHandlerService.confirmPlayerAnswer()">Confirmer</button>
+        <button [disabled]="this.playerHandlerService.answerConfirmed" (click)="playerHandlerService.confirmPlayerAnswer()">Confirmer</button>
     </div>
 </div>
