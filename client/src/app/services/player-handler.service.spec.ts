@@ -38,7 +38,6 @@ describe('PlayerHandlerService', () => {
         name: 'test',
         score: 0,
         questions: [...TEST_QUESTIONS],
-        isCorrect: false,
     };
 
     const PLAYER_RESPONSE = {
@@ -112,11 +111,10 @@ describe('PlayerHandlerService', () => {
         socketHelper.peerSideEmit('start-game', countdown);
     });
 
-    it('should confirm answer, show answer and stop timer on endQuestion', (done) => {
+    it('should confirm answer and stop timer on endQuestion', (done) => {
         service.handleSockets();
         socketHelper.on('end-question', () => {
             expect(service.answerConfirmed).toBeTrue();
-            expect(service.showingAnswer).toBeTrue();
             expect(timeServiceSpy.setTimeById).toHaveBeenCalledWith(1, 0);
             done();
             return {};
@@ -261,7 +259,8 @@ describe('PlayerHandlerService', () => {
         expect(service.player.questions.length).toEqual(2);
         expect(service.player.questions[1]).toEqual(TEST_QUESTIONS[0]);
         expect(service.answerConfirmed).toBeFalse();
-        expect(service.player.isCorrect).toBeFalse();
+        expect(service.answer).toEqual([]);
+        expect(service.isCorrect).toBeFalse();
         expect(service.updatePlayer).toHaveBeenCalled();
     });
 });
