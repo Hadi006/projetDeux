@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     private questionEndedSubscription: Subscription;
+    private gameEndedSubscription: Subscription;
 
     constructor(
         public playerHandlerService: PlayerHandlerService,
@@ -19,6 +20,9 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     ) {
         this.questionEndedSubscription = this.hostService.questionEndedSubject.subscribe(() => {
             this.hostService.nextQuestion();
+        });
+        this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
+            this.router.navigate(['game']);
         });
     }
 
@@ -37,5 +41,6 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         this.hostService.cleanUp();
         this.playerHandlerService.cleanUp();
         this.questionEndedSubscription.unsubscribe();
+        this.gameEndedSubscription.unsubscribe();
     }
 }
