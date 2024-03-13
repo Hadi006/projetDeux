@@ -95,8 +95,6 @@ describe('QuestionComponent', () => {
 
     it('getQuestionData should return currentQuestion', () => {
         spyOn(component, 'getPlayer').and.returnValue(testPlayer);
-        console.log(component.getQuestionData());
-        console.log(testQuestions[testPlayer.questions.length - 1]);
         expect(component.getQuestionData()).toEqual(testQuestions[testPlayer.questions.length - 1]);
     });
 
