@@ -4,7 +4,6 @@ import { WebSocketService } from './web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
 import { TimeService } from './time.service';
-import { QuestionHandlerService } from './question-handler.service';
 import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 import { LobbyData } from '@common/lobby-data';
@@ -32,13 +31,11 @@ describe('HostService', () => {
             name: 'Player 1',
             score: 0,
             questions: [],
-            isCorrect: false,
         },
         {
             name: 'Player 2',
             score: 0,
             questions: [],
-            isCorrect: false,
         },
     ];
 
@@ -52,17 +49,12 @@ describe('HostService', () => {
     let service: HostService;
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
-    let questionHandlerServiceSpy: jasmine.SpyObj<QuestionHandlerService>;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
 
     beforeEach(async () => {
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
-        questionHandlerServiceSpy = jasmine.createSpyObj('QuestionHandlerService', ['getCurrentQuestion'], {
-            questions: [],
-        });
-        questionHandlerServiceSpy.currentQuestionIndex = 0;
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
     });
@@ -71,7 +63,6 @@ describe('HostService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: WebSocketService, useValue: webSocketServiceMock },
-                { provide: QuestionHandlerService, useValue: questionHandlerServiceSpy },
                 { provide: TimeService, useValue: timeServiceSpy },
             ],
         });
@@ -106,11 +97,10 @@ describe('HostService', () => {
         });
     });
 
-    it('should increment currentQuestionIndex and start timer on nextQuestion', () => {
+    it('should start timer on nextQuestion', () => {
         const countdown = 10;
         service.handleSockets();
         socketHelper.peerSideEmit('next-question', countdown);
-        expect(questionHandlerServiceSpy.currentQuestionIndex).toBe(1);
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
     });
 
@@ -132,15 +122,12 @@ describe('HostService', () => {
         });
         service.createLobby(TEST_QUIZ).subscribe(() => {
             emitSpy.and.stub();
+            spyOn(service, 'endQuestion');
             service.handleSockets();
             socketHelper.peerSideEmit('confirm-player-answer');
             socketHelper.peerSideEmit('confirm-player-answer');
             expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(1);
-            expect(emitSpy).toHaveBeenCalledWith('end-question', TEST_LOBBY_DATA.id);
-            expect(emitSpy).toHaveBeenCalledWith('update-scores', {
-                lobbyId: TEST_LOBBY_DATA.id,
-                questionIndex: questionHandlerServiceSpy.currentQuestionIndex - 1,
-            });
+            expect(service.endQuestion).toHaveBeenCalled();
             expect(service.nAnswered).toBe(0);
             done();
         });
@@ -188,7 +175,7 @@ describe('HostService', () => {
             service.nextQuestion();
             expect(emitSpy).toHaveBeenCalledWith('next-question', {
                 lobbyId: service.lobbyData.id,
-                question: questionHandlerServiceSpy.getCurrentQuestion(),
+                question: service.lobbyData.quiz?.questions[0],
                 countdown: service.lobbyData.quiz?.duration,
             });
         });
