@@ -156,7 +156,7 @@ describe('HostService', () => {
         });
     });
 
-    it('should emit end-question, update-scores and answer on endQuestion', () => {
+    it('should emit end-question, update-scores and answer on endQuestion', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
         });
@@ -172,6 +172,21 @@ describe('HostService', () => {
                 lobbyId: service.lobbyData.id,
                 answer: [],
             });
+            done();
+        });
+    });
+
+    it('should emit end-game on endGame', (done) => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testLobbyData);
+        });
+        service.createLobby(testQuiz).subscribe(() => {
+            service.gameEndedSubject.subscribe(() => {
+                expect(emitSpy).toHaveBeenCalledWith('end-game', service.lobbyData.id);
+                done();
+            });
+            emitSpy.and.stub();
+            service.endGame();
         });
     });
 
