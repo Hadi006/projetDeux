@@ -53,10 +53,7 @@ export class HostService {
     }
 
     startGame(countdown: number) {
-        this.webSocketService.emit('start-game', {
-            lobbyId: this.internalLobbyData.id,
-            countdown,
-        });
+        this.emitStartGame(countdown);
 
         this.internalLobbyData.locked = true;
         this.timeService.stopTimerById(this.timerId);
@@ -106,6 +103,13 @@ export class HostService {
 
     private emitDeleteLobby(): void {
         this.webSocketService.emit('delete-lobby', this.internalLobbyData.id);
+    }
+
+    private emitStartGame(countdown: number) {
+        this.webSocketService.emit('start-game', {
+            lobbyId: this.internalLobbyData.id,
+            countdown,
+        });
     }
 
     private emitNextQuestion() {
