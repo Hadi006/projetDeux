@@ -7,8 +7,7 @@ import { Container } from 'typedi';
 import { LobbiesService } from './lobbies.service';
 import { Question, Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
-import { NEW_PLAYER } from '@common/constant';
-import { Player } from '@common/player';
+import { NEW_PLAYER, TEST_LOBBY_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 
 describe('LobbySocketsService', () => {
     let service: LobbySocketsService;
@@ -18,40 +17,17 @@ describe('LobbySocketsService', () => {
 
     const urlString = 'http://localhost:3000';
 
-    const testQuestion: Question = {
-        id: '1',
-        text: 'Question',
-        type: 'QCM',
-        points: 1,
-        lastModification: new Date(),
-        choices: [],
-    };
-
-    const testQuiz: Quiz = {
-        id: '1',
-        title: 'Math',
-        visible: true,
-        description: 'Math quiz',
-        duration: 5,
-        lastModification: new Date(),
-        questions: [{ ...testQuestion }],
-    };
-
-    const testPlayers: Player[] = [
-        { ...NEW_PLAYER, name: 'John Doe' },
-        { ...NEW_PLAYER, name: 'Jane Doe' },
-    ];
-
-    const testLobby: LobbyData = {
-        id: '1',
-        players: testPlayers,
-        locked: false,
-        quiz: { ...testQuiz },
-    };
+    let testQuestion: Question;
+    let testQuiz: Quiz;
+    let testLobby: LobbyData;
 
     const RESPONSE_DELAY = 200;
 
     beforeEach(async () => {
+        testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
+        testQuiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
+        testLobby = JSON.parse(JSON.stringify(TEST_LOBBY_DATA));
+
         lobbiesServiceStub = createStubInstance(LobbiesService);
         Container.set(LobbiesService, lobbiesServiceStub);
         server = Container.get(Server);
@@ -210,8 +186,10 @@ describe('LobbySocketsService', () => {
         lobbiesServiceStub.createLobby.resolves(testLobby);
         clientSocket.emit('create-lobby', testLobby.quiz, () => {
             const toSpy = spy(service['sio'], 'to');
-            clientSocket.emit('confirm-player-answer', testLobby.id);
+            lobbiesServiceStub.updatePlayer.resolves();
+            clientSocket.emit('confirm-player-answer', { lobbyId: testLobby.id, player: testLobby.players[0] });
             setTimeout(() => {
+                expect(lobbiesServiceStub.updatePlayer.called).to.equal(true);
                 expect(toSpy.calledWith(testLobby.id)).to.equal(true);
                 done();
             }, RESPONSE_DELAY);
