@@ -8,7 +8,7 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     templateUrl: './lobby-organizer-page.component.html',
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
-export class LobbyOrganizerPageComponent {
+export class WaitingRoomHostPageComponent {
     constructor(
         private hostService: HostService,
         private router: Router,
