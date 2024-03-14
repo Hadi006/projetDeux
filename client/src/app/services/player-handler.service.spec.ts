@@ -138,36 +138,24 @@ describe('PlayerHandlerService', () => {
         socketHelper.peerSideEmit('answer', answer);
     });
 
-    it('should join game and return errors', (done) => {
-        const response = '';
-        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(response);
-        });
-        service.joinGame('1').subscribe((error) => {
-            expect(error).toEqual(response);
-            done();
-        });
-    });
-
-    it('createPlayer should create a player', (done) => {
+    it('should join game and create a player if there are no errors', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(playerResponse);
         });
-        service.createPlayer('1', 'test').subscribe((error) => {
-            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('create-player', { pin: '1', playerName: 'test' }, jasmine.any(Function));
-            expect(error).toBeFalsy();
+        service.joinGame('1', 'test').subscribe((error) => {
+            expect(error).toEqual(playerResponse.error);
             expect(service.player).toEqual(playerResponse.player);
             expect(service.players).toEqual(playerResponse.players);
             done();
         });
     });
 
-    it('should not create a player if there is an error', (done) => {
+    it('should not join game and create a player if there is an error', (done) => {
         const response = { ...playerResponse, error: 'Error' };
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(response);
         });
-        service.createPlayer('1', 'test').subscribe((error) => {
+        service.joinGame('1', 'test').subscribe((error) => {
             expect(webSocketServiceMock.emit).toHaveBeenCalledWith('create-player', { pin: '1', playerName: 'test' }, jasmine.any(Function));
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
