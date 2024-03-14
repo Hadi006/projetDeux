@@ -107,14 +107,14 @@ export class HostService {
 
     private emitStartGame(countdown: number) {
         this.webSocketService.emit('start-game', {
-            gameId: this.internalGame.pin,
+            pin: this.internalGame.pin,
             countdown,
         });
     }
 
     private emitNextQuestion() {
         this.webSocketService.emit('next-question', {
-            gameId: this.internalGame.pin,
+            pin: this.internalGame.pin,
             question: this.getCurrentQuestion(),
             countdown: this.internalGame.quiz?.duration,
         });
@@ -126,14 +126,14 @@ export class HostService {
 
     private emitUpdateScores() {
         this.webSocketService.emit('update-scores', {
-            gameId: this.internalGame.pin,
+            pin: this.internalGame.pin,
             questionIndex: this.currentQuestionIndex,
         });
     }
 
     private emitAnswer() {
         this.webSocketService.emit('answer', {
-            gameId: this.internalGame.pin,
+            pin: this.internalGame.pin,
             answer: this.getCurrentAnswer(),
         });
     }

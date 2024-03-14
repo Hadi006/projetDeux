@@ -13,8 +13,8 @@ export class GameService {
         return await this.database.get<Game>('games');
     }
 
-    async getGame(gameId: string): Promise<Game> {
-        return (await this.database.get<Game>('games', { id: gameId }))[0];
+    async getGame(pin: string): Promise<Game> {
+        return (await this.database.get<Game>('games', { pin }))[0];
     }
 
     async createGame(quiz: Quiz): Promise<Game | undefined> {
@@ -41,13 +41,13 @@ export class GameService {
         return await this.database.update('games', { id: game.pin }, [{ $set: game }]);
     }
 
-    async deleteGame(gameId: string): Promise<boolean> {
-        return await this.database.delete('games', { id: gameId });
+    async deleteGame(pin: string): Promise<boolean> {
+        return await this.database.delete('games', { id: pin });
     }
 
-    async checkGameAvailability(gameId: string): Promise<string> {
-        const game = await this.getGame(gameId);
-        if (!game || game.pin !== gameId) {
+    async checkGameAvailability(pin: string): Promise<string> {
+        const game = await this.getGame(pin);
+        if (!game || game.pin !== pin) {
             return 'Le NIP est invalide';
         }
         if (game.locked) {
@@ -56,12 +56,12 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(gameId: string, playerName: string): Promise<{ player: Player; players: string[]; error: string }> {
-        const game = await this.getGame(gameId);
+    async addPlayer(pin: string, playerName: string): Promise<{ player: Player; players: string[]; error: string }> {
+        const game = await this.getGame(pin);
         const player: Player = { ...NEW_PLAYER, name: playerName };
         const lowerCasePlayerName = playerName.toLocaleLowerCase();
 
-        if (!game || game.pin !== gameId) {
+        if (!game || game.pin !== pin) {
             return { player, players: [], error: 'Le NIP est invalide' };
         }
 
@@ -87,9 +87,9 @@ export class GameService {
         return { player, players: game.players.map((p) => p.name), error: '' };
     }
 
-    async updatePlayer(gameId: string, player: Player): Promise<void> {
-        const game = await this.getGame(gameId);
-        if (!game || game.pin !== gameId) {
+    async updatePlayer(pin: string, player: Player): Promise<void> {
+        const game = await this.getGame(pin);
+        if (!game || game.pin !== pin) {
             return;
         }
 
@@ -102,9 +102,9 @@ export class GameService {
         await this.updateGame(game);
     }
 
-    async updateScores(gameId: string, questionIndex: number): Promise<void> {
-        const game = await this.getGame(gameId);
-        if (!game || game.pin !== gameId) {
+    async updateScores(pin: string, questionIndex: number): Promise<void> {
+        const game = await this.getGame(pin);
+        if (!game || game.pin !== pin) {
             return;
         }
 

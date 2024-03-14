@@ -88,7 +88,7 @@ export class PlayerService {
     }
 
     updatePlayer(): void {
-        this.webSocketService.emit('update-player', { gameId: this.pin, player: this.player });
+        this.webSocketService.emit('update-player', { pin: this.pin, player: this.player });
     }
 
     handleKeyUp(event: KeyboardEvent): void {
@@ -103,7 +103,7 @@ export class PlayerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.webSocketService.emit('confirm-player-answer', { gameId: this.pin, player: this.player });
+        this.webSocketService.emit('confirm-player-answer', { pin: this.pin, player: this.player });
         this.internalAnswerConfirmed = true;
     }
 
