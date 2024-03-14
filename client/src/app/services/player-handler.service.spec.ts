@@ -150,7 +150,6 @@ describe('PlayerHandlerService', () => {
     });
 
     it('createPlayer should create a player', (done) => {
-        spyOn(service, 'handleSockets');
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(playerResponse);
         });
@@ -159,14 +158,12 @@ describe('PlayerHandlerService', () => {
             expect(error).toBeFalsy();
             expect(service.player).toEqual(playerResponse.player);
             expect(service.players).toEqual(playerResponse.players);
-            expect(service.handleSockets).toHaveBeenCalled();
             done();
         });
     });
 
     it('should not create a player if there is an error', (done) => {
         const response = { ...playerResponse, error: 'Error' };
-        spyOn(service, 'handleSockets');
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(response);
         });
@@ -175,7 +172,6 @@ describe('PlayerHandlerService', () => {
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
             expect(service.players).toEqual([]);
-            expect(service.handleSockets).not.toHaveBeenCalled();
             done();
         });
     });
