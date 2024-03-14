@@ -16,9 +16,9 @@ export class GameController {
 
     handleSockets(): void {
         this.sio.on('connection', (socket: Socket) => {
-            this.createLobby(socket);
-            this.joinLobby(socket);
-            this.deleteLobby(socket);
+            this.createGame(socket);
+            this.joinGame(socket);
+            this.deleteGame(socket);
             this.startGame(socket);
             this.addPlayer(socket);
             this.nextQuestion(socket);
@@ -32,32 +32,32 @@ export class GameController {
         });
     }
 
-    private createLobby(socket: Socket): void {
-        socket.on('create-lobby', async (quiz: Quiz, ack) => {
-            const lobby = await this.gameService.createGame(quiz);
-            if (lobby) {
-                socket.join(lobby.id);
-                ack(lobby);
+    private createGame(socket: Socket): void {
+        socket.on('create-game', async (quiz: Quiz, ack) => {
+            const game = await this.gameService.createGame(quiz);
+            if (game) {
+                socket.join(game.id);
+                ack(game);
             }
-            ack(lobby);
+            ack(game);
         });
     }
 
-    private joinLobby(socket: Socket): void {
-        socket.on('join-game', async (lobbyId: string, callback) => {
-            callback(await this.gameService.checkGameAvailability(lobbyId));
+    private joinGame(socket: Socket): void {
+        socket.on('join-game', async (game: string, callback) => {
+            callback(await this.gameService.checkGameAvailability(game));
         });
     }
 
-    private deleteLobby(socket: Socket): void {
-        socket.on('delete-lobby', async (lobbyId: string) => {
-            await this.gameService.deleteLobby(lobbyId);
+    private deleteGame(socket: Socket): void {
+        socket.on('delete-game', async (game: string) => {
+            await this.gameService.deleteGame(game);
         });
     }
 
     private startGame(socket: Socket): void {
-        socket.on('start-game', ({ lobbyId, countdown }) => {
-            this.sio.to(lobbyId).emit('start-game', countdown);
+        socket.on('start-game', ({ game, countdown }) => {
+            this.sio.to(game).emit('start-game', countdown);
         });
     }
 
@@ -73,48 +73,48 @@ export class GameController {
     }
 
     private nextQuestion(socket: Socket): void {
-        socket.on('next-question', ({ lobbyId, question, countdown }) => {
-            this.sio.to(lobbyId).emit('next-question', { question, countdown });
+        socket.on('next-question', ({ game, question, countdown }) => {
+            this.sio.to(game).emit('next-question', { question, countdown });
         });
     }
 
     private updatePlayer(socket: Socket): void {
-        socket.on('update-player', async ({ lobbyId, player }) => {
-            await this.gameService.updatePlayer(lobbyId, player);
+        socket.on('update-player', async ({ game, player }) => {
+            await this.gameService.updatePlayer(game, player);
         });
     }
     private updateScores(socket: Socket): void {
-        socket.on('update-scores', async ({ lobbyId, questionIndex }) => {
-            await this.gameService.updateScores(lobbyId, questionIndex);
-            (await this.gameService.getGame(lobbyId)).players.forEach((player) => {
-                this.sio.to(lobbyId).emit('new-score', player);
+        socket.on('update-scores', async ({ game, questionIndex }) => {
+            await this.gameService.updateScores(game, questionIndex);
+            (await this.gameService.getGame(game)).players.forEach((player) => {
+                this.sio.to(game).emit('new-score', player);
             });
         });
     }
 
     private confirmPlayerAnswer(socket: Socket): void {
-        socket.on('confirm-player-answer', async ({ lobbyId, player }) => {
+        socket.on('confirm-player-answer', async ({ game, player }) => {
             player.questions[player.questions.length - 1].lastModification = new Date();
-            await this.gameService.updatePlayer(lobbyId, player);
-            this.sio.to(lobbyId).emit('confirm-player-answer');
+            await this.gameService.updatePlayer(game, player);
+            this.sio.to(game).emit('confirm-player-answer');
         });
     }
 
     private endQuestion(socket: Socket): void {
-        socket.on('end-question', (lobbyId: string) => {
-            this.sio.to(lobbyId).emit('end-question');
+        socket.on('end-question', (game: string) => {
+            this.sio.to(game).emit('end-question');
         });
     }
 
     private answer(socket: Socket): void {
-        socket.on('answer', ({ lobbyId, answer }) => {
-            this.sio.to(lobbyId).emit('answer', answer);
+        socket.on('answer', ({ game, answer }) => {
+            this.sio.to(game).emit('answer', answer);
         });
     }
 
     private endGame(socket: Socket): void {
-        socket.on('end-game', (lobbyId: string) => {
-            this.sio.to(lobbyId).emit('end-game');
+        socket.on('end-game', (game: string) => {
+            this.sio.to(game).emit('end-game');
         });
     }
 

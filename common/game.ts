@@ -1,7 +1,7 @@
 import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
-export interface LobbyData {
+export interface Game {
     id: string;
     players: Player[];
     quiz?: Quiz;
