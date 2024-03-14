@@ -20,7 +20,6 @@ export class LobbySocketsService {
             this.joinLobby(socket);
             this.deleteLobby(socket);
             this.startGame(socket);
-            this.addPlayer(socket);
             this.nextQuestion(socket);
             this.updatePlayer(socket);
             this.updateScores(socket);
@@ -43,8 +42,15 @@ export class LobbySocketsService {
     }
 
     private joinLobby(socket: Socket): void {
-        socket.on('join-game', async (lobbyId: string, callback) => {
-            callback(await this.lobbiesService.checkLobbyAvailability(lobbyId));
+        socket.on('join-game', async ({ pin, playerName }, callback) => {
+            const result: { player: Player; players: string[]; error: string } = await this.lobbiesService.addPlayer(pin, playerName);
+
+            if (!result.error) {
+                socket.join(pin);
+                this.sio.to(pin).emit('player-joined', result.player.name);
+            }
+
+            callback(result);
         });
     }
 
@@ -57,17 +63,6 @@ export class LobbySocketsService {
     private startGame(socket: Socket): void {
         socket.on('start-game', ({ lobbyId, countdown }) => {
             this.sio.to(lobbyId).emit('start-game', countdown);
-        });
-    }
-
-    private addPlayer(socket: Socket): void {
-        socket.on('create-player', async ({ pin, playerName }, callback) => {
-            const result: { player: Player; players: string[]; error: string } = await this.lobbiesService.addPlayer(pin, playerName);
-            if (!result.error) {
-                socket.join(pin);
-                this.sio.to(pin).emit('player-joined', result.player.name);
-            }
-            callback(result);
         });
     }
 
