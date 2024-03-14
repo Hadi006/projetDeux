@@ -114,7 +114,7 @@ describe('HostService', () => {
         service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.startGame(countdown);
-            expect(emitSpy).toHaveBeenCalledWith('start-game', { gameId: service.game.id, countdown });
+            expect(emitSpy).toHaveBeenCalledWith('start-game', { gameId: service.game.pin, countdown });
             expect(service.game.locked).toBeTrue();
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
             done();
@@ -129,7 +129,7 @@ describe('HostService', () => {
             emitSpy.and.stub();
             service.nextQuestion();
             expect(emitSpy).toHaveBeenCalledWith('next-question', {
-                gameId: service.game.id,
+                gameId: service.game.pin,
                 question: service.game.quiz?.questions[0],
                 countdown: service.game.quiz?.duration,
             });
@@ -143,13 +143,13 @@ describe('HostService', () => {
         });
         service.createGame(testQuiz).subscribe(() => {
             service.questionEndedSubject.subscribe(() => {
-                expect(emitSpy).toHaveBeenCalledWith('end-question', service.game.id);
+                expect(emitSpy).toHaveBeenCalledWith('end-question', service.game.pin);
                 expect(emitSpy).toHaveBeenCalledWith('update-scores', {
-                    gameId: service.game.id,
+                    gameId: service.game.pin,
                     questionIndex: -1,
                 });
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
-                    gameId: service.game.id,
+                    gameId: service.game.pin,
                     answer: [],
                 });
                 done();
@@ -168,7 +168,7 @@ describe('HostService', () => {
             service.game.quiz = undefined;
             service.questionEndedSubject.subscribe(() => {
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
-                    gameId: service.game.id,
+                    gameId: service.game.pin,
                     answer: [],
                 });
                 done();
@@ -185,7 +185,7 @@ describe('HostService', () => {
         });
         service.createGame(testQuiz).subscribe(() => {
             service.gameEndedSubject.subscribe(() => {
-                expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.id);
+                expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin);
                 done();
             });
             emitSpy.and.stub();
@@ -201,7 +201,7 @@ describe('HostService', () => {
             emitSpy.and.stub();
             spyOn(webSocketServiceMock, 'disconnect');
             service.cleanUp();
-            expect(emitSpy).toHaveBeenCalledWith('delete-game', service.game.id);
+            expect(emitSpy).toHaveBeenCalledWith('delete-game', service.game.pin);
             expect(webSocketServiceMock.disconnect).toHaveBeenCalled();
             expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(1);
         });

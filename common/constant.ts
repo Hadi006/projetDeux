@@ -78,7 +78,7 @@ export const NEW_PLAYER: Player = {
 };
 
 export const NEW_GAME: Game = {
-    id: '',
+    pin: '',
     players: [],
     locked: false,
 };
@@ -164,7 +164,7 @@ export const TEST_PLAYERS: Player[] = [
 ];
 
 export const TEST_GAME_DATA: Game = {
-    id: '1',
+    pin: '1',
     players: TEST_PLAYERS,
     quiz: TEST_QUIZZES[0],
     locked: false,

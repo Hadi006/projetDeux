@@ -36,7 +36,7 @@ export class GameController {
         socket.on('create-game', async (quiz: Quiz, ack) => {
             const game = await this.gameService.createGame(quiz);
             if (game) {
-                socket.join(game.id);
+                socket.join(game.pin);
                 ack(game);
             }
             ack(game);
@@ -44,20 +44,20 @@ export class GameController {
     }
 
     private joinGame(socket: Socket): void {
-        socket.on('join-game', async (game: string, callback) => {
-            callback(await this.gameService.checkGameAvailability(game));
+        socket.on('join-game', async (pin: string, callback) => {
+            callback(await this.gameService.checkGameAvailability(pin));
         });
     }
 
     private deleteGame(socket: Socket): void {
-        socket.on('delete-game', async (game: string) => {
-            await this.gameService.deleteGame(game);
+        socket.on('delete-game', async (pin: string) => {
+            await this.gameService.deleteGame(pin);
         });
     }
 
     private startGame(socket: Socket): void {
-        socket.on('start-game', ({ game, countdown }) => {
-            this.sio.to(game).emit('start-game', countdown);
+        socket.on('start-game', ({ pin, countdown }) => {
+            this.sio.to(pin).emit('start-game', countdown);
         });
     }
 
@@ -73,48 +73,48 @@ export class GameController {
     }
 
     private nextQuestion(socket: Socket): void {
-        socket.on('next-question', ({ game, question, countdown }) => {
-            this.sio.to(game).emit('next-question', { question, countdown });
+        socket.on('next-question', ({ pin, question, countdown }) => {
+            this.sio.to(pin).emit('next-question', { question, countdown });
         });
     }
 
     private updatePlayer(socket: Socket): void {
-        socket.on('update-player', async ({ game, player }) => {
-            await this.gameService.updatePlayer(game, player);
+        socket.on('update-player', async ({ pin, player }) => {
+            await this.gameService.updatePlayer(pin, player);
         });
     }
     private updateScores(socket: Socket): void {
-        socket.on('update-scores', async ({ game, questionIndex }) => {
-            await this.gameService.updateScores(game, questionIndex);
-            (await this.gameService.getGame(game)).players.forEach((player) => {
-                this.sio.to(game).emit('new-score', player);
+        socket.on('update-scores', async ({ pin, questionIndex }) => {
+            await this.gameService.updateScores(pin, questionIndex);
+            (await this.gameService.getGame(pin)).players.forEach((player) => {
+                this.sio.to(pin).emit('new-score', player);
             });
         });
     }
 
     private confirmPlayerAnswer(socket: Socket): void {
-        socket.on('confirm-player-answer', async ({ game, player }) => {
+        socket.on('confirm-player-answer', async ({ pin, player }) => {
             player.questions[player.questions.length - 1].lastModification = new Date();
-            await this.gameService.updatePlayer(game, player);
-            this.sio.to(game).emit('confirm-player-answer');
+            await this.gameService.updatePlayer(pin, player);
+            this.sio.to(pin).emit('confirm-player-answer');
         });
     }
 
     private endQuestion(socket: Socket): void {
-        socket.on('end-question', (game: string) => {
-            this.sio.to(game).emit('end-question');
+        socket.on('end-question', (pin: string) => {
+            this.sio.to(pin).emit('end-question');
         });
     }
 
     private answer(socket: Socket): void {
-        socket.on('answer', ({ game, answer }) => {
-            this.sio.to(game).emit('answer', answer);
+        socket.on('answer', ({ pin, answer }) => {
+            this.sio.to(pin).emit('answer', answer);
         });
     }
 
     private endGame(socket: Socket): void {
-        socket.on('end-game', (game: string) => {
-            this.sio.to(game).emit('end-game');
+        socket.on('end-game', (pin: string) => {
+            this.sio.to(pin).emit('end-game');
         });
     }
 

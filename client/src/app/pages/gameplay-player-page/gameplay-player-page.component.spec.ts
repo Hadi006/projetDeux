@@ -82,7 +82,7 @@ describe('GameplayPlayerPageComponent', () => {
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
         expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
-        expect(playerServiceSpy.createPlayer).toHaveBeenCalledWith(testGame.id, 'Test');
+        expect(playerServiceSpy.createPlayer).toHaveBeenCalledWith(testGame.pin, 'Test');
         playerServiceSpy.createPlayer('1', 'test').subscribe(() => {
             expect(hostServiceSpy.startGame).toHaveBeenCalledWith(0);
             done();

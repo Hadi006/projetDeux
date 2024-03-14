@@ -2,7 +2,7 @@ import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
 export interface Game {
-    id: string;
+    pin: string;
     players: Player[];
     quiz?: Quiz;
     locked: boolean;

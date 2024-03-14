@@ -102,44 +102,44 @@ export class HostService {
     }
 
     private emitDeleteGame(): void {
-        this.webSocketService.emit('delete-game', this.internalGame.id);
+        this.webSocketService.emit('delete-game', this.internalGame.pin);
     }
 
     private emitStartGame(countdown: number) {
         this.webSocketService.emit('start-game', {
-            gameId: this.internalGame.id,
+            gameId: this.internalGame.pin,
             countdown,
         });
     }
 
     private emitNextQuestion() {
         this.webSocketService.emit('next-question', {
-            gameId: this.internalGame.id,
+            gameId: this.internalGame.pin,
             question: this.getCurrentQuestion(),
             countdown: this.internalGame.quiz?.duration,
         });
     }
 
     private emitEndQuestion() {
-        this.webSocketService.emit('end-question', this.internalGame.id);
+        this.webSocketService.emit('end-question', this.internalGame.pin);
     }
 
     private emitUpdateScores() {
         this.webSocketService.emit('update-scores', {
-            gameId: this.internalGame.id,
+            gameId: this.internalGame.pin,
             questionIndex: this.currentQuestionIndex,
         });
     }
 
     private emitAnswer() {
         this.webSocketService.emit('answer', {
-            gameId: this.internalGame.id,
+            gameId: this.internalGame.pin,
             answer: this.getCurrentAnswer(),
         });
     }
 
     private emitEndGame() {
-        this.webSocketService.emit('end-game', this.internalGame.id);
+        this.webSocketService.emit('end-game', this.internalGame.pin);
     }
 
     private onConfirmPlayerAnswer() {

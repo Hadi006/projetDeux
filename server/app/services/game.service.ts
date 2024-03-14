@@ -18,7 +18,7 @@ export class GameService {
     }
 
     async createGame(quiz: Quiz): Promise<Game | undefined> {
-        let id: string;
+        let pin: string;
 
         const games = await this.getGames();
 
@@ -27,18 +27,18 @@ export class GameService {
         }
 
         do {
-            id = Math.floor(Math.random() * GAME_ID_MAX)
+            pin = Math.floor(Math.random() * GAME_ID_MAX)
                 .toString()
                 .padStart(GAME_ID_LENGTH, '0');
-        } while (games.some((game) => game.id === id));
+        } while (games.some((game) => game.pin === pin));
 
-        const newGame: Game = { ...NEW_GAME, id, quiz };
+        const newGame: Game = { ...NEW_GAME, pin, quiz };
         await this.database.add('games', newGame);
         return newGame;
     }
 
     async updateGame(game: Game): Promise<boolean> {
-        return await this.database.update('games', { id: game.id }, [{ $set: game }]);
+        return await this.database.update('games', { id: game.pin }, [{ $set: game }]);
     }
 
     async deleteGame(gameId: string): Promise<boolean> {
@@ -47,7 +47,7 @@ export class GameService {
 
     async checkGameAvailability(gameId: string): Promise<string> {
         const game = await this.getGame(gameId);
-        if (!game || game.id !== gameId) {
+        if (!game || game.pin !== gameId) {
             return 'Le NIP est invalide';
         }
         if (game.locked) {
@@ -61,7 +61,7 @@ export class GameService {
         const player: Player = { ...NEW_PLAYER, name: playerName };
         const lowerCasePlayerName = playerName.toLocaleLowerCase();
 
-        if (!game || game.id !== gameId) {
+        if (!game || game.pin !== gameId) {
             return { player, players: [], error: 'Le NIP est invalide' };
         }
 
@@ -89,7 +89,7 @@ export class GameService {
 
     async updatePlayer(gameId: string, player: Player): Promise<void> {
         const game = await this.getGame(gameId);
-        if (!game || game.id !== gameId) {
+        if (!game || game.pin !== gameId) {
             return;
         }
 
@@ -104,7 +104,7 @@ export class GameService {
 
     async updateScores(gameId: string, questionIndex: number): Promise<void> {
         const game = await this.getGame(gameId);
-        if (!game || game.id !== gameId) {
+        if (!game || game.pin !== gameId) {
             return;
         }
 
