@@ -1,1 +1,20 @@
-<p>join-room-page works!</p>
+<div class="grid-container">
+    <div class="grid-title">
+        <h2 class="title">Join Room</h2>
+    </div>
+    <form (ngSubmit)="joinGame()" #partyForm="ngForm">
+        <div class="item-1">
+            <label for="partyInput">Entrer le code : </label>
+            <input type="text" name="partyInput" [(ngModel)]="gamePin" placeholder="e.g 0000" required pattern="[0-9]{4}" />
+            <!-- <div *ngIf="partyForm.controls['partyInput'].errors?.pattern">Please enter exactly 4 digits.</div> -->
+            <label for="nicknameInput">Choisir un surnom:</label>
+            <input type="text" name="nicknameInput" [(ngModel)]="playerName" placeholder="e.g John" required />
+            <p>error : {{ error }}</p>
+        </div>
+
+        <div class="item-2">
+            <!-- <button [disabled]="partyForm.invalid" type="submit" class="btn">Join Room</button> -->
+            <button type="submit">Joindre une partie</button>
+        </div>
+    </form>
+</div>
