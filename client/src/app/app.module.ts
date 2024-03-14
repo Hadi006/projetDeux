@@ -19,7 +19,7 @@ import { QuestionBankComponent } from './components/question-bank/question-bank.
 import { QuestionFormComponent } from './components/question-form/question-form.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
 import { QuestionComponent } from './components/question/question.component';
-import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { TestPageComponent } from './pages/test-page/test-page.component';
 import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -40,7 +40,7 @@ import { PlayerComponent } from './components/player/player.component';
         GameChoicePageComponent,
         DescriptionPanelComponent,
         QuestionComponent,
-        GameplayPlayerPageComponent,
+        TestPageComponent,
         GameTimersComponent,
         ChatboxComponent,
         AdminLoginPageComponent,
