@@ -133,6 +133,7 @@ export class LobbiesService {
                 player.fastestResponseCount++;
             }
         });
+
         await this.updateLobby(lobby);
     }
 
