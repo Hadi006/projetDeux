@@ -28,5 +28,10 @@ export class JoinRoomPageComponent {
             this.router.navigate(['/home/waiting-room-player']);
         });
     }
+
+    return() {
+        this.playerService.cleanUp();
+        this.router.navigate(['/']);
+    }
 }
 
