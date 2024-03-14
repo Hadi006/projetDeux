@@ -32,7 +32,7 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
         }
 
         this.playerHandlerService.handleSockets();
-        this.playerHandlerService.createPlayer(this.hostService.lobbyData.id, 'Test').subscribe(() => {
+        this.playerHandlerService.joinGame(this.hostService.lobbyData.id, 'Test').subscribe(() => {
             this.hostService.startGame(0);
         });
     }

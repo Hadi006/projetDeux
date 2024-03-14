@@ -62,18 +62,9 @@ export class PlayerHandlerService {
         this.onAnswer();
     }
 
-    joinGame(pin: string): Observable<string> {
+    joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.emit('joingame', pin, (response) => {
-                observer.next(response as string);
-                observer.complete();
-            });
-        });
-    }
-
-    createPlayer(pin: string, playerName: string): Observable<string> {
-        return new Observable<string>((observer) => {
-            this.webSocketService.emit('create-player', { pin, playerName }, (response: unknown) => {
+            this.webSocketService.emit('join-game', { pin, playerName }, (response: unknown) => {
                 const responseData = response as { player: Player; players: string[]; error: string };
                 if (!responseData.error) {
                     this.player = responseData.player;
