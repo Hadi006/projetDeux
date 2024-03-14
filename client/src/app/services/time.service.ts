@@ -8,8 +8,8 @@ export class TimeService {
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
 
-    createTimerById(callback?: () => void): number {
-        const timer = new Timer(callback);
+    createTimerById(): number {
+        const timer = new Timer();
         this.nextId++;
         this.timers.set(this.nextId, timer);
         return this.nextId;

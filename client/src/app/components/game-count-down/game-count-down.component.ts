@@ -17,7 +17,7 @@ export class GameCountDownComponent implements OnInit {
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.timerId = this.timeService.createTimerById(this.startGame.bind(this));
+        this.timerId = this.timeService.createTimerById();
     }
 
     get time() {
@@ -25,7 +25,7 @@ export class GameCountDownComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN);
+        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN, this.startGame.bind(this));
     }
 
     private startGame() {

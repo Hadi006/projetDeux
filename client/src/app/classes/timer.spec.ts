@@ -75,9 +75,9 @@ describe('Timer', () => {
 
     it('startTimer should call stopTimer and callback at the end of timer', fakeAsync(() => {
         const callbackSpy = jasmine.createSpy('callbackSpy');
-        timerTest = new Timer(callbackSpy);
+        timerTest = new Timer();
         const spy = spyOn(timerTest, 'stop').and.callThrough();
-        timerTest.start(TIMEOUT);
+        timerTest.start(TIMEOUT, callbackSpy);
         tick((TIMEOUT + 1) * MS_SECOND);
 
         expect(spy).toHaveBeenCalled();
@@ -86,9 +86,9 @@ describe('Timer', () => {
 
     it('startTimer with 0 should call callback and stop', fakeAsync(() => {
         const callbackSpy = jasmine.createSpy('callbackSpy');
-        timerTest = new Timer(callbackSpy);
+        timerTest = new Timer();
         const spy = spyOn(timerTest, 'stop').and.callThrough();
-        timerTest.start(0);
+        timerTest.start(0, callbackSpy);
         tick(MS_SECOND);
 
         expect(callbackSpy).toHaveBeenCalled();

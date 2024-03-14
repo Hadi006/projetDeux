@@ -40,11 +40,10 @@ describe('GameCountDownComponent', () => {
 
     it('should call createTimerById on TimeService', () => {
         expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
-        expect(timeServiceSpy.createTimerById.calls.first().args[0]).toEqual(jasmine.any(Function));
     });
 
     it('ngOnInit should call startTimerById', () => {
-        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(TEST_ID, START_GAME_COUNTDOWN);
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(TEST_ID, START_GAME_COUNTDOWN, jasmine.any(Function));
     });
 
     it('time getter should call getTimeById', () => {

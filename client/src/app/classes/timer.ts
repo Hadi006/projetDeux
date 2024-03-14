@@ -6,25 +6,24 @@ export class Timer {
     private tickRate: number;
     private callback: () => void;
 
-    constructor(
-        callback: () => void = () => {
-            return;
-        },
-        tickRate: number = TIMER_TICK_RATE,
-    ) {
+    constructor(tickRate: number = TIMER_TICK_RATE) {
         this.time = 0;
         this.interval = undefined;
         this.tickRate = tickRate;
-        this.callback = callback;
     }
 
-    start(time: number, callback?: () => void) {
+    start(
+        time: number,
+        callback: () => void = () => {
+            return;
+        },
+    ) {
         if (this.interval) {
             return;
         }
 
         this.time = time > 0 ? time : 0;
-        this.callback = callback || this.callback;
+        this.callback = callback;
         this.resume();
     }
 
