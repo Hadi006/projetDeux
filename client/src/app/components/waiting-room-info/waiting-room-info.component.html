@@ -1,1 +1,11 @@
-<p>waiting-room-info works!</p>
+<div *ngIf="game">
+    <div *ngIf="game.quiz" class="title-container">
+        <h2>{{ game.quiz.title }}</h2>
+    </div>
+
+    <div>Pin du jeu: {{ game.pin }}</div>
+
+    <div id="nPlayers">Nombre de joueurs: {{ game.players.length }}</div>
+
+    <button (click)="leaveGame()">Quitter</button>
+</div>

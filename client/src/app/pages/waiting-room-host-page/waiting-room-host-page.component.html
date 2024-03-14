@@ -1,4 +1,6 @@
 <div *ngIf="game">
+    <app-waiting-room-info [game]="game" [leaveGame]="leaveGame.bind(this)"></app-waiting-room-info>
+
     <div *ngIf="game.quiz" class="title-container">
         <h2>{{ game.quiz.title }}</h2>
     </div>
@@ -14,13 +16,5 @@
         </div>
     </div>
 
-    <footer>
-        <button (click)="leaveGame()">Quitter</button>
-
-        <button *ngIf="game.quiz" (click)="startGame()">Commencer la partie</button>
-    </footer>
-
-    <div *ngIf="game.locked">
-        <app-game-count-down *ngIf="game.quiz" [gameName]="game.quiz.title"></app-game-count-down>
-    </div>
+    <button *ngIf="game.quiz" (click)="startGame()">Commencer la partie</button>
 </div>
