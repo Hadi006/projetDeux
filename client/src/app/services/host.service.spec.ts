@@ -4,8 +4,8 @@ import { WebSocketService } from './web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
 import { TimeService } from './time.service';
-import { LobbyData } from '@common/lobby-data';
-import { TEST_LOBBY_DATA, TEST_QUIZZES, TRANSITION_DELAY } from '@common/constant';
+import { Game } from '@common/game';
+import { TEST_GAME_DATA, TEST_QUIZZES, TRANSITION_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 
 class WebSocketServiceMock extends WebSocketService {
@@ -16,7 +16,7 @@ class WebSocketServiceMock extends WebSocketService {
 
 describe('HostService', () => {
     let testQuiz: Quiz;
-    let testLobbyData: LobbyData;
+    let testGame: Game;
 
     let service: HostService;
     let webSocketServiceMock: WebSocketServiceMock;
@@ -25,7 +25,7 @@ describe('HostService', () => {
 
     beforeEach(async () => {
         testQuiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
-        testLobbyData = JSON.parse(JSON.stringify(TEST_LOBBY_DATA));
+        testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
 
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
@@ -60,9 +60,9 @@ describe('HostService', () => {
 
     it('should increment nAnswered on confirmPlayerAnswer', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             service.handleSockets();
             socketHelper.peerSideEmit('confirm-player-answer');
             expect(service.nAnswered).toBe(1);
@@ -72,9 +72,9 @@ describe('HostService', () => {
 
     it('should set timer to 0 and reset nAnswered if all players answered', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             spyOn(service, 'endQuestion');
             service.handleSockets();
@@ -86,21 +86,21 @@ describe('HostService', () => {
         });
     });
 
-    it('should create a lobby', (done) => {
+    it('should create a game', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe((success) => {
+        service.createGame(testQuiz).subscribe((success) => {
             expect(success).toBeTrue();
             done();
         });
     });
 
-    it('should not create a lobby', (done) => {
+    it('should not create a game', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(null);
         });
-        service.createLobby(testQuiz).subscribe((success) => {
+        service.createGame(testQuiz).subscribe((success) => {
             expect(success).toBeFalse();
             done();
         });
@@ -109,13 +109,13 @@ describe('HostService', () => {
     it('should emit start-game on startGame', (done) => {
         const countdown = 10;
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.startGame(countdown);
-            expect(emitSpy).toHaveBeenCalledWith('start-game', { lobbyId: service.lobbyData.id, countdown });
-            expect(service.lobbyData.locked).toBeTrue();
+            expect(emitSpy).toHaveBeenCalledWith('start-game', { gameId: service.game.id, countdown });
+            expect(service.game.locked).toBeTrue();
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
             done();
         });
@@ -123,15 +123,15 @@ describe('HostService', () => {
 
     it('should emit next-question on nextQuestion', () => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.nextQuestion();
             expect(emitSpy).toHaveBeenCalledWith('next-question', {
-                lobbyId: service.lobbyData.id,
-                question: service.lobbyData.quiz?.questions[0],
-                countdown: service.lobbyData.quiz?.duration,
+                gameId: service.game.id,
+                question: service.game.quiz?.questions[0],
+                countdown: service.game.quiz?.duration,
             });
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
         });
@@ -139,17 +139,17 @@ describe('HostService', () => {
 
     it('should emit end-question, update-scores and answer on endQuestion', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             service.questionEndedSubject.subscribe(() => {
-                expect(emitSpy).toHaveBeenCalledWith('end-question', service.lobbyData.id);
+                expect(emitSpy).toHaveBeenCalledWith('end-question', service.game.id);
                 expect(emitSpy).toHaveBeenCalledWith('update-scores', {
-                    lobbyId: service.lobbyData.id,
+                    gameId: service.game.id,
                     questionIndex: -1,
                 });
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
-                    lobbyId: service.lobbyData.id,
+                    gameId: service.game.id,
                     answer: [],
                 });
                 done();
@@ -162,13 +162,13 @@ describe('HostService', () => {
 
     it('should emit empty answer if no quiz', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
-            service.lobbyData.quiz = undefined;
+        service.createGame(testQuiz).subscribe(() => {
+            service.game.quiz = undefined;
             service.questionEndedSubject.subscribe(() => {
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
-                    lobbyId: service.lobbyData.id,
+                    gameId: service.game.id,
                     answer: [],
                 });
                 done();
@@ -181,11 +181,11 @@ describe('HostService', () => {
 
     it('should emit end-game on endGame', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             service.gameEndedSubject.subscribe(() => {
-                expect(emitSpy).toHaveBeenCalledWith('end-game', service.lobbyData.id);
+                expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.id);
                 done();
             });
             emitSpy.and.stub();
@@ -193,15 +193,15 @@ describe('HostService', () => {
         });
     });
 
-    it('should emit delete-lobby, disconnect and stop timer on cleanUp', () => {
+    it('should emit delete-game, disconnect and stop timer on cleanUp', () => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             spyOn(webSocketServiceMock, 'disconnect');
             service.cleanUp();
-            expect(emitSpy).toHaveBeenCalledWith('delete-lobby', service.lobbyData.id);
+            expect(emitSpy).toHaveBeenCalledWith('delete-game', service.game.id);
             expect(webSocketServiceMock.disconnect).toHaveBeenCalled();
             expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(1);
         });
@@ -209,29 +209,29 @@ describe('HostService', () => {
 
     it('should start timer when setting up next question', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.nextQuestion();
             service['setupNextQuestion']();
-            if (!testLobbyData.quiz) {
+            if (!testGame.quiz) {
                 fail('No quiz');
                 done();
                 return;
             }
-            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, testLobbyData.quiz.duration, jasmine.any(Function));
+            expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, testGame.quiz.duration, jasmine.any(Function));
             done();
         });
     });
 
     it('should end game when setting up next question', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             spyOn(service, 'endGame');
-            service.lobbyData.quiz = JSON.parse(JSON.stringify({ ...testLobbyData.quiz, questions: [] }));
+            service.game.quiz = JSON.parse(JSON.stringify({ ...testGame.quiz, questions: [] }));
             service['setupNextQuestion']();
             expect(service.endGame).toHaveBeenCalled();
             done();
@@ -240,11 +240,11 @@ describe('HostService', () => {
 
     it('should do nothing when setting up next question', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
-            callback(testLobbyData);
+            callback(testGame);
         });
-        service.createLobby(testQuiz).subscribe(() => {
+        service.createGame(testQuiz).subscribe(() => {
             spyOn(service, 'endGame');
-            service.lobbyData.quiz = undefined;
+            service.game.quiz = undefined;
             service['setupNextQuestion']();
             expect(service.endGame).not.toHaveBeenCalled();
             done();

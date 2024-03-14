@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
 import { HostService } from '@app/services/host.service';
-import { START_GAME_COUNTDOWN, TEST_LOBBY_DATA } from '@common/constant';
+import { START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
@@ -13,7 +13,7 @@ describe('LobbyOrganizerPageComponent', () => {
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('LobbyService', ['cleanUp', 'startGame', 'handleSockets']);
-        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
+        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_GAME_DATA, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 

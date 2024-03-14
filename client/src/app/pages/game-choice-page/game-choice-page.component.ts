@@ -64,7 +64,7 @@ export class GameChoicePageComponent implements OnInit {
         }
 
         this.hostService.handleSockets();
-        return this.hostService.createLobby(this.chosenQuiz).pipe(
+        return this.hostService.createGame(this.chosenQuiz).pipe(
             map((success: boolean) => {
                 if (!success) {
                     this.publicQuizzesService.alertNoQuizAvailable('Nombre maximum de jeux atteint');

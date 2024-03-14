@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Player } from '@common/player';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { PlayerService } from '@app/services/player.service';
 import { Question } from '@common/quiz';
 
 @Component({
@@ -9,7 +9,7 @@ import { Question } from '@common/quiz';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent {
-    constructor(public playerHandlerService: PlayerHandlerService) {}
+    constructor(public playerService: PlayerService) {}
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
@@ -22,11 +22,11 @@ export class QuestionComponent {
         }
 
         event.stopPropagation();
-        this.playerHandlerService.handleKeyUp(event);
+        this.playerService.handleKeyUp(event);
     }
 
     getPlayer(): Player | undefined {
-        return this.playerHandlerService.player;
+        return this.playerService.player;
     }
 
     getQuestionData(): Question | undefined {
@@ -40,11 +40,11 @@ export class QuestionComponent {
     }
 
     getIsChecked(): boolean[] {
-        return this.playerHandlerService.getPlayerBooleanAnswers();
+        return this.playerService.getPlayerBooleanAnswers();
     }
 
     private canEditAnswer(): boolean {
-        if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerHandlerService.answerConfirmed) {
+        if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerService.answerConfirmed) {
             return true;
         }
 

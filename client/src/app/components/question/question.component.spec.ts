@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { PlayerService } from '@app/services/player.service';
 import { Question } from '@common/quiz';
 import { QuestionComponent } from './question.component';
 import { of } from 'rxjs';
@@ -12,17 +12,13 @@ describe('QuestionComponent', () => {
 
     let component: QuestionComponent;
     let fixture: ComponentFixture<QuestionComponent>;
-    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerService>;
 
     beforeEach(() => {
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
-            'createPlayer',
-            'handleKeyUp',
-            'getPlayerBooleanAnswers',
-        ]);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', ['createPlayer', 'handleKeyUp', 'getPlayerBooleanAnswers']);
         playerHandlerServiceSpy.createPlayer.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
             get: () => {
@@ -35,7 +31,7 @@ describe('QuestionComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionComponent],
-            providers: [{ provide: PlayerHandlerService, useValue: playerHandlerServiceSpy }],
+            providers: [{ provide: PlayerService, useValue: playerHandlerServiceSpy }],
         }).compileComponents();
     }));
 

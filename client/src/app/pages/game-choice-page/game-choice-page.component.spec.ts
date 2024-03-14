@@ -30,7 +30,7 @@ describe('GameChoicePageComponent', () => {
             value: new Subject<Quiz[]>(),
         });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'createLobby', 'handleSockets']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'createGame', 'handleSockets']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -78,7 +78,7 @@ describe('GameChoicePageComponent', () => {
     it('should start game', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.chooseQuiz(testQuiz);
-        hostServiceSpy.createLobby.and.returnValue(of(true));
+        hostServiceSpy.createGame.and.returnValue(of(true));
         component.startGame();
         expect(publicQuizzesServiceSpy.checkQuizAvailability).toHaveBeenCalled();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
@@ -90,7 +90,7 @@ describe('GameChoicePageComponent', () => {
     it('should not start game if no quiz is chosen', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.startGame();
-        hostServiceSpy.createLobby.and.returnValue(of(true));
+        hostServiceSpy.createGame.and.returnValue(of(true));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Aucun quiz sélectionné');
@@ -108,10 +108,10 @@ describe('GameChoicePageComponent', () => {
         });
     });
 
-    it('should not start game if lobby creation fails', (done) => {
+    it('should not start game if game creation fails', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.chooseQuiz(testQuiz);
-        hostServiceSpy.createLobby.and.returnValue(of(false));
+        hostServiceSpy.createGame.and.returnValue(of(false));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Nombre maximum de jeux atteint');
@@ -122,7 +122,7 @@ describe('GameChoicePageComponent', () => {
     it('should test game', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.chooseQuiz(testQuiz);
-        hostServiceSpy.createLobby.and.returnValue(of(true));
+        hostServiceSpy.createGame.and.returnValue(of(true));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['test']);
@@ -149,10 +149,10 @@ describe('GameChoicePageComponent', () => {
         });
     });
 
-    it('should not test game if lobby creation fails', (done) => {
+    it('should not test game if game creation fails', (done) => {
         publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
         component.chooseQuiz(testQuiz);
-        hostServiceSpy.createLobby.and.returnValue(of(false));
+        hostServiceSpy.createGame.and.returnValue(of(false));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Nombre maximum de jeux atteint');

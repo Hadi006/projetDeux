@@ -9,7 +9,7 @@ import { TRANSITION_DELAY } from '@common/constant';
 @Injectable({
     providedIn: 'root',
 })
-export class PlayerHandlerService {
+export class PlayerService {
     player: Player;
 
     private pin: string;
@@ -88,7 +88,7 @@ export class PlayerHandlerService {
     }
 
     updatePlayer(): void {
-        this.webSocketService.emit('update-player', { lobbyId: this.pin, player: this.player });
+        this.webSocketService.emit('update-player', { gameId: this.pin, player: this.player });
     }
 
     handleKeyUp(event: KeyboardEvent): void {
@@ -103,7 +103,7 @@ export class PlayerHandlerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.webSocketService.emit('confirm-player-answer', { lobbyId: this.pin, player: this.player });
+        this.webSocketService.emit('confirm-player-answer', { gameId: this.pin, player: this.player });
         this.internalAnswerConfirmed = true;
     }
 

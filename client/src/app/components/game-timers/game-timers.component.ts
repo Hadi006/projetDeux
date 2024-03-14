@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { PlayerService } from '@app/services/player.service';
 
 @Component({
     selector: 'app-game-timers',
@@ -7,5 +7,5 @@ import { PlayerHandlerService } from '@app/services/player-handler.service';
     styleUrls: ['./game-timers.component.scss'],
 })
 export class GameTimersComponent {
-    constructor(public playerHandlerService: PlayerHandlerService) {}
+    constructor(public playerService: PlayerService) {}
 }

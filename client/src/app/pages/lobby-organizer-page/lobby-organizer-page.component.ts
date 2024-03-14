@@ -17,7 +17,7 @@ export class LobbyOrganizerPageComponent {
     }
 
     get lobbyData() {
-        return this.hostService.lobbyData;
+        return this.hostService.game;
     }
 
     startGame() {

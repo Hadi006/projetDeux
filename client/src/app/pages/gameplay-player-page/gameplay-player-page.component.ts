@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host.service';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     private gameEndedSubscription: Subscription;
 
     constructor(
-        public playerHandlerService: PlayerHandlerService,
+        public playerService: PlayerService,
         private hostService: HostService,
         private router: Router,
     ) {
@@ -27,19 +27,19 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        if (!this.hostService.lobbyData.quiz) {
+        if (!this.hostService.game.quiz) {
             this.router.navigate(['game']);
         }
 
-        this.playerHandlerService.handleSockets();
-        this.playerHandlerService.createPlayer(this.hostService.lobbyData.id, 'Test').subscribe(() => {
+        this.playerService.handleSockets();
+        this.playerService.createPlayer(this.hostService.game.id, 'Test').subscribe(() => {
             this.hostService.startGame(0);
         });
     }
 
     ngOnDestroy(): void {
         this.hostService.cleanUp();
-        this.playerHandlerService.cleanUp();
+        this.playerService.cleanUp();
         this.questionEndedSubscription.unsubscribe();
         this.gameEndedSubscription.unsubscribe();
     }
