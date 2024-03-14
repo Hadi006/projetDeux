@@ -25,7 +25,7 @@ export class JoinRoomPageComponent {
             if (error) {
                 return;
             }
-            this.router.navigate(['/home/player-lobby']);
+            this.router.navigate(['/home/waiting-room-player']);
         });
     }
 }
