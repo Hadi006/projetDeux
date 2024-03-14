@@ -15,7 +15,9 @@ export class JoinRoomPageComponent {
     constructor(
         private router: Router,
         private playerService: PlayerService,
-    ) {}
+    ) {
+        this.playerService.handleSockets();
+    }
 
     joinGame() {
         this.playerService.joinGame(this.gamePin, this.playerName).subscribe((error: string) => {
