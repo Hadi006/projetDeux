@@ -13,8 +13,8 @@ export class JoinRoomPageComponent {
     error: string = '';
 
     constructor(
-        private router: Router,
         private playerService: PlayerService,
+        private router: Router,
     ) {
         this.playerService.handleSockets();
     }
