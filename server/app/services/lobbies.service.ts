@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
-import { GOOD_ANSWER_BONUS, LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY, NEW_PLAYER } from '@common/constant';
+import { ANSWER_TIME_BUFFER, GOOD_ANSWER_BONUS, LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY, NEW_PLAYER } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
@@ -145,7 +145,7 @@ export class LobbiesService {
                 } else {
                     const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
                     const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
-                    if (currentPlayerTime === firstPlayerTime) {
+                    if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
                         isUnique = false;
                     } else if (currentPlayerTime < firstPlayerTime) {
                         firstCorrectPlayer = player;
