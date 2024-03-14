@@ -6,21 +6,21 @@ import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
 @Service()
-export class LobbiesService {
+export class GameService {
     constructor(private database: DatabaseService) {}
 
-    async getLobbies(): Promise<LobbyData[]> {
+    async getGames(): Promise<LobbyData[]> {
         return await this.database.get<LobbyData>('lobbies');
     }
 
-    async getLobby(lobbyId: string): Promise<LobbyData> {
+    async getGame(lobbyId: string): Promise<LobbyData> {
         return (await this.database.get<LobbyData>('lobbies', { id: lobbyId }))[0];
     }
 
-    async createLobby(quiz: Quiz): Promise<LobbyData | undefined> {
+    async createGame(quiz: Quiz): Promise<LobbyData | undefined> {
         let id: string;
 
-        const lobbies = await this.getLobbies();
+        const lobbies = await this.getGames();
 
         if (lobbies.length >= LOBBY_ID_MAX) {
             return undefined;
@@ -45,8 +45,8 @@ export class LobbiesService {
         return await this.database.delete('lobbies', { id: lobbyId });
     }
 
-    async checkLobbyAvailability(lobbyId: string): Promise<string> {
-        const lobby = await this.getLobby(lobbyId);
+    async checkGameAvailability(lobbyId: string): Promise<string> {
+        const lobby = await this.getGame(lobbyId);
         if (!lobby || lobby.id !== lobbyId) {
             return 'Le NIP est invalide';
         }
@@ -57,7 +57,7 @@ export class LobbiesService {
     }
 
     async addPlayer(lobbyId: string, playerName: string): Promise<{ player: Player; players: string[]; error: string }> {
-        const lobby = await this.getLobby(lobbyId);
+        const lobby = await this.getGame(lobbyId);
         const player: Player = { ...NEW_PLAYER, name: playerName };
         const lowerCasePlayerName = playerName.toLocaleLowerCase();
 
@@ -88,7 +88,7 @@ export class LobbiesService {
     }
 
     async updatePlayer(lobbyId: string, player: Player): Promise<void> {
-        const lobby = await this.getLobby(lobbyId);
+        const lobby = await this.getGame(lobbyId);
         if (!lobby || lobby.id !== lobbyId) {
             return;
         }
@@ -103,7 +103,7 @@ export class LobbiesService {
     }
 
     async updateScores(lobbyId: string, questionIndex: number): Promise<void> {
-        const lobby = await this.getLobby(lobbyId);
+        const lobby = await this.getGame(lobbyId);
         if (!lobby || lobby.id !== lobbyId) {
             return;
         }

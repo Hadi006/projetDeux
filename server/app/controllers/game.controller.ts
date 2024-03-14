@@ -1,6 +1,6 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import { LobbiesService } from '@app/services/lobbies.service';
+import { GameService } from '@app/services/game.service';
 import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
@@ -8,7 +8,7 @@ export class GameController {
     private sio: SocketIOServer;
 
     constructor(
-        private lobbiesService: LobbiesService,
+        private gameService: GameService,
         server: HTTPServer,
     ) {
         this.sio = new SocketIOServer(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
@@ -34,7 +34,7 @@ export class GameController {
 
     private createLobby(socket: Socket): void {
         socket.on('create-lobby', async (quiz: Quiz, ack) => {
-            const lobby = await this.lobbiesService.createLobby(quiz);
+            const lobby = await this.gameService.createGame(quiz);
             if (lobby) {
                 socket.join(lobby.id);
                 ack(lobby);
@@ -45,13 +45,13 @@ export class GameController {
 
     private joinLobby(socket: Socket): void {
         socket.on('join-game', async (lobbyId: string, callback) => {
-            callback(await this.lobbiesService.checkLobbyAvailability(lobbyId));
+            callback(await this.gameService.checkGameAvailability(lobbyId));
         });
     }
 
     private deleteLobby(socket: Socket): void {
         socket.on('delete-lobby', async (lobbyId: string) => {
-            await this.lobbiesService.deleteLobby(lobbyId);
+            await this.gameService.deleteLobby(lobbyId);
         });
     }
 
@@ -63,7 +63,7 @@ export class GameController {
 
     private addPlayer(socket: Socket): void {
         socket.on('create-player', async ({ pin, playerName }, callback) => {
-            const result: { player: Player; players: string[]; error: string } = await this.lobbiesService.addPlayer(pin, playerName);
+            const result: { player: Player; players: string[]; error: string } = await this.gameService.addPlayer(pin, playerName);
             if (!result.error) {
                 socket.join(pin);
                 this.sio.to(pin).emit('player-joined', result.player.name);
@@ -80,13 +80,13 @@ export class GameController {
 
     private updatePlayer(socket: Socket): void {
         socket.on('update-player', async ({ lobbyId, player }) => {
-            await this.lobbiesService.updatePlayer(lobbyId, player);
+            await this.gameService.updatePlayer(lobbyId, player);
         });
     }
     private updateScores(socket: Socket): void {
         socket.on('update-scores', async ({ lobbyId, questionIndex }) => {
-            await this.lobbiesService.updateScores(lobbyId, questionIndex);
-            (await this.lobbiesService.getLobby(lobbyId)).players.forEach((player) => {
+            await this.gameService.updateScores(lobbyId, questionIndex);
+            (await this.gameService.getGame(lobbyId)).players.forEach((player) => {
                 this.sio.to(lobbyId).emit('new-score', player);
             });
         });
@@ -95,7 +95,7 @@ export class GameController {
     private confirmPlayerAnswer(socket: Socket): void {
         socket.on('confirm-player-answer', async ({ lobbyId, player }) => {
             player.questions[player.questions.length - 1].lastModification = new Date();
-            await this.lobbiesService.updatePlayer(lobbyId, player);
+            await this.gameService.updatePlayer(lobbyId, player);
             this.sio.to(lobbyId).emit('confirm-player-answer');
         });
     }

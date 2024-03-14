@@ -3,7 +3,7 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service, Container } from 'typedi';
 import { GameController } from '@app/controllers/game.controller';
-import { LobbiesService } from './services/lobbies.service';
+import { GameService } from '@app/services/game.service';
 
 @Service()
 export class Server {
@@ -24,7 +24,7 @@ export class Server {
 
         this.server = http.createServer(this.application.app);
 
-        this.gameController = new GameController(Container.get(LobbiesService), this.server);
+        this.gameController = new GameController(Container.get(GameService), this.server);
         this.gameController.handleSockets();
 
         this.server.listen(Server.appPort);
