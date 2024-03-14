@@ -113,7 +113,8 @@ export class LobbiesService {
             return;
         }
 
-        const sortedPlayers = lobby.players.sort((a, b) => {
+        const sortedPlayers = [...lobby.players];
+        lobby.players.sort((a, b) => {
             const dateA = new Date(a.questions[questionIndex].lastModification);
             const dateB = new Date(b.questions[questionIndex].lastModification);
             return dateA.getTime() - dateB.getTime();
