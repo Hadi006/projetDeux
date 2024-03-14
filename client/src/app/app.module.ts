@@ -26,6 +26,7 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 import { PromptComponent } from './components/prompt/prompt.component';
 import { PlayerComponent } from './components/player/player.component';
+import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -55,6 +56,7 @@ import { PlayerComponent } from './components/player/player.component';
         PromptComponent,
         WaitingRoomHostPageComponent,
         PlayerComponent,
+        JoinRoomPageComponent,
     ],
     imports: [
         AppMaterialModule,
