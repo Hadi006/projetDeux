@@ -79,7 +79,6 @@ export class PlayerHandlerService {
                     this.player = responseData.player;
                     this.internalPlayers = responseData.players;
                     this.pin = pin;
-                    this.handleSockets();
                 }
 
                 observer.next(responseData.error);
