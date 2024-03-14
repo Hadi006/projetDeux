@@ -186,7 +186,6 @@ describe('LobbiesService', () => {
         const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         const wrongQuestionAnswer: Question = JSON.parse(JSON.stringify(testQuestion));
         wrongQuestionAnswer.choices[0].isCorrect = !wrongQuestionAnswer.choices[0].isCorrect;
-        testPlayers[0].questions[0] = JSON.parse(JSON.stringify(testQuestion));
         testPlayers[1].questions[0] = JSON.parse(JSON.stringify(wrongQuestionAnswer));
         const testLobby: LobbyData = { ...testLobbyData, players: testPlayers };
         const getStub = stub(lobbiesService, 'getLobby').resolves(testLobby);
@@ -194,7 +193,7 @@ describe('LobbiesService', () => {
         await lobbiesService.updateScores(testLobby.id, 0);
         expect(getStub.calledWith(testLobby.id)).to.equal(true);
         expect(updateStub.called).to.equal(true);
-        expect(testPlayers[0].score).to.equal(testQuestion.points);
+        expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
         expect(testPlayers[1].score).to.equal(0);
     });
 
@@ -225,6 +224,7 @@ describe('LobbiesService', () => {
     it('should give bonus points if player is the first to answer correctly', async () => {
         const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:01Z');
         const testLobby: LobbyData = { ...testLobbyData, players: testPlayers };
         const getStub = stub(lobbiesService, 'getLobby').resolves(testLobby);
         const updateStub = stub(lobbiesService, 'updateLobby').resolves(true);
@@ -234,6 +234,22 @@ describe('LobbiesService', () => {
         expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
         expect(testPlayers[0].fastestResponseCount).to.equal(1);
         expect(testPlayers[1].score).to.equal(testQuestion.points);
+    });
+
+    it('should give bonus points if the second player answers before the first one', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:01Z');
+        testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        const testLobby: LobbyData = { ...testLobbyData, players: testPlayers };
+        const getStub = stub(lobbiesService, 'getLobby').resolves(testLobby);
+        const updateStub = stub(lobbiesService, 'updateLobby').resolves(true);
+        await lobbiesService.updateScores(testLobby.id, 0);
+        expect(getStub.calledWith(testLobby.id)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points);
+        expect(testPlayers[0].fastestResponseCount).to.equal(0);
+        expect(testPlayers[1].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+        expect(testPlayers[1].fastestResponseCount).to.equal(1);
     });
 
     it('should give points if there is only 1 player and he answers correctly', async () => {
@@ -246,5 +262,21 @@ describe('LobbiesService', () => {
         expect(updateStub.called).to.equal(true);
         expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
         expect(testPlayers[0].fastestResponseCount).to.equal(1);
+    });
+
+    it('should not give bonus points if multiple players answer correctly at the same time', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        const testLobby: LobbyData = { ...testLobbyData, players: testPlayers };
+        const getStub = stub(lobbiesService, 'getLobby').resolves(testLobby);
+        const updateStub = stub(lobbiesService, 'updateLobby').resolves(true);
+        await lobbiesService.updateScores(testLobby.id, 0);
+        expect(getStub.calledWith(testLobby.id)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points);
+        expect(testPlayers[0].fastestResponseCount).to.equal(0);
+        expect(testPlayers[1].score).to.equal(testQuestion.points);
+        expect(testPlayers[1].fastestResponseCount).to.equal(0);
     });
 });
