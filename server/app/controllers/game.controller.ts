@@ -1,10 +1,10 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import { LobbiesService } from './lobbies.service';
+import { LobbiesService } from '@app/services/lobbies.service';
 import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 
-export class LobbySocketsService {
+export class GameController {
     private sio: SocketIOServer;
 
     constructor(

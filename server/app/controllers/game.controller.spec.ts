@@ -1,16 +1,16 @@
 import { Server } from '@app/server';
-import { LobbySocketsService } from '@app/services/lobby-sockets.service';
+import { GameController } from '@app/controllers/game.controller';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
-import { LobbiesService } from './lobbies.service';
+import { LobbiesService } from '@app/services/lobbies.service';
 import { Question, Quiz } from '@common/quiz';
 import { LobbyData } from '@common/lobby-data';
 import { NEW_PLAYER, TEST_LOBBY_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 
-describe('LobbySocketsService', () => {
-    let service: LobbySocketsService;
+describe('GameController', () => {
+    let service: GameController;
     let lobbiesServiceStub: SinonStubbedInstance<LobbiesService>;
     let server: Server;
     let clientSocket: Socket;
@@ -32,7 +32,7 @@ describe('LobbySocketsService', () => {
         Container.set(LobbiesService, lobbiesServiceStub);
         server = Container.get(Server);
         server.init();
-        service = server['lobbySocketsService'];
+        service = server['gameController'];
         clientSocket = ioClient(urlString);
         stub(console, 'log');
     });
