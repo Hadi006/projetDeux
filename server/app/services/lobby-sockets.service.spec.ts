@@ -61,24 +61,6 @@ describe('LobbySocketsService', () => {
         });
     });
 
-    it('should join a lobby', (done) => {
-        lobbiesServiceStub.checkLobbyAvailability.resolves('');
-        clientSocket.emit('join-game', testLobby.id, (ack: string) => {
-            expect(ack).to.equal('');
-            expect(lobbiesServiceStub.checkLobbyAvailability.calledWith(testLobby.id)).to.equal(true);
-            done();
-        });
-    });
-
-    it('should not join a lobby', (done) => {
-        lobbiesServiceStub.checkLobbyAvailability.resolves('Error');
-        clientSocket.emit('join-game', testLobby.id, (ack: string) => {
-            expect(ack).to.equal('Error');
-            expect(lobbiesServiceStub.checkLobbyAvailability.calledWith(testLobby.id)).to.equal(true);
-            done();
-        });
-    });
-
     it('should delete a lobby', (done) => {
         lobbiesServiceStub.deleteLobby.resolves(true);
         clientSocket.emit('delete-lobby', testLobby.id);
@@ -111,7 +93,7 @@ describe('LobbySocketsService', () => {
             error: '',
         };
         lobbiesServiceStub.addPlayer.resolves(result);
-        clientSocket.emit('create-player', { pin: testLobby.id, playerName }, (ack: typeof result) => {
+        clientSocket.emit('join-game', { pin: testLobby.id, playerName }, (ack: typeof result) => {
             expect(ack).to.deep.equal(result);
             expect(lobbiesServiceStub.addPlayer.calledWith(testLobby.id, playerName)).to.equal(true);
             done();
@@ -127,7 +109,7 @@ describe('LobbySocketsService', () => {
         };
         lobbiesServiceStub.addPlayer.resolves(result);
         const toSpy = spy(service['sio'], 'to');
-        clientSocket.emit('create-player', { pin: testLobby.id, playerName }, (ack: typeof result) => {
+        clientSocket.emit('join-game', { pin: testLobby.id, playerName }, (ack: typeof result) => {
             expect(ack).to.deep.equal(result);
             expect(lobbiesServiceStub.addPlayer.calledWith(testLobby.id, playerName)).to.equal(true);
             expect(toSpy.called).to.equal(false);
