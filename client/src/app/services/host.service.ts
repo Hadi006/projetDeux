@@ -145,8 +145,7 @@ export class HostService {
     private onConfirmPlayerAnswer() {
         this.webSocketService.onEvent('confirm-player-answer', () => {
             if (++this.internalNAnswered >= this.internalLobbyData.players.length) {
-                this.timeService.stopTimerById(this.timerId);
-                this.endQuestion();
+                this.timeService.setTimeById(this.timerId, 0);
                 this.internalNAnswered = 0;
             }
         });

@@ -30,7 +30,7 @@ describe('HostService', () => {
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
     });
 
@@ -70,7 +70,7 @@ describe('HostService', () => {
         });
     });
 
-    it('should stop timer, emit endQuestion and reset nAnswered if all players answered', (done) => {
+    it('should set timer to 0 and reset nAnswered if all players answered', (done) => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
         });
@@ -80,8 +80,7 @@ describe('HostService', () => {
             service.handleSockets();
             socketHelper.peerSideEmit('confirm-player-answer');
             socketHelper.peerSideEmit('confirm-player-answer');
-            expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(1);
-            expect(service.endQuestion).toHaveBeenCalled();
+            expect(timeServiceSpy.setTimeById).toHaveBeenCalledWith(1, 0);
             expect(service.nAnswered).toBe(0);
             done();
         });
