@@ -3,12 +3,12 @@
         <h2>{{ game.quiz.title }}</h2>
     </div>
 
-    <div>Game code: {{ game.pin }}</div>
+    <div>Pin du jeu: {{ game.pin }}</div>
 
-    <div id="nPlayers">Number of players: {{ game.players.length }}</div>
+    <div id="nPlayers">Nombre de joueurs: {{ game.players.length }}</div>
 
     <div id="players-container">
-        <p>Players:</p>
+        <p>Joueurs:</p>
         <div class="player-container" *ngFor="let player of game.players">
             {{ player.name }}
         </div>
@@ -17,7 +17,7 @@
     <footer>
         <button (click)="leaveGame()">Quitter</button>
 
-        <button *ngIf="game.quiz" (click)="startGame()">Start game</button>
+        <button *ngIf="game.quiz" (click)="startGame()">Commencer la partie</button>
     </footer>
 
     <div *ngIf="game.locked">
