@@ -91,6 +91,8 @@ export const START_GAME_COUNTDOWN = 5;
 
 export const TRANSITION_DELAY = 3;
 
+export const INITIAL_QUESTION_INDEX = -1;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 

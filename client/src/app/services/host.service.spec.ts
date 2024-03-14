@@ -208,10 +208,12 @@ describe('HostService', () => {
     });
 
     it('should start timer when setting up next question', (done) => {
-        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testLobbyData);
         });
         service.createLobby(testQuiz).subscribe(() => {
+            emitSpy.and.stub();
+            service.nextQuestion();
             service['setupNextQuestion']();
             if (!testLobbyData.quiz) {
                 fail('No quiz');

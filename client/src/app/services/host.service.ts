@@ -4,7 +4,7 @@ import { WebSocketService } from './web-socket.service';
 import { Observable /* , Subject */, Subject } from 'rxjs';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { TimeService } from './time.service';
-import { TRANSITION_DELAY } from '@common/constant';
+import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
@@ -61,8 +61,8 @@ export class HostService {
     }
 
     nextQuestion() {
+        this.currentQuestionIndex++;
         this.emitNextQuestion();
-
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
@@ -90,7 +90,7 @@ export class HostService {
             this.webSocketService.emit('create-lobby', quiz, (lobbyData: unknown) => {
                 if (lobbyData) {
                     this.internalLobbyData = lobbyData as LobbyData;
-                    this.currentQuestionIndex = 0;
+                    this.currentQuestionIndex = INITIAL_QUESTION_INDEX;
                     subscriber.next(true);
                     subscriber.complete();
                 } else {
@@ -127,7 +127,7 @@ export class HostService {
     private emitUpdateScores() {
         this.webSocketService.emit('update-scores', {
             lobbyId: this.internalLobbyData.id,
-            questionIndex: this.currentQuestionIndex - 1,
+            questionIndex: this.currentQuestionIndex,
         });
     }
 
@@ -169,7 +169,6 @@ export class HostService {
             return;
         }
 
-        this.currentQuestionIndex++;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalLobbyData.quiz?.duration, this.endQuestion.bind(this));
     }
