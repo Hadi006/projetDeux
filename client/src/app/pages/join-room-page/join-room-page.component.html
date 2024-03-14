@@ -1,6 +1,6 @@
 <div class="grid-container">
     <div class="grid-title">
-        <h2 class="title">Join Room</h2>
+        <h2 class="title">Joindre une partie</h2>
     </div>
     <form (ngSubmit)="joinGame()" #partyForm="ngForm">
         <div class="item-1">
@@ -8,7 +8,7 @@
             <input type="text" name="partyInput" [(ngModel)]="gamePin" placeholder="e.g 0000" required pattern="[0-9]{4}" />
             <label for="nicknameInput">Choisir un surnom:</label>
             <input type="text" name="nicknameInput" [(ngModel)]="playerName" placeholder="e.g John" required />
-            <p>error : {{ error }}</p>
+            <p *ngIf="error">{{ error }}</p>
         </div>
 
         <div class="item-2">
