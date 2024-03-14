@@ -31,7 +31,7 @@ export class GameChoicePageComponent implements OnInit {
         this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
             this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
                 if (success) {
-                    this.router.navigate(['lobby']);
+                    this.router.navigate(['waiting-room-host']);
                 } else {
                     this.hostService.cleanUp();
                 }

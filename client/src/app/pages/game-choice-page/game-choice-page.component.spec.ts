@@ -82,7 +82,7 @@ describe('GameChoicePageComponent', () => {
         component.startGame();
         expect(publicQuizzesServiceSpy.checkQuizAvailability).toHaveBeenCalled();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['lobby']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['waiting-room-host']);
             done();
         });
     });
