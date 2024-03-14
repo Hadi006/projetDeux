@@ -38,8 +38,6 @@ export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.hostService.cleanUp();
-        this.playerService.cleanUp();
         this.questionEndedSubscription.unsubscribe();
         this.gameEndedSubscription.unsubscribe();
     }
