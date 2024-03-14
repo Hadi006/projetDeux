@@ -121,13 +121,13 @@ export class LobbiesService {
 
         const isOldestUnique = this.isOldestUnique(sortedPlayers, questionIndex);
 
-        sortedPlayers.forEach((player, playerIndex) => {
+        sortedPlayers.forEach((player) => {
             const playerAnswer = player.questions[questionIndex];
             const isCorrect = playerAnswer.choices.every((choice, choiceIndex) => choice.isCorrect === question.choices[choiceIndex].isCorrect);
 
             player.score += isCorrect ? question.points : 0;
 
-            if (isCorrect && isOldestUnique && playerIndex === 0) {
+            if (isCorrect && isOldestUnique) {
                 player.score += question.points * GOOD_ANSWER_BONUS;
                 player.fastestResponseCount++;
             }
