@@ -61,24 +61,6 @@ describe('GameController', () => {
         });
     });
 
-    it('should join a game', (done) => {
-        gameServiceStub.checkGameAvailability.resolves('');
-        clientSocket.emit('join-game', testGame.pin, (ack: string) => {
-            expect(ack).to.equal('');
-            expect(gameServiceStub.checkGameAvailability.calledWith(testGame.pin)).to.equal(true);
-            done();
-        });
-    });
-
-    it('should not join a game', (done) => {
-        gameServiceStub.checkGameAvailability.resolves('Error');
-        clientSocket.emit('join-game', testGame.pin, (ack: string) => {
-            expect(ack).to.equal('Error');
-            expect(gameServiceStub.checkGameAvailability.calledWith(testGame.pin)).to.equal(true);
-            done();
-        });
-    });
-
     it('should delete a game', (done) => {
         gameServiceStub.deleteGame.resolves(true);
         clientSocket.emit('delete-game', testGame.pin);
@@ -103,7 +85,7 @@ describe('GameController', () => {
         });
     });
 
-    it('should add a player to the game', (done) => {
+    it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
         const result = {
             player: { ...NEW_PLAYER, name: playerName },
@@ -111,7 +93,7 @@ describe('GameController', () => {
             error: '',
         };
         gameServiceStub.addPlayer.resolves(result);
-        clientSocket.emit('create-player', { pin: testGame.pin, playerName }, (ack: typeof result) => {
+        clientSocket.emit('join-game', { pin: testGame.pin, playerName }, (ack: typeof result) => {
             expect(ack).to.deep.equal(result);
             expect(gameServiceStub.addPlayer.calledWith(testGame.pin, playerName)).to.equal(true);
             done();
@@ -127,7 +109,7 @@ describe('GameController', () => {
         };
         gameServiceStub.addPlayer.resolves(result);
         const toSpy = spy(service['sio'], 'to');
-        clientSocket.emit('create-player', { pin: testGame.pin, playerName }, (ack: typeof result) => {
+        clientSocket.emit('join-game', { pin: testGame.pin, playerName }, (ack: typeof result) => {
             expect(ack).to.deep.equal(result);
             expect(gameServiceStub.addPlayer.calledWith(testGame.pin, playerName)).to.equal(true);
             expect(toSpy.called).to.equal(false);

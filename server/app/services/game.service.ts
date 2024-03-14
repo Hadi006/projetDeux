@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
-import { GOOD_ANSWER_BONUS, GAME_ID_LENGTH, GAME_ID_MAX, NEW_GAME, NEW_PLAYER } from '@common/constant';
-import { Quiz } from '@common/quiz';
+import { ANSWER_TIME_BUFFER, GOOD_ANSWER_BONUS, GAME_ID_LENGTH, GAME_ID_MAX, NEW_GAME, NEW_PLAYER } from '@common/constant';
+import { Question, Quiz } from '@common/quiz';
 import { Player } from '@common/player';
 import { Game } from '@common/game';
 
@@ -113,37 +113,52 @@ export class GameService {
             return;
         }
 
-        const sortedPlayers = game.players.sort((a, b) => {
-            const dateA = new Date(a.questions[questionIndex].lastModification);
-            const dateB = new Date(b.questions[questionIndex].lastModification);
-            return dateA.getTime() - dateB.getTime();
-        });
+        const { firstCorrectPlayer, isUnique } = this.findFirstCorrectAndUniquePlayer(game.players, questionIndex, question);
 
-        const isOldestUnique = this.isOldestUnique(sortedPlayers, questionIndex);
-
-        sortedPlayers.forEach((player, playerIndex) => {
-            const playerAnswer = player.questions[questionIndex];
-            const isCorrect = playerAnswer.choices.every((choice, choiceIndex) => choice.isCorrect === question.choices[choiceIndex].isCorrect);
-
-            player.score += isCorrect ? question.points : 0;
-
-            if (isCorrect && isOldestUnique && playerIndex === 0) {
-                player.score += question.points * GOOD_ANSWER_BONUS;
-                player.fastestResponseCount++;
+        game.players.forEach((player) => {
+            const isCorrect = this.isAnswerCorrect(player, questionIndex, question);
+            if (isCorrect) {
+                player.score += question.points;
             }
         });
+
+        if (firstCorrectPlayer && isUnique) {
+            firstCorrectPlayer.score += question.points * GOOD_ANSWER_BONUS;
+            firstCorrectPlayer.fastestResponseCount++;
+        }
+
         await this.updateGame(game);
     }
 
-    private oldestModificationDate(sortedPlayers: Player[], questionIndex: number): Date {
-        return sortedPlayers[0].questions[questionIndex].lastModification;
-    }
+    private findFirstCorrectAndUniquePlayer(
+        players: Player[],
+        questionIndex: number,
+        question: Question,
+    ): { firstCorrectPlayer: Player | null; isUnique: boolean } {
+        let firstCorrectPlayer: Player | null = null;
+        let isUnique = true;
 
-    private isOldestUnique(sortedPlayers: Player[], questionIndex: number): boolean {
-        if (sortedPlayers.length === 1) {
-            return true;
+        for (const player of players) {
+            if (this.isAnswerCorrect(player, questionIndex, question)) {
+                if (!firstCorrectPlayer) {
+                    firstCorrectPlayer = player;
+                } else {
+                    const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
+                    const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
+                    if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
+                        isUnique = false;
+                    } else if (currentPlayerTime < firstPlayerTime) {
+                        firstCorrectPlayer = player;
+                        isUnique = true;
+                    }
+                }
+            }
         }
 
-        return this.oldestModificationDate(sortedPlayers, questionIndex) !== sortedPlayers[1].questions[questionIndex].lastModification;
+        return { firstCorrectPlayer, isUnique };
+    }
+
+    private isAnswerCorrect(player: Player, questionIndex: number, question: Question): boolean {
+        return player.questions[questionIndex].choices.every((choice, choiceIndex) => choice.isCorrect === question.choices[choiceIndex].isCorrect);
     }
 }

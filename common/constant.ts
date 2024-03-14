@@ -93,6 +93,8 @@ export const TRANSITION_DELAY = 3;
 
 export const INITIAL_QUESTION_INDEX = -1;
 
+export const ANSWER_TIME_BUFFER = 1000;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 

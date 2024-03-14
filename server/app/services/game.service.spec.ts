@@ -50,7 +50,7 @@ describe('GameService', () => {
         expect(databaseServiceStub.add.called).to.equal(false);
     });
 
-    it('should generate a new game id', async () => {
+    it('should generate a new game pin', async () => {
         stub(gameService, 'getGames').resolves([testGame]);
         const result = await gameService.createGame(testQuiz);
         expect(result.pin).to.not.equal(testGame.pin);
@@ -61,49 +61,49 @@ describe('GameService', () => {
         databaseServiceStub.update.resolves(true);
         const result = await gameService.updateGame(testGame);
         expect(result).to.equal(true);
-        expect(databaseServiceStub.update.calledWith('games', { id: testGame.pin }, [{ $set: testGame }])).to.equal(true);
+        expect(databaseServiceStub.update.calledWith('games', { pin: testGame.pin }, [{ $set: testGame }])).to.equal(true);
     });
 
     it('should not update a game', async () => {
         databaseServiceStub.update.resolves(false);
         const result = await gameService.updateGame(testGame);
         expect(result).to.equal(false);
-        expect(databaseServiceStub.update.calledWith('games', { id: testGame.pin }, [{ $set: testGame }])).to.equal(true);
+        expect(databaseServiceStub.update.calledWith('games', { pin: testGame.pin }, [{ $set: testGame }])).to.equal(true);
     });
 
     it('should delete a game', async () => {
         databaseServiceStub.delete.resolves(true);
         const result = await gameService.deleteGame(testGame.pin);
         expect(result).to.equal(true);
-        expect(databaseServiceStub.delete.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.delete.calledWith('games', { pin: testGame.pin })).to.equal(true);
     });
 
     it('should not delete a game', async () => {
         databaseServiceStub.delete.resolves(false);
         const result = await gameService.deleteGame(testGame.pin);
         expect(result).to.equal(false);
-        expect(databaseServiceStub.delete.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.delete.calledWith('games', { pin: testGame.pin })).to.equal(true);
     });
 
     it('should check game availability', async () => {
         databaseServiceStub.get.resolves([testGame]);
         const result = await gameService.checkGameAvailability(testGame.pin);
         expect(result).to.equal('');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
     });
 
-    it('should return invalid game id', async () => {
+    it('should return invalid game pin', async () => {
         databaseServiceStub.get.resolves([]);
         const result = await gameService.checkGameAvailability(testGame.pin);
         expect(result).to.equal('Le NIP est invalide');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
     });
 
     it('should return locked game', async () => {
         databaseServiceStub.get.resolves([{ ...testGame, locked: true }]);
         const result = await gameService.checkGameAvailability(testGame.pin);
         expect(result).to.equal('La partie est verouillée');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
     });
 
     it('should add a player', async () => {
@@ -111,7 +111,7 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         const result = await gameService.addPlayer(testGame.pin, 'Player');
         expect(result.error).to.equal('');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.calledWith({ ...testGame })).to.equal(true);
     });
 
@@ -120,7 +120,7 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         const result = await gameService.addPlayer(testGame.pin, 'Player');
         expect(result.error).to.equal('Le NIP est invalide');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -129,7 +129,7 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         const result = await gameService.addPlayer(testGame.pin, 'Player');
         expect(result.error).to.equal('La partie est verrouillée');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -138,7 +138,7 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         const result = await gameService.addPlayer(testGame.pin, 'Player');
         expect(result.error).to.equal('Ce nom est déjà utilisé');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -147,7 +147,7 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         const result = await gameService.addPlayer(testGame.pin, 'Organisateur');
         expect(result.error).to.equal('Pseudo interdit');
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -156,7 +156,7 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         const result = await gameService.addPlayer(testGame.pin, '        ');
         expect(result.error).to.equal("Pseudo vide n'est pas permis");
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -186,7 +186,6 @@ describe('GameService', () => {
         const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         const wrongQuestionAnswer: Question = JSON.parse(JSON.stringify(testQuestion));
         wrongQuestionAnswer.choices[0].isCorrect = !wrongQuestionAnswer.choices[0].isCorrect;
-        testPlayers[0].questions[0] = JSON.parse(JSON.stringify(testQuestion));
         testPlayers[1].questions[0] = JSON.parse(JSON.stringify(wrongQuestionAnswer));
         const newGame: Game = { ...testGame, players: testPlayers };
         const getStub = stub(gameService, 'getGame').resolves(newGame);
@@ -194,7 +193,7 @@ describe('GameService', () => {
         await gameService.updateScores(newGame.pin, 0);
         expect(getStub.calledWith(newGame.pin)).to.equal(true);
         expect(updateStub.called).to.equal(true);
-        expect(testPlayers[0].score).to.equal(testQuestion.points);
+        expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
         expect(testPlayers[1].score).to.equal(0);
     });
 
@@ -202,7 +201,7 @@ describe('GameService', () => {
         databaseServiceStub.get.resolves([]);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(testGame.pin, 0);
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -210,7 +209,7 @@ describe('GameService', () => {
         databaseServiceStub.get.resolves([{ ...testGame, quiz: undefined }]);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(testGame.pin, 0);
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
@@ -218,13 +217,14 @@ describe('GameService', () => {
         databaseServiceStub.get.resolves([testGame]);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(testGame.pin, 1);
-        expect(databaseServiceStub.get.calledWith('games', { id: testGame.pin })).to.equal(true);
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
         expect(updateStub.called).to.equal(false);
     });
 
     it('should give bonus points if player is the first to answer correctly', async () => {
         const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:01Z');
         const newGame: Game = { ...testGame, players: testPlayers };
         const getStub = stub(gameService, 'getGame').resolves(newGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
@@ -234,6 +234,22 @@ describe('GameService', () => {
         expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
         expect(testPlayers[0].fastestResponseCount).to.equal(1);
         expect(testPlayers[1].score).to.equal(testQuestion.points);
+    });
+
+    it('should give bonus points if the second player answers before the first one', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:01Z');
+        testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        const newGame: Game = { ...testGame, players: testPlayers };
+        const getStub = stub(gameService, 'getGame').resolves(newGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updateScores(newGame.pin, 0);
+        expect(getStub.calledWith(newGame.pin)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points);
+        expect(testPlayers[0].fastestResponseCount).to.equal(0);
+        expect(testPlayers[1].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+        expect(testPlayers[1].fastestResponseCount).to.equal(1);
     });
 
     it('should give points if there is only 1 player and he answers correctly', async () => {
@@ -246,5 +262,21 @@ describe('GameService', () => {
         expect(updateStub.called).to.equal(true);
         expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
         expect(testPlayers[0].fastestResponseCount).to.equal(1);
+    });
+
+    it('should not give bonus points if multiple players answer correctly at the same time', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
+        const newGame: Game = { ...testGame, players: testPlayers };
+        const getStub = stub(gameService, 'getGame').resolves(newGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updateScores(newGame.pin, 0);
+        expect(getStub.calledWith(newGame.pin)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points);
+        expect(testPlayers[0].fastestResponseCount).to.equal(0);
+        expect(testPlayers[1].score).to.equal(testQuestion.points);
+        expect(testPlayers[1].fastestResponseCount).to.equal(0);
     });
 });

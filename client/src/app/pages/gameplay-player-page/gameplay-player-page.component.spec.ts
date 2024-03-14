@@ -22,8 +22,8 @@ describe('GameplayPlayerPageComponent', () => {
     beforeEach(() => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
 
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['handleSockets', 'createPlayer', 'cleanUp', 'getTime']);
-        playerServiceSpy.createPlayer.and.returnValue(of(''));
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['handleSockets', 'joinGame', 'cleanUp', 'getTime']);
+        playerServiceSpy.joinGame.and.returnValue(of(''));
 
         const questionEndedSubject = new Subject<void>();
         const gameEndedSubject = new Subject<void>();
@@ -82,8 +82,8 @@ describe('GameplayPlayerPageComponent', () => {
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
         expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
-        expect(playerServiceSpy.createPlayer).toHaveBeenCalledWith(testGame.pin, 'Test');
-        playerServiceSpy.createPlayer('1', 'test').subscribe(() => {
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, 'Test');
+        playerServiceSpy.joinGame('1', 'test').subscribe(() => {
             expect(hostServiceSpy.startGame).toHaveBeenCalledWith(0);
             done();
         });

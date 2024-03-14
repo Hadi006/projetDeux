@@ -20,7 +20,6 @@ export class GameController {
             this.joinGame(socket);
             this.deleteGame(socket);
             this.startGame(socket);
-            this.addPlayer(socket);
             this.nextQuestion(socket);
             this.updatePlayer(socket);
             this.updateScores(socket);
@@ -37,15 +36,21 @@ export class GameController {
             const game = await this.gameService.createGame(quiz);
             if (game) {
                 socket.join(game.pin);
-                ack(game);
             }
             ack(game);
         });
     }
 
     private joinGame(socket: Socket): void {
-        socket.on('join-game', async (pin: string, callback) => {
-            callback(await this.gameService.checkGameAvailability(pin));
+        socket.on('join-game', async ({ pin, playerName }, callback) => {
+            const result: { player: Player; players: string[]; error: string } = await this.gameService.addPlayer(pin, playerName);
+
+            if (!result.error) {
+                socket.join(pin);
+                this.sio.to(pin).emit('player-joined', result.player.name);
+            }
+
+            callback(result);
         });
     }
 
@@ -58,17 +63,6 @@ export class GameController {
     private startGame(socket: Socket): void {
         socket.on('start-game', ({ pin, countdown }) => {
             this.sio.to(pin).emit('start-game', countdown);
-        });
-    }
-
-    private addPlayer(socket: Socket): void {
-        socket.on('create-player', async ({ pin, playerName }, callback) => {
-            const result: { player: Player; players: string[]; error: string } = await this.gameService.addPlayer(pin, playerName);
-            if (!result.error) {
-                socket.join(pin);
-                this.sio.to(pin).emit('player-joined', result.player.name);
-            }
-            callback(result);
         });
     }
 
