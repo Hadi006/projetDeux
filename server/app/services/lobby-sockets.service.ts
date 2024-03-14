@@ -37,7 +37,6 @@ export class LobbySocketsService {
             const lobby = await this.lobbiesService.createLobby(quiz);
             if (lobby) {
                 socket.join(lobby.id);
-                ack(lobby);
             }
             ack(lobby);
         });
