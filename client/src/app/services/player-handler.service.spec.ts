@@ -156,7 +156,7 @@ describe('PlayerHandlerService', () => {
             callback(response);
         });
         service.joinGame('1', 'test').subscribe((error) => {
-            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('create-player', { pin: '1', playerName: 'test' }, jasmine.any(Function));
+            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('join-game', { pin: '1', playerName: 'test' }, jasmine.any(Function));
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
             expect(service.players).toEqual([]);

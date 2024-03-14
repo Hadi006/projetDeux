@@ -19,11 +19,11 @@ describe('QuestionComponent', () => {
         testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
 
         playerHandlerServiceSpy = jasmine.createSpyObj<PlayerHandlerService>('PlayerHandlerService', [
-            'createPlayer',
+            'joinGame',
             'handleKeyUp',
             'getPlayerBooleanAnswers',
         ]);
-        playerHandlerServiceSpy.createPlayer.and.returnValue(of(''));
+        playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
             get: () => {
                 return false;
