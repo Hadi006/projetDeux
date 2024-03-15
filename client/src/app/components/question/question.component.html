@@ -1,3 +1,4 @@
+Temps restant: {{ playerService.getTime() }}
 <div *ngIf="getQuestionData() as questionData">
     <div *ngIf="getPlayer() as player">
         <h2>{{ questionData.text }}</h2>
