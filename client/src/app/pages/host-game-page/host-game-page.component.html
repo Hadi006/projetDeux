@@ -1,4 +1,10 @@
 <div *ngIf="getGame().quiz as quiz">
     <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()"
         [gameName]="quiz.title"></app-game-count-down>
+    <div *ngIf="!isCountingDown">
+        <div class="question-display" *ngIf="getCurrentQuestion() as question">
+            <h1>{{ question.text }}</h1>
+            <p>Points: + {{ question.points }}</p>
+        </div>
+    </div>
 </div>

@@ -18,4 +18,8 @@ export class HostGamePageComponent {
     getGame() {
         return this.hostService.game;
     }
+
+    getCurrentQuestion() {
+        return this.hostService.getCurrentQuestion();
+    }
 }
