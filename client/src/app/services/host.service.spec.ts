@@ -106,6 +106,19 @@ describe('HostService', () => {
         });
     });
 
+    it('should emit toggle-lock on toggleLock', (done) => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            emitSpy.and.stub();
+            service.toggleLock();
+            expect(emitSpy).toHaveBeenCalledWith('toggle-lock', { pin: service.game.pin, lockState: true });
+            expect(service.game.locked).toBeTrue();
+            done();
+        });
+    });
+
     it('should emit start-game on startGame', (done) => {
         const countdown = 10;
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
