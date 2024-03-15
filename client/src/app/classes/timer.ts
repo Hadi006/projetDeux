@@ -43,7 +43,7 @@ export class Timer {
     }
 
     resume() {
-        if (this.interval || this.time <= 0) {
+        if (this.interval) {
             return;
         }
 
