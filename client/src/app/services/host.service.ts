@@ -60,6 +60,10 @@ export class HostService {
         this.emitToggleLock();
     }
 
+    kick(playerName: string) {
+        this.emitKick(playerName);
+    }
+
     startGame(countdown: number) {
         this.emitStartGame(countdown);
 
@@ -114,6 +118,10 @@ export class HostService {
 
     private emitDeleteGame(): void {
         this.webSocketService.emit('delete-game', this.internalGame.pin);
+    }
+
+    private emitKick(playerName: string) {
+        this.webSocketService.emit('kick', { pin: this.internalGame.pin, playerName });
     }
 
     private emitStartGame(countdown: number) {

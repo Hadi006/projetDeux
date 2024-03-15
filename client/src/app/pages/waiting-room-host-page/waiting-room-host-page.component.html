@@ -12,6 +12,7 @@
         <p>Joueurs:</p>
         <div class="player-container" *ngFor="let player of game.players">
             {{ player.name }}
+            <button (click)="kick(player.name)">X</button>
         </div>
     </div>
 
