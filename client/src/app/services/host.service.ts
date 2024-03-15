@@ -5,6 +5,7 @@ import { Observable /* , Subject */, Subject } from 'rxjs';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { TimeService } from './time.service';
 import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { Player } from '@common/player';
 
 @Injectable({
     providedIn: 'root',
@@ -45,6 +46,7 @@ export class HostService {
             this.webSocketService.connect();
         }
 
+        this.onPlayerLeft();
         this.onConfirmPlayerAnswer();
     }
 
@@ -140,6 +142,12 @@ export class HostService {
 
     private emitEndGame() {
         this.webSocketService.emit('end-game', this.internalGame.pin);
+    }
+
+    private onPlayerLeft() {
+        this.webSocketService.onEvent('player-left', (players: Player[]) => {
+            this.internalGame.players = players;
+        });
     }
 
     private onConfirmPlayerAnswer() {
