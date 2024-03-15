@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
-import { GameTimersComponent } from '@app/components/game-timers/game-timers.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
 import { Router } from '@angular/router';
@@ -37,7 +36,7 @@ describe('TestPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [TestPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
+            declarations: [TestPageComponent, QuestionComponent, ChatboxComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
