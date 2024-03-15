@@ -9,7 +9,7 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
-import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
+import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
@@ -35,7 +35,6 @@ import { PromptComponent } from './components/prompt/prompt.component';
 @NgModule({
     declarations: [
         AppComponent,
-        LobbyOrganizerPageComponent,
         GameCountDownComponent,
         GameChoicePageComponent,
         DescriptionPanelComponent,
@@ -53,6 +52,7 @@ import { PromptComponent } from './components/prompt/prompt.component';
         QuestionItemComponent,
         QuestionFormComponent,
         PromptComponent,
+        WaitingRoomHostPageComponent,
     ],
     imports: [
         AppMaterialModule,

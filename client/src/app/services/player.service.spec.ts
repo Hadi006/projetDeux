@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
-import { PlayerHandlerService } from './player-handler.service';
+import { PlayerService } from '@app/services/player.service';
 import { TimeService } from './time.service';
 import { WebSocketService } from '@app/services/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
@@ -15,12 +15,12 @@ class WebSocketServiceMock extends WebSocketService {
     }
 }
 
-describe('PlayerHandlerService', () => {
+describe('PlayerService', () => {
     let testQuestions: Question[];
     let testPlayer: Player;
     let playerResponse: { player: Player; players: string[]; error: string };
 
-    let service: PlayerHandlerService;
+    let service: PlayerService;
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
@@ -55,7 +55,7 @@ describe('PlayerHandlerService', () => {
                 },
             ],
         });
-        service = TestBed.inject(PlayerHandlerService);
+        service = TestBed.inject(PlayerService);
     });
 
     it('should be created', () => {
@@ -167,7 +167,7 @@ describe('PlayerHandlerService', () => {
     it('updatePlayer should update the player', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.updatePlayer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('update-player', { lobbyId: undefined, player: undefined });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('update-player', { pin: undefined, player: undefined });
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
@@ -208,7 +208,7 @@ describe('PlayerHandlerService', () => {
     it('confirmPlayerAnswer should confirm the answer', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.confirmPlayerAnswer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { lobbyId: undefined, player: undefined });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { pin: undefined, player: undefined });
         expect(service.answerConfirmed).toBeTrue();
     });
 

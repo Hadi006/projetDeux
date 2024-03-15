@@ -4,11 +4,11 @@ import { HostService } from '@app/services/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
-    selector: 'app-lobby-organizer-page',
-    templateUrl: './lobby-organizer-page.component.html',
-    styleUrls: ['./lobby-organizer-page.component.scss'],
+    selector: 'app-waiting-room-host-page',
+    templateUrl: './waiting-room-host-page.component.html',
+    styleUrls: ['./waiting-room-host-page.component.scss'],
 })
-export class LobbyOrganizerPageComponent {
+export class WaitingRoomHostPageComponent {
     constructor(
         private hostService: HostService,
         private router: Router,
@@ -16,15 +16,15 @@ export class LobbyOrganizerPageComponent {
         this.hostService.handleSockets();
     }
 
-    get lobbyData() {
-        return this.hostService.lobbyData;
+    get game() {
+        return this.hostService.game;
     }
 
     startGame() {
         this.hostService.startGame(START_GAME_COUNTDOWN);
     }
 
-    leaveLobby() {
+    leaveGame() {
         this.hostService.cleanUp();
         this.router.navigate(['/']);
     }

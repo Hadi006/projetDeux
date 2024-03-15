@@ -1,6 +1,6 @@
 import { AccessToken } from '@common/access-token';
 import { Quiz } from '@common/quiz';
-import { LobbyData } from '@common/lobby-data';
+import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 import { Answer } from '@common/quiz';
@@ -77,15 +77,15 @@ export const NEW_PLAYER: Player = {
     fastestResponseCount: 0,
 };
 
-export const NEW_LOBBY: LobbyData = {
-    id: '',
+export const NEW_GAME: Game = {
+    pin: '',
     players: [],
     locked: false,
 };
 
-export const LOBBY_ID_MAX = 10000;
+export const GAME_ID_MAX = 10000;
 
-export const LOBBY_ID_LENGTH = 4;
+export const GAME_ID_LENGTH = 4;
 
 export const START_GAME_COUNTDOWN = 5;
 
@@ -165,8 +165,8 @@ export const TEST_PLAYERS: Player[] = [
     },
 ];
 
-export const TEST_LOBBY_DATA: LobbyData = {
-    id: '1',
+export const TEST_GAME_DATA: Game = {
+    pin: '1',
     players: TEST_PLAYERS,
     quiz: TEST_QUIZZES[0],
     locked: false,

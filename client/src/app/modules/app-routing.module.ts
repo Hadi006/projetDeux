@@ -7,7 +7,7 @@ import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
-import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
+import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -17,7 +17,7 @@ const routes: Routes = [
     { path: 'home/admin/quizzes', component: AdminPageComponent, canActivate: [authGuard] },
     { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent, canActivate: [authGuard] },
     { path: 'game', component: GameChoicePageComponent },
-    { path: 'lobby', component: LobbyOrganizerPageComponent },
+    { path: 'waiting-room-host', component: WaitingRoomHostPageComponent },
     { path: 'test', component: GameplayPlayerPageComponent },
     { path: '**', redirectTo: '/home' },
 ];

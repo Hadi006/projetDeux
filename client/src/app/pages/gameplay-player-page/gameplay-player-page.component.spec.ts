@@ -4,33 +4,33 @@ import { GameTimersComponent } from '@app/components/game-timers/game-timers.com
 import { QuestionComponent } from '@app/components/question/question.component';
 import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
 import { Router } from '@angular/router';
-import { PlayerHandlerService } from '@app/services/player-handler.service';
+import { PlayerService } from '@app/services/player.service';
 import { HostService } from '@app/services/host.service';
-import { LobbyData } from '@common/lobby-data';
+import { Game } from '@common/game';
 import { of, Subject } from 'rxjs';
-import { TEST_LOBBY_DATA } from '@common/constant';
+import { TEST_GAME_DATA } from '@common/constant';
 
 describe('GameplayPlayerPageComponent', () => {
-    let testLobbyData: LobbyData;
+    let testGame: Game;
 
     let component: GameplayPlayerPageComponent;
     let fixture: ComponentFixture<GameplayPlayerPageComponent>;
-    let playerHandlerServiceSpy: jasmine.SpyObj<PlayerHandlerService>;
+    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        testLobbyData = JSON.parse(JSON.stringify(TEST_LOBBY_DATA));
+        testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
 
-        playerHandlerServiceSpy = jasmine.createSpyObj('PlayerHandlerService', ['handleSockets', 'joinGame', 'cleanUp', 'getTime']);
-        playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['handleSockets', 'joinGame', 'cleanUp', 'getTime']);
+        playerServiceSpy.joinGame.and.returnValue(of(''));
 
         const questionEndedSubject = new Subject<void>();
         const gameEndedSubject = new Subject<void>();
         hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
         Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
-        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => testLobbyData, configurable: true });
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => testGame, configurable: true });
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -39,7 +39,7 @@ describe('GameplayPlayerPageComponent', () => {
         TestBed.configureTestingModule({
             declarations: [GameplayPlayerPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
             providers: [
-                { provide: PlayerHandlerService, useValue: playerHandlerServiceSpy },
+                { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: Router, useValue: routerSpy },
             ],
@@ -75,15 +75,15 @@ describe('GameplayPlayerPageComponent', () => {
     });
 
     it('ngOnInit should navigate to game page if there is no quiz', () => {
-        hostServiceSpy.lobbyData.quiz = undefined;
+        hostServiceSpy.game.quiz = undefined;
         component.ngOnInit();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
     });
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
-        expect(playerHandlerServiceSpy.handleSockets).toHaveBeenCalled();
-        expect(playerHandlerServiceSpy.joinGame).toHaveBeenCalledWith(testLobbyData.id, 'Test');
-        playerHandlerServiceSpy.joinGame('1', 'test').subscribe(() => {
+        expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, 'Test');
+        playerServiceSpy.joinGame('1', 'test').subscribe(() => {
             expect(hostServiceSpy.startGame).toHaveBeenCalledWith(0);
             done();
         });
@@ -92,7 +92,7 @@ describe('GameplayPlayerPageComponent', () => {
     it('ngOnDestroy should clean up', () => {
         component.ngOnDestroy();
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
-        expect(playerHandlerServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
         hostServiceSpy.gameEndedSubject.next();
         expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);

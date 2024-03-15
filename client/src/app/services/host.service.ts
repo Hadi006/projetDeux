@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LobbyData } from '@common/lobby-data';
+import { Game } from '@common/game';
 import { WebSocketService } from './web-socket.service';
 import { Observable /* , Subject */, Subject } from 'rxjs';
 import { Answer, Question, Quiz } from '@common/quiz';
@@ -10,7 +10,7 @@ import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
     providedIn: 'root',
 })
 export class HostService {
-    private internalLobbyData: LobbyData;
+    private internalGame: Game;
     private internalNAnswered = 0;
     private timerId: number;
     private internalQuestionEndedSubject = new Subject<void>();
@@ -24,8 +24,8 @@ export class HostService {
         this.timerId = timeService.createTimerById();
     }
 
-    get lobbyData() {
-        return this.internalLobbyData;
+    get game() {
+        return this.internalGame;
     }
 
     get nAnswered() {
@@ -48,14 +48,14 @@ export class HostService {
         this.onConfirmPlayerAnswer();
     }
 
-    createLobby(quiz: Quiz): Observable<boolean> {
-        return this.emitCreateLobby(quiz);
+    createGame(quiz: Quiz): Observable<boolean> {
+        return this.emitCreateGame(quiz);
     }
 
     startGame(countdown: number) {
         this.emitStartGame(countdown);
 
-        this.internalLobbyData.locked = true;
+        this.internalGame.locked = true;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }
@@ -80,16 +80,16 @@ export class HostService {
     }
 
     cleanUp() {
-        this.emitDeleteLobby();
+        this.emitDeleteGame();
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
     }
 
-    private emitCreateLobby(quiz: Quiz): Observable<boolean> {
+    private emitCreateGame(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
-            this.webSocketService.emit('create-lobby', quiz, (lobbyData: unknown) => {
-                if (lobbyData) {
-                    this.internalLobbyData = lobbyData as LobbyData;
+            this.webSocketService.emit('create-game', quiz, (game: unknown) => {
+                if (game) {
+                    this.internalGame = game as Game;
                     this.currentQuestionIndex = INITIAL_QUESTION_INDEX;
                     subscriber.next(true);
                     subscriber.complete();
@@ -101,50 +101,50 @@ export class HostService {
         });
     }
 
-    private emitDeleteLobby(): void {
-        this.webSocketService.emit('delete-lobby', this.internalLobbyData.id);
+    private emitDeleteGame(): void {
+        this.webSocketService.emit('delete-game', this.internalGame.pin);
     }
 
     private emitStartGame(countdown: number) {
         this.webSocketService.emit('start-game', {
-            lobbyId: this.internalLobbyData.id,
+            pin: this.internalGame.pin,
             countdown,
         });
     }
 
     private emitNextQuestion() {
         this.webSocketService.emit('next-question', {
-            lobbyId: this.internalLobbyData.id,
+            pin: this.internalGame.pin,
             question: this.getCurrentQuestion(),
-            countdown: this.lobbyData.quiz?.duration,
+            countdown: this.internalGame.quiz?.duration,
         });
     }
 
     private emitEndQuestion() {
-        this.webSocketService.emit('end-question', this.internalLobbyData.id);
+        this.webSocketService.emit('end-question', this.internalGame.pin);
     }
 
     private emitUpdateScores() {
         this.webSocketService.emit('update-scores', {
-            lobbyId: this.internalLobbyData.id,
+            pin: this.internalGame.pin,
             questionIndex: this.currentQuestionIndex,
         });
     }
 
     private emitAnswer() {
         this.webSocketService.emit('answer', {
-            lobbyId: this.internalLobbyData.id,
+            pin: this.internalGame.pin,
             answer: this.getCurrentAnswer(),
         });
     }
 
     private emitEndGame() {
-        this.webSocketService.emit('end-game', this.internalLobbyData.id);
+        this.webSocketService.emit('end-game', this.internalGame.pin);
     }
 
     private onConfirmPlayerAnswer() {
         this.webSocketService.onEvent('confirm-player-answer', () => {
-            if (++this.internalNAnswered >= this.internalLobbyData.players.length) {
+            if (++this.internalNAnswered >= this.internalGame.players.length) {
                 this.timeService.setTimeById(this.timerId, 0);
                 this.internalNAnswered = 0;
             }
@@ -152,7 +152,7 @@ export class HostService {
     }
 
     private getCurrentQuestion(): Question | undefined {
-        return this.internalLobbyData.quiz?.questions[this.currentQuestionIndex];
+        return this.internalGame.quiz?.questions[this.currentQuestionIndex];
     }
 
     private getCurrentAnswer(): Answer[] {
@@ -160,7 +160,7 @@ export class HostService {
     }
 
     private setupNextQuestion() {
-        if (!this.internalLobbyData.quiz) {
+        if (!this.internalGame.quiz) {
             return;
         }
 
@@ -170,6 +170,6 @@ export class HostService {
         }
 
         this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, this.internalLobbyData.quiz?.duration, this.endQuestion.bind(this));
+        this.timeService.startTimerById(this.timerId, this.internalGame.quiz?.duration, this.endQuestion.bind(this));
     }
 }
