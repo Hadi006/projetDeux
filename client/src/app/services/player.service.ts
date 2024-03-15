@@ -12,9 +12,11 @@ import { TRANSITION_DELAY } from '@common/constant';
 export class PlayerService {
     player: Player;
 
-    private pin: string;
-    private timerId: number;
+    private internalPin: string;
+    private internalGameTitle: string;
     private internalPlayers: string[] = [];
+
+    private timerId: number;
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
@@ -26,8 +28,16 @@ export class PlayerService {
         this.timerId = timeService.createTimerById();
     }
 
+    get pin(): string {
+        return this.internalPin;
+    }
+
     get players(): string[] {
         return this.internalPlayers;
+    }
+
+    get gameTitle(): string {
+        return this.internalGameTitle;
     }
 
     get answerConfirmed(): boolean {
@@ -65,11 +75,11 @@ export class PlayerService {
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
             this.webSocketService.emit('join-game', { pin, playerName }, (response: unknown) => {
-                const responseData = response as { player: Player; players: string[]; error: string };
+                const responseData = response as { player: Player; players: string[]; gameTitle: string; error: string };
                 if (!responseData.error) {
                     this.player = responseData.player;
                     this.internalPlayers = responseData.players;
-                    this.pin = pin;
+                    this.internalPin = pin;
                 }
 
                 observer.next(responseData.error);
@@ -79,7 +89,7 @@ export class PlayerService {
     }
 
     updatePlayer(): void {
-        this.webSocketService.emit('update-player', { pin: this.pin, player: this.player });
+        this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
     }
 
     handleKeyUp(event: KeyboardEvent): void {
@@ -94,7 +104,7 @@ export class PlayerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.webSocketService.emit('confirm-player-answer', { pin: this.pin, player: this.player });
+        this.webSocketService.emit('confirm-player-answer', { pin: this.internalPin, player: this.player });
         this.internalAnswerConfirmed = true;
     }
 
