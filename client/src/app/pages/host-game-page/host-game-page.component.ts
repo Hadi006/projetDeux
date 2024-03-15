@@ -22,4 +22,8 @@ export class HostGamePageComponent {
     getCurrentQuestion() {
         return this.hostService.getCurrentQuestion();
     }
+
+    getTime() {
+        return this.hostService.getTime();
+    }
 }

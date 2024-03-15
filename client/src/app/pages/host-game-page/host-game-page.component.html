@@ -6,5 +6,14 @@
             <h1>{{ question.text }}</h1>
             <p>Points: + {{ question.points }}</p>
         </div>
+
+        <div class="countdown">
+            <mat-card class="timer-card">
+                <mat-card-content>
+                    <mat-icon class="timer-icon">timer</mat-icon>
+                    <p class="timer-text">{{ getTime() }}</p>
+                </mat-card-content>
+            </mat-card>
+        </div>
     </div>
 </div>
