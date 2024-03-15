@@ -63,7 +63,6 @@ export class HostService {
     startGame(countdown: number) {
         this.emitStartGame(countdown);
 
-        this.internalGame.locked = true;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }

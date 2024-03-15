@@ -152,7 +152,6 @@ describe('HostService', () => {
             emitSpy.and.stub();
             service.startGame(countdown);
             expect(emitSpy).toHaveBeenCalledWith('start-game', { pin: service.game.pin, countdown });
-            expect(service.game.locked).toBeTrue();
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
             done();
         });
