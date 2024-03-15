@@ -85,6 +85,20 @@ describe('GameController', () => {
         });
     });
 
+    it('should change lock state', (done) => {
+        const lockState = true;
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.emit('toggle-lock', { pin: testGame.pin, lockState });
+            setTimeout(() => {
+                expect(gameServiceStub.updateGame.calledWith({ ...testGame, locked: lockState })).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
     it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
         const result = {
