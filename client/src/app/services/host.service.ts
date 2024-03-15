@@ -41,6 +41,14 @@ export class HostService {
         return this.internalGameEndedSubject;
     }
 
+    getTime() {
+        return this.timeService.getTimeById(this.timerId);
+    }
+
+    getCurrentQuestion(): Question | undefined {
+        return this.internalGame.quiz?.questions[this.currentQuestionIndex];
+    }
+
     handleSockets() {
         if (!this.webSocketService.isSocketAlive()) {
             this.webSocketService.connect();
@@ -172,10 +180,6 @@ export class HostService {
                 this.internalNAnswered = 0;
             }
         });
-    }
-
-    private getCurrentQuestion(): Question | undefined {
-        return this.internalGame.quiz?.questions[this.currentQuestionIndex];
     }
 
     private getCurrentAnswer(): Answer[] {
