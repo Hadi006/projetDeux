@@ -60,7 +60,7 @@ export class GameController {
             const game = await this.gameService.getGame(pin);
             game.players = game.players.filter((player) => player.name !== playerName);
             await this.gameService.updateGame(game);
-            this.sio.to(pin).emit('player-leave', game.players);
+            this.sio.to(pin).emit('player-left', game.players);
         });
     }
 
