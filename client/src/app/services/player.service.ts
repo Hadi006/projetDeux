@@ -92,12 +92,12 @@ export class PlayerService {
     }
 
     leaveGame(): void {
-        this.webSocketService.emit('player-leave', { pin: this.internalPin, playerName: this.player.name });
+        this.emitLeaveGame();
         this.cleanUp();
     }
 
     updatePlayer(): void {
-        this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
+        this.emitUpdatePlayer();
     }
 
     handleKeyUp(event: KeyboardEvent): void {
@@ -112,7 +112,7 @@ export class PlayerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.webSocketService.emit('confirm-player-answer', { pin: this.internalPin, player: this.player });
+        this.emitConfirmPlayerAnswer();
         this.internalAnswerConfirmed = true;
     }
 
@@ -133,6 +133,18 @@ export class PlayerService {
         this.internalAnswer = [];
         this.internalIsCorrect = false;
         this.updatePlayer();
+    }
+
+    private emitLeaveGame() {
+        this.webSocketService.emit('player-leave', { pin: this.internalPin, playerName: this.player.name });
+    }
+
+    private emitUpdatePlayer() {
+        this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
+    }
+
+    private emitConfirmPlayerAnswer() {
+        this.webSocketService.emit('confirm-player-answer', { pin: this.internalPin, player: this.player });
     }
 
     private onPlayerJoined() {
