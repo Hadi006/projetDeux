@@ -27,7 +27,7 @@ export class GameController {
             this.onConfirmPlayerAnswer(socket);
             this.onAnswer(socket);
             this.onEndGame(socket);
-            this.disconnect(socket);
+            this.onDisconnect(socket);
         });
     }
 
@@ -112,7 +112,7 @@ export class GameController {
         });
     }
 
-    private disconnect(socket: Socket): void {
+    private onDisconnect(socket: Socket): void {
         socket.on('disconnect', () => {
             return;
         });
