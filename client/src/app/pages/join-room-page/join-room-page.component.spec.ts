@@ -49,4 +49,16 @@ describe('JoinRoomPageComponent', () => {
             done();
         });
     });
+
+    it('should not join game', (done) => {
+        component.gamePin = '12345';
+        component.playerName = 'test';
+        playerServiceSpy.joinGame.and.returnValue(of('error'));
+        component.joinGame();
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith('12345', 'test');
+        playerServiceSpy.joinGame('', '').subscribe(() => {
+            expect(routerSpy.navigate).not.toHaveBeenCalled();
+            done();
+        });
+    });
 });
