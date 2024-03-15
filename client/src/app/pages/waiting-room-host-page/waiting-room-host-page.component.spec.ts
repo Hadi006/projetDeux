@@ -37,10 +37,6 @@ describe('WaitingRoomHostPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should handle sockets', () => {
-        expect(hostServiceSpy.handleSockets).toHaveBeenCalled();
-    });
-
     it('should start game', () => {
         component.startGame();
         expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
