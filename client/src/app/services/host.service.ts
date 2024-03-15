@@ -13,6 +13,7 @@ import { Player } from '@common/player';
 export class HostService {
     private internalGame: Game;
     private internalNAnswered = 0;
+    private internalQuestionEnded: boolean;
     private timerId: number;
     private internalQuestionEndedSubject = new Subject<void>();
     private internalGameEndedSubject = new Subject<void>();
@@ -33,6 +34,9 @@ export class HostService {
         return this.internalNAnswered;
     }
 
+    get questionEnded() {
+        return this.internalQuestionEnded;
+    }
     get questionEndedSubject() {
         return this.internalQuestionEndedSubject;
     }
@@ -76,6 +80,7 @@ export class HostService {
     }
 
     nextQuestion() {
+        this.internalQuestionEnded = false;
         this.currentQuestionIndex++;
         this.emitNextQuestion();
         this.timeService.stopTimerById(this.timerId);
@@ -196,6 +201,7 @@ export class HostService {
             return;
         }
 
+        this.internalQuestionEnded = true;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz?.duration, this.endQuestion.bind(this));
     }
