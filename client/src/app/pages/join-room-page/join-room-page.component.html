@@ -5,7 +5,8 @@
     <form (ngSubmit)="joinGame()" #partyForm="ngForm">
         <div class="item-1">
             <label for="partyInput">Entrer le code : </label>
-            <input type="text" name="partyInput" [(ngModel)]="gamePin" placeholder="e.g 0000" required pattern="[0-9]{4}" />
+            <input type="text" name="partyInput" [(ngModel)]="gamePin" placeholder="e.g 0000" required
+                pattern="[0-9]{4}" />
             <label for="nicknameInput">Choisir un surnom:</label>
             <input type="text" name="nicknameInput" [(ngModel)]="playerName" placeholder="e.g John" required />
             <p *ngIf="error">{{ error }}</p>
