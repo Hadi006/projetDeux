@@ -10,6 +10,7 @@ import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { JoinRoomPageComponent } from '@app/pages/join-room-page/join-room-page.component';
 import { WaitingRoomPlayerPageComponent } from '@app/pages/waiting-room-player-page/waiting-room-player-page.component';
+import { PlayerGamePageComponent } from '@app/pages/player-game-page/player-game-page.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -22,6 +23,7 @@ const routes: Routes = [
     { path: 'game', component: GameChoicePageComponent },
     { path: 'waiting-room-host', component: WaitingRoomHostPageComponent },
     { path: 'waiting-room-player', component: WaitingRoomPlayerPageComponent },
+    { path: 'game-player', component: PlayerGamePageComponent },
     { path: 'test', component: TestPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
