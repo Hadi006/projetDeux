@@ -18,7 +18,7 @@
                     Allez à la page des résultats
                 </button>
                 <div class="histogram-container">
-                    <app-histogram>h</app-histogram>
+                    <app-histogram [chartData]="histogramData"></app-histogram>
                 </div>
                 <div class="answers">
                     <p *ngFor="let choice of gameData.questions[currentQuestionIndex].choices; let i = index" >

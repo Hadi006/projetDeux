@@ -1,5 +1,5 @@
-
-import { Component, OnInit } from '@angular/core';
+// histogram.component.ts
+import { Component, Input, OnInit } from '@angular/core';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -8,6 +8,8 @@ import Chart from 'chart.js/auto';
     styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent implements OnInit {
+    @Input() chartData: { labels: string[]; data: number[] };
+
     chart: unknown;
 
     ngOnInit(): void {
@@ -19,11 +21,11 @@ export class HistogramComponent implements OnInit {
         this.chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5'],
+                labels: this.chartData.labels,
                 datasets: [
                     {
                         label: 'Data',
-                        data: [10, 20, 30, 40, 50],
+                        data: this.chartData.data,
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
