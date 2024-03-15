@@ -146,8 +146,8 @@ export class HostService {
     }
 
     private onPlayerJoined() {
-        this.webSocketService.onEvent('player-joined', (players: Player[]) => {
-            this.internalGame.players = players;
+        this.webSocketService.onEvent('player-joined', (player: Player) => {
+            this.internalGame.players.push(player);
         });
     }
 

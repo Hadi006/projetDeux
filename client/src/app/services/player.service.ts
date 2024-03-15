@@ -131,8 +131,8 @@ export class PlayerService {
     }
 
     private onPlayerJoined() {
-        this.webSocketService.onEvent<Player[]>('player-joined', (players) => {
-            this.internalPlayers = players.map((player) => player.name);
+        this.webSocketService.onEvent<Player>('player-joined', (player) => {
+            this.internalPlayers.push(player.name);
         });
     }
 
