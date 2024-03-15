@@ -21,7 +21,7 @@ export class OrganizerViewPageComponent implements OnInit {
     showNextQuestionButton: boolean = true;
     histogramData = {
         labels: ['Reponse 1', 'Reponse 2', 'Reponse 3', 'Reponse 4'],
-        data: [1, 0, 0, 0],
+        data: [1, 1, 0, 0],
     };
 
     get time(): number {

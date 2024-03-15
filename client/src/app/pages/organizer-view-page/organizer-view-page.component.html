@@ -21,14 +21,10 @@
                     <app-histogram [chartData]="histogramData"></app-histogram>
                 </div>
                 <div class="answers">
-                    <p *ngFor="let choice of gameData.questions[currentQuestionIndex].choices; let i = index" >
-                        {{ i + 1 }}. {{ choice.text }}
-                    </p>
+                    <p *ngFor="let choice of gameData.questions[currentQuestionIndex].choices; let i = index">{{ i + 1 }}. {{ choice.text }}</p>
                 </div>
 
-                <button *ngIf="playerScores.size === playerList.length - 1">
-                    Envoyer les scores aux joueurs
-                </button>
+                <button *ngIf="playerScores.size === playerList.length - 1">Envoyer les scores aux joueurs</button>
             </div>
             <div class="countdown">
                 <mat-card class="timer-card">
@@ -37,9 +33,7 @@
                         <p *ngIf="gameData.duration && time" class="timer-text">{{ time }}</p>
                     </mat-card-content>
                     <div class="timer-container">
-                        <button class="button-timer" [hidden]="allPlayerSubmitted">
-                           
-                        </button>
+                        <button class="button-timer" [hidden]="allPlayerSubmitted"></button>
                     </div>
                 </mat-card>
                 <div class="players-container">
