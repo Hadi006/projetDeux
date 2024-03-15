@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Game } from '@common/game';
 import { WebSocketService } from './web-socket.service';
-import { Observable /* , Subject */, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { TimeService } from './time.service';
 import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
@@ -46,6 +46,7 @@ export class HostService {
             this.webSocketService.connect();
         }
 
+        this.onPlayerJoined();
         this.onPlayerLeft();
         this.onConfirmPlayerAnswer();
     }
@@ -142,6 +143,12 @@ export class HostService {
 
     private emitEndGame() {
         this.webSocketService.emit('end-game', this.internalGame.pin);
+    }
+
+    private onPlayerJoined() {
+        this.webSocketService.onEvent('player-joined', (players: Player[]) => {
+            this.internalGame.players = players;
+        });
     }
 
     private onPlayerLeft() {
