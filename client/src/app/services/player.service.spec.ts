@@ -18,7 +18,7 @@ class WebSocketServiceMock extends WebSocketService {
 describe('PlayerService', () => {
     let testQuestions: Question[];
     let testPlayer: Player;
-    let playerResponse: { player: Player; players: string[]; error: string };
+    let playerResponse: { player: Player; players: string[]; gameTitle: string; error: string };
 
     let service: PlayerService;
     let webSocketServiceMock: WebSocketServiceMock;
@@ -31,6 +31,7 @@ describe('PlayerService', () => {
         playerResponse = {
             player: { ...testPlayer },
             players: [],
+            gameTitle: '',
             error: '',
         };
 
@@ -146,6 +147,7 @@ describe('PlayerService', () => {
             expect(error).toEqual(playerResponse.error);
             expect(service.player).toEqual(playerResponse.player);
             expect(service.players).toEqual(playerResponse.players);
+            expect(service.gameTitle).toEqual(playerResponse.gameTitle);
             done();
         });
     });
@@ -160,6 +162,7 @@ describe('PlayerService', () => {
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
             expect(service.players).toEqual([]);
+            expect(service.gameTitle).toBeUndefined();
             done();
         });
     });
