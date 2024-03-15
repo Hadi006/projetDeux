@@ -58,6 +58,18 @@ describe('HostService', () => {
         expect(webSocketServiceMock.connect).toHaveBeenCalled();
     });
 
+    it('should add player on playerJoined', (done) => {
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            service.handleSockets();
+            socketHelper.peerSideEmit('player-joined', { name: 'Test Player' });
+            expect(service.game.players.length).toBe(testGame.players.length);
+            done();
+        });
+    });
+
     it('should increment nAnswered on confirmPlayerAnswer', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testGame);
