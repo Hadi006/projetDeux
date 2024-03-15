@@ -90,6 +90,7 @@ describe('GameController', () => {
         const result = {
             player: { ...NEW_PLAYER, name: playerName },
             players: [playerName],
+            gameTitle: testGame.quiz.title,
             error: '',
         };
         gameServiceStub.addPlayer.resolves(result);
@@ -105,6 +106,7 @@ describe('GameController', () => {
         const result = {
             player: { ...NEW_PLAYER, name: playerName },
             players: [playerName],
+            gameTitle: testGame.quiz.title,
             error: 'Error',
         };
         gameServiceStub.addPlayer.resolves(result);
