@@ -70,6 +70,18 @@ describe('HostService', () => {
         });
     });
 
+    it('should remove player on playerLeft', (done) => {
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            service.handleSockets();
+            socketHelper.peerSideEmit('player-left', { name: 'Test Player' });
+            expect(service.game.players.length).toBe(testGame.players.length);
+            done();
+        });
+    });
+
     it('should increment nAnswered on confirmPlayerAnswer', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testGame);
