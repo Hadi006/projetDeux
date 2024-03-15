@@ -33,12 +33,12 @@ export class GameController {
     }
 
     private onCreateGame(socket: Socket): void {
-        socket.on('create-game', async (quiz: Quiz, ack) => {
+        socket.on('create-game', async (quiz: Quiz, callback) => {
             const game = await this.gameService.createGame(quiz);
             if (game) {
                 socket.join(game.pin);
             }
-            ack(game);
+            callback(game);
         });
     }
 
