@@ -1,34 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { TimeService } from '@app/services/time.service';
-import { START_GAME_COUNTDOWN } from '@common/constant';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'app-game-count-down',
     templateUrl: './game-count-down.component.html',
     styleUrls: ['./game-count-down.component.scss'],
 })
-export class GameCountDownComponent implements OnInit {
+export class GameCountDownComponent {
     @Input() gameName: string;
-
-    private timerId: number;
-
-    constructor(
-        private timeService: TimeService,
-        private router: Router,
-    ) {
-        this.timerId = this.timeService.createTimerById();
-    }
-
-    get time() {
-        return this.timeService.getTimeById(this.timerId);
-    }
-
-    ngOnInit(): void {
-        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN, this.startGame.bind(this));
-    }
-
-    private startGame() {
-        this.router.navigate(['/']);
-    }
+    @Input() time: number;
 }
