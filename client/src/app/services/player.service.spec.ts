@@ -164,6 +164,15 @@ describe('PlayerService', () => {
         });
     });
 
+    it('leaveGame should emit player-leave and clean up', () => {
+        spyOn(webSocketServiceMock, 'emit');
+        spyOn(service, 'cleanUp');
+        service.player = testPlayer;
+        service.leaveGame();
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: undefined, playerName: testPlayer.name });
+        expect(service.cleanUp).toHaveBeenCalled();
+    });
+
     it('updatePlayer should update the player', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.updatePlayer();
