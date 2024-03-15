@@ -7,7 +7,7 @@ import { Container } from 'typedi';
 import { GameService } from '@app/services/game.service';
 import { Question, Quiz } from '@common/quiz';
 import { Game } from '@common/game';
-import { NEW_PLAYER, TEST_GAME_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 
 describe('GameController', () => {
     let service: GameController;
@@ -116,6 +116,25 @@ describe('GameController', () => {
             expect(gameServiceStub.addPlayer.calledWith(testGame.pin, playerName)).to.equal(true);
             expect(toSpy.called).to.equal(false);
             done();
+        });
+    });
+
+    it('should broadcast a player left and remove player from game', (done) => {
+        const playerName = TEST_PLAYERS[0].name;
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('player-left', (response) => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(
+                    gameServiceStub.updateGame.calledWith({ ...testGame, players: testGame.players.filter((player) => player.name !== playerName) }),
+                ).to.equal(true);
+                expect(response).to.deep.equal(testGame.players);
+                done();
+            });
+            clientSocket.emit('player-leave', { pin: testGame.pin, playerName });
         });
     });
 
