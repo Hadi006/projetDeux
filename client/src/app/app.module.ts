@@ -30,6 +30,7 @@ import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.com
 import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting-room-info.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
+import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -63,6 +64,7 @@ import { PlayerGamePageComponent } from './pages/player-game-page/player-game-pa
         WaitingRoomInfoComponent,
         WaitingRoomPlayerPageComponent,
         PlayerGamePageComponent,
+        HostGamePageComponent,
     ],
     imports: [
         AppMaterialModule,
