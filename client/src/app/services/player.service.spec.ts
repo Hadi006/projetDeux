@@ -94,6 +94,16 @@ describe('PlayerService', () => {
         socketHelper.peerSideEmit('start-game', countdown);
     });
 
+    it('should add player on player-joined', (done) => {
+        service.handleSockets();
+        socketHelper.on('player-joined', (player) => {
+            expect(service.players).toContain(player.name);
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('player-joined', testPlayer);
+    });
+
     it('should confirm answer and stop timer on endQuestion', (done) => {
         service.handleSockets();
         socketHelper.on('end-question', () => {
