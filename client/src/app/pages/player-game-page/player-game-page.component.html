@@ -1,1 +1,3 @@
-<p>player-game-page works!</p>
+<div *ngIf="playerService.player.questions.length === 0">
+    <app-game-count-down [gameName]="playerService.gameTitle" [time]="playerService.getTime()"></app-game-count-down>
+</div>
