@@ -1,6 +1,6 @@
 <app-waiting-room-info [title]="gameTitle" [pin]="pin" [nPlayers]="players.length" [leaveGame]="leaveGame.bind(this)"></app-waiting-room-info>
 
-Joueurs:
+<p>Joueurs:</p>
 <div *ngFor="let player of players">
     {{ player }}
 </div>
