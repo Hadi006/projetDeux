@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Player } from '@common/player';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Answer, Question } from '@common/quiz';
 import { WebSocketService } from './web-socket.service';
 import { TimeService } from './time.service';
@@ -17,6 +17,7 @@ export class PlayerService {
     private internalPlayers: string[] = [];
 
     private timerId: number;
+    private internalStartGameSubject: Subject<void> = new Subject<void>();
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
@@ -38,6 +39,10 @@ export class PlayerService {
 
     get gameTitle(): string {
         return this.internalGameTitle;
+    }
+
+    get startGameSubject(): Subject<void> {
+        return this.internalStartGameSubject;
     }
 
     get answerConfirmed(): boolean {
@@ -161,6 +166,7 @@ export class PlayerService {
 
     private onStartGame() {
         this.webSocketService.onEvent<number>('start-game', (countdown) => {
+            this.internalStartGameSubject.next();
             this.timeService.startTimerById(this.timerId, countdown);
         });
     }
