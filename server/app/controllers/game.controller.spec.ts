@@ -152,6 +152,17 @@ describe('GameController', () => {
         });
     });
 
+    it('should do nothing if game does not exist', (done) => {
+        const playerName = TEST_PLAYERS[0].name;
+        gameServiceStub.getGame.resolves(null);
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('player-leave', { pin: testGame.pin, playerName });
+        setTimeout(() => {
+            expect(toSpy.called).to.equal(false);
+            done();
+        }, RESPONSE_DELAY);
+    });
+
     it('should broadcast a next question', (done) => {
         const question = JSON.parse(JSON.stringify(testQuestion));
         const countdown = 5;
