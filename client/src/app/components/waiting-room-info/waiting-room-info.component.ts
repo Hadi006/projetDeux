@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Game } from '@common/game';
 
 @Component({
     selector: 'app-waiting-room-info',
@@ -7,6 +6,8 @@ import { Game } from '@common/game';
     styleUrls: ['./waiting-room-info.component.scss'],
 })
 export class WaitingRoomInfoComponent {
-    @Input() game: Game;
+    @Input() title: string;
+    @Input() pin: string;
+    @Input() nPlayers: number;
     @Input() leaveGame: () => void;
 }

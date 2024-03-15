@@ -1,5 +1,12 @@
 <div *ngIf="game">
-    <app-waiting-room-info [game]="game" [leaveGame]="leaveGame.bind(this)"></app-waiting-room-info>
+    <div *ngIf="game.quiz">
+        <app-waiting-room-info
+            [title]="game.quiz.title"
+            [pin]="game.pin"
+            [nPlayers]="game.players.length"
+            [leaveGame]="leaveGame.bind(this)"
+        ></app-waiting-room-info>
+    </div>
 
     <div id="players-container">
         <p>Joueurs:</p>
