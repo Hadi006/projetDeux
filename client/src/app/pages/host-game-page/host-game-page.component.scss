@@ -5,6 +5,15 @@
     background-color: #302b63;
 }
 
+.organizer-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #302b63;
+}
+
 .question-display p {
     font-size: 20px;
     color: #302b63;
