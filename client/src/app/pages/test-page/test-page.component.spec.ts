@@ -91,6 +91,7 @@ describe('TestPageComponent', () => {
 
     it('ngOnDestroy should unsubscribe', () => {
         component.ngOnDestroy();
+        expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
         hostServiceSpy.gameEndedSubject.next();
         expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);
