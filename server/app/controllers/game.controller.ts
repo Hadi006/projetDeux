@@ -43,7 +43,7 @@ export class GameController {
 
     private joinGame(socket: Socket): void {
         socket.on('join-game', async ({ pin, playerName }, callback) => {
-            const result: { player: Player; players: string[]; error: string } = await this.gameService.addPlayer(pin, playerName);
+            const result: { player: Player; players: string[]; gameTitle: string; error: string } = await this.gameService.addPlayer(pin, playerName);
 
             if (!result.error) {
                 socket.join(pin);

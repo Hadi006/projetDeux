@@ -56,35 +56,35 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(pin: string, playerName: string): Promise<{ player: Player; players: string[]; error: string }> {
+    async addPlayer(pin: string, playerName: string): Promise<{ player: Player; players: string[]; gameTitle: string; error: string }> {
         const game = await this.getGame(pin);
         const player: Player = { ...NEW_PLAYER, name: playerName };
         const lowerCasePlayerName = playerName.toLocaleLowerCase();
 
         if (!game || game.pin !== pin) {
-            return { player, players: [], error: 'Le NIP est invalide' };
+            return { player, players: [], gameTitle: '', error: 'Le NIP est invalide' };
         }
 
         if (game.locked) {
-            return { player, players: [], error: 'La partie est verrouillée' };
+            return { player, players: [], gameTitle: '', error: 'La partie est verrouillée' };
         }
 
         if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
-            return { player, players: [], error: 'Ce nom est déjà utilisé' };
+            return { player, players: [], gameTitle: '', error: 'Ce nom est déjà utilisé' };
         }
 
         if (lowerCasePlayerName === 'organisateur') {
-            return { player, players: [], error: 'Pseudo interdit' };
+            return { player, players: [], gameTitle: '', error: 'Pseudo interdit' };
         }
 
         if (lowerCasePlayerName.trim() === '') {
-            return { player, players: [], error: "Pseudo vide n'est pas permis" };
+            return { player, players: [], gameTitle: '', error: "Pseudo vide n'est pas permis" };
         }
 
         game.players.push(player);
         await this.updateGame(game);
 
-        return { player, players: game.players.map((p) => p.name), error: '' };
+        return { player, players: game.players.map((p) => p.name), gameTitle: game.quiz.title, error: '' };
     }
 
     async updatePlayer(pin: string, player: Player): Promise<void> {
