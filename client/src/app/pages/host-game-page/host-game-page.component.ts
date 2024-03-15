@@ -9,9 +9,13 @@ import { HostService } from '@app/services/host.service';
 export class HostGamePageComponent {
     isCountingDown = true;
 
-    constructor(public hostService: HostService) {}
+    constructor(private hostService: HostService) {}
 
     stopCountDown() {
         this.isCountingDown = false;
+    }
+
+    getGame() {
+        return this.hostService.game;
     }
 }

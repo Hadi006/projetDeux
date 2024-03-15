@@ -1,4 +1,4 @@
-<div *ngIf="hostService.game.quiz">
+<div *ngIf="getGame().quiz as quiz">
     <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()"
-        [gameName]="hostService.game.quiz.title"></app-game-count-down>
+        [gameName]="quiz.title"></app-game-count-down>
 </div>
