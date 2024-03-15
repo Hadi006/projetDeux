@@ -169,7 +169,7 @@ describe('PlayerService', () => {
         spyOn(service, 'cleanUp');
         service.player = testPlayer;
         service.leaveGame();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: undefined, playerName: testPlayer.name });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, playerName: testPlayer.name });
         expect(service.cleanUp).toHaveBeenCalled();
     });
 
