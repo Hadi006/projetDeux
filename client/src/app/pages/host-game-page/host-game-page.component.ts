@@ -7,5 +7,11 @@ import { HostService } from '@app/services/host.service';
     styleUrls: ['./host-game-page.component.scss'],
 })
 export class HostGamePageComponent {
+    isCountingDown = true;
+
     constructor(public hostService: HostService) {}
+
+    stopCountDown() {
+        this.isCountingDown = false;
+    }
 }
