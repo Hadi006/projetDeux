@@ -91,6 +91,11 @@ export class PlayerService {
         });
     }
 
+    leaveGame(): void {
+        this.webSocketService.emit('player-leave', { pin: this.internalPin, playerName: this.player.name });
+        this.cleanUp();
+    }
+
     updatePlayer(): void {
         this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
     }
