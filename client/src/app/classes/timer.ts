@@ -39,9 +39,14 @@ export class Timer {
 
     pause() {
         clearInterval(this.interval);
+        this.interval = undefined;
     }
 
     resume() {
+        if (this.interval || this.time <= 0) {
+            return;
+        }
+
         this.interval = window.setInterval(() => {
             if (this.time > 0) {
                 this.time--;
