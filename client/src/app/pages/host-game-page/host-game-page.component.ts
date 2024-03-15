@@ -30,4 +30,8 @@ export class HostGamePageComponent {
     getQuestionEnded() {
         return this.hostService.questionEnded;
     }
+
+    nextQuestion() {
+        this.hostService.nextQuestion();
+    }
 }

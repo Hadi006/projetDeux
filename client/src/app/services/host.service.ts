@@ -91,6 +91,7 @@ export class HostService {
         this.emitEndQuestion();
         this.emitUpdateScores();
         this.emitAnswer();
+        this.internalQuestionEnded = true;
         this.internalQuestionEndedSubject.next();
     }
 
@@ -201,7 +202,6 @@ export class HostService {
             return;
         }
 
-        this.internalQuestionEnded = true;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz?.duration, this.endQuestion.bind(this));
     }
