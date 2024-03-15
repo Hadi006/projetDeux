@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
@@ -9,8 +9,7 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
 })
 export class GameCountDownComponent {
     @Input() gameName: string;
-
-    isCountingDown = true;
+    @Output() countdownEnded = new EventEmitter<void>();
 
     private timerId: number;
 
@@ -24,6 +23,6 @@ export class GameCountDownComponent {
     }
 
     private stopCountDown() {
-        this.isCountingDown = false;
+        this.countdownEnded.emit();
     }
 }

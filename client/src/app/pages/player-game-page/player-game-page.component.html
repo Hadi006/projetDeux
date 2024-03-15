@@ -1,3 +1,3 @@
-<app-game-count-down [gameName]="playerService.gameTitle"></app-game-count-down>
-<app-question></app-question>
+<app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()" [gameName]="playerService.gameTitle"></app-game-count-down>
+<app-question *ngIf="!isCountingDown"></app-question>
 <app-chatbox></app-chatbox>

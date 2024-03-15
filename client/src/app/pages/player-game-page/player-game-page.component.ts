@@ -7,5 +7,11 @@ import { PlayerService } from '@app/services/player.service';
     styleUrls: ['./player-game-page.component.scss'],
 })
 export class PlayerGamePageComponent {
+    isCountingDown = true;
+
     constructor(public playerService: PlayerService) {}
+
+    stopCountDown() {
+        this.isCountingDown = false;
+    }
 }
