@@ -89,7 +89,7 @@ export class GameController {
         socket.on('kick', async ({ pin, playerName }) => {
             const game = await this.gameService.getGame(pin);
             game.players = game.players.filter((player) => player.name !== playerName);
-            game.bannedNames.push(playerName);
+            game.bannedNames.push(playerName.toLocaleLowerCase());
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('kick', playerName);
             this.sio.to(pin).emit('player-left', game.players);
