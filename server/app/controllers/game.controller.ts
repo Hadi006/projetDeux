@@ -18,6 +18,7 @@ export class GameController {
         this.sio.on('connection', (socket: Socket) => {
             this.onCreateGame(socket);
             this.onJoinGame(socket);
+            this.onPlayerLeave(socket);
             this.onDeleteGame(socket);
             this.onStartGame(socket);
             this.onNextQuestion(socket);
@@ -51,6 +52,15 @@ export class GameController {
             }
 
             callback(result);
+        });
+    }
+
+    private onPlayerLeave(socket: Socket): void {
+        socket.on('player-leave', async ({ pin, playerName }) => {
+            const game = await this.gameService.getGame(pin);
+            game.players = game.players.filter((player) => player.name !== playerName);
+            await this.gameService.updateGame(game);
+            this.sio.to(pin).emit('player-leave', game.players);
         });
     }
 
