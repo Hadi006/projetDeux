@@ -1,11 +1,7 @@
 <div *ngIf="game">
     <div *ngIf="game.quiz">
-        <app-waiting-room-info
-            [title]="game.quiz.title"
-            [pin]="game.pin"
-            [nPlayers]="game.players.length"
-            [leaveGame]="leaveGame.bind(this)"
-        ></app-waiting-room-info>
+        <app-waiting-room-info [title]="game.quiz.title" [pin]="game.pin" [nPlayers]="game.players.length"
+            [leaveGame]="leaveGame.bind(this)"></app-waiting-room-info>
     </div>
 
     <div id="players-container">
@@ -15,5 +11,6 @@
         </div>
     </div>
 
+    <button (click)="toggleLock()">{{ game.locked ? 'Déverrouiller' : 'Verrouiller' }}</button>
     <button *ngIf="game.quiz" (click)="startGame()">Commencer la partie</button>
 </div>

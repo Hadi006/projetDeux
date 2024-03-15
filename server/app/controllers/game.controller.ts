@@ -17,6 +17,7 @@ export class GameController {
     handleSockets(): void {
         this.sio.on('connection', (socket: Socket) => {
             this.onCreateGame(socket);
+            this.onToggleLock(socket);
             this.onJoinGame(socket);
             this.onPlayerLeave(socket);
             this.onDeleteGame(socket);
@@ -39,6 +40,14 @@ export class GameController {
                 socket.join(game.pin);
             }
             callback(game);
+        });
+    }
+
+    private onToggleLock(socket: Socket): void {
+        socket.on('toggle-lock', async ({ pin, lockState }) => {
+            const game = await this.gameService.getGame(pin);
+            game.locked = lockState;
+            await this.gameService.updateGame(game);
         });
     }
 

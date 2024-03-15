@@ -18,6 +18,10 @@ export class WaitingRoomHostPageComponent {
         return this.hostService.game;
     }
 
+    toggleLock() {
+        this.hostService.toggleLock();
+    }
+
     startGame() {
         this.hostService.startGame(START_GAME_COUNTDOWN);
     }

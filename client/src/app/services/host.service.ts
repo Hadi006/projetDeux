@@ -55,6 +55,11 @@ export class HostService {
         return this.emitCreateGame(quiz);
     }
 
+    toggleLock() {
+        this.internalGame.locked = !this.internalGame.locked;
+        this.emitToggleLock();
+    }
+
     startGame(countdown: number) {
         this.emitStartGame(countdown);
 
@@ -86,6 +91,10 @@ export class HostService {
         this.emitDeleteGame();
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+    }
+
+    private emitToggleLock() {
+        this.webSocketService.emit('toggle-lock', { pin: this.internalGame.pin, lockState: this.internalGame.locked });
     }
 
     private emitCreateGame(quiz: Quiz): Observable<boolean> {
