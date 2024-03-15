@@ -61,4 +61,10 @@ describe('JoinRoomPageComponent', () => {
             done();
         });
     });
+
+    it('should clean up', () => {
+        component.return();
+        expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
 });
