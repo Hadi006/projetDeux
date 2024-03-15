@@ -65,6 +65,8 @@ export class PlayerService {
             this.webSocketService.connect();
         }
 
+        this.onPlayerJoined();
+        this.onPlayerLeft();
         this.onStartGame();
         this.onEndQuestion();
         this.onNextQuestion();
@@ -126,6 +128,18 @@ export class PlayerService {
         this.internalAnswer = [];
         this.internalIsCorrect = false;
         this.updatePlayer();
+    }
+
+    private onPlayerJoined() {
+        this.webSocketService.onEvent<string[]>('player-joined', (players) => {
+            this.internalPlayers = players;
+        });
+    }
+
+    private onPlayerLeft() {
+        this.webSocketService.onEvent<string[]>('player-left', (players) => {
+            this.internalPlayers = players;
+        });
     }
 
     private onStartGame() {
