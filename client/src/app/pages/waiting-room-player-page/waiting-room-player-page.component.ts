@@ -13,6 +13,18 @@ export class WaitingRoomPlayerPageComponent {
         private router: Router,
     ) {}
 
+    get pin() {
+        return this.playerService.pin;
+    }
+
+    get gameTitle() {
+        return this.playerService.gameTitle;
+    }
+
+    get players() {
+        return this.playerService.players;
+    }
+
     leaveGame() {
         this.playerService.cleanUp();
         this.router.navigate(['/']);
