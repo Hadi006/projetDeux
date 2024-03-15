@@ -25,7 +25,6 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 import { PromptComponent } from './components/prompt/prompt.component';
-import { PlayerComponent } from './components/player/player.component';
 import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
 import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting-room-info.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
@@ -57,7 +56,6 @@ import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page
         QuestionFormComponent,
         PromptComponent,
         WaitingRoomHostPageComponent,
-        PlayerComponent,
         JoinRoomPageComponent,
         WaitingRoomInfoComponent,
         WaitingRoomPlayerPageComponent,
