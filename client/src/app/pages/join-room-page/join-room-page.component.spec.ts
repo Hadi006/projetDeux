@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PlayerService } from '@app/services/player.service';
+import { of } from 'rxjs';
 
 import { JoinRoomPageComponent } from './join-room-page.component';
 
@@ -35,5 +36,17 @@ describe('JoinRoomPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should join game', (done) => {
+        component.gamePin = '12345';
+        component.playerName = 'test';
+        playerServiceSpy.joinGame.and.returnValue(of(''));
+        component.joinGame();
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith('12345', 'test');
+        playerServiceSpy.joinGame('', '').subscribe(() => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['waiting-room-player']);
+            done();
+        });
     });
 });
