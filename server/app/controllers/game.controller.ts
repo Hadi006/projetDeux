@@ -48,7 +48,7 @@ export class GameController {
 
             if (!result.error) {
                 socket.join(pin);
-                this.sio.to(pin).emit('player-joined', result.player.name);
+                this.sio.to(pin).emit('player-joined', result.player);
             }
 
             callback(result);
