@@ -67,6 +67,11 @@ export class GameController {
     private onPlayerLeave(socket: Socket): void {
         socket.on('player-leave', async ({ pin, playerName }) => {
             const game = await this.gameService.getGame(pin);
+
+            if (!game) {
+                return;
+            }
+
             game.players = game.players.filter((player) => player.name !== playerName);
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('player-left', game.players);
