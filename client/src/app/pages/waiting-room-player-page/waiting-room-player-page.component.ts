@@ -26,6 +26,7 @@ export class WaitingRoomPlayerPageComponent {
     }
 
     leaveGame() {
+        this.playerService.leaveGame();
         this.playerService.cleanUp();
         this.router.navigate(['/']);
     }
