@@ -1,6 +1,6 @@
 // histogram.component.ts
 import { Component, Input, OnInit } from '@angular/core';
-import Chart from 'chart.js/auto';
+import { Chart } from 'chart.js/auto';
 
 @Component({
     selector: 'app-histogram',
