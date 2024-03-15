@@ -1,30 +1,37 @@
-<div *ngIf="questionData">
-    <h2>{{ questionData.text }}</h2>
+<div *ngIf="getQuestionData() as questionData">
+    <div *ngIf="getPlayer() as player">
+        <h2>{{ questionData.text }}</h2>
 
-    <p>Valeur de la question: {{ questionData.points }} points</p>
+        <p>Valeur de la question: {{ questionData.points }} points</p>
 
-    <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
-        <div *ngFor="let choice of questionData.choices; let i = index">
-            <label>
-                <input [disabled]="!canEditAnswer()" type="checkbox" [(ngModel)]="playerHandlerService.getPlayerAnswers()[i].isCorrect" />
-                {{ i + 1 }} ) {{ choice.text }}
-            </label>
+        <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
+            <div
+                *ngFor="let choice of playerHandlerService.player.questions[playerHandlerService.player.questions.length - 1].choices; let i = index"
+            >
+                <label>
+                    <input
+                        [disabled]="this.playerHandlerService.answerConfirmed"
+                        type="checkbox"
+                        [(ngModel)]="choice.isCorrect"
+                        (ngModelChange)="playerHandlerService.updatePlayer()"
+                    />
+                    {{ i + 1 }} ) {{ choice.text }}
+                </label>
+            </div>
         </div>
-    </div>
 
-    <div *ngIf="questionData.type === 'QRL'" id="question-container">
-        <textarea [disabled]="showingAnswer" placeholder="Tapez votre réponse ici..."></textarea>
-    </div>
+        <div *ngIf="questionData.type === 'QRL'" id="question-container">
+            <textarea [disabled]="this.playerHandlerService.answerConfirmed" placeholder="Tapez votre réponse ici..."></textarea>
+        </div>
 
-    <div>Score: {{ player.score }}</div>
+        <div>Score: {{ player.score }}</div>
 
-    <div *ngIf="showingAnswer" id="grade-container">
-        <span *ngFor="let correctAnswer of correctAnswers; let i = index">
+        <div *ngFor="let correctAnswer of playerHandlerService.answer; let i = index">
             <p>Réponse(s): {{ correctAnswer.text }}</p>
-        </span>
-        <div *ngIf="player.isCorrect">
+        </div>
+        <div *ngIf="playerHandlerService.isCorrect">
             <p>Bonne réponse!</p>
         </div>
+        <button [disabled]="this.playerHandlerService.answerConfirmed" (click)="playerHandlerService.confirmPlayerAnswer()">Confirmer</button>
     </div>
 </div>
-<button [disabled]="!canEditAnswer()" (click)="playerHandlerService.confirmPlayerAnswer(player)">Confirmer</button>

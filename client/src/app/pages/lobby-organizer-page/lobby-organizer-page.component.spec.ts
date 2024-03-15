@@ -1,23 +1,29 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { LobbyOrganizerPageComponent } from '@app/pages/lobby-organizer-page/lobby-organizer-page.component';
-import { LobbyService } from '@app/services/lobby.service';
-import { TEST_LOBBY_DATA } from '@common/constant';
+import { HostService } from '@app/services/host.service';
+import { START_GAME_COUNTDOWN, TEST_LOBBY_DATA } from '@common/constant';
 
 describe('LobbyOrganizerPageComponent', () => {
     let component: LobbyOrganizerPageComponent;
     let fixture: ComponentFixture<LobbyOrganizerPageComponent>;
-    let lobbyServiceSpy: jasmine.SpyObj<LobbyService>;
+    let hostServiceSpy: jasmine.SpyObj<HostService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        lobbyServiceSpy = jasmine.createSpyObj('LobbyService', ['subscribeLobbyToServer']);
-        Object.defineProperty(lobbyServiceSpy, 'lobbyData', { value: TEST_LOBBY_DATA });
+        hostServiceSpy = jasmine.createSpyObj('LobbyService', ['cleanUp', 'startGame', 'handleSockets']);
+        Object.defineProperty(hostServiceSpy, 'lobbyData', { get: () => TEST_LOBBY_DATA, configurable: true });
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [LobbyOrganizerPageComponent, GameCountDownComponent],
-            providers: [{ provide: LobbyService, useValue: lobbyServiceSpy }],
+            providers: [
+                { provide: HostService, useValue: hostServiceSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
         }).compileComponents();
     }));
 
@@ -31,12 +37,18 @@ describe('LobbyOrganizerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should return lobbyData from lobbyService', () => {
-        expect(component.lobbyData).toEqual(TEST_LOBBY_DATA);
+    it('should handle sockets', () => {
+        expect(hostServiceSpy.handleSockets).toHaveBeenCalled();
     });
 
-    it('should set lobbyData.started to true', () => {
+    it('should start game', () => {
         component.startGame();
-        expect(component.lobbyData.started).toBeTrue();
+        expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
+    });
+
+    it('should clean up', () => {
+        component.leaveLobby();
+        expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 });

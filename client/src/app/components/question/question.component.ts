@@ -1,69 +1,53 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Player } from '@common/player';
 import { PlayerHandlerService } from '@app/services/player-handler.service';
-import { QuestionHandlerService } from '@app/services/question-handler.service';
-import { GameState } from '@common/constant';
-import { Answer, Question } from '@common/quiz';
-import { GameManagementService } from '@app/services/game-management.service';
-import { Subscription } from 'rxjs';
+import { Question } from '@common/quiz';
 
 @Component({
     selector: 'app-question',
     templateUrl: './question.component.html',
     styleUrls: ['./question.component.scss'],
 })
-export class QuestionComponent implements OnDestroy {
-    player: Player;
-    answerConfirmed = false;
-
-    private answerConfirmedSubscription: Subscription;
-
-    constructor(
-        public playerHandlerService: PlayerHandlerService,
-        private questionHandlerService: QuestionHandlerService,
-        private gameManagementService: GameManagementService,
-    ) {
-        this.player = this.playerHandlerService.createPlayer();
-        this.subscribeToAnswerConfirmed();
-    }
-
-    get questionData(): Question | undefined {
-        return this.questionHandlerService.currentQuestion;
-    }
-
-    get correctAnswers(): Answer[] {
-        return this.questionHandlerService.currentAnswers;
-    }
-
-    get isChecked(): boolean[] {
-        return this.playerHandlerService.getPlayerBooleanAnswers();
-    }
-
-    get showingAnswer(): boolean {
-        return this.gameManagementService.gameState === GameState.ShowAnswer;
-    }
+export class QuestionComponent {
+    constructor(public playerHandlerService: PlayerHandlerService) {}
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.questionData || !(this.questionData.type === 'QCM') || !this.canEditAnswer()) {
+        if (!this.getPlayer()) {
+            return;
+        }
+
+        if (!this.canEditAnswer()) {
             return;
         }
 
         event.stopPropagation();
-        this.playerHandlerService.handleKeyUp(event, this.player);
+        this.playerHandlerService.handleKeyUp(event);
     }
 
-    canEditAnswer(): boolean {
-        return !this.answerConfirmed && !this.showingAnswer;
+    getPlayer(): Player | undefined {
+        return this.playerHandlerService.player;
     }
 
-    ngOnDestroy(): void {
-        this.answerConfirmedSubscription.unsubscribe();
+    getQuestionData(): Question | undefined {
+        const player = this.getPlayer();
+
+        if (!player) {
+            return;
+        }
+
+        return player.questions[player.questions.length - 1];
     }
 
-    private subscribeToAnswerConfirmed(): void {
-        this.answerConfirmedSubscription = this.playerHandlerService.answerConfirmedSubject.subscribe((answerConfirmed) => {
-            this.answerConfirmed = answerConfirmed;
-        });
+    getIsChecked(): boolean[] {
+        return this.playerHandlerService.getPlayerBooleanAnswers();
+    }
+
+    private canEditAnswer(): boolean {
+        if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerHandlerService.answerConfirmed) {
+            return true;
+        }
+
+        return false;
     }
 }

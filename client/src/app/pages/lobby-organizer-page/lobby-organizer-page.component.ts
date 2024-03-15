@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { LobbyService } from '@app/services/lobby.service';
+import { Router } from '@angular/router';
+import { HostService } from '@app/services/host.service';
+import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
     selector: 'app-lobby-organizer-page',
@@ -7,13 +9,23 @@ import { LobbyService } from '@app/services/lobby.service';
     styleUrls: ['./lobby-organizer-page.component.scss'],
 })
 export class LobbyOrganizerPageComponent {
-    constructor(private lobbyService: LobbyService) {}
+    constructor(
+        private hostService: HostService,
+        private router: Router,
+    ) {
+        this.hostService.handleSockets();
+    }
 
     get lobbyData() {
-        return this.lobbyService.lobbyData;
+        return this.hostService.lobbyData;
     }
 
     startGame() {
-        this.lobbyService.lobbyData.started = true;
+        this.hostService.startGame(START_GAME_COUNTDOWN);
+    }
+
+    leaveLobby() {
+        this.hostService.cleanUp();
+        this.router.navigate(['/']);
     }
 }

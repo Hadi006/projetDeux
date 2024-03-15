@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameHandlerService } from '@app/services/game-handler.service';
+import { HostService } from '@app/services/host.service';
+import { PlayerHandlerService } from '@app/services/player-handler.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -9,26 +10,37 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./gameplay-player-page.component.scss'],
 })
 export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
+    private questionEndedSubscription: Subscription;
     private gameEndedSubscription: Subscription;
 
     constructor(
-        public gameHandlerService: GameHandlerService,
+        public playerHandlerService: PlayerHandlerService,
+        private hostService: HostService,
         private router: Router,
     ) {
-        this.gameEndedSubscription = this.gameHandlerService.gameEnded$.subscribe(() => {
+        this.questionEndedSubscription = this.hostService.questionEndedSubject.subscribe(() => {
+            this.hostService.nextQuestion();
+        });
+        this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
             this.router.navigate(['game']);
         });
     }
 
     ngOnInit(): void {
-        if (!this.gameHandlerService.quizData) {
+        if (!this.hostService.lobbyData.quiz) {
             this.router.navigate(['game']);
         }
 
-        this.gameHandlerService.startGame();
+        this.playerHandlerService.handleSockets();
+        this.playerHandlerService.joinGame(this.hostService.lobbyData.id, 'Test').subscribe(() => {
+            this.hostService.startGame(0);
+        });
     }
 
     ngOnDestroy(): void {
+        this.hostService.cleanUp();
+        this.playerHandlerService.cleanUp();
+        this.questionEndedSubscription.unsubscribe();
         this.gameEndedSubscription.unsubscribe();
     }
 }

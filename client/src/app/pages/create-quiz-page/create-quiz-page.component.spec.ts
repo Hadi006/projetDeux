@@ -11,46 +11,13 @@ import { QuestionFormComponent } from '@app/components/question-form/question-fo
 import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { of } from 'rxjs';
 
 describe('CreateQuizPageComponent', () => {
-    const TEST_QUESTIONS: Question[] = [
-        {
-            id: '1',
-            text: 'Test Question 1',
-            type: 'QCM',
-            points: 10,
-            choices: [
-                { text: 'Choice 1', isCorrect: true },
-                { text: 'Choice 2', isCorrect: false },
-                { text: 'Choice 3', isCorrect: false },
-                { text: 'Choice 4', isCorrect: false },
-            ],
-        },
-        {
-            id: '2',
-            text: 'Test Question 2',
-            type: 'QCM',
-            points: 10,
-            choices: [
-                { text: 'Choice 1', isCorrect: true },
-                { text: 'Choice 2', isCorrect: false },
-                { text: 'Choice 3', isCorrect: false },
-                { text: 'Choice 4', isCorrect: false },
-            ],
-        },
-    ];
-
-    const TEST_QUIZ: Quiz = {
-        id: '123',
-        title: 'Test Quiz',
-        visible: true,
-        description: 'Test Description',
-        duration: 0,
-        lastModification: new Date(),
-        questions: TEST_QUESTIONS,
-    };
+    let testQuestions: Question[];
+    let testQuiz: Quiz;
 
     let component: CreateQuizPageComponent;
     let fixture: ComponentFixture<CreateQuizPageComponent>;
@@ -61,6 +28,9 @@ describe('CreateQuizPageComponent', () => {
     let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
 
     beforeEach(() => {
+        testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
+        testQuiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
+
         adminQuizzesServiceSpy = jasmine.createSpyObj('AdminQuizzesService', ['getSelectedQuiz', 'submitQuiz', 'transferQuestion', 'updateQuiz']);
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -86,7 +56,7 @@ describe('CreateQuizPageComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CreateQuizPageComponent);
         component = fixture.componentInstance;
-        adminQuizzesServiceSpy.getSelectedQuiz.and.returnValue({ ...TEST_QUIZ, questions: [...TEST_QUESTIONS] });
+        adminQuizzesServiceSpy.getSelectedQuiz.and.returnValue({ ...testQuiz, questions: [...testQuestions] });
         fixture.detectChanges();
     });
 
@@ -96,11 +66,11 @@ describe('CreateQuizPageComponent', () => {
 
     it('should get quiz from admin service', () => {
         expect(adminQuizzesServiceSpy.getSelectedQuiz).toHaveBeenCalled();
-        expect(component.quiz).toEqual(TEST_QUIZ);
+        expect(component.quiz).toEqual(testQuiz);
     });
 
     it('should open question form with existing question', () => {
-        dialogRefSpy.afterClosed.and.returnValue(of({ ...TEST_QUESTIONS[0] }));
+        dialogRefSpy.afterClosed.and.returnValue(of({ ...testQuestions[0] }));
         component.openQuestionForm(0);
         expect(dialogSpy.open).toHaveBeenCalledWith(QuestionFormComponent, {
             width: '80%',
@@ -109,9 +79,9 @@ describe('CreateQuizPageComponent', () => {
     });
 
     it('should save changes to existing question', () => {
-        dialogRefSpy.afterClosed.and.returnValue(of({ ...TEST_QUESTIONS[1] }));
+        dialogRefSpy.afterClosed.and.returnValue(of({ ...testQuestions[1] }));
         component.openQuestionForm(0);
-        expect(component.quiz.questions[0]).toEqual(TEST_QUESTIONS[1]);
+        expect(component.quiz.questions[0]).toEqual(testQuestions[1]);
     });
 
     it('should open question form with new question', () => {
@@ -124,9 +94,9 @@ describe('CreateQuizPageComponent', () => {
     });
 
     it('should save new question', () => {
-        dialogRefSpy.afterClosed.and.returnValue(of({ ...TEST_QUESTIONS[1] }));
+        dialogRefSpy.afterClosed.and.returnValue(of({ ...testQuestions[1] }));
         component.openQuestionForm();
-        expect(component.quiz.questions).toEqual([...TEST_QUESTIONS, TEST_QUESTIONS[1]]);
+        expect(component.quiz.questions).toEqual([...testQuestions, testQuestions[1]]);
     });
 
     it('should move item within the same container', () => {
@@ -138,18 +108,18 @@ describe('CreateQuizPageComponent', () => {
             currentIndex: 1,
         });
         component.drop(eventSpy);
-        expect(component.quiz.questions).toEqual([TEST_QUESTIONS[1], TEST_QUESTIONS[0]]);
+        expect(component.quiz.questions).toEqual([testQuestions[1], testQuestions[0]]);
     });
 
     it('should add a new item to the container', () => {
         const eventSpy: jasmine.SpyObj<CdkDragDrop<Question[]>> = jasmine.createSpyObj('CdkDragDrop', [], {
             container: { data: component.quiz.questions },
-            previousContainer: { data: [{ ...TEST_QUESTIONS[0] }] },
+            previousContainer: { data: [{ ...testQuestions[0] }] },
             previousIndex: 0,
             currentIndex: 2,
         });
         component.drop(eventSpy);
-        expect(component.quiz.questions).toEqual([...TEST_QUESTIONS, TEST_QUESTIONS[0]]);
+        expect(component.quiz.questions).toEqual([...testQuestions, testQuestions[0]]);
     });
 
     it('should handle edit action', () => {
@@ -175,7 +145,7 @@ describe('CreateQuizPageComponent', () => {
     it('should subscribe to submitted quiz', () => {
         spyOn(component, 'close');
         component.quiz.id = '';
-        adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ quiz: { ...TEST_QUIZ }, errorLog: '' }));
+        adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ quiz: { ...testQuiz }, errorLog: '' }));
         component.submitQuiz();
         expect(component.close).toHaveBeenCalled();
         adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ quiz: undefined, errorLog: 'error' }));
@@ -190,7 +160,7 @@ describe('CreateQuizPageComponent', () => {
 
     it('should subscribe to updated quiz', () => {
         spyOn(component, 'close');
-        adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ quiz: { ...TEST_QUIZ }, errorLog: '' }));
+        adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ quiz: { ...testQuiz }, errorLog: '' }));
         component.submitQuiz();
         expect(component.close).toHaveBeenCalled();
         adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ quiz: undefined, errorLog: 'error' }));

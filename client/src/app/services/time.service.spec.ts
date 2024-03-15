@@ -36,8 +36,7 @@ describe('TimeService', () => {
     });
 
     it('createTimerById should add a timer with callback to the map with the correct id', () => {
-        const callbackSpy = jasmine.createSpy('callback');
-        const timerId = service.createTimerById(callbackSpy);
+        const timerId = service.createTimerById();
         const timer = service['timers'].get(timerId);
 
         expect(timer).toBeTruthy();

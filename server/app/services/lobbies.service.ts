@@ -1,8 +1,9 @@
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 import { LobbyData } from '@common/lobby-data';
-import { LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY } from '@common/constant';
-import { Quiz } from '@common/quiz';
+import { ANSWER_TIME_BUFFER, GOOD_ANSWER_BONUS, LOBBY_ID_LENGTH, LOBBY_ID_MAX, NEW_LOBBY, NEW_PLAYER } from '@common/constant';
+import { Question, Quiz } from '@common/quiz';
+import { Player } from '@common/player';
 
 @Service()
 export class LobbiesService {
@@ -42,5 +43,122 @@ export class LobbiesService {
 
     async deleteLobby(lobbyId: string): Promise<boolean> {
         return await this.database.delete('lobbies', { id: lobbyId });
+    }
+
+    async checkLobbyAvailability(lobbyId: string): Promise<string> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return 'Le NIP est invalide';
+        }
+        if (lobby.locked) {
+            return 'La partie est verouillée';
+        }
+        return '';
+    }
+
+    async addPlayer(lobbyId: string, playerName: string): Promise<{ player: Player; players: string[]; error: string }> {
+        const lobby = await this.getLobby(lobbyId);
+        const player: Player = { ...NEW_PLAYER, name: playerName };
+        const lowerCasePlayerName = playerName.toLocaleLowerCase();
+
+        if (!lobby || lobby.id !== lobbyId) {
+            return { player, players: [], error: 'Le NIP est invalide' };
+        }
+
+        if (lobby.locked) {
+            return { player, players: [], error: 'La partie est verrouillée' };
+        }
+
+        if (lobby.players.some((lobbyPlayer) => lobbyPlayer.name.toLocaleLowerCase() === lowerCasePlayerName)) {
+            return { player, players: [], error: 'Ce nom est déjà utilisé' };
+        }
+
+        if (lowerCasePlayerName === 'organisateur') {
+            return { player, players: [], error: 'Pseudo interdit' };
+        }
+
+        if (lowerCasePlayerName.trim() === '') {
+            return { player, players: [], error: "Pseudo vide n'est pas permis" };
+        }
+
+        lobby.players.push(player);
+        await this.updateLobby(lobby);
+
+        return { player, players: lobby.players.map((lobbyPlayer) => lobbyPlayer.name), error: '' };
+    }
+
+    async updatePlayer(lobbyId: string, player: Player): Promise<void> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return;
+        }
+
+        lobby.players.forEach((lobbyPlayer, index) => {
+            if (lobbyPlayer.name === player.name) {
+                lobby.players[index] = player;
+            }
+        });
+
+        await this.updateLobby(lobby);
+    }
+
+    async updateScores(lobbyId: string, questionIndex: number): Promise<void> {
+        const lobby = await this.getLobby(lobbyId);
+        if (!lobby || lobby.id !== lobbyId) {
+            return;
+        }
+
+        const question = lobby.quiz?.questions[questionIndex];
+        if (!question) {
+            return;
+        }
+
+        const { firstCorrectPlayer, isUnique } = this.findFirstCorrectAndUniquePlayer(lobby.players, questionIndex, question);
+
+        lobby.players.forEach((player) => {
+            const isCorrect = this.isAnswerCorrect(player, questionIndex, question);
+            if (isCorrect) {
+                player.score += question.points;
+            }
+        });
+
+        if (firstCorrectPlayer && isUnique) {
+            firstCorrectPlayer.score += question.points * GOOD_ANSWER_BONUS;
+            firstCorrectPlayer.fastestResponseCount++;
+        }
+
+        await this.updateLobby(lobby);
+    }
+
+    private findFirstCorrectAndUniquePlayer(
+        players: Player[],
+        questionIndex: number,
+        question: Question,
+    ): { firstCorrectPlayer: Player | null; isUnique: boolean } {
+        let firstCorrectPlayer: Player | null = null;
+        let isUnique = true;
+
+        for (const player of players) {
+            if (this.isAnswerCorrect(player, questionIndex, question)) {
+                if (!firstCorrectPlayer) {
+                    firstCorrectPlayer = player;
+                } else {
+                    const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
+                    const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
+                    if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
+                        isUnique = false;
+                    } else if (currentPlayerTime < firstPlayerTime) {
+                        firstCorrectPlayer = player;
+                        isUnique = true;
+                    }
+                }
+            }
+        }
+
+        return { firstCorrectPlayer, isUnique };
+    }
+
+    private isAnswerCorrect(player: Player, questionIndex: number, question: Question): boolean {
+        return player.questions[questionIndex].choices.every((choice, choiceIndex) => choice.isCorrect === question.choices[choiceIndex].isCorrect);
     }
 }
