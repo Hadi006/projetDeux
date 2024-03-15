@@ -131,14 +131,14 @@ export class PlayerService {
     }
 
     private onPlayerJoined() {
-        this.webSocketService.onEvent<string[]>('player-joined', (players) => {
-            this.internalPlayers = players;
+        this.webSocketService.onEvent<Player[]>('player-joined', (players) => {
+            this.internalPlayers = players.map((player) => player.name);
         });
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent<string[]>('player-left', (players) => {
-            this.internalPlayers = players;
+        this.webSocketService.onEvent<Player[]>('player-left', (players) => {
+            this.internalPlayers = players.map((player) => player.name);
         });
     }
 
