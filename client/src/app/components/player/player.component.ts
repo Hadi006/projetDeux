@@ -7,7 +7,7 @@ import { PlayerService } from '@app/services/player.service';
     styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent implements OnDestroy {
-    constructor(public playerService: PlayerService) {}
+    constructor(private playerService: PlayerService) {}
 
     ngOnDestroy(): void {
         this.playerService.cleanUp();
