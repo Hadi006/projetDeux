@@ -1,2 +1,4 @@
-<div id="game-name-container">Nom du Jeu: {{ gameName }}</div>
-<div id="time-container">{{ getTime() }}</div>
+<div *ngIf="isCountingDown">
+    <div id="game-name-container">Nom du Jeu: {{ gameName }}</div>
+    <div id="time-container">{{ getTime() }}</div>
+</div>

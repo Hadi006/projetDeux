@@ -10,13 +10,20 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
 export class GameCountDownComponent {
     @Input() gameName: string;
 
+    isCountingDown = true;
+
     private timerId: number;
 
     constructor(private timeService: TimeService) {
         this.timerId = this.timeService.createTimerById();
+        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN, this.stopCountDown.bind(this));
     }
 
     getTime() {
         return this.timeService.getTimeById(this.timerId);
+    }
+
+    private stopCountDown() {
+        this.isCountingDown = false;
     }
 }

@@ -1,5 +1,3 @@
 <div *ngIf="hostService.game.quiz">
-    <div *ngIf="!hostService.getCurrentQuestion()">
-        <app-game-count-down [gameName]="hostService.game.quiz.title"></app-game-count-down>
-    </div>
+    <app-game-count-down [gameName]="hostService.game.quiz.title"></app-game-count-down>
 </div>
