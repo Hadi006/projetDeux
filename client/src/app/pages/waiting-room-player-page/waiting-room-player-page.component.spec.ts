@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player.service';
 
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';
@@ -20,7 +21,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [WaitingRoomPlayerPageComponent],
+            declarations: [WaitingRoomPlayerPageComponent, WaitingRoomInfoComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: Router, useValue: routerSpy },

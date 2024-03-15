@@ -9,6 +9,7 @@ import { HostService } from '@app/services/host.service';
 import { Game } from '@common/game';
 import { of, Subject } from 'rxjs';
 import { TEST_GAME_DATA } from '@common/constant';
+import { PlayerComponent } from '@app/components/player/player.component';
 
 describe('TestPageComponent', () => {
     let testGame: Game;
@@ -37,7 +38,7 @@ describe('TestPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [TestPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
+            declarations: [TestPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent, PlayerComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
