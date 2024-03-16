@@ -158,10 +158,16 @@ export class HostService {
     }
 
     private emitUpdateScores() {
-        this.webSocketService.emit('update-scores', {
-            pin: this.internalGame.pin,
-            questionIndex: this.currentQuestionIndex,
-        });
+        this.webSocketService.emit(
+            'update-scores',
+            {
+                pin: this.internalGame.pin,
+                questionIndex: this.currentQuestionIndex,
+            },
+            (game: unknown) => {
+                this.internalGame = game as Game;
+            },
+        );
     }
 
     private emitAnswer() {

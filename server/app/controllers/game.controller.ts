@@ -114,11 +114,13 @@ export class GameController {
         });
     }
     private onUpdateScores(socket: Socket): void {
-        socket.on('update-scores', async ({ pin, questionIndex }) => {
+        socket.on('update-scores', async ({ pin, questionIndex }, callback) => {
             await this.gameService.updateScores(pin, questionIndex);
-            (await this.gameService.getGame(pin)).players.forEach((player) => {
+            const game = await this.gameService.getGame(pin);
+            game.players.forEach((player) => {
                 this.sio.to(pin).emit('new-score', player);
             });
+            callback(game);
         });
     }
 
