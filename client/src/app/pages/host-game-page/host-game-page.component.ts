@@ -42,4 +42,8 @@ export class HostGamePageComponent {
     getQuitters() {
         return this.hostService.quitters;
     }
+
+    leaveGame() {
+        this.hostService.leaveGame();
+    }
 }
