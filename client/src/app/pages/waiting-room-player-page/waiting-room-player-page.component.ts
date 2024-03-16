@@ -23,7 +23,7 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
             router.navigate(['game-player']);
         });
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
-            this.dialog.open(AlertComponent, { data: { message: 'La partie est terminée' } });
+            this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
         });
     }
 

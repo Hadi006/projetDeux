@@ -19,7 +19,7 @@ export class PlayerGamePageComponent implements OnDestroy {
         private dialog: MatDialog,
     ) {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
-            this.dialog.open(AlertComponent, { data: { message: 'La partie est terminée' } });
+            this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
         });
     }
 
