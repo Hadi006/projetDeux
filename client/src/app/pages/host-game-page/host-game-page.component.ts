@@ -1,15 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { HostService } from '@app/services/host.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-host-game-page',
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent {
+export class HostGamePageComponent implements OnDestroy {
     isCountingDown = true;
 
-    constructor(private hostService: HostService) {}
+    private gameEndedSubscription: Subscription;
+
+    constructor(
+        private hostService: HostService,
+        private dialog: MatDialog,
+    ) {
+        this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
+            this.dialog.open(AlertComponent, { data: { message: 'Tous les joueurs on quittés' } });
+        });
+    }
 
     stopCountDown() {
         this.isCountingDown = false;
@@ -45,5 +57,9 @@ export class HostGamePageComponent {
 
     leaveGame() {
         this.hostService.leaveGame();
+    }
+
+    ngOnDestroy() {
+        this.gameEndedSubscription.unsubscribe();
     }
 }
