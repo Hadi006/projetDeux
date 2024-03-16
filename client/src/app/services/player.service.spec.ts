@@ -213,6 +213,7 @@ describe('PlayerService', () => {
         service.leaveGame();
         expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, playerName: testPlayer.name });
         expect(service.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('updatePlayer should update the player', () => {
