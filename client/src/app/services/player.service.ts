@@ -163,7 +163,8 @@ export class PlayerService {
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent<Player[]>('player-left', (players) => {
+        this.webSocketService.onEvent('player-left', (data) => {
+            const { players } = data as { players: Player[]; player: Player };
             this.internalPlayers = players.map((player) => player.name);
         });
     }

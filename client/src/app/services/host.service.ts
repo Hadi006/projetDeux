@@ -18,6 +18,7 @@ export class HostService {
     private internalQuestionEndedSubject = new Subject<void>();
     private internalGameEndedSubject = new Subject<void>();
     private currentQuestionIndex: number;
+    private internalQuitters: Player[] = [];
 
     constructor(
         private webSocketService: WebSocketService,
@@ -43,6 +44,10 @@ export class HostService {
 
     get gameEndedSubject() {
         return this.internalGameEndedSubject;
+    }
+
+    get quitters() {
+        return this.internalQuitters;
     }
 
     getTime() {
@@ -188,8 +193,10 @@ export class HostService {
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent('player-left', (players: Player[]) => {
+        this.webSocketService.onEvent('player-left', (data) => {
+            const { players, player } = data as { players: Player[]; player: Player };
             this.internalGame.players = players;
+            this.internalQuitters.push(player);
         });
     }
 

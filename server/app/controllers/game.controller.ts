@@ -73,9 +73,10 @@ export class GameController {
                 return;
             }
 
-            game.players = game.players.filter((player) => player.name !== playerName);
+            const player = game.players.find((p) => p.name === playerName);
+            game.players = game.players.filter((p) => p.name !== playerName);
             await this.gameService.updateGame(game);
-            this.sio.to(pin).emit('player-left', game.players);
+            this.sio.to(pin).emit('player-left', game.players, player);
         });
     }
 
