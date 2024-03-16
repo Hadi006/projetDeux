@@ -288,4 +288,18 @@ describe('GameService', () => {
         expect(testPlayers[1].score).to.equal(testQuestion.points);
         expect(testPlayers[1].fastestResponseCount).to.equal(0);
     });
+
+    it('should assign dates to players who did confirm', async () => {
+        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers[0].questions[0].lastModification = undefined;
+        testPlayers[1].questions[0].lastModification = undefined;
+        const newGame: Game = { ...testGame, players: testPlayers };
+        const getStub = stub(gameService, 'getGame').resolves(newGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updateScores(newGame.pin, 0);
+        expect(getStub.calledWith(newGame.pin)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].questions[0].lastModification).to.not.equal(undefined);
+        expect(testPlayers[1].questions[0].lastModification).to.not.equal(undefined);
+    });
 });
