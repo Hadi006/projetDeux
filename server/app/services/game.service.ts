@@ -147,6 +147,16 @@ export class GameService {
                 if (!firstCorrectPlayer) {
                     firstCorrectPlayer = player;
                 } else {
+                    const date = new Date();
+
+                    if (!player.questions[questionIndex].lastModification) {
+                        player.questions[questionIndex].lastModification = date;
+                    }
+
+                    if (!firstCorrectPlayer.questions[questionIndex].lastModification) {
+                        firstCorrectPlayer.questions[questionIndex].lastModification = date;
+                    }
+
                     const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
                     const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
                     if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
