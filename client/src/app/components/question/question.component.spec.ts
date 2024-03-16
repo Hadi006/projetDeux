@@ -107,4 +107,9 @@ describe('QuestionComponent', () => {
     it('getIsChecked should return the players answer', () => {
         expect(component.getIsChecked()).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
+
+    it('should call leaveGame on the playerService when leaveGame is called', () => {
+        component.leaveGame();
+        expect(playerHandlerServiceSpy.leaveGame).toHaveBeenCalled();
+    });
 });
