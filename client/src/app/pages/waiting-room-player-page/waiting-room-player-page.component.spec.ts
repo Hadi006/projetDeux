@@ -17,9 +17,10 @@ describe('WaitingRoomPlayerPageComponent', () => {
         Object.defineProperty(playerServiceSpy, 'pin', { get: () => '1234', configurable: true });
         Object.defineProperty(playerServiceSpy, 'gameTitle', { get: () => 'Test Game', configurable: true });
         Object.defineProperty(playerServiceSpy, 'players', { get: () => [], configurable: true });
+        const startGameSubject = new Subject<void>();
         Object.defineProperty(playerServiceSpy, 'startGameSubject', {
             get: () => {
-                return new Subject<void>();
+                return startGameSubject;
             },
             configurable: true,
         });
@@ -53,8 +54,11 @@ describe('WaitingRoomPlayerPageComponent', () => {
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
-    it('should navigate to game page when start game is called', () => {
+    it('should navigate to game page when start game is called', (done) => {
+        playerServiceSpy.startGameSubject.subscribe(() => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['game-player']);
+            done();
+        });
         playerServiceSpy.startGameSubject.next();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['game-player']);
     });
 });
