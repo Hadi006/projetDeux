@@ -227,9 +227,19 @@ describe('HostService', () => {
                 expect(service.questionEnded).toBeTrue();
                 done();
             });
-
             emitSpy.and.stub();
             service.endQuestion();
+        });
+    });
+
+    it('should update game when updating scores', (done) => {
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            service['emitUpdateScores']();
+            expect(service.game).toEqual(testGame);
+            done();
         });
     });
 
