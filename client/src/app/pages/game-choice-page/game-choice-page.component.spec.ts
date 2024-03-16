@@ -114,7 +114,7 @@ describe('GameChoicePageComponent', () => {
         hostServiceSpy.createGame.and.returnValue(of(false));
         component.startGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Nombre maximum de jeux atteint');
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Erreur lors de la création du jeu');
             done();
         });
     });
@@ -155,7 +155,7 @@ describe('GameChoicePageComponent', () => {
         hostServiceSpy.createGame.and.returnValue(of(false));
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
-            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Nombre maximum de jeux atteint');
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Erreur lors de la création du jeu');
             done();
         });
     });

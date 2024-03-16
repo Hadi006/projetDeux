@@ -5,6 +5,7 @@ import { Answer, Question } from '@common/quiz';
 import { WebSocketService } from './web-socket.service';
 import { TimeService } from './time.service';
 import { TRANSITION_DELAY } from '@common/constant';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -12,9 +13,11 @@ import { TRANSITION_DELAY } from '@common/constant';
 export class PlayerService {
     player: Player;
 
-    private pin: string;
-    private timerId: number;
+    private internalPin: string;
+    private internalGameTitle: string;
     private internalPlayers: string[] = [];
+
+    private timerId: number;
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
@@ -22,12 +25,21 @@ export class PlayerService {
     constructor(
         private webSocketService: WebSocketService,
         private timeService: TimeService,
+        private router: Router,
     ) {
         this.timerId = timeService.createTimerById();
     }
 
+    get pin(): string {
+        return this.internalPin;
+    }
+
     get players(): string[] {
         return this.internalPlayers;
+    }
+
+    get gameTitle(): string {
+        return this.internalGameTitle;
     }
 
     get answerConfirmed(): boolean {
@@ -55,6 +67,9 @@ export class PlayerService {
             this.webSocketService.connect();
         }
 
+        this.onPlayerJoined();
+        this.onPlayerLeft();
+        this.onKick();
         this.onStartGame();
         this.onEndQuestion();
         this.onNextQuestion();
@@ -65,11 +80,12 @@ export class PlayerService {
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
             this.webSocketService.emit('join-game', { pin, playerName }, (response: unknown) => {
-                const responseData = response as { player: Player; players: string[]; error: string };
+                const responseData = response as { player: Player; players: string[]; gameTitle: string; error: string };
                 if (!responseData.error) {
                     this.player = responseData.player;
                     this.internalPlayers = responseData.players;
-                    this.pin = pin;
+                    this.internalGameTitle = responseData.gameTitle;
+                    this.internalPin = pin;
                 }
 
                 observer.next(responseData.error);
@@ -78,8 +94,14 @@ export class PlayerService {
         });
     }
 
+    leaveGame(): void {
+        this.emitLeaveGame();
+        this.cleanUp();
+        this.router.navigate(['/']);
+    }
+
     updatePlayer(): void {
-        this.webSocketService.emit('update-player', { pin: this.pin, player: this.player });
+        this.emitUpdatePlayer();
     }
 
     handleKeyUp(event: KeyboardEvent): void {
@@ -94,7 +116,7 @@ export class PlayerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.webSocketService.emit('confirm-player-answer', { pin: this.pin, player: this.player });
+        this.emitConfirmPlayerAnswer();
         this.internalAnswerConfirmed = true;
     }
 
@@ -115,6 +137,38 @@ export class PlayerService {
         this.internalAnswer = [];
         this.internalIsCorrect = false;
         this.updatePlayer();
+    }
+
+    private emitLeaveGame() {
+        this.webSocketService.emit('player-leave', { pin: this.internalPin, playerName: this.player.name });
+    }
+
+    private emitUpdatePlayer() {
+        this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
+    }
+
+    private emitConfirmPlayerAnswer() {
+        this.webSocketService.emit('confirm-player-answer', { pin: this.internalPin, player: this.player });
+    }
+
+    private onPlayerJoined() {
+        this.webSocketService.onEvent<Player>('player-joined', (player) => {
+            this.internalPlayers.push(player.name);
+        });
+    }
+
+    private onPlayerLeft() {
+        this.webSocketService.onEvent<Player[]>('player-left', (players) => {
+            this.internalPlayers = players.map((player) => player.name);
+        });
+    }
+
+    private onKick() {
+        this.webSocketService.onEvent<string>('kick', (playerName) => {
+            if (playerName === this.player.name) {
+                this.router.navigate(['/']);
+            }
+        });
     }
 
     private onStartGame() {

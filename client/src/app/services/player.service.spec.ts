@@ -8,6 +8,7 @@ import { WebSocketService } from '@app/services/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
 import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
+import { Router } from '@angular/router';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -18,12 +19,13 @@ class WebSocketServiceMock extends WebSocketService {
 describe('PlayerService', () => {
     let testQuestions: Question[];
     let testPlayer: Player;
-    let playerResponse: { player: Player; players: string[]; error: string };
+    let playerResponse: { player: Player; players: string[]; gameTitle: string; error: string };
 
     let service: PlayerService;
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
@@ -31,6 +33,7 @@ describe('PlayerService', () => {
         playerResponse = {
             player: { ...testPlayer },
             players: [],
+            gameTitle: '',
             error: '',
         };
 
@@ -39,6 +42,8 @@ describe('PlayerService', () => {
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'startTimerById', 'stopTimerById', 'setTimeById', 'getTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
+
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(() => {
@@ -52,6 +57,10 @@ describe('PlayerService', () => {
                 {
                     provide: TimeService,
                     useValue: timeServiceSpy,
+                },
+                {
+                    provide: Router,
+                    useValue: routerSpy,
                 },
             ],
         });
@@ -91,6 +100,37 @@ describe('PlayerService', () => {
             return {};
         });
         socketHelper.peerSideEmit('start-game', countdown);
+    });
+
+    it('should add player on player-joined', (done) => {
+        service.handleSockets();
+        socketHelper.on('player-joined', (player) => {
+            expect(service.players).toContain(player.name);
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('player-joined', testPlayer);
+    });
+
+    it('should update players on player-left', (done) => {
+        service.handleSockets();
+        socketHelper.on('player-left', (player) => {
+            expect(service.players).not.toContain(player.name);
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('player-left', []);
+    });
+
+    it('should navigate on kick', (done) => {
+        service.player = testPlayer;
+        service.handleSockets();
+        socketHelper.on('kick', () => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('kick', testPlayer.name);
     });
 
     it('should confirm answer and stop timer on endQuestion', (done) => {
@@ -146,6 +186,7 @@ describe('PlayerService', () => {
             expect(error).toEqual(playerResponse.error);
             expect(service.player).toEqual(playerResponse.player);
             expect(service.players).toEqual(playerResponse.players);
+            expect(service.gameTitle).toEqual(playerResponse.gameTitle);
             done();
         });
     });
@@ -160,8 +201,19 @@ describe('PlayerService', () => {
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
             expect(service.players).toEqual([]);
+            expect(service.gameTitle).toBeUndefined();
             done();
         });
+    });
+
+    it('leaveGame should emit player-leave and clean up', () => {
+        spyOn(webSocketServiceMock, 'emit');
+        spyOn(service, 'cleanUp');
+        service.player = testPlayer;
+        service.leaveGame();
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, playerName: testPlayer.name });
+        expect(service.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('updatePlayer should update the player', () => {

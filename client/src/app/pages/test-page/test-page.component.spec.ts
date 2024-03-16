@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameTimersComponent } from '@app/components/game-timers/game-timers.component';
 import { QuestionComponent } from '@app/components/question/question.component';
-import { GameplayPlayerPageComponent } from '@app/pages/gameplay-player-page/gameplay-player-page.component';
+import { TestPageComponent } from '@app/pages/test-page/test-page.component';
 import { Router } from '@angular/router';
 import { PlayerService } from '@app/services/player.service';
 import { HostService } from '@app/services/host.service';
@@ -10,11 +10,11 @@ import { Game } from '@common/game';
 import { of, Subject } from 'rxjs';
 import { TEST_GAME_DATA } from '@common/constant';
 
-describe('GameplayPlayerPageComponent', () => {
+describe('TestPageComponent', () => {
     let testGame: Game;
 
-    let component: GameplayPlayerPageComponent;
-    let fixture: ComponentFixture<GameplayPlayerPageComponent>;
+    let component: TestPageComponent;
+    let fixture: ComponentFixture<TestPageComponent>;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerSpy: jasmine.SpyObj<Router>;
@@ -37,7 +37,7 @@ describe('GameplayPlayerPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [GameplayPlayerPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
+            declarations: [TestPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
@@ -47,7 +47,7 @@ describe('GameplayPlayerPageComponent', () => {
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(GameplayPlayerPageComponent);
+        fixture = TestBed.createComponent(TestPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -89,7 +89,7 @@ describe('GameplayPlayerPageComponent', () => {
         });
     });
 
-    it('ngOnDestroy should clean up', () => {
+    it('ngOnDestroy should unsubscribe', () => {
         component.ngOnDestroy();
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(playerServiceSpy.cleanUp).toHaveBeenCalled();

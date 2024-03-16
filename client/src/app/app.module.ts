@@ -19,12 +19,15 @@ import { QuestionBankComponent } from './components/question-bank/question-bank.
 import { QuestionFormComponent } from './components/question-form/question-form.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
 import { QuestionComponent } from './components/question/question.component';
-import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gameplay-player-page.component';
+import { TestPageComponent } from './pages/test-page/test-page.component';
 import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
 import { PromptComponent } from './components/prompt/prompt.component';
+import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
+import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting-room-info.component';
+import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -39,7 +42,7 @@ import { PromptComponent } from './components/prompt/prompt.component';
         GameChoicePageComponent,
         DescriptionPanelComponent,
         QuestionComponent,
-        GameplayPlayerPageComponent,
+        TestPageComponent,
         GameTimersComponent,
         ChatboxComponent,
         AdminLoginPageComponent,
@@ -53,6 +56,9 @@ import { PromptComponent } from './components/prompt/prompt.component';
         QuestionFormComponent,
         PromptComponent,
         WaitingRoomHostPageComponent,
+        JoinRoomPageComponent,
+        WaitingRoomInfoComponent,
+        WaitingRoomPlayerPageComponent,
     ],
     imports: [
         AppMaterialModule,

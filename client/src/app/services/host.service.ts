@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Game } from '@common/game';
 import { WebSocketService } from './web-socket.service';
-import { Observable /* , Subject */, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { TimeService } from './time.service';
 import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { Player } from '@common/player';
 
 @Injectable({
     providedIn: 'root',
@@ -45,6 +46,8 @@ export class HostService {
             this.webSocketService.connect();
         }
 
+        this.onPlayerJoined();
+        this.onPlayerLeft();
         this.onConfirmPlayerAnswer();
     }
 
@@ -52,10 +55,18 @@ export class HostService {
         return this.emitCreateGame(quiz);
     }
 
+    toggleLock() {
+        this.internalGame.locked = !this.internalGame.locked;
+        this.emitToggleLock();
+    }
+
+    kick(playerName: string) {
+        this.emitKick(playerName);
+    }
+
     startGame(countdown: number) {
         this.emitStartGame(countdown);
 
-        this.internalGame.locked = true;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }
@@ -85,6 +96,10 @@ export class HostService {
         this.timeService.stopTimerById(this.timerId);
     }
 
+    private emitToggleLock() {
+        this.webSocketService.emit('toggle-lock', { pin: this.internalGame.pin, lockState: this.internalGame.locked });
+    }
+
     private emitCreateGame(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
             this.webSocketService.emit('create-game', quiz, (game: unknown) => {
@@ -103,6 +118,10 @@ export class HostService {
 
     private emitDeleteGame(): void {
         this.webSocketService.emit('delete-game', this.internalGame.pin);
+    }
+
+    private emitKick(playerName: string) {
+        this.webSocketService.emit('kick', { pin: this.internalGame.pin, playerName });
     }
 
     private emitStartGame(countdown: number) {
@@ -140,6 +159,18 @@ export class HostService {
 
     private emitEndGame() {
         this.webSocketService.emit('end-game', this.internalGame.pin);
+    }
+
+    private onPlayerJoined() {
+        this.webSocketService.onEvent('player-joined', (player: Player) => {
+            this.internalGame.players.push(player);
+        });
+    }
+
+    private onPlayerLeft() {
+        this.webSocketService.onEvent('player-left', (players: Player[]) => {
+            this.internalGame.players = players;
+        });
     }
 
     private onConfirmPlayerAnswer() {

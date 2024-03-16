@@ -58,6 +58,30 @@ describe('HostService', () => {
         expect(webSocketServiceMock.connect).toHaveBeenCalled();
     });
 
+    it('should add player on playerJoined', (done) => {
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            service.handleSockets();
+            socketHelper.peerSideEmit('player-joined', { name: 'Test Player' });
+            expect(service.game.players.length).toBe(testGame.players.length);
+            done();
+        });
+    });
+
+    it('should remove player on playerLeft', (done) => {
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            service.handleSockets();
+            socketHelper.peerSideEmit('player-left', { name: 'Test Player' });
+            expect(service.game.players.length).toBe(testGame.players.length);
+            done();
+        });
+    });
+
     it('should increment nAnswered on confirmPlayerAnswer', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testGame);
@@ -106,6 +130,31 @@ describe('HostService', () => {
         });
     });
 
+    it('should emit toggle-lock on toggleLock', (done) => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            emitSpy.and.stub();
+            service.toggleLock();
+            expect(emitSpy).toHaveBeenCalledWith('toggle-lock', { pin: service.game.pin, lockState: true });
+            expect(service.game.locked).toBeTrue();
+            done();
+        });
+    });
+
+    it('should emit kick on kick', (done) => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            emitSpy.and.stub();
+            service.kick('Test Player');
+            expect(emitSpy).toHaveBeenCalledWith('kick', { pin: service.game.pin, playerName: 'Test Player' });
+            done();
+        });
+    });
+
     it('should emit start-game on startGame', (done) => {
         const countdown = 10;
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
@@ -115,7 +164,6 @@ describe('HostService', () => {
             emitSpy.and.stub();
             service.startGame(countdown);
             expect(emitSpy).toHaveBeenCalledWith('start-game', { pin: service.game.pin, countdown });
-            expect(service.game.locked).toBeTrue();
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
             done();
         });

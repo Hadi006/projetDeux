@@ -132,4 +132,13 @@ describe('Timer', () => {
         expect(spy).toHaveBeenCalled();
         discardPeriodicTasks();
     }));
+
+    it('resumeTimer should not call setInterval if interval exists', fakeAsync(() => {
+        timerTest.start(TIMEOUT);
+        const spy = spyOn(window, 'setInterval');
+        timerTest.resume();
+
+        expect(spy).not.toHaveBeenCalled();
+        discardPeriodicTasks();
+    }));
 });

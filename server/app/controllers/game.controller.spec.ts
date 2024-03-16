@@ -7,7 +7,8 @@ import { Container } from 'typedi';
 import { GameService } from '@app/services/game.service';
 import { Question, Quiz } from '@common/quiz';
 import { Game } from '@common/game';
-import { NEW_PLAYER, TEST_GAME_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { Player } from '@common/player';
 
 describe('GameController', () => {
     let service: GameController;
@@ -71,6 +72,28 @@ describe('GameController', () => {
         }, RESPONSE_DELAY);
     });
 
+    it('should kick a player', (done) => {
+        const name = TEST_PLAYERS[0].name;
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('kick', (response) => {
+                const filteredPlayers = testGame.players.filter((player: Player) => player.name !== name);
+                expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
+                expect(testGame.players).to.deep.equal(filteredPlayers);
+                expect(testGame.bannedNames).to.deep.equal([name.toLowerCase()]);
+                expect(gameServiceStub.updateGame.calledWith(testGame)).to.equal(true);
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response).to.equal(name);
+                done();
+            });
+
+            clientSocket.emit('kick', { pin: testGame.pin, playerName: name });
+        });
+    });
+
     it('should broadcast a start game if in the game', (done) => {
         const countdown = 5;
         gameServiceStub.createGame.resolves(testGame);
@@ -85,11 +108,26 @@ describe('GameController', () => {
         });
     });
 
+    it('should change lock state', (done) => {
+        const lockState = true;
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.emit('toggle-lock', { pin: testGame.pin, lockState });
+            setTimeout(() => {
+                expect(gameServiceStub.updateGame.calledWith({ ...testGame, locked: lockState })).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
     it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
         const result = {
             player: { ...NEW_PLAYER, name: playerName },
             players: [playerName],
+            gameTitle: testGame.quiz.title,
             error: '',
         };
         gameServiceStub.addPlayer.resolves(result);
@@ -105,6 +143,7 @@ describe('GameController', () => {
         const result = {
             player: { ...NEW_PLAYER, name: playerName },
             players: [playerName],
+            gameTitle: testGame.quiz.title,
             error: 'Error',
         };
         gameServiceStub.addPlayer.resolves(result);
@@ -115,6 +154,36 @@ describe('GameController', () => {
             expect(toSpy.called).to.equal(false);
             done();
         });
+    });
+
+    it('should broadcast a player left and remove player from game', (done) => {
+        const playerName = TEST_PLAYERS[0].name;
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('player-left', (response) => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(
+                    gameServiceStub.updateGame.calledWith({ ...testGame, players: testGame.players.filter((player) => player.name !== playerName) }),
+                ).to.equal(true);
+                expect(response).to.deep.equal(testGame.players);
+                done();
+            });
+            clientSocket.emit('player-leave', { pin: testGame.pin, playerName });
+        });
+    });
+
+    it('should do nothing if game does not exist', (done) => {
+        const playerName = TEST_PLAYERS[0].name;
+        gameServiceStub.getGame.resolves(null);
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('player-leave', { pin: testGame.pin, playerName });
+        setTimeout(() => {
+            expect(toSpy.called).to.equal(false);
+            done();
+        }, RESPONSE_DELAY);
     });
 
     it('should broadcast a next question', (done) => {

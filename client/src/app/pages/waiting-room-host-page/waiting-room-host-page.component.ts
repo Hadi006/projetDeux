@@ -12,12 +12,18 @@ export class WaitingRoomHostPageComponent {
     constructor(
         private hostService: HostService,
         private router: Router,
-    ) {
-        this.hostService.handleSockets();
-    }
+    ) {}
 
     get game() {
         return this.hostService.game;
+    }
+
+    toggleLock() {
+        this.hostService.toggleLock();
+    }
+
+    kick(player: string) {
+        this.hostService.kick(player);
     }
 
     startGame() {

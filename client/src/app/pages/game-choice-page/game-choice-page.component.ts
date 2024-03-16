@@ -67,7 +67,7 @@ export class GameChoicePageComponent implements OnInit {
         return this.hostService.createGame(this.chosenQuiz).pipe(
             map((success: boolean) => {
                 if (!success) {
-                    this.publicQuizzesService.alertNoQuizAvailable('Nombre maximum de jeux atteint');
+                    this.publicQuizzesService.alertNoQuizAvailable('Erreur lors de la création du jeu');
                 }
                 return success;
             }),

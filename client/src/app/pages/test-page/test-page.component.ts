@@ -6,10 +6,10 @@ import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-gameplay-player-page',
-    templateUrl: './gameplay-player-page.component.html',
-    styleUrls: ['./gameplay-player-page.component.scss'],
+    templateUrl: './test-page.component.html',
+    styleUrls: ['./test-page.component.scss'],
 })
-export class GameplayPlayerPageComponent implements OnInit, OnDestroy {
+export class TestPageComponent implements OnInit, OnDestroy {
     private questionEndedSubscription: Subscription;
     private gameEndedSubscription: Subscription;
 

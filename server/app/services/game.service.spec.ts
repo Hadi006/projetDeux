@@ -160,6 +160,15 @@ describe('GameService', () => {
         expect(updateStub.called).to.equal(false);
     });
 
+    it('should not add a player if name is banned', async () => {
+        databaseServiceStub.get.resolves([{ ...testGame, bannedNames: ['banned'] }]);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        const result = await gameService.addPlayer(testGame.pin, 'Banned');
+        expect(result.error).to.equal('Ce nom est banni');
+        expect(databaseServiceStub.get.calledWith('games', { pin: testGame.pin })).to.equal(true);
+        expect(updateStub.called).to.equal(false);
+    });
+
     it('should update a player', async () => {
         const player: Player = JSON.parse(JSON.stringify(NEW_PLAYER));
         stub(gameService, 'getGame').resolves({ ...testGame, players: [NEW_PLAYER] });

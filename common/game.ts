@@ -6,4 +6,5 @@ export interface Game {
     players: Player[];
     quiz?: Quiz;
     locked: boolean;
+    bannedNames: string[];
 }

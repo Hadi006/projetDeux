@@ -16,68 +16,104 @@ export class GameController {
 
     handleSockets(): void {
         this.sio.on('connection', (socket: Socket) => {
-            this.createGame(socket);
-            this.joinGame(socket);
-            this.deleteGame(socket);
-            this.startGame(socket);
-            this.nextQuestion(socket);
-            this.updatePlayer(socket);
-            this.updateScores(socket);
-            this.endQuestion(socket);
-            this.confirmPlayerAnswer(socket);
-            this.answer(socket);
-            this.endGame(socket);
-            this.disconnect(socket);
+            this.onCreateGame(socket);
+            this.onToggleLock(socket);
+            this.onJoinGame(socket);
+            this.onPlayerLeave(socket);
+            this.onDeleteGame(socket);
+            this.onKick(socket);
+            this.onStartGame(socket);
+            this.onNextQuestion(socket);
+            this.onUpdatePlayer(socket);
+            this.onUpdateScores(socket);
+            this.onEndQuestion(socket);
+            this.onConfirmPlayerAnswer(socket);
+            this.onAnswer(socket);
+            this.onEndGame(socket);
+            this.onDisconnect(socket);
         });
     }
 
-    private createGame(socket: Socket): void {
-        socket.on('create-game', async (quiz: Quiz, ack) => {
+    private onCreateGame(socket: Socket): void {
+        socket.on('create-game', async (quiz: Quiz, callback) => {
             const game = await this.gameService.createGame(quiz);
             if (game) {
                 socket.join(game.pin);
             }
-            ack(game);
+            callback(game);
         });
     }
 
-    private joinGame(socket: Socket): void {
+    private onToggleLock(socket: Socket): void {
+        socket.on('toggle-lock', async ({ pin, lockState }) => {
+            const game = await this.gameService.getGame(pin);
+            game.locked = lockState;
+            await this.gameService.updateGame(game);
+        });
+    }
+
+    private onJoinGame(socket: Socket): void {
         socket.on('join-game', async ({ pin, playerName }, callback) => {
-            const result: { player: Player; players: string[]; error: string } = await this.gameService.addPlayer(pin, playerName);
+            const result: { player: Player; players: string[]; gameTitle: string; error: string } = await this.gameService.addPlayer(pin, playerName);
 
             if (!result.error) {
                 socket.join(pin);
-                this.sio.to(pin).emit('player-joined', result.player.name);
+                this.sio.to(pin).emit('player-joined', result.player);
             }
 
             callback(result);
         });
     }
 
-    private deleteGame(socket: Socket): void {
+    private onPlayerLeave(socket: Socket): void {
+        socket.on('player-leave', async ({ pin, playerName }) => {
+            const game = await this.gameService.getGame(pin);
+
+            if (!game) {
+                return;
+            }
+
+            game.players = game.players.filter((player) => player.name !== playerName);
+            await this.gameService.updateGame(game);
+            this.sio.to(pin).emit('player-left', game.players);
+        });
+    }
+
+    private onDeleteGame(socket: Socket): void {
         socket.on('delete-game', async (pin: string) => {
             await this.gameService.deleteGame(pin);
         });
     }
 
-    private startGame(socket: Socket): void {
+    private onKick(socket: Socket): void {
+        socket.on('kick', async ({ pin, playerName }) => {
+            const game = await this.gameService.getGame(pin);
+            game.players = game.players.filter((player) => player.name !== playerName);
+            game.bannedNames.push(playerName.toLocaleLowerCase());
+            await this.gameService.updateGame(game);
+            this.sio.to(pin).emit('kick', playerName);
+            this.sio.to(pin).emit('player-left', game.players);
+        });
+    }
+
+    private onStartGame(socket: Socket): void {
         socket.on('start-game', ({ pin, countdown }) => {
             this.sio.to(pin).emit('start-game', countdown);
         });
     }
 
-    private nextQuestion(socket: Socket): void {
+    private onNextQuestion(socket: Socket): void {
         socket.on('next-question', ({ pin, question, countdown }) => {
             this.sio.to(pin).emit('next-question', { question, countdown });
         });
     }
 
-    private updatePlayer(socket: Socket): void {
+    private onUpdatePlayer(socket: Socket): void {
         socket.on('update-player', async ({ pin, player }) => {
             await this.gameService.updatePlayer(pin, player);
         });
     }
-    private updateScores(socket: Socket): void {
+    private onUpdateScores(socket: Socket): void {
         socket.on('update-scores', async ({ pin, questionIndex }) => {
             await this.gameService.updateScores(pin, questionIndex);
             (await this.gameService.getGame(pin)).players.forEach((player) => {
@@ -86,7 +122,7 @@ export class GameController {
         });
     }
 
-    private confirmPlayerAnswer(socket: Socket): void {
+    private onConfirmPlayerAnswer(socket: Socket): void {
         socket.on('confirm-player-answer', async ({ pin, player }) => {
             player.questions[player.questions.length - 1].lastModification = new Date();
             await this.gameService.updatePlayer(pin, player);
@@ -94,25 +130,25 @@ export class GameController {
         });
     }
 
-    private endQuestion(socket: Socket): void {
+    private onEndQuestion(socket: Socket): void {
         socket.on('end-question', (pin: string) => {
             this.sio.to(pin).emit('end-question');
         });
     }
 
-    private answer(socket: Socket): void {
+    private onAnswer(socket: Socket): void {
         socket.on('answer', ({ pin, answer }) => {
             this.sio.to(pin).emit('answer', answer);
         });
     }
 
-    private endGame(socket: Socket): void {
+    private onEndGame(socket: Socket): void {
         socket.on('end-game', (pin: string) => {
             this.sio.to(pin).emit('end-game');
         });
     }
 
-    private disconnect(socket: Socket): void {
+    private onDisconnect(socket: Socket): void {
         socket.on('disconnect', () => {
             return;
         });
