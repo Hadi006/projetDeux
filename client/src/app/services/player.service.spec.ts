@@ -114,12 +114,12 @@ describe('PlayerService', () => {
 
     it('should update players on player-left', (done) => {
         service.handleSockets();
-        socketHelper.on('player-left', (player) => {
-            expect(service.players).not.toContain(player.name);
+        socketHelper.on('player-left', (data) => {
+            expect(service.players).not.toContain(data.player.name);
             done();
             return {};
         });
-        socketHelper.peerSideEmit('player-left', []);
+        socketHelper.peerSideEmit('player-left', { players: [], player: testPlayer });
     });
 
     it('should navigate on kick', (done) => {
