@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { HostService } from '@app/services/host.service';
 import { TEST_GAME_DATA } from '@common/constant';
 
@@ -8,6 +9,7 @@ describe('HostGamePageComponent', () => {
     let component: HostGamePageComponent;
     let fixture: ComponentFixture<HostGamePageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
+    let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', ['getCurrentQuestion', 'getTime', 'questionEnded', 'nextQuestion', 'getGame']);
@@ -17,12 +19,17 @@ describe('HostGamePageComponent', () => {
             },
             configurable: true,
         });
+
+        dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [HostGamePageComponent],
-            providers: [{ provide: HostService, useValue: hostServiceSpy }],
+            providers: [
+                { provide: HostService, useValue: hostServiceSpy },
+                { provide: MatDialog, useValue: dialogSpy },
+            ],
         }).compileComponents();
     }));
 
