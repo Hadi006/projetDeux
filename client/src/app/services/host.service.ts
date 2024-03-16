@@ -6,6 +6,7 @@ import { Answer, Question, Quiz } from '@common/quiz';
 import { TimeService } from './time.service';
 import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
 import { Player } from '@common/player';
+import { RoomData } from '@common/room-data';
 
 @Injectable({
     providedIn: 'root',
@@ -116,9 +117,9 @@ export class HostService {
     }
 
     private emitToggleLock() {
-        this.webSocketService.emit<{ pin: string; lockState: boolean }>('toggle-lock', {
+        this.webSocketService.emit<RoomData<boolean>>('toggle-lock', {
             pin: this.internalGame.pin,
-            lockState: this.internalGame.locked,
+            data: this.internalGame.locked,
         });
     }
 
@@ -143,21 +144,23 @@ export class HostService {
     }
 
     private emitKick(playerName: string) {
-        this.webSocketService.emit<{ pin: string; playerName: string }>('kick', { pin: this.internalGame.pin, playerName });
+        this.webSocketService.emit<RoomData<string>>('kick', { pin: this.internalGame.pin, data: playerName });
     }
 
     private emitStartGame(countdown: number) {
-        this.webSocketService.emit<{ pin: string; countdown: number }>('start-game', {
+        this.webSocketService.emit<RoomData<number>>('start-game', {
             pin: this.internalGame.pin,
-            countdown,
+            data: countdown,
         });
     }
 
     private emitNextQuestion() {
-        this.webSocketService.emit<{ pin: string; question: Question | undefined; countdown: number | undefined }>('next-question', {
+        this.webSocketService.emit<RoomData<{ question: Question | undefined; countdown: number | undefined }>>('next-question', {
             pin: this.internalGame.pin,
-            question: this.getCurrentQuestion(),
-            countdown: this.internalGame.quiz?.duration,
+            data: {
+                question: this.getCurrentQuestion(),
+                countdown: this.internalGame.quiz?.duration,
+            },
         });
     }
 
@@ -166,11 +169,11 @@ export class HostService {
     }
 
     private emitUpdateScores() {
-        this.webSocketService.emit<{ pin: string; questionIndex: number }>(
+        this.webSocketService.emit<RoomData<number>>(
             'update-scores',
             {
                 pin: this.internalGame.pin,
-                questionIndex: this.currentQuestionIndex,
+                data: this.currentQuestionIndex,
             },
             (game: unknown) => {
                 this.internalGame = game as Game;
@@ -179,9 +182,9 @@ export class HostService {
     }
 
     private emitAnswer() {
-        this.webSocketService.emit<{ pin: string; answer: Answer[] }>('answer', {
+        this.webSocketService.emit<RoomData<Answer[]>>('answer', {
             pin: this.internalGame.pin,
-            answer: this.getCurrentAnswer(),
+            data: this.getCurrentAnswer(),
         });
     }
 

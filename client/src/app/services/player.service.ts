@@ -6,6 +6,7 @@ import { WebSocketService } from './web-socket.service';
 import { TimeService } from './time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Router } from '@angular/router';
+import { RoomData } from '@common/room-data';
 
 @Injectable({
     providedIn: 'root',
@@ -145,15 +146,15 @@ export class PlayerService {
     }
 
     private emitLeaveGame() {
-        this.webSocketService.emit<{ pin: string; playerName: string }>('player-leave', { pin: this.internalPin, playerName: this.player.name });
+        this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
     }
 
     private emitUpdatePlayer() {
-        this.webSocketService.emit<{ pin: string; player: Player }>('update-player', { pin: this.internalPin, player: this.player });
+        this.webSocketService.emit<RoomData<Player>>('update-player', { pin: this.internalPin, data: this.player });
     }
 
     private emitConfirmPlayerAnswer() {
-        this.webSocketService.emit<{ pin: string; player: Player }>('confirm-player-answer', { pin: this.internalPin, player: this.player });
+        this.webSocketService.emit<RoomData<Player>>('confirm-player-answer', { pin: this.internalPin, data: this.player });
     }
 
     private onPlayerJoined() {
