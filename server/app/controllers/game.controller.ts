@@ -1,8 +1,9 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
 import { GameService } from '@app/services/game.service';
-import { Quiz } from '@common/quiz';
+import { Answer, Question, Quiz } from '@common/quiz';
 import { Player } from '@common/player';
+import { RoomData } from '@common/room-data';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -45,16 +46,21 @@ export class GameController {
     }
 
     private onToggleLock(socket: Socket): void {
-        socket.on('toggle-lock', async ({ pin, lockState }) => {
-            const game = await this.gameService.getGame(pin);
-            game.locked = lockState;
+        socket.on('toggle-lock', async (roomData: RoomData<boolean>) => {
+            const game = await this.gameService.getGame(roomData.pin);
+            game.locked = roomData.data;
             await this.gameService.updateGame(game);
         });
     }
 
     private onJoinGame(socket: Socket): void {
-        socket.on('join-game', async ({ pin, playerName }, callback) => {
-            const result: { player: Player; players: string[]; gameTitle: string; error: string } = await this.gameService.addPlayer(pin, playerName);
+        socket.on('join-game', async (roomData: RoomData<string>, callback) => {
+            const pin = roomData.pin;
+
+            const result: { player: Player; players: string[]; gameTitle: string; error: string } = await this.gameService.addPlayer(
+                pin,
+                roomData.data,
+            );
 
             if (!result.error) {
                 socket.join(pin);
@@ -66,7 +72,10 @@ export class GameController {
     }
 
     private onPlayerLeave(socket: Socket): void {
-        socket.on('player-leave', async ({ pin, playerName }) => {
+        socket.on('player-leave', async (roomData: RoomData<string>) => {
+            const pin = roomData.pin;
+            const playerName = roomData.data;
+
             const game = await this.gameService.getGame(pin);
 
             if (!game) {
@@ -87,7 +96,10 @@ export class GameController {
     }
 
     private onKick(socket: Socket): void {
-        socket.on('kick', async ({ pin, playerName }) => {
+        socket.on('kick', async (roomData: RoomData<string>) => {
+            const pin = roomData.pin;
+            const playerName = roomData.data;
+
             const game = await this.gameService.getGame(pin);
             game.players = game.players.filter((player) => player.name !== playerName);
             game.bannedNames.push(playerName.toLocaleLowerCase());
@@ -98,25 +110,27 @@ export class GameController {
     }
 
     private onStartGame(socket: Socket): void {
-        socket.on('start-game', ({ pin, countdown }) => {
-            this.sio.to(pin).emit('start-game', countdown);
+        socket.on('start-game', (roomData: RoomData<number>) => {
+            this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
 
     private onNextQuestion(socket: Socket): void {
-        socket.on('next-question', ({ pin, question, countdown }) => {
-            this.sio.to(pin).emit('next-question', { question, countdown });
+        socket.on('next-question', (roomData: RoomData<{ question: Question; countdown: number }>) => {
+            this.sio.to(roomData.pin).emit('next-question', { question: roomData.data.question, countdown: roomData.data.countdown });
         });
     }
 
     private onUpdatePlayer(socket: Socket): void {
-        socket.on('update-player', async ({ pin, player }) => {
-            await this.gameService.updatePlayer(pin, player);
+        socket.on('update-player', async (roomData: RoomData<Player>) => {
+            await this.gameService.updatePlayer(roomData.pin, roomData.data);
         });
     }
     private onUpdateScores(socket: Socket): void {
-        socket.on('update-scores', async ({ pin, questionIndex }, callback) => {
-            await this.gameService.updateScores(pin, questionIndex);
+        socket.on('update-scores', async (roomData: RoomData<number>, callback) => {
+            const pin = roomData.pin;
+
+            await this.gameService.updateScores(pin, roomData.data);
             const game = await this.gameService.getGame(pin);
             game.players.forEach((player) => {
                 this.sio.to(pin).emit('new-score', player);
@@ -126,7 +140,10 @@ export class GameController {
     }
 
     private onConfirmPlayerAnswer(socket: Socket): void {
-        socket.on('confirm-player-answer', async ({ pin, player }) => {
+        socket.on('confirm-player-answer', async (roomData: RoomData<Player>) => {
+            const pin = roomData.pin;
+            const player = roomData.data;
+
             player.questions[player.questions.length - 1].lastModification = new Date();
             await this.gameService.updatePlayer(pin, player);
             this.sio.to(pin).emit('confirm-player-answer');
@@ -140,8 +157,8 @@ export class GameController {
     }
 
     private onAnswer(socket: Socket): void {
-        socket.on('answer', ({ pin, answer }) => {
-            this.sio.to(pin).emit('answer', answer);
+        socket.on('answer', (roomData: RoomData<Answer[]>) => {
+            this.sio.to(roomData.pin).emit('answer', roomData.data);
         });
     }
 
