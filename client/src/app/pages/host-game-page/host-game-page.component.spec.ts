@@ -28,4 +28,9 @@ describe('HostGamePageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('stopCountDown should set isCountingDown to false', () => {
+        component.stopCountDown();
+        expect(component.isCountingDown).toBeFalse();
+    });
 });
