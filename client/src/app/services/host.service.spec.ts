@@ -8,6 +8,7 @@ import { Game } from '@common/game';
 import { TEST_GAME_DATA, TEST_QUIZZES, TRANSITION_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -23,6 +24,7 @@ describe('HostService', () => {
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
+    let routerSpy: jasmine.SpyObj<Router>;
     let emitSpy: jasmine.Spy;
 
     beforeEach(async () => {
@@ -34,6 +36,8 @@ describe('HostService', () => {
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
+
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(async () => {
@@ -41,6 +45,7 @@ describe('HostService', () => {
             providers: [
                 { provide: WebSocketService, useValue: webSocketServiceMock },
                 { provide: TimeService, useValue: timeServiceSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         });
         service = TestBed.inject(HostService);
@@ -121,6 +126,15 @@ describe('HostService', () => {
             expect(success).toBeFalse();
             done();
         });
+    });
+
+    it('should emit delete-game and cleanup on leaveGame', () => {
+        emitSpy.and.stub();
+        spyOn(service, 'cleanUp');
+        service.leaveGame();
+        expect(emitSpy).toHaveBeenCalledWith('delete-game', service.game.pin);
+        expect(service.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('should emit toggle-lock on toggleLock', () => {
