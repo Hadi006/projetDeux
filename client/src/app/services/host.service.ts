@@ -7,6 +7,7 @@ import { TimeService } from './time.service';
 import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
 import { Player } from '@common/player';
 import { RoomData } from '@common/room-data';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -24,6 +25,7 @@ export class HostService {
     constructor(
         private webSocketService: WebSocketService,
         private timeService: TimeService,
+        private router: Router,
     ) {
         this.timerId = timeService.createTimerById();
     }
@@ -71,6 +73,12 @@ export class HostService {
 
     createGame(quiz: Quiz): Observable<boolean> {
         return this.emitCreateGame(quiz);
+    }
+
+    leaveGame() {
+        this.emitDeleteGame();
+        this.cleanUp();
+        this.router.navigate(['/']);
     }
 
     toggleLock() {

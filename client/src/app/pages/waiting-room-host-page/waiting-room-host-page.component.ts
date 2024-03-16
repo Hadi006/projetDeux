@@ -32,7 +32,6 @@ export class WaitingRoomHostPageComponent {
     }
 
     leaveGame() {
-        this.hostService.cleanUp();
-        this.router.navigate(['/']);
+        this.hostService.leaveGame();
     }
 }
