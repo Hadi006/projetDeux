@@ -196,6 +196,7 @@ describe('HostService', () => {
                 data: { question: service.game.quiz?.questions[0], countdown: service.game.quiz?.duration },
             });
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
+            expect(service.questionEnded).toBeFalse();
         });
     });
 
@@ -218,6 +219,7 @@ describe('HostService', () => {
                     pin: service.game.pin,
                     data: [],
                 });
+                expect(service.questionEnded).toBeTrue();
                 done();
             });
 
