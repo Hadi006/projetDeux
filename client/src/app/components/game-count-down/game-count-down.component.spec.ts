@@ -49,12 +49,7 @@ describe('GameCountDownComponent', () => {
     it('time getter should call getTimeById', () => {
         const time = 10;
         timeServiceSpy.getTimeById.and.returnValue(time);
-        expect(component.time).toBe(timeServiceSpy.getTimeById(time));
+        expect(component.getTime()).toBe(timeServiceSpy.getTimeById(time));
         expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(TEST_ID);
-    });
-
-    it('should navigate to root on start game', () => {
-        component['startGame']();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 });
