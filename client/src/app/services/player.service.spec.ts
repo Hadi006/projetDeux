@@ -94,8 +94,13 @@ describe('PlayerService', () => {
     it('should start a timer on startGame', (done) => {
         const countdown = 10;
         service.handleSockets();
+        let emitted = false;
+        service.startGameSubject.subscribe(() => {
+            emitted = true;
+        });
         socketHelper.on('start-game', () => {
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown);
+            expect(emitted).toBeTrue();
             done();
             return {};
         });
