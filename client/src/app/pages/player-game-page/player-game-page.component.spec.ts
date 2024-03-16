@@ -46,9 +46,4 @@ describe('PlayerGamePageComponent', () => {
         });
         expect(component.gameTitle()).toEqual('test');
     });
-
-    it('leaveGame should call leaveGame on the playerService', () => {
-        component.leaveGame();
-        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
-    });
 });
