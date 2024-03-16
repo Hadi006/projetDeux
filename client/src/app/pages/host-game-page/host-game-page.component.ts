@@ -34,4 +34,8 @@ export class HostGamePageComponent {
     nextQuestion() {
         this.hostService.nextQuestion();
     }
+
+    getPlayers() {
+        return this.hostService.game.players;
+    }
 }

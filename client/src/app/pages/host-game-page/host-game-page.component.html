@@ -18,6 +18,14 @@
                         <p class="timer-text">{{ getTime() }}</p>
                     </mat-card-content>
                 </mat-card>
+                <div class="players-container">
+                    <section class="playerCardContainer">
+                        <div *ngFor="let player of getPlayers()">
+                            <h1>{{ player.name }}</h1>
+                            <h1>{{ player.score }}</h1>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     </div>
