@@ -116,12 +116,15 @@ export class HostService {
     }
 
     private emitToggleLock() {
-        this.webSocketService.emit('toggle-lock', { pin: this.internalGame.pin, lockState: this.internalGame.locked });
+        this.webSocketService.emit<{ pin: string; lockState: boolean }>('toggle-lock', {
+            pin: this.internalGame.pin,
+            lockState: this.internalGame.locked,
+        });
     }
 
     private emitCreateGame(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
-            this.webSocketService.emit('create-game', quiz, (game: unknown) => {
+            this.webSocketService.emit<Quiz>('create-game', quiz, (game: unknown) => {
                 if (game) {
                     this.internalGame = game as Game;
                     this.currentQuestionIndex = INITIAL_QUESTION_INDEX;
@@ -136,22 +139,22 @@ export class HostService {
     }
 
     private emitDeleteGame(): void {
-        this.webSocketService.emit('delete-game', this.internalGame.pin);
+        this.webSocketService.emit<string>('delete-game', this.internalGame.pin);
     }
 
     private emitKick(playerName: string) {
-        this.webSocketService.emit('kick', { pin: this.internalGame.pin, playerName });
+        this.webSocketService.emit<{ pin: string; playerName: string }>('kick', { pin: this.internalGame.pin, playerName });
     }
 
     private emitStartGame(countdown: number) {
-        this.webSocketService.emit('start-game', {
+        this.webSocketService.emit<{ pin: string; countdown: number }>('start-game', {
             pin: this.internalGame.pin,
             countdown,
         });
     }
 
     private emitNextQuestion() {
-        this.webSocketService.emit('next-question', {
+        this.webSocketService.emit<{ pin: string; question: Question | undefined; countdown: number | undefined }>('next-question', {
             pin: this.internalGame.pin,
             question: this.getCurrentQuestion(),
             countdown: this.internalGame.quiz?.duration,
@@ -159,11 +162,11 @@ export class HostService {
     }
 
     private emitEndQuestion() {
-        this.webSocketService.emit('end-question', this.internalGame.pin);
+        this.webSocketService.emit<string>('end-question', this.internalGame.pin);
     }
 
     private emitUpdateScores() {
-        this.webSocketService.emit(
+        this.webSocketService.emit<{ pin: string; questionIndex: number }>(
             'update-scores',
             {
                 pin: this.internalGame.pin,
@@ -176,25 +179,25 @@ export class HostService {
     }
 
     private emitAnswer() {
-        this.webSocketService.emit('answer', {
+        this.webSocketService.emit<{ pin: string; answer: Answer[] }>('answer', {
             pin: this.internalGame.pin,
             answer: this.getCurrentAnswer(),
         });
     }
 
     private emitEndGame() {
-        this.webSocketService.emit('end-game', this.internalGame.pin);
+        this.webSocketService.emit<string>('end-game', this.internalGame.pin);
     }
 
     private onPlayerJoined() {
-        this.webSocketService.onEvent('player-joined', (player: Player) => {
+        this.webSocketService.onEvent<Player>('player-joined', (player) => {
             this.internalGame.players.push(player);
         });
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent('player-left', (data) => {
-            const { players, player } = data as { players: Player[]; player: Player };
+        this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
+            const { players, player } = data;
             this.internalGame.players = players;
             if (this.currentQuestionIndex !== INITIAL_QUESTION_INDEX) {
                 this.internalQuitters.push(player);
@@ -203,7 +206,7 @@ export class HostService {
     }
 
     private onConfirmPlayerAnswer() {
-        this.webSocketService.onEvent('confirm-player-answer', () => {
+        this.webSocketService.onEvent<void>('confirm-player-answer', () => {
             if (++this.internalNAnswered >= this.internalGame.players.length) {
                 this.timeService.setTimeById(this.timerId, 0);
                 this.internalNAnswered = 0;
