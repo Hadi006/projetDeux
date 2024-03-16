@@ -116,6 +116,7 @@ export class HostService {
     endGame() {
         this.emitEndGame();
         this.internalGameEndedSubject.next();
+        this.cleanUp();
     }
 
     cleanUp() {
@@ -210,8 +211,15 @@ export class HostService {
         this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
             const { players, player } = data;
             this.internalGame.players = players;
-            if (this.currentQuestionIndex !== INITIAL_QUESTION_INDEX) {
-                this.internalQuitters.push(player);
+
+            if (this.currentQuestionIndex === INITIAL_QUESTION_INDEX) {
+                return;
+            }
+
+            this.internalQuitters.push(player);
+
+            if (this.internalGame.players.length === 0) {
+                this.endGame();
             }
         });
     }
