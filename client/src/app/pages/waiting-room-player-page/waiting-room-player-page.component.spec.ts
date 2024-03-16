@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player.service';
 import { Subject } from 'rxjs';
@@ -59,6 +60,11 @@ describe('WaitingRoomPlayerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should alert when game ends', () => {
+        playerServiceSpy.endGameSubject.next();
+        expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: "La partie n'existe plus" } });
+    });
+
     it('should leave game', () => {
         component.leaveGame();
         expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
@@ -72,5 +78,18 @@ describe('WaitingRoomPlayerPageComponent', () => {
             done();
         });
         playerServiceSpy.startGameSubject.next();
+    });
+
+    it('should unsubscribe on destroy', (done) => {
+        component.ngOnDestroy();
+        playerServiceSpy.startGameSubject.subscribe(() => {
+            expect(routerSpy.navigate).not.toHaveBeenCalled();
+        });
+        playerServiceSpy.startGameSubject.next();
+        playerServiceSpy.endGameSubject.subscribe(() => {
+            expect(dialogSpy.open).not.toHaveBeenCalled();
+            done();
+        });
+        playerServiceSpy.endGameSubject.next();
     });
 });
