@@ -183,6 +183,16 @@ describe('PlayerService', () => {
         socketHelper.peerSideEmit('answer', answer);
     });
 
+    it('should leave game on game deleted', () => {
+        spyOn(service, 'leaveGame');
+        service.handleSockets();
+        socketHelper.on('game-deleted', () => {
+            expect(service.leaveGame).toHaveBeenCalled();
+            return {};
+        });
+        socketHelper.peerSideEmit('game-deleted');
+    });
+
     it('should join game and create a player if there are no errors', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(playerResponse);

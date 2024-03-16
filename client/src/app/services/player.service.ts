@@ -81,6 +81,7 @@ export class PlayerService {
         this.onNextQuestion();
         this.onNewScore();
         this.onAnswer();
+        this.onGameDeleted();
     }
 
     joinGame(pin: string, playerName: string): Observable<string> {
@@ -213,6 +214,12 @@ export class PlayerService {
     private onAnswer() {
         this.webSocketService.onEvent<Answer[]>('answer', (answer) => {
             this.internalAnswer = answer;
+        });
+    }
+
+    private onGameDeleted() {
+        this.webSocketService.onEvent<void>('game-deleted', () => {
+            this.leaveGame();
         });
     }
 
