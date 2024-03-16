@@ -30,7 +30,7 @@ describe('HostService', () => {
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
     });
 
@@ -50,6 +50,11 @@ describe('HostService', () => {
 
     it('should create timer', () => {
         expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
+    });
+
+    it('getTime should call getTimeById', () => {
+        service.getTime();
+        expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(1);
     });
 
     it('should connect to web socket', () => {
