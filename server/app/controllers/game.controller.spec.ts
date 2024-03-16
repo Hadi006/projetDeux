@@ -79,14 +79,14 @@ describe('GameController', () => {
         gameServiceStub.updateGame.resolves();
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.on('kick', ({ pin, playerName }) => {
+            clientSocket.on('kick', (response) => {
                 const filteredPlayers = testGame.players.filter((player: Player) => player.name !== name);
                 expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
                 expect(testGame.players).to.deep.equal(filteredPlayers);
                 expect(testGame.bannedNames).to.deep.equal([name.toLowerCase()]);
                 expect(gameServiceStub.updateGame.calledWith(testGame)).to.equal(true);
-                expect(toSpy.calledWith(pin)).to.equal(true);
-                expect(playerName).to.equal(name);
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response).to.equal(name);
                 done();
             });
 
