@@ -9,9 +9,13 @@ import { PlayerService } from '@app/services/player.service';
 export class PlayerGamePageComponent {
     isCountingDown = true;
 
-    constructor(public playerService: PlayerService) {}
+    constructor(private playerService: PlayerService) {}
 
     stopCountDown() {
         this.isCountingDown = false;
+    }
+
+    gameTitle() {
+        return this.playerService.gameTitle;
     }
 }
