@@ -18,7 +18,12 @@ describe('QuestionComponent', () => {
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', ['joinGame', 'handleKeyUp', 'getPlayerBooleanAnswers']);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', [
+            'joinGame',
+            'handleKeyUp',
+            'getPlayerBooleanAnswers',
+            'getTime',
+        ]);
         playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
             get: () => {
