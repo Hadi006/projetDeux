@@ -8,6 +8,7 @@ import { WebSocketService } from '@app/services/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
 import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
+import { Router } from '@angular/router';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -24,6 +25,7 @@ describe('PlayerService', () => {
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
@@ -40,6 +42,8 @@ describe('PlayerService', () => {
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'startTimerById', 'stopTimerById', 'setTimeById', 'getTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
+
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
     beforeEach(() => {
@@ -53,6 +57,10 @@ describe('PlayerService', () => {
                 {
                     provide: TimeService,
                     useValue: timeServiceSpy,
+                },
+                {
+                    provide: Router,
+                    useValue: routerSpy,
                 },
             ],
         });
@@ -112,6 +120,17 @@ describe('PlayerService', () => {
             return {};
         });
         socketHelper.peerSideEmit('player-left', []);
+    });
+
+    it('should navigate on kick', (done) => {
+        service.player = testPlayer;
+        service.handleSockets();
+        socketHelper.on('kick', () => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('kick', testPlayer.name);
     });
 
     it('should confirm answer and stop timer on endQuestion', (done) => {
