@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HostService } from '@app/services/host.service';
+import { TEST_GAME_DATA } from '@common/constant';
 
 import { HostGamePageComponent } from './host-game-page.component';
 
@@ -10,6 +11,12 @@ describe('HostGamePageComponent', () => {
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', ['getCurrentQuestion', 'getTime', 'questionEnded', 'nextQuestion', 'getGame']);
+        Object.defineProperty(hostServiceSpy, 'game', {
+            get: () => {
+                return TEST_GAME_DATA;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(waitForAsync(() => {
