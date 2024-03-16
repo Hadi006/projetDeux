@@ -13,7 +13,14 @@ describe('HostGamePageComponent', () => {
     let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['getCurrentQuestion', 'getTime', 'questionEnded', 'nextQuestion', 'getGame']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', [
+            'getCurrentQuestion',
+            'getTime',
+            'questionEnded',
+            'nextQuestion',
+            'getGame',
+            'leaveGame',
+        ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
                 return TEST_GAME_DATA;
@@ -49,6 +56,15 @@ describe('HostGamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should alert and leave game when gameEndedSubject is triggered', (done) => {
+        hostServiceSpy.gameEndedSubject.subscribe(() => {
+            expect(dialogSpy.open).toHaveBeenCalled();
+            expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
+            done();
+        });
+        hostServiceSpy.gameEndedSubject.next();
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
@@ -99,5 +115,14 @@ describe('HostGamePageComponent', () => {
             configurable: true,
         });
         expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
+    });
+
+    it('should unsubscribe on destroy', () => {
+        component.ngOnDestroy();
+        hostServiceSpy.gameEndedSubject.subscribe(() => {
+            expect(dialogSpy.open).not.toHaveBeenCalled();
+            expect(hostServiceSpy.leaveGame).not.toHaveBeenCalled();
+        });
+        hostServiceSpy.gameEndedSubject.next();
     });
 });
