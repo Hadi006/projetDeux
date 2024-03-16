@@ -1,15 +1,28 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
+import { QuestionComponent } from '@app/components/question/question.component';
+import { PlayerService } from '@app/services/player.service';
 
 import { PlayerGamePageComponent } from './player-game-page.component';
 
 describe('PlayerGamePageComponent', () => {
     let component: PlayerGamePageComponent;
     let fixture: ComponentFixture<PlayerGamePageComponent>;
+    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
 
     beforeEach(() => {
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['gameTitle', 'leaveGame']);
+    });
+
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [PlayerGamePageComponent],
-        });
+            declarations: [PlayerGamePageComponent, GameCountDownComponent, QuestionComponent, ChatboxComponent],
+            providers: [{ provide: PlayerService, useValue: playerServiceSpy }],
+        }).compileComponents();
+    }));
+
+    beforeEach(() => {
         fixture = TestBed.createComponent(PlayerGamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
