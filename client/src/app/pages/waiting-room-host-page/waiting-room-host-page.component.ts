@@ -22,6 +22,10 @@ export class WaitingRoomHostPageComponent {
         this.hostService.toggleLock();
     }
 
+    kick(player: string) {
+        this.hostService.kick(player);
+    }
+
     startGame() {
         this.router.navigate(['game-host']);
         this.hostService.startGame(START_GAME_COUNTDOWN);

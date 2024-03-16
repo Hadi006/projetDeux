@@ -21,6 +21,7 @@ export class GameController {
             this.onJoinGame(socket);
             this.onPlayerLeave(socket);
             this.onDeleteGame(socket);
+            this.onKick(socket);
             this.onStartGame(socket);
             this.onNextQuestion(socket);
             this.onUpdatePlayer(socket);
@@ -81,6 +82,17 @@ export class GameController {
     private onDeleteGame(socket: Socket): void {
         socket.on('delete-game', async (pin: string) => {
             await this.gameService.deleteGame(pin);
+        });
+    }
+
+    private onKick(socket: Socket): void {
+        socket.on('kick', async ({ pin, playerName }) => {
+            const game = await this.gameService.getGame(pin);
+            game.players = game.players.filter((player) => player.name !== playerName);
+            game.bannedNames.push(playerName.toLocaleLowerCase());
+            await this.gameService.updateGame(game);
+            this.sio.to(pin).emit('kick', playerName);
+            this.sio.to(pin).emit('player-left', game.players);
         });
     }
 

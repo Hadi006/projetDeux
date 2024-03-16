@@ -81,6 +81,10 @@ export class GameService {
             return { player, players: [], gameTitle: '', error: "Pseudo vide n'est pas permis" };
         }
 
+        if (game.bannedNames.includes(lowerCasePlayerName)) {
+            return { player, players: [], gameTitle: '', error: 'Ce nom est banni' };
+        }
+
         game.players.push(player);
         await this.updateGame(game);
 

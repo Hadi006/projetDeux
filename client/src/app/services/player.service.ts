@@ -5,6 +5,7 @@ import { Answer, Question } from '@common/quiz';
 import { WebSocketService } from './web-socket.service';
 import { TimeService } from './time.service';
 import { TRANSITION_DELAY } from '@common/constant';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -25,6 +26,7 @@ export class PlayerService {
     constructor(
         private webSocketService: WebSocketService,
         private timeService: TimeService,
+        private router: Router,
     ) {
         this.timerId = timeService.createTimerById();
     }
@@ -72,6 +74,7 @@ export class PlayerService {
 
         this.onPlayerJoined();
         this.onPlayerLeft();
+        this.onKick();
         this.onStartGame();
         this.onEndQuestion();
         this.onNextQuestion();
@@ -99,6 +102,7 @@ export class PlayerService {
     leaveGame(): void {
         this.emitLeaveGame();
         this.cleanUp();
+        this.router.navigate(['/']);
     }
 
     updatePlayer(): void {
@@ -161,6 +165,14 @@ export class PlayerService {
     private onPlayerLeft() {
         this.webSocketService.onEvent<Player[]>('player-left', (players) => {
             this.internalPlayers = players.map((player) => player.name);
+        });
+    }
+
+    private onKick() {
+        this.webSocketService.onEvent<string>('kick', (playerName) => {
+            if (playerName === this.player.name) {
+                this.router.navigate(['/']);
+            }
         });
     }
 

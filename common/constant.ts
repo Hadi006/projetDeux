@@ -81,6 +81,7 @@ export const NEW_GAME: Game = {
     pin: '',
     players: [],
     locked: false,
+    bannedNames: [],
 };
 
 export const GAME_ID_MAX = 10000;
@@ -170,5 +171,6 @@ export const TEST_GAME_DATA: Game = {
     players: TEST_PLAYERS,
     quiz: TEST_QUIZZES[0],
     locked: false,
+    bannedNames: [],
 };
 

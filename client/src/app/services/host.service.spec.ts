@@ -143,6 +143,18 @@ describe('HostService', () => {
         });
     });
 
+    it('should emit kick on kick', (done) => {
+        const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            emitSpy.and.stub();
+            service.kick('Test Player');
+            expect(emitSpy).toHaveBeenCalledWith('kick', { pin: service.game.pin, playerName: 'Test Player' });
+            done();
+        });
+    });
+
     it('should emit start-game on startGame', (done) => {
         const countdown = 10;
         const emitSpy = spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {

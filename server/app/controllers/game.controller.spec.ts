@@ -8,6 +8,7 @@ import { GameService } from '@app/services/game.service';
 import { Question, Quiz } from '@common/quiz';
 import { Game } from '@common/game';
 import { NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { Player } from '@common/player';
 
 describe('GameController', () => {
     let service: GameController;
@@ -69,6 +70,28 @@ describe('GameController', () => {
             expect(gameServiceStub.deleteGame.calledWith(testGame.pin)).to.equal(true);
             done();
         }, RESPONSE_DELAY);
+    });
+
+    it('should kick a player', (done) => {
+        const name = TEST_PLAYERS[0].name;
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('kick', (response) => {
+                const filteredPlayers = testGame.players.filter((player: Player) => player.name !== name);
+                expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
+                expect(testGame.players).to.deep.equal(filteredPlayers);
+                expect(testGame.bannedNames).to.deep.equal([name.toLowerCase()]);
+                expect(gameServiceStub.updateGame.calledWith(testGame)).to.equal(true);
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response).to.equal(name);
+                done();
+            });
+
+            clientSocket.emit('kick', { pin: testGame.pin, playerName: name });
+        });
     });
 
     it('should broadcast a start game if in the game', (done) => {
