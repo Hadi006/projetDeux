@@ -29,6 +29,7 @@ import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
+import { HistogramComponent } from './components/histogram/histogram.component';
 
 /**
  * Main module that is used in main.ts.
@@ -61,6 +62,7 @@ import { HostGamePageComponent } from './pages/host-game-page/host-game-page.com
         WaitingRoomPlayerPageComponent,
         PlayerGamePageComponent,
         HostGamePageComponent,
+        HistogramComponent,
     ],
     imports: [
         AppMaterialModule,
