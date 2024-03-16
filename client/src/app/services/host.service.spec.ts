@@ -70,14 +70,29 @@ describe('HostService', () => {
         });
     });
 
-    it('should remove player on playerLeft', (done) => {
+    it('should remove player on playerLeft and add to quitters', (done) => {
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
+        service.createGame(testQuiz).subscribe(() => {
+            service['currentQuestionIndex'] = 1;
+            service.handleSockets();
+            socketHelper.peerSideEmit('player-left', { players: testGame.players, player: testGame.players[0] });
+            expect(service.game.players.length).toBe(testGame.players.length);
+            expect(service.quitters).toContain(testGame.players[0]);
+            done();
+        });
+    });
+
+    it('should remove player on playerLeft and not add to quitters if no current question', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testGame);
         });
         service.createGame(testQuiz).subscribe(() => {
             service.handleSockets();
-            socketHelper.peerSideEmit('player-left', { name: 'Test Player' });
+            socketHelper.peerSideEmit('player-left', { players: testGame.players, player: testGame.players[0] });
             expect(service.game.players.length).toBe(testGame.players.length);
+            expect(service.quitters).not.toContain(testGame.players[0]);
             done();
         });
     });
