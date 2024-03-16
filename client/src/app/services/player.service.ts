@@ -85,7 +85,7 @@ export class PlayerService {
 
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.emit('join-game', { pin, playerName }, (response: unknown) => {
+            this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
                 const responseData = response as { player: Player; players: string[]; gameTitle: string; error: string };
                 if (!responseData.error) {
                     this.player = responseData.player;
