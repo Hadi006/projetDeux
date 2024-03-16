@@ -206,10 +206,14 @@ describe('HostService', () => {
         service.createGame(testQuiz).subscribe(() => {
             service.questionEndedSubject.subscribe(() => {
                 expect(emitSpy).toHaveBeenCalledWith('end-question', service.game.pin);
-                expect(emitSpy).toHaveBeenCalledWith('update-scores', {
-                    pin: service.game.pin,
-                    data: -1,
-                });
+                expect(emitSpy).toHaveBeenCalledWith(
+                    'update-scores',
+                    {
+                        pin: service.game.pin,
+                        data: -1,
+                    },
+                    jasmine.any(Function),
+                );
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
                     pin: service.game.pin,
                     data: [],
