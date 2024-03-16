@@ -20,7 +20,6 @@ export class PlayerGamePageComponent implements OnDestroy {
     ) {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: 'La partie est terminée' } });
-            this.playerService.leaveGame();
         });
     }
 
