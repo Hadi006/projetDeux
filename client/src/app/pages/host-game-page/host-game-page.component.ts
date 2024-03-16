@@ -38,4 +38,8 @@ export class HostGamePageComponent {
     getPlayers() {
         return this.hostService.game.players;
     }
+
+    getQuitters() {
+        return this.hostService.quitters;
+    }
 }

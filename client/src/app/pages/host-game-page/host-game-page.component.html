@@ -24,6 +24,10 @@
                             <h1>{{ player.name }}</h1>
                             <h1>{{ player.score }}</h1>
                         </div>
+                        <div *ngFor="let quitter of getQuitters()">
+                            <h1 class="quitter">{{ quitter.name }}</h1>
+                            <h1>{{ quitter.score }}</h1>
+                        </div>
                     </section>
                 </div>
             </div>
