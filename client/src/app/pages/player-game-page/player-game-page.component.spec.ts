@@ -31,4 +31,24 @@ describe('PlayerGamePageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('stopCountDown should set isCountingDown to false', () => {
+        component.stopCountDown();
+        expect(component.isCountingDown).toBeFalse();
+    });
+
+    it('gameTitle should return the gameTitle from the playerService', () => {
+        Object.defineProperty(playerServiceSpy, 'gameTitle', {
+            get: () => {
+                return 'test';
+            },
+            configurable: true,
+        });
+        expect(component.gameTitle()).toEqual('test');
+    });
+
+    it('leaveGame should call leaveGame on the playerService', () => {
+        component.leaveGame();
+        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
+    });
 });
