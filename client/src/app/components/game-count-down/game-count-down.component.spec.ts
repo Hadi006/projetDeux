@@ -52,4 +52,10 @@ describe('GameCountDownComponent', () => {
         expect(component.getTime()).toBe(timeServiceSpy.getTimeById(time));
         expect(timeServiceSpy.getTimeById).toHaveBeenCalledWith(TEST_ID);
     });
+
+    it('should emit countdownEnded when stopCountDown is called', () => {
+        const emitSpy = spyOn(component.countdownEnded, 'emit');
+        component['stopCountDown']();
+        expect(emitSpy).toHaveBeenCalled();
+    });
 });
