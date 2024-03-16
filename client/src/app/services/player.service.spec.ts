@@ -183,11 +183,17 @@ describe('PlayerService', () => {
         socketHelper.peerSideEmit('answer', answer);
     });
 
-    it('should leave game on game deleted', () => {
+    it('should leave game on game deleted', (done) => {
         spyOn(service, 'leaveGame');
         service.handleSockets();
+        let emitted = false;
+        service.endGameSubject.subscribe(() => {
+            emitted = true;
+        });
         socketHelper.on('game-deleted', () => {
             expect(service.leaveGame).toHaveBeenCalled();
+            expect(emitted).toBeTrue();
+            done();
             return {};
         });
         socketHelper.peerSideEmit('game-deleted');
