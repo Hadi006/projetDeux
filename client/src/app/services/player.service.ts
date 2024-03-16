@@ -19,10 +19,11 @@ export class PlayerService {
     private internalPlayers: string[] = [];
 
     private timerId: number;
-    private internalStartGameSubject: Subject<void> = new Subject<void>();
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
+    private internalStartGameSubject: Subject<void> = new Subject<void>();
+    private internalEndGameSubject: Subject<void> = new Subject<void>();
 
     constructor(
         private webSocketService: WebSocketService,
@@ -44,10 +45,6 @@ export class PlayerService {
         return this.internalGameTitle;
     }
 
-    get startGameSubject(): Subject<void> {
-        return this.internalStartGameSubject;
-    }
-
     get answerConfirmed(): boolean {
         return this.internalAnswerConfirmed;
     }
@@ -58,6 +55,14 @@ export class PlayerService {
 
     get isCorrect(): boolean {
         return this.internalIsCorrect;
+    }
+
+    get startGameSubject(): Subject<void> {
+        return this.internalStartGameSubject;
+    }
+
+    get endGameSubject(): Subject<void> {
+        return this.internalEndGameSubject;
     }
 
     getPlayerAnswers(): Answer[] {
@@ -219,6 +224,7 @@ export class PlayerService {
 
     private onGameDeleted() {
         this.webSocketService.onEvent<void>('game-deleted', () => {
+            this.internalEndGameSubject.next();
             this.leaveGame();
         });
     }
