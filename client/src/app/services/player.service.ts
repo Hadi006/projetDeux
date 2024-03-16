@@ -145,15 +145,15 @@ export class PlayerService {
     }
 
     private emitLeaveGame() {
-        this.webSocketService.emit('player-leave', { pin: this.internalPin, playerName: this.player.name });
+        this.webSocketService.emit<{ pin: string; playerName: string }>('player-leave', { pin: this.internalPin, playerName: this.player.name });
     }
 
     private emitUpdatePlayer() {
-        this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
+        this.webSocketService.emit<{ pin: string; player: Player }>('update-player', { pin: this.internalPin, player: this.player });
     }
 
     private emitConfirmPlayerAnswer() {
-        this.webSocketService.emit('confirm-player-answer', { pin: this.internalPin, player: this.player });
+        this.webSocketService.emit<{ pin: string; player: Player }>('confirm-player-answer', { pin: this.internalPin, player: this.player });
     }
 
     private onPlayerJoined() {
@@ -163,8 +163,8 @@ export class PlayerService {
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent('player-left', (data) => {
-            const { players } = data as { players: Player[]; player: Player };
+        this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
+            const { players } = data;
             this.internalPlayers = players.map((player) => player.name);
         });
     }
