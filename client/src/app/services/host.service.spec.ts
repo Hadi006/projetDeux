@@ -95,6 +95,14 @@ describe('HostService', () => {
         expect(service.quitters).not.toContain(testGame.players[0]);
     });
 
+    it('should end game if all players left', () => {
+        service['currentQuestionIndex'] = 1;
+        spyOn(service, 'endGame');
+        service.handleSockets();
+        socketHelper.peerSideEmit('player-left', { players: [], player: testGame.players[0] });
+        expect(service.endGame).toHaveBeenCalled();
+    });
+
     it('should increment nAnswered on confirmPlayerAnswer', () => {
         service.handleSockets();
         socketHelper.peerSideEmit('confirm-player-answer');
