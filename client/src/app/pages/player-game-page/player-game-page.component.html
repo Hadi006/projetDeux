@@ -1,5 +1,4 @@
 <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()"
     [gameName]="gameTitle()"></app-game-count-down>
 <app-question *ngIf="!isCountingDown"></app-question>
-<button (click)="leaveGame()">Quitter</button>
 <app-chatbox></app-chatbox>

@@ -43,6 +43,10 @@ export class QuestionComponent {
         return this.playerService.getPlayerBooleanAnswers();
     }
 
+    leaveGame() {
+        this.playerService.leaveGame();
+    }
+
     private canEditAnswer(): boolean {
         if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerService.answerConfirmed) {
             return true;
