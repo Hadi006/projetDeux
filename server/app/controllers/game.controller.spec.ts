@@ -64,12 +64,15 @@ describe('GameController', () => {
 
     it('should delete a game', (done) => {
         gameServiceStub.deleteGame.resolves(true);
+        const toSpy = spy(service['sio'], 'to');
+        gameServiceStub.createGame.resolves(testGame);
+        clientSocket.emit('create-game', testQuiz, () => {
+            clientSocket.on('game-deleted', () => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                done();
+            });
+        });
         clientSocket.emit('delete-game', testGame.pin);
-
-        setTimeout(() => {
-            expect(gameServiceStub.deleteGame.calledWith(testGame.pin)).to.equal(true);
-            done();
-        }, RESPONSE_DELAY);
     });
 
     it('should kick a player', (done) => {

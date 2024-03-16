@@ -92,6 +92,7 @@ export class GameController {
     private onDeleteGame(socket: Socket): void {
         socket.on('delete-game', async (pin: string) => {
             await this.gameService.deleteGame(pin);
+            this.sio.to(pin).emit('game-deleted');
         });
     }
 
