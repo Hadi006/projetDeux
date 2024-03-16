@@ -79,7 +79,7 @@ describe('GameController', () => {
         gameServiceStub.updateGame.resolves();
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.on('kick', (response) => {
+            clientSocket.on('kicked', (response) => {
                 const filteredPlayers = testGame.players.filter((player: Player) => player.name !== name);
                 expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
                 expect(testGame.players).to.deep.equal(filteredPlayers);

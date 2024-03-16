@@ -125,12 +125,12 @@ describe('PlayerService', () => {
     it('should navigate on kick', (done) => {
         service.player = testPlayer;
         service.handleSockets();
-        socketHelper.on('kick', () => {
+        socketHelper.on('kicked', () => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
             done();
             return {};
         });
-        socketHelper.peerSideEmit('kick', testPlayer.name);
+        socketHelper.peerSideEmit('kicked', testPlayer.name);
     });
 
     it('should confirm answer and stop timer on endQuestion', (done) => {

@@ -92,7 +92,7 @@ export class GameController {
             game.players = game.players.filter((player) => player.name !== playerName);
             game.bannedNames.push(playerName.toLocaleLowerCase());
             await this.gameService.updateGame(game);
-            this.sio.to(pin).emit('kick', playerName);
+            this.sio.to(pin).emit('kicked', playerName);
             this.sio.to(pin).emit('player-left', game.players);
         });
     }

@@ -170,7 +170,7 @@ export class PlayerService {
     }
 
     private onKick() {
-        this.webSocketService.onEvent<string>('kick', (playerName) => {
+        this.webSocketService.onEvent<string>('kicked', (playerName) => {
             if (playerName === this.player.name) {
                 this.router.navigate(['/']);
             }
