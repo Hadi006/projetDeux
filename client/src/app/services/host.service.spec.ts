@@ -137,7 +137,7 @@ describe('HostService', () => {
         service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.toggleLock();
-            expect(emitSpy).toHaveBeenCalledWith('toggle-lock', { pin: service.game.pin, lockState: true });
+            expect(emitSpy).toHaveBeenCalledWith('toggle-lock', { pin: service.game.pin, data: true });
             expect(service.game.locked).toBeTrue();
             done();
         });
@@ -150,7 +150,7 @@ describe('HostService', () => {
         service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.kick('Test Player');
-            expect(emitSpy).toHaveBeenCalledWith('kick', { pin: service.game.pin, playerName: 'Test Player' });
+            expect(emitSpy).toHaveBeenCalledWith('kick', { pin: service.game.pin, data: 'Test Player' });
             done();
         });
     });
@@ -163,7 +163,7 @@ describe('HostService', () => {
         service.createGame(testQuiz).subscribe(() => {
             emitSpy.and.stub();
             service.startGame(countdown);
-            expect(emitSpy).toHaveBeenCalledWith('start-game', { pin: service.game.pin, countdown });
+            expect(emitSpy).toHaveBeenCalledWith('start-game', { pin: service.game.pin, data: countdown });
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown, jasmine.any(Function));
             done();
         });
@@ -178,8 +178,7 @@ describe('HostService', () => {
             service.nextQuestion();
             expect(emitSpy).toHaveBeenCalledWith('next-question', {
                 pin: service.game.pin,
-                question: service.game.quiz?.questions[0],
-                countdown: service.game.quiz?.duration,
+                data: { question: service.game.quiz?.questions[0], countdown: service.game.quiz?.duration },
             });
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
         });
@@ -194,11 +193,11 @@ describe('HostService', () => {
                 expect(emitSpy).toHaveBeenCalledWith('end-question', service.game.pin);
                 expect(emitSpy).toHaveBeenCalledWith('update-scores', {
                     pin: service.game.pin,
-                    questionIndex: -1,
+                    data: -1,
                 });
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
                     pin: service.game.pin,
-                    answer: [],
+                    data: [],
                 });
                 done();
             });
@@ -217,7 +216,7 @@ describe('HostService', () => {
             service.questionEndedSubject.subscribe(() => {
                 expect(emitSpy).toHaveBeenCalledWith('answer', {
                     pin: service.game.pin,
-                    answer: [],
+                    data: [],
                 });
                 done();
             });
