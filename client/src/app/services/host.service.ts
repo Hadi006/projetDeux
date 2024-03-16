@@ -196,7 +196,9 @@ export class HostService {
         this.webSocketService.onEvent('player-left', (data) => {
             const { players, player } = data as { players: Player[]; player: Player };
             this.internalGame.players = players;
-            this.internalQuitters.push(player);
+            if (this.currentQuestionIndex !== INITIAL_QUESTION_INDEX) {
+                this.internalQuitters.push(player);
+            }
         });
     }
 
