@@ -117,6 +117,11 @@ describe('HostGamePageComponent', () => {
         expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
     });
 
+    it('should call leaveGame on the hostService when leaveGame is called', () => {
+        component.leaveGame();
+        expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
+    });
+
     it('should unsubscribe on destroy', () => {
         component.ngOnDestroy();
         hostServiceSpy.gameEndedSubject.subscribe(() => {
