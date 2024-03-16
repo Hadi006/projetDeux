@@ -52,4 +52,9 @@ describe('WaitingRoomPlayerPageComponent', () => {
         expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
+
+    it('should navigate to game page when start game is called', () => {
+        playerServiceSpy.startGameSubject.next();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['game-player']);
+    });
 });
