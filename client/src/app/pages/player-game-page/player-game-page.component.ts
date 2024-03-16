@@ -18,4 +18,8 @@ export class PlayerGamePageComponent {
     gameTitle() {
         return this.playerService.gameTitle;
     }
+
+    leaveGame() {
+        this.playerService.leaveGame();
+    }
 }
