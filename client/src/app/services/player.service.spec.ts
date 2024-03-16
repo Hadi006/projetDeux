@@ -197,7 +197,7 @@ describe('PlayerService', () => {
             callback(response);
         });
         service.joinGame('1', 'test').subscribe((error) => {
-            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('join-game', { pin: '1', playerName: 'test' }, jasmine.any(Function));
+            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('join-game', { pin: '1', data: 'test' }, jasmine.any(Function));
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
             expect(service.players).toEqual([]);
@@ -211,7 +211,7 @@ describe('PlayerService', () => {
         spyOn(service, 'cleanUp');
         service.player = testPlayer;
         service.leaveGame();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, playerName: testPlayer.name });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, data: testPlayer.name });
         expect(service.cleanUp).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
@@ -219,7 +219,7 @@ describe('PlayerService', () => {
     it('updatePlayer should update the player', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.updatePlayer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('update-player', { pin: undefined, player: undefined });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('update-player', { pin: undefined, data: undefined });
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
@@ -260,7 +260,7 @@ describe('PlayerService', () => {
     it('confirmPlayerAnswer should confirm the answer', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.confirmPlayerAnswer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { pin: undefined, player: undefined });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { pin: undefined, data: undefined });
         expect(service.answerConfirmed).toBeTrue();
     });
 
