@@ -171,9 +171,10 @@ describe('HostService', () => {
                 data: [],
             });
             expect(service.questionEnded).toBeTrue();
-            emitSpy.and.stub();
-            service.endQuestion();
         });
+        emitSpy.and.stub();
+        service.endQuestion();
+        service.questionEndedSubject.next();
     });
 
     it('should update game when updating scores', () => {
@@ -188,18 +189,19 @@ describe('HostService', () => {
                 pin: service.game.pin,
                 data: [],
             });
-
-            emitSpy.and.stub();
-            service.endQuestion();
         });
+        emitSpy.and.stub();
+        service.endQuestion();
+        service.questionEndedSubject.next();
     });
 
     it('should emit end-game on endGame', () => {
         service.gameEndedSubject.subscribe(() => {
             expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin);
-            emitSpy.and.stub();
-            service.endGame();
         });
+        emitSpy.and.stub();
+        service.endGame();
+        service.gameEndedSubject.next();
     });
 
     it('should emit delete-game, disconnect and stop timer on cleanUp', () => {
