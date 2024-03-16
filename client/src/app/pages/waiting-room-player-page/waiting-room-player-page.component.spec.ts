@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player.service';
@@ -11,6 +12,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
     let fixture: ComponentFixture<WaitingRoomPlayerPageComponent>;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['leaveGame', 'cleanUp']);
@@ -24,7 +26,16 @@ describe('WaitingRoomPlayerPageComponent', () => {
             },
             configurable: true,
         });
+        const endGameSubject = new Subject<void>();
+        Object.defineProperty(playerServiceSpy, 'endGameSubject', {
+            get: () => {
+                return endGameSubject;
+            },
+            configurable: true,
+        });
+
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -33,6 +44,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: MatDialog, useValue: dialogSpy },
             ],
         });
     }));
