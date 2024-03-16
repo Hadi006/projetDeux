@@ -1,8 +1,8 @@
-import { Server as SocketIOServer, Socket } from 'socket.io';
-import { Server as HTTPServer } from 'http';
 import { GameService } from '@app/services/game.service';
-import { Quiz } from '@common/quiz';
 import { Player } from '@common/player';
+import { Quiz } from '@common/quiz';
+import { Server as HTTPServer } from 'http';
+import { Socket, Server as SocketIOServer } from 'socket.io';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -29,11 +29,18 @@ export class GameController {
             this.onEndQuestion(socket);
             this.onConfirmPlayerAnswer(socket);
             this.onAnswer(socket);
+            this.chatMessages(socket);
             this.onEndGame(socket);
             this.onDisconnect(socket);
         });
     }
 
+    private chatMessages(socket: Socket): void {
+        socket.on('new-message', (message) => {
+            console.log(message);
+            this.sio.emit('message-received', message);
+        });
+    }
     private onCreateGame(socket: Socket): void {
         socket.on('create-game', async (quiz: Quiz, callback) => {
             const game = await this.gameService.createGame(quiz);

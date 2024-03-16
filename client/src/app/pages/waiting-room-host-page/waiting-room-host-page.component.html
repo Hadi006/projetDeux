@@ -19,3 +19,5 @@
     <button (click)="toggleLock()">{{ game.locked ? 'Déverrouiller' : 'Verrouiller' }}</button>
     <button *ngIf="game.quiz" [disabled]="!game.locked || !game.players.length" (click)="startGame()">Commencer la partie</button>
 </div>
+<app-chatbox [playerName]="'Organisateur'"> </app-chatbox>
+```

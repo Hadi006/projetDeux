@@ -14,20 +14,23 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { GameTimersComponent } from './components/game-timers/game-timers.component';
-import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
+import { PromptComponent } from './components/prompt/prompt.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
 import { QuestionFormComponent } from './components/question-form/question-form.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
 import { QuestionComponent } from './components/question/question.component';
-import { TestPageComponent } from './pages/test-page/test-page.component';
-import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
-import { HomePageComponent } from './pages/home-page/home-page.component';
-import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
-import { PromptComponent } from './components/prompt/prompt.component';
-import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
 import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting-room-info.component';
+import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
+import { HomePageComponent } from './pages/home-page/home-page.component';
+import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
+import { SelectNamePageComponent } from './pages/select-name-page/select-name-page.component';
+import { TestPageComponent } from './pages/test-page/test-page.component';
+import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
+import { ChatService } from './services/chat.service';
 
 /**
  * Main module that is used in main.ts.
@@ -59,6 +62,9 @@ import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page
         JoinRoomPageComponent,
         WaitingRoomInfoComponent,
         WaitingRoomPlayerPageComponent,
+        WaitingRoomPageComponent,
+        JoinRoomPageComponent,
+        SelectNamePageComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -70,7 +76,7 @@ import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page
         DragDropModule,
         ReactiveFormsModule,
     ],
-    providers: [],
+    providers: [ChatService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

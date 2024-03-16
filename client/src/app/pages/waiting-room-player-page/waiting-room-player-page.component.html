@@ -3,4 +3,5 @@
 <p>Joueurs:</p>
 <div *ngFor="let player of players">
     {{ player }}
+    <app-chatbox [playerName]="player"></app-chatbox>
 </div>
