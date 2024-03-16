@@ -40,4 +40,49 @@ describe('HostGamePageComponent', () => {
         component.stopCountDown();
         expect(component.isCountingDown).toBeFalse();
     });
+
+    it('getGame should return the game from the hostService', () => {
+        expect(component.getGame()).toEqual(TEST_GAME_DATA);
+    });
+
+    it('getCurrentQuestion should return the current question from the hostService', () => {
+        hostServiceSpy.getCurrentQuestion.and.returnValue(TEST_GAME_DATA.quiz?.questions[0]);
+        expect(component.getCurrentQuestion()).toEqual(TEST_GAME_DATA.quiz?.questions[0]);
+    });
+
+    it('getTime should return the time from the hostService', () => {
+        const time = 10;
+        hostServiceSpy.getTime.and.returnValue(time);
+        expect(component.getTime()).toEqual(time);
+    });
+
+    it('getQuestionEnded should return the questionEnded from the hostService', () => {
+        Object.defineProperty(hostServiceSpy, 'questionEnded', {
+            get: () => {
+                return true;
+            },
+            configurable: true,
+        });
+        expect(component.getQuestionEnded()).toBeTrue();
+    });
+
+    it('nextQuestion should call nextQuestion on the hostService', () => {
+        component.nextQuestion();
+        expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
+    });
+
+    it('getPlayers should return the players from the hostService', () => {
+        const players = TEST_GAME_DATA.players;
+        expect(component.getPlayers()).toEqual(players);
+    });
+
+    it('getQuitters should return the quitters from the hostService', () => {
+        Object.defineProperty(hostServiceSpy, 'quitters', {
+            get: () => {
+                return TEST_GAME_DATA.players;
+            },
+            configurable: true,
+        });
+        expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
+    });
 });
