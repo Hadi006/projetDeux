@@ -5,7 +5,7 @@ import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
 import { TimeService } from './time.service';
 import { Game } from '@common/game';
-import { TEST_GAME_DATA, TEST_QUIZZES, TRANSITION_DELAY } from '@common/constant';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUIZZES, TRANSITION_DELAY } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -117,6 +117,14 @@ describe('HostService', () => {
         socketHelper.peerSideEmit('confirm-player-answer');
         expect(timeServiceSpy.setTimeById).toHaveBeenCalledWith(1, 0);
         expect(service.nAnswered).toBe(0);
+    });
+
+    it('should update histogram on playerUpdated', () => {
+        const index = -1;
+        emitSpy.and.stub();
+        service.handleSockets();
+        socketHelper.peerSideEmit('player-updated', TEST_HISTOGRAM_DATA[0]);
+        expect(service.histograms[index]).toEqual(TEST_HISTOGRAM_DATA[0]);
     });
 
     it('should create a game', (done) => {
