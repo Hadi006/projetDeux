@@ -167,11 +167,22 @@ describe('HostService', () => {
     });
 
     it('should emit next-question on nextQuestion', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testGame.quiz?.questions[0]);
+        const histogram = {
+            labels:
+                service.getCurrentQuestion()?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
+            datasets: [
+                {
+                    label: service.getCurrentQuestion()?.text || '',
+                    data: service.getCurrentQuestion()?.choices.map(() => 0) || [],
+                },
+            ],
+        };
         emitSpy.and.stub();
         service.nextQuestion();
         expect(emitSpy).toHaveBeenCalledWith('next-question', {
             pin: service.game.pin,
-            data: { question: service.game.quiz?.questions[0], countdown: service.game.quiz?.duration },
+            data: { question: service.game.quiz?.questions[0], countdown: service.game.quiz?.duration, histogram },
         });
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
         expect(service.questionEnded).toBeFalse();
