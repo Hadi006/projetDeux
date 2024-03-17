@@ -177,6 +177,26 @@ export const TEST_PLAYERS: Player[] = [
     },
 ];
 
+export const TEST_HISTOGRAM_DATA: HistogramData[] = [{
+    labels: ['Test Label 1', 'Test Label 2'],
+    datasets: [
+        {
+            label: 'Test Dataset',
+            data: [1, 2],
+        },
+    ],
+},
+{
+    labels: ['Test Label 3', 'Test Label 4'],
+    datasets: [
+        {
+            label: 'Test Dataset 2',
+            data: [3, 4],
+        },
+    ],
+}];
+
+
 export const TEST_GAME_DATA: Game = {
     pin: '1',
     hostId: '1',
@@ -184,6 +204,6 @@ export const TEST_GAME_DATA: Game = {
     quiz: TEST_QUIZZES[0],
     locked: false,
     bannedNames: [],
-    histograms: [],
+    histograms: TEST_HISTOGRAM_DATA,
 };
 
