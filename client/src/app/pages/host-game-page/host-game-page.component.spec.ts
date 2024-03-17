@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { HostService } from '@app/services/host.service';
-import { TEST_GAME_DATA } from '@common/constant';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { Subject } from 'rxjs';
 
@@ -32,6 +32,12 @@ describe('HostGamePageComponent', () => {
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', {
             get: () => {
                 return gameEndedSubject;
+            },
+            configurable: true,
+        });
+        Object.defineProperty(hostServiceSpy, 'histograms', {
+            get: () => {
+                return TEST_HISTOGRAM_DATA;
             },
             configurable: true,
         });
