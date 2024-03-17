@@ -33,12 +33,8 @@ export class GameService {
                 .padStart(GAME_ID_LENGTH, '0');
         } while (games.some((game) => game.pin === pin));
 
-        const newGame: Game = { ...NEW_GAME, pin, quiz }; // le pin et le quiz ne sont pas dupliques ?
+        const newGame: Game = { ...NEW_GAME, pin, quiz };
         newGame.hostId = hostId;
-        // newGame.histograms[0].labels = quiz.questions[0].choices.map((choice) => `${choice.text} ${choice.isCorrect ? 'bonne' : 'mauvaise'}`);
-        // console.log(newGame.histograms[0].labels);
-        // newGame.histograms[0].datasets[0].label = quiz.questions[0].text;
-        // newGame.histograms[0].datasets[0].data = quiz.questions.map(() => 0);
 
         await this.database.add('games', newGame);
         return newGame;
