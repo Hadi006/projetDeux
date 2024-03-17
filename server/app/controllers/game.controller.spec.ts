@@ -226,10 +226,24 @@ describe('GameController', () => {
         });
     });
 
-    it('should update player', (done) => {
+    it('should update player and tell the host', (done) => {
+        gameServiceStub.updatePlayer.resolves(TEST_HISTOGRAM_DATA[0]);
+        gameServiceStub.getGame.resolves(testGame);
+        const getStub = stub().returns(clientSocket);
+        stub(service['sio'].sockets.sockets, 'get').callsFake(getStub);
         clientSocket.emit('update-player', { pin: testGame.pin, data: testGame.players[0] });
         setTimeout(() => {
             expect(gameServiceStub.updatePlayer.calledWith(testGame.pin, testGame.players[0])).to.equal(true);
+            done();
+        }, RESPONSE_DELAY);
+    });
+
+    it('should not tell the host if host is not in the game', (done) => {
+        gameServiceStub.getGame.resolves(undefined);
+        stub(service['sio'].sockets.sockets, 'get').returns(undefined);
+        clientSocket.emit('update-player', { pin: testGame.pin, data: testGame.players[0] });
+        setTimeout(() => {
+            expect(gameServiceStub.updatePlayer.called).to.equal(true);
             done();
         }, RESPONSE_DELAY);
     });
