@@ -223,7 +223,7 @@ describe('HostService', () => {
         });
         emitSpy.and.stub();
         service.endGame();
-        service.gameEndedSubject.next();
+        service.gameEndedSubject.next(TEST_GAME_DATA);
     });
 
     it('should emit delete-game, disconnect and stop timer on cleanUp', () => {

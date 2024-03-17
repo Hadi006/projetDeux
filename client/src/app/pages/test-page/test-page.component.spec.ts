@@ -25,7 +25,7 @@ describe('TestPageComponent', () => {
         playerServiceSpy.joinGame.and.returnValue(of(''));
 
         const questionEndedSubject = new Subject<void>();
-        const gameEndedSubject = new Subject<void>();
+        const gameEndedSubject = new Subject<Game>();
         hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
         Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
@@ -70,7 +70,7 @@ describe('TestPageComponent', () => {
             done();
         });
 
-        hostServiceSpy.gameEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
     });
 
     it('ngOnInit should navigate to game page if there is no quiz', () => {
@@ -93,7 +93,7 @@ describe('TestPageComponent', () => {
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
-        hostServiceSpy.gameEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
         expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);
         expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
     });

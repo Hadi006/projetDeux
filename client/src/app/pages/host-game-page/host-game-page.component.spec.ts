@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { HostService } from '@app/services/host.service';
 import { TEST_GAME_DATA } from '@common/constant';
+import { Game } from '@common/game';
 import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
@@ -27,7 +28,7 @@ describe('HostGamePageComponent', () => {
             },
             configurable: true,
         });
-        const gameEndedSubject = new Subject<void>();
+        const gameEndedSubject = new Subject<Game>();
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', {
             get: () => {
                 return gameEndedSubject;
@@ -64,7 +65,7 @@ describe('HostGamePageComponent', () => {
             expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
             done();
         });
-        hostServiceSpy.gameEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
@@ -128,6 +129,6 @@ describe('HostGamePageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
             expect(hostServiceSpy.leaveGame).not.toHaveBeenCalled();
         });
-        hostServiceSpy.gameEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
     });
 });
