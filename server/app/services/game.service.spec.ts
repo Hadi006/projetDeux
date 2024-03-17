@@ -170,8 +170,8 @@ describe('GameService', () => {
     });
 
     it('should update a player', async () => {
-        const player: Player = JSON.parse(JSON.stringify(NEW_PLAYER));
-        stub(gameService, 'getGame').resolves({ ...testGame, players: [NEW_PLAYER] });
+        const player: Player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        stub(gameService, 'getGame').resolves({ ...testGame, players: [player] });
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updatePlayer(testGame.pin, player);
         expect(updateStub.calledWith({ ...testGame, players: [player] })).to.equal(true);
