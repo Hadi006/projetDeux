@@ -1,0 +1,11 @@
+<div *ngIf="game">
+    <div class="player-list" *ngFor="let player of game.players">
+        <div>{{ player.name }} {{ player.score }} {{ player.fastestResponseCount }}</div>
+    </div>
+    <app-histogram [chartData]="game.histograms[currentHistogramIndex]"></app-histogram>
+</div>
+<button (click)="previousHistogram()"></button>
+<button (click)="nextHistogram()"></button>
+<app-chatbox></app-chatbox>
+<button (click)="leaveGame()">Quitter</button>
+

@@ -18,8 +18,8 @@ export class HostService {
     private internalNAnswered = 0;
     private internalQuestionEnded: boolean;
     private timerId: number;
-    private internalQuestionEndedSubject = new Subject<void>();
-    private internalGameEndedSubject = new Subject<void>();
+    private internalQuestionEndedSubject = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
+    private internalGameEndedSubject = new Subject<Game>(); // les subjects sont faits pour etre observes, ils devraient etre public
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
@@ -44,11 +44,11 @@ export class HostService {
         return this.internalQuestionEnded;
     }
     get questionEndedSubject() {
-        return this.internalQuestionEndedSubject;
+        return this.internalQuestionEndedSubject; // utilise public readonly a la place
     }
 
     get gameEndedSubject() {
-        return this.internalGameEndedSubject;
+        return this.internalGameEndedSubject; // utilise public readonly a la place
     }
 
     get quitters() {
@@ -134,8 +134,8 @@ export class HostService {
 
     endGame() {
         this.emitEndGame();
-        this.internalGameEndedSubject.next();
-        this.cleanUp();
+        // this.internalGameEndedSubject.next();
+        // this.cleanUp();
     }
 
     cleanUp() {
@@ -219,7 +219,11 @@ export class HostService {
     }
 
     private emitEndGame() {
-        this.webSocketService.emit<string>('end-game', this.internalGame.pin);
+        this.webSocketService.emit<string>('end-game', this.internalGame.pin, (game: unknown) => {
+            console.log('end-game', game);
+            this.router.navigate(['/endgame']);
+            this.internalGameEndedSubject.next(game as Game);
+        });
     }
 
     private onPlayerJoined() {
