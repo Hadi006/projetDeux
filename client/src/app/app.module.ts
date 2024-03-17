@@ -30,6 +30,7 @@ import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.com
 import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
 import { TestPageComponent } from './pages/test-page/test-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
+import { EndgameResultPageComponent } from './pages/endgame-result-page/endgame-result-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -63,6 +64,7 @@ import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page
         PlayerGamePageComponent,
         HostGamePageComponent,
         HistogramComponent,
+        EndgameResultPageComponent,
     ],
     imports: [
         AppMaterialModule,

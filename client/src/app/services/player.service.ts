@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TRANSITION_DELAY } from '@common/constant';
+import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { Answer, Question } from '@common/quiz';
 import { RoomData } from '@common/room-data';
@@ -22,8 +23,8 @@ export class PlayerService {
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
-    private internalStartGameSubject: Subject<void> = new Subject<void>();
-    private internalEndGameSubject: Subject<void> = new Subject<void>();
+    private internalStartGameSubject: Subject<void> = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
+    private internalEndGameSubject: Subject<Game> = new Subject<Game>(); // les subjects sont faits pour etre observes, ils devraient etre public
 
     constructor(
         private webSocketService: WebSocketService,
@@ -57,11 +58,11 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
-    get startGameSubject(): Subject<void> {
+    get startGameSubject(): Subject<void> { // utilise public readonly a la place
         return this.internalStartGameSubject;
     }
 
-    get endGameSubject(): Subject<void> {
+    get endGameSubject(): Subject<Game> { // utilise public readonly a la place
         return this.internalEndGameSubject;
     }
 
@@ -86,6 +87,7 @@ export class PlayerService {
         this.onNextQuestion();
         this.onNewScore();
         this.onAnswer();
+        this.onGameEnded();
         this.onGameDeleted();
     }
 
@@ -212,9 +214,17 @@ export class PlayerService {
         });
     }
 
+    private onGameEnded() {
+        this.webSocketService.onEvent<Game>('game-ended', (game) => {
+            this.router.navigate(['/endgame']);
+            console.log('game ended', game);
+            this.internalEndGameSubject.next(game);
+        });
+    }
+
     private onGameDeleted() {
-        this.webSocketService.onEvent<void>('game-deleted', () => {
-            this.internalEndGameSubject.next();
+        this.webSocketService.onEvent<Game>('game-deleted', (game) => {
+            this.internalEndGameSubject.next(game);
             this.leaveGame();
         });
     }

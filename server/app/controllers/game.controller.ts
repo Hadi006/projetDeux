@@ -120,7 +120,7 @@ export class GameController {
     private onNextQuestion(socket: Socket): void {
         socket.on('next-question', async (roomData: RoomData<{ question: Question; countdown: number; histogram: HistogramData }>) => {
             const blankQuestion: Question = roomData.data.question;
-            blankQuestion.choices.forEach((choice) => {
+            blankQuestion?.choices.forEach((choice) => {
                 choice.isCorrect = false;
             });
             const game = await this.gameService.getGame(roomData.pin);
@@ -178,8 +178,11 @@ export class GameController {
     }
 
     private onEndGame(socket: Socket): void {
-        socket.on('end-game', (pin: string) => {
-            this.sio.to(pin).emit('end-game');
+        socket.on('end-game', async (pin: string, callback) => {
+            console.log('end-game', typeof callback);
+            const game = await this.gameService.getGame(pin);
+            this.sio.to(pin).emit('game-ended', game);
+            callback(game);
         });
     }
 
