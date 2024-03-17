@@ -141,16 +141,6 @@ export class PlayerService {
         this.timeService.stopTimerById(this.timerId);
     }
 
-    private resetPlayerAnswers(question: Question): void {
-        const resetQuestion = { ...question };
-        resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false })); // le joueur ne devrait pas recevoir la question avec les bonnes réponses, le serveur devrait envoyer une question avec des réponses vides
-        this.player.questions.push(resetQuestion);
-        this.internalAnswerConfirmed = false;
-        this.internalAnswer = [];
-        this.internalIsCorrect = false;
-        this.updatePlayer(); // c'est mieux de faire le update (mettre une question vide) dans le cote serveur pour éviter la concurrence
-    }
-
     private emitLeaveGame() {
         this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
     }
@@ -230,7 +220,11 @@ export class PlayerService {
     }
 
     private setupNextQuestion(question: Question, countdown: number): void {
-        this.resetPlayerAnswers(question);
+        this.player.questions.push(question);
+        this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
+        this.internalIsCorrect = false;
+        this.updatePlayer(); // c'est mieux de faire le update (mettre une question vide) dans le cote serveur pour éviter la concurrence
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
     }
