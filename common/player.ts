@@ -6,4 +6,3 @@ export interface Player {
     questions: Question[];
     fastestResponseCount: number;
 }
-

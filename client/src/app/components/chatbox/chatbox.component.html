@@ -8,7 +8,7 @@
         <div class="messages">
             <div *ngFor="let message of chatService.messages" class="message">
                 <div class="message-header">
-                    <span class="author">{{ playerName }} :</span>
+                    <span class="author">{{ message.author.name }} :</span>
                     <span class="timestamp">{{ message.timestamp | date: 'mediumTime' }}</span>
                 </div>
                 <div class="message-body">

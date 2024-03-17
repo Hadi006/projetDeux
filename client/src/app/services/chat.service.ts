@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@app/interfaces/chat-message';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
+import { Player } from '@common/player';
 import { Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -21,8 +21,7 @@ export class ChatService {
     private setupSocket() {
         this.socket.on('message-received', (message: ChatMessage) => {
             this.internalMessages.push(message);
-            // (window as any)['chatboxComponent'].handleMessagesUpdate(); //donne une erreur dans console
-            this.messagesSubject.next(); // Notify subscribers of new messages
+            this.messagesSubject.next();
         });
     }
 
@@ -34,7 +33,7 @@ export class ChatService {
         return this.messagesSubject;
     }
 
-    sendMessage(newMessage: string) {
+    sendMessage(newMessage: string, player: Player) {
         if (!this.validateMessage(newMessage)) {
             return;
         }
@@ -42,10 +41,9 @@ export class ChatService {
         const newChatMessage: ChatMessage = {
             text: newMessage,
             timestamp: new Date(),
-            // player: PlayerService.player.name,
+            author: player,
         };
 
-        // Emit the message to the server
         this.socket.emit('new-message', newChatMessage);
     }
 

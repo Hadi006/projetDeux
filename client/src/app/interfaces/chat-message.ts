@@ -1,5 +1,7 @@
+import { Player } from '@common/player';
+
 export interface ChatMessage {
     text: string;
     timestamp: Date;
-    // player: Player['name'];
+    author: Player;
 }
