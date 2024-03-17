@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Player } from '@common/player';
-import { Observable, Subject } from 'rxjs';
-import { Answer, Question } from '@common/quiz';
-import { WebSocketService } from './web-socket.service';
-import { TimeService } from './time.service';
-import { TRANSITION_DELAY } from '@common/constant';
 import { Router } from '@angular/router';
+import { TRANSITION_DELAY } from '@common/constant';
+import { Player } from '@common/player';
+import { Answer, Question } from '@common/quiz';
 import { RoomData } from '@common/room-data';
+import { Observable, Subject } from 'rxjs';
+import { TimeService } from './time.service';
+import { WebSocketService } from './web-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -30,7 +30,7 @@ export class PlayerService {
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.timerId = timeService.createTimerById();
+        this.timerId = timeService.createTimerById(); // soit qu'on initialise tous les attributs dans le constructeur, soit qu'on les initialise tout en dehors du constructeur
     }
 
     get pin(): string {
@@ -143,12 +143,12 @@ export class PlayerService {
 
     private resetPlayerAnswers(question: Question): void {
         const resetQuestion = { ...question };
-        resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
+        resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false })); // le joueur ne devrait pas recevoir la question avec les bonnes réponses, le serveur devrait envoyer une question avec des réponses vides
         this.player.questions.push(resetQuestion);
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
-        this.updatePlayer();
+        this.updatePlayer(); // c'est mieux de faire le update (mettre une question vide) dans le cote serveur pour éviter la concurrence
     }
 
     private emitLeaveGame() {

@@ -1,9 +1,10 @@
+import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_GAME, NEW_HISTOGRAM_DATA, NEW_PLAYER } from '@common/constant';
+import { Game } from '@common/game';
+import { HistogramData } from '@common/histogram-data';
+import { Player } from '@common/player';
+import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
-import { ANSWER_TIME_BUFFER, GOOD_ANSWER_BONUS, GAME_ID_LENGTH, GAME_ID_MAX, NEW_GAME, NEW_PLAYER } from '@common/constant';
-import { Question, Quiz } from '@common/quiz';
-import { Player } from '@common/player';
-import { Game } from '@common/game';
 
 @Service()
 export class GameService {
@@ -17,7 +18,7 @@ export class GameService {
         return (await this.database.get<Game>('games', { pin }))[0];
     }
 
-    async createGame(quiz: Quiz): Promise<Game | undefined> {
+    async createGame(quiz: Quiz, hostId: string): Promise<Game | undefined> {
         let pin: string;
 
         const games = await this.getGames();
@@ -32,7 +33,13 @@ export class GameService {
                 .padStart(GAME_ID_LENGTH, '0');
         } while (games.some((game) => game.pin === pin));
 
-        const newGame: Game = { ...NEW_GAME, pin, quiz };
+        const newGame: Game = { ...NEW_GAME, pin, quiz }; // le pin et le quiz ne sont pas dupliques ?
+        newGame.hostId = hostId;
+        // newGame.histograms[0].labels = quiz.questions[0].choices.map((choice) => `${choice.text} ${choice.isCorrect ? 'bonne' : 'mauvaise'}`);
+        // console.log(newGame.histograms[0].labels);
+        // newGame.histograms[0].datasets[0].label = quiz.questions[0].text;
+        // newGame.histograms[0].datasets[0].data = quiz.questions.map(() => 0);
+
         await this.database.add('games', newGame);
         return newGame;
     }
@@ -91,19 +98,37 @@ export class GameService {
         return { player, players: game.players.map((p) => p.name), gameTitle: game.quiz.title, error: '' };
     }
 
-    async updatePlayer(pin: string, player: Player): Promise<void> {
+    async updatePlayer(pin: string, player: Player): Promise<HistogramData> {
         const game = await this.getGame(pin);
         if (!game || game.pin !== pin) {
-            return;
+            return { ... NEW_HISTOGRAM_DATA };
         }
+
+        const selectionChanges: number[] = [];
+        let previousSelections: boolean[] = [];
+        let currentSelections: boolean[] = [];
 
         game.players.forEach((p, index) => {
             if (p.name === player.name) {
+                previousSelections = p.questions[p.questions.length - 1].choices.map((choice) => choice.isCorrect);
+                currentSelections = player.questions[player.questions.length - 1].choices.map((choice) => choice.isCorrect);
+
                 game.players[index] = player;
             }
         });
 
+        const currentHistogram = game.histograms[game.histograms.length - 1];
+        if (previousSelections.length !== currentSelections.length) {
+            return currentHistogram; // ca devrait jamais arriver, mais whatever
+        }
+        currentSelections.forEach((currentSelection, index) => {
+            selectionChanges.push(+currentSelection - +previousSelections[index]); // true true => 0, true false => 1, false true => -1, false false => 0
+            currentHistogram.datasets[0].data[index] += (+currentSelection - +previousSelections[index]); // true true = +0, true false = +1, false true = -1, false false = -0
+        });
+
         await this.updateGame(game);
+
+        return currentHistogram;
     }
 
     async updateScores(pin: string, questionIndex: number): Promise<void> {

@@ -33,5 +33,6 @@
             </div>
             <button (click)="leaveGame()">Quitter</button>
         </div>
+        <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
     </div>
 </body>

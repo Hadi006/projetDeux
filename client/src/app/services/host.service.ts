@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Game } from '@common/game';
-import { WebSocketService } from './web-socket.service';
-import { Observable, Subject } from 'rxjs';
-import { Answer, Question, Quiz } from '@common/quiz';
-import { TimeService } from './time.service';
-import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
-import { Player } from '@common/player';
-import { RoomData } from '@common/room-data';
 import { Router } from '@angular/router';
+import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { Game } from '@common/game';
+import { HistogramData } from '@common/histogram-data';
+import { Player } from '@common/player';
+import { Answer, Question, Quiz } from '@common/quiz';
+import { RoomData } from '@common/room-data';
+import { Observable, Subject } from 'rxjs';
+import { TimeService } from './time.service';
+import { WebSocketService } from './web-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,6 +22,7 @@ export class HostService {
     private internalGameEndedSubject = new Subject<void>();
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
+    private internalHistograms: HistogramData[] = [];
 
     constructor(
         private webSocketService: WebSocketService,
@@ -53,6 +55,10 @@ export class HostService {
         return this.internalQuitters;
     }
 
+    get histograms() {
+        return this.internalHistograms;
+    }
+
     getTime() {
         return this.timeService.getTimeById(this.timerId);
     }
@@ -69,6 +75,7 @@ export class HostService {
         this.onPlayerJoined();
         this.onPlayerLeft();
         this.onConfirmPlayerAnswer();
+        this.onPlayerUpdated();
     }
 
     createGame(quiz: Quiz): Observable<boolean> {
@@ -100,6 +107,18 @@ export class HostService {
     nextQuestion() {
         this.internalQuestionEnded = false;
         this.currentQuestionIndex++;
+        // create a new histogram for the new question
+        const newHistogram: HistogramData = {
+            labels: this.getCurrentQuestion()?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
+            datasets: [
+                {
+                    label: this.getCurrentQuestion()?.text || '',
+                    data: this.getCurrentQuestion()?.choices.map(() => 0) || [],
+                },
+            ],
+        };
+        this.internalHistograms.push(newHistogram);
+        //
         this.emitNextQuestion();
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
@@ -121,6 +140,7 @@ export class HostService {
 
     cleanUp() {
         this.emitDeleteGame();
+        this.internalHistograms = [];
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
     }
@@ -164,11 +184,12 @@ export class HostService {
     }
 
     private emitNextQuestion() {
-        this.webSocketService.emit<RoomData<{ question: Question | undefined; countdown: number | undefined }>>('next-question', {
+        this.webSocketService.emit<RoomData<{ question?: Question; countdown?: number, histogram: HistogramData }>>('next-question', {
             pin: this.internalGame.pin,
             data: {
                 question: this.getCurrentQuestion(),
                 countdown: this.internalGame.quiz?.duration,
+                histogram: this.internalHistograms[this.internalHistograms.length - 1],
             },
         });
     }
@@ -230,6 +251,12 @@ export class HostService {
                 this.timeService.setTimeById(this.timerId, 0);
                 this.internalNAnswered = 0;
             }
+        });
+    }
+
+    private onPlayerUpdated() {
+        this.webSocketService.onEvent('player-updated', (histogramdData: HistogramData) => {
+            this.internalHistograms[this.internalHistograms.length - 1] = histogramdData;
         });
     }
 

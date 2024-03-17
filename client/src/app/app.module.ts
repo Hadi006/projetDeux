@@ -13,23 +13,23 @@ import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/
 import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
-import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
+import { HistogramComponent } from './components/histogram/histogram.component';
+import { PromptComponent } from './components/prompt/prompt.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
 import { QuestionFormComponent } from './components/question-form/question-form.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
 import { QuestionComponent } from './components/question/question.component';
-import { TestPageComponent } from './pages/test-page/test-page.component';
-import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
-import { HomePageComponent } from './pages/home-page/home-page.component';
-import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { QuizItemComponent } from './components/quiz-item/quiz-item.component';
-import { PromptComponent } from './components/prompt/prompt.component';
-import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
 import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting-room-info.component';
-import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
-import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
+import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
+import { HomePageComponent } from './pages/home-page/home-page.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
-import { HistogramComponent } from './components/histogram/histogram.component';
+import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
+import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
+import { TestPageComponent } from './pages/test-page/test-page.component';
+import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 
 /**
  * Main module that is used in main.ts.

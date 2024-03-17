@@ -5,4 +5,5 @@ interface HistogramData {
         data: number[];
     }[];
 }
-    
+
+export { HistogramData };

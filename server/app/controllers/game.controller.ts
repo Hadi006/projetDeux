@@ -1,9 +1,10 @@
-import { Server as SocketIOServer, Socket } from 'socket.io';
-import { Server as HTTPServer } from 'http';
 import { GameService } from '@app/services/game.service';
-import { Answer, Question, Quiz } from '@common/quiz';
+import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
+import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
+import { Server as HTTPServer } from 'http';
+import { Socket, Server as SocketIOServer } from 'socket.io';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -37,7 +38,7 @@ export class GameController {
 
     private onCreateGame(socket: Socket): void {
         socket.on('create-game', async (quiz: Quiz, callback) => {
-            const game = await this.gameService.createGame(quiz);
+            const game = await this.gameService.createGame(quiz, socket.id);
             if (game) {
                 socket.join(game.pin);
             }
@@ -117,14 +118,25 @@ export class GameController {
     }
 
     private onNextQuestion(socket: Socket): void {
-        socket.on('next-question', (roomData: RoomData<{ question: Question; countdown: number }>) => {
-            this.sio.to(roomData.pin).emit('next-question', { question: roomData.data.question, countdown: roomData.data.countdown });
+        socket.on('next-question', async (roomData: RoomData<{ question: Question; countdown: number; histogram: HistogramData }>) => {
+            // begin : ajout de questions vides pour chaque joueur. J'ai besoin de cette partie, car avant que le joueue selectionne une reponse pour la premiere fois et l'envoie au serveur, le serveur doit savoir c'est quoi ses choix précédents
+            const blankQuestion: Question = roomData.data.question;
+            blankQuestion.choices.forEach((choice) => { choice.isCorrect = false; });
+            const game = await this.gameService.getGame(roomData.pin);
+            game.players.forEach((player) => { player.questions.push(blankQuestion); });
+            game.histograms.push(roomData.data.histogram);
+            await this.gameService.updateGame(game);
+            // end
+
+            this.sio.to(roomData.pin).emit('next-question', { question: roomData.data.question, countdown: roomData.data.countdown }); // tu peux remplacer roomData.data.question par blankQuestion ici
         });
     }
 
     private onUpdatePlayer(socket: Socket): void {
         socket.on('update-player', async (roomData: RoomData<Player>) => {
-            await this.gameService.updatePlayer(roomData.pin, roomData.data);
+            const histogramData = await this.gameService.updatePlayer(roomData.pin, roomData.data);
+            const hostId = (await this.gameService.getGame(roomData.pin))?.hostId;
+            this.sio.sockets.sockets.get(hostId)?.emit('player-updated', histogramData);
         });
     }
     private onUpdateScores(socket: Socket): void {

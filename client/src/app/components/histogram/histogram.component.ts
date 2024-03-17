@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ChartData } from 'chart.js';
 import { Chart, ChartConfiguration } from 'chart.js/auto';
 
 @Component({
@@ -6,24 +7,34 @@ import { Chart, ChartConfiguration } from 'chart.js/auto';
   templateUrl: './histogram.component.html',
   styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent implements OnInit {
-    chart: ChartConfiguration;
-
-    constructor() {
-    // this.chart = {
-    //   type: 'bar',
-    //   data: {
-    //     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    //     datasets: [{
-    //       label: 'Histogram',
-    //       data: [12, 19, 3, 5, 2, 3],
-    //     }]
-    //   },
-    // };
-    }
+export class HistogramComponent implements OnInit, OnChanges {
+    @Input() chartData: ChartData;
+    chart: Chart;
+    private chartConfig: ChartConfiguration;
 
     ngOnInit() {
-        let newChart = new Chart('histogram', this.chart);
-        newChart;
+        this.chartConfig = {
+            type: 'bar',
+            data: {
+                labels: [''],
+                datasets: [{
+                    label: '',
+                    data: [0],
+                }]
+            },
+        }
+        this.chart = new Chart('histogram', this.chartConfig);
+    }
+
+    ngOnChanges() {
+        if (!this.chart) {
+            return;
+        }
+        if (this.chart.data.datasets[0].label === this.chartData.datasets[0].label) {
+            this.chart.data.datasets[0].data = this.chartData.datasets[0].data;
+        } else {
+            this.chart.data = this.chartData;
+        }
+        this.chart.update();
     }
 }
