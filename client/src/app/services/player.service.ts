@@ -58,11 +58,13 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
-    get startGameSubject(): Subject<void> { // utilise public readonly a la place
+    get startGameSubject(): Subject<void> {
+        // utilise public readonly a la place
         return this.internalStartGameSubject;
     }
 
-    get endGameSubject(): Subject<Game> { // utilise public readonly a la place
+    get endGameSubject(): Subject<Game> {
+        // utilise public readonly a la place
         return this.internalEndGameSubject;
     }
 
@@ -234,7 +236,6 @@ export class PlayerService {
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
-        this.updatePlayer(); // c'est mieux de faire le update (mettre une question vide) dans le cote serveur pour éviter la concurrence
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
     }
