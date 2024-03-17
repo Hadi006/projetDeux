@@ -119,16 +119,18 @@ export class GameController {
 
     private onNextQuestion(socket: Socket): void {
         socket.on('next-question', async (roomData: RoomData<{ question: Question; countdown: number; histogram: HistogramData }>) => {
-            // begin : ajout de questions vides pour chaque joueur. J'ai besoin de cette partie, car avant que le joueue selectionne une reponse pour la premiere fois et l'envoie au serveur, le serveur doit savoir c'est quoi ses choix précédents
             const blankQuestion: Question = roomData.data.question;
-            blankQuestion.choices.forEach((choice) => { choice.isCorrect = false; });
+            blankQuestion.choices.forEach((choice) => {
+                choice.isCorrect = false;
+            });
             const game = await this.gameService.getGame(roomData.pin);
-            game.players.forEach((player) => { player.questions.push(blankQuestion); });
+            game.players.forEach((player) => {
+                player.questions.push(blankQuestion);
+            });
             game.histograms.push(roomData.data.histogram);
             await this.gameService.updateGame(game);
-            // end
 
-            this.sio.to(roomData.pin).emit('next-question', { question: roomData.data.question, countdown: roomData.data.countdown }); // tu peux remplacer roomData.data.question par blankQuestion ici
+            this.sio.to(roomData.pin).emit('next-question', { question: roomData.data.question, countdown: roomData.data.countdown });
         });
     }
 
