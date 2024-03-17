@@ -175,6 +175,11 @@ describe('HostService', () => {
     });
 
     it('should emit next-question on nextQuestion', () => {
+        if (!testGame.quiz) {
+            fail('No quiz');
+            return;
+        }
+        testGame.quiz.questions[0].choices[0].isCorrect = true;
         spyOn(service, 'getCurrentQuestion').and.returnValue(testGame.quiz?.questions[0]);
         const histogram = {
             labels:
@@ -194,6 +199,16 @@ describe('HostService', () => {
         });
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, TRANSITION_DELAY, jasmine.any(Function));
         expect(service.questionEnded).toBeFalse();
+    });
+
+    it('should add empty histogram on nextQuestion if no quiz', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+        emitSpy.and.stub();
+        service.nextQuestion();
+        expect(emitSpy).toHaveBeenCalledWith('next-question', {
+            pin: service.game.pin,
+            data: { question: undefined, countdown: service.game.quiz?.duration, histogram: { labels: [], datasets: [{ label: '', data: [] }] } },
+        });
     });
 
     it('should emit end-question, update-scores and answer on endQuestion', () => {
