@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "ngx-socket-io": "^4.6.1",
     "tslib": "^2.6.2"
   }
 }
