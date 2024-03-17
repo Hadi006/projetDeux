@@ -210,6 +210,22 @@ describe('GameController', () => {
         });
     });
 
+    it('should broadcast undefined question', (done) => {
+        const countdown = 5;
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('next-question', (response) => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response).to.deep.equal({ countdown });
+                done();
+            });
+            clientSocket.emit('next-question', { pin: testGame.pin, data: { countdown } });
+        });
+    });
+
     it('should update player', (done) => {
         clientSocket.emit('update-player', { pin: testGame.pin, data: testGame.players[0] });
         setTimeout(() => {
