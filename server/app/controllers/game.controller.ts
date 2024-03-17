@@ -141,6 +141,7 @@ export class GameController {
             this.sio.sockets.sockets.get(hostId)?.emit('player-updated', histogramData);
         });
     }
+
     private onUpdateScores(socket: Socket): void {
         socket.on('update-scores', async (roomData: RoomData<number>, callback) => {
             const pin = roomData.pin;
