@@ -229,10 +229,13 @@ describe('HostService', () => {
     });
 
     it('should emit end-game on endGame', () => {
+        emitSpy.and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(testGame);
+        });
         service.gameEndedSubject.subscribe(() => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame']);
             expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin, jasmine.any(Function));
         });
-        emitSpy.and.stub();
         service.endGame();
         service.gameEndedSubject.next(TEST_GAME_DATA);
     });
