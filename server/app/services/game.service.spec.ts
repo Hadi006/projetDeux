@@ -174,7 +174,7 @@ describe('GameService', () => {
     });
 
     it('should update a player', async () => {
-        stub(gameService, 'getGame').resolves({ ...testGame, players: [] });
+        stub(gameService, 'getGame').resolves({ ...testGame, players: [testPlayer] });
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updatePlayer(testGame.pin, testPlayer);
         expect(updateStub.calledWith({ ...testGame, players: [testPlayer] })).to.equal(true);
@@ -262,7 +262,7 @@ describe('GameService', () => {
     });
 
     it('should give points if there is only 1 player and he answers correctly', async () => {
-        const newGame: Game = { ...testGame, players: testPlayers };
+        const newGame: Game = { ...testGame, players: [testPlayers[0]] };
         const getStub = stub(gameService, 'getGame').resolves(newGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(newGame.pin, 0);
