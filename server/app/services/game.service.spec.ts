@@ -8,6 +8,8 @@ import { createStubInstance, SinonStubbedInstance, stub } from 'sinon';
 import { Player } from '@common/player';
 
 describe('GameService', () => {
+    let testPlayer: Player;
+    let testPlayers: Player[];
     let testQuestion: Question;
     let testQuiz: Quiz;
     let testGame: Game;
@@ -16,6 +18,8 @@ describe('GameService', () => {
     let databaseServiceStub: SinonStubbedInstance<DatabaseService>;
 
     beforeEach(async () => {
+        testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        testPlayers = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
         testQuiz = JSON.parse(JSON.stringify({ ...TEST_QUIZZES[0], questions: [testQuestion] }));
         testGame = JSON.parse(JSON.stringify({ ...TEST_GAME_DATA, quiz: testQuiz }));
@@ -170,11 +174,10 @@ describe('GameService', () => {
     });
 
     it('should update a player', async () => {
-        const player: Player = JSON.parse(JSON.stringify(NEW_PLAYER));
-        stub(gameService, 'getGame').resolves({ ...testGame, players: [NEW_PLAYER] });
+        stub(gameService, 'getGame').resolves({ ...testGame, players: [testPlayer] });
         const updateStub = stub(gameService, 'updateGame').resolves(true);
-        await gameService.updatePlayer(testGame.pin, player);
-        expect(updateStub.calledWith({ ...testGame, players: [player] })).to.equal(true);
+        await gameService.updatePlayer(testGame.pin, testPlayer);
+        expect(updateStub.calledWith({ ...testGame, players: [testPlayer] })).to.equal(true);
     });
 
     it('should not update a player if game is invalid', async () => {
@@ -192,7 +195,6 @@ describe('GameService', () => {
     });
 
     it('should update scores', async () => {
-        const testPlayers: Player[] = TEST_PLAYERS;
         const wrongQuestionAnswer: Question = testQuestion;
         wrongQuestionAnswer.choices[0].isCorrect = !wrongQuestionAnswer.choices[0].isCorrect;
         testPlayers[1].questions[0] = JSON.parse(JSON.stringify(wrongQuestionAnswer));
@@ -231,7 +233,6 @@ describe('GameService', () => {
     });
 
     it('should give bonus points if player is the first to answer correctly', async () => {
-        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
         testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:01Z');
         const newGame: Game = { ...testGame, players: testPlayers };
@@ -246,7 +247,6 @@ describe('GameService', () => {
     });
 
     it('should give bonus points if the second player answers before the first one', async () => {
-        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:01Z');
         testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
         const newGame: Game = { ...testGame, players: testPlayers };
@@ -262,8 +262,7 @@ describe('GameService', () => {
     });
 
     it('should give points if there is only 1 player and he answers correctly', async () => {
-        const testPlayers: Player[] = JSON.parse(JSON.stringify([TEST_PLAYERS[0]]));
-        const newGame: Game = { ...testGame, players: testPlayers };
+        const newGame: Game = { ...testGame, players: [testPlayers[0]] };
         const getStub = stub(gameService, 'getGame').resolves(newGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(newGame.pin, 0);
@@ -274,7 +273,6 @@ describe('GameService', () => {
     });
 
     it('should not give bonus points if multiple players answer correctly at the same time', async () => {
-        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testPlayers[0].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
         testPlayers[1].questions[0].lastModification = new Date('2020-01-01T00:00:00Z');
         const newGame: Game = { ...testGame, players: testPlayers };
@@ -290,7 +288,6 @@ describe('GameService', () => {
     });
 
     it('should assign dates to players who did confirm', async () => {
-        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
         testPlayers[0].questions[0].lastModification = undefined;
         testPlayers[1].questions[0].lastModification = undefined;
         const newGame: Game = { ...testGame, players: testPlayers };

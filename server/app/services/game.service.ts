@@ -114,12 +114,9 @@ export class GameService {
         });
 
         const currentHistogram = game.histograms[game.histograms.length - 1];
-        if (previousSelections.length !== currentSelections.length) {
-            return currentHistogram; // ca devrait jamais arriver, mais whatever
-        }
         currentSelections.forEach((currentSelection, index) => {
-            selectionChanges.push(+currentSelection - +previousSelections[index]); // true true => 0, true false => 1, false true => -1, false false => 0
-            currentHistogram.datasets[0].data[index] += +currentSelection - +previousSelections[index]; // true true = +0, true false = +1, false true = -1, false false = -0
+            selectionChanges.push(+currentSelection - +previousSelections[index]);
+            currentHistogram.datasets[0].data[index] += +currentSelection - +previousSelections[index];
         });
 
         await this.updateGame(game);
