@@ -114,9 +114,6 @@ export class GameService {
         });
 
         const currentHistogram = game.histograms[game.histograms.length - 1];
-        if (previousSelections.length !== currentSelections.length) {
-            return currentHistogram;
-        }
         currentSelections.forEach((currentSelection, index) => {
             selectionChanges.push(+currentSelection - +previousSelections[index]);
             currentHistogram.datasets[0].data[index] += +currentSelection - +previousSelections[index];
