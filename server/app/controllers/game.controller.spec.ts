@@ -7,8 +7,9 @@ import { Container } from 'typedi';
 import { GameService } from '@app/services/game.service';
 import { Question, Quiz } from '@common/quiz';
 import { Game } from '@common/game';
-import { NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { NEW_PLAYER, TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Player } from '@common/player';
+import { HistogramData } from '@common/histogram-data';
 
 describe('GameController', () => {
     let service: GameController;
@@ -20,6 +21,7 @@ describe('GameController', () => {
 
     let testQuestion: Question;
     let testQuiz: Quiz;
+    let testHistogram: HistogramData;
     let testGame: Game;
 
     const RESPONSE_DELAY = 200;
@@ -27,6 +29,7 @@ describe('GameController', () => {
     beforeEach(async () => {
         testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
         testQuiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
+        testHistogram = JSON.parse(JSON.stringify(TEST_HISTOGRAM_DATA[0]));
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
 
         gameServiceStub = createStubInstance(GameService);
@@ -190,9 +193,12 @@ describe('GameController', () => {
     });
 
     it('should broadcast a next question', (done) => {
-        const question = JSON.parse(JSON.stringify(testQuestion));
+        const question = testQuestion;
+        const histogram = testHistogram;
         const countdown = 5;
         gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
             clientSocket.on('next-question', (response) => {
@@ -200,7 +206,7 @@ describe('GameController', () => {
                 expect(response).to.deep.equal({ question, countdown });
                 done();
             });
-            clientSocket.emit('next-question', { pin: testGame.pin, data: { question, countdown } });
+            clientSocket.emit('next-question', { pin: testGame.pin, data: { question, countdown, histogram } });
         });
     });
 
