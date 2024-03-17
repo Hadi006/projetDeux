@@ -3,9 +3,9 @@ import { ChartData } from 'chart.js';
 import { Chart, ChartConfiguration } from 'chart.js/auto';
 
 @Component({
-  selector: 'app-histogram',
-  templateUrl: './histogram.component.html',
-  styleUrls: ['./histogram.component.scss']
+    selector: 'app-histogram',
+    templateUrl: './histogram.component.html',
+    styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent implements OnInit, OnChanges {
     @Input() chartData: ChartData;
@@ -17,12 +17,14 @@ export class HistogramComponent implements OnInit, OnChanges {
             type: 'bar',
             data: {
                 labels: [''],
-                datasets: [{
-                    label: '',
-                    data: [0],
-                }]
+                datasets: [
+                    {
+                        label: '',
+                        data: [0],
+                    },
+                ],
             },
-        }
+        };
         this.chart = new Chart('histogram', this.chartConfig);
     }
 
