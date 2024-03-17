@@ -12,24 +12,31 @@ export class HistogramComponent implements OnInit, OnChanges {
     chart: Chart | undefined;
     private chartConfig: ChartConfiguration;
 
+    constructor() {
+        this.chartData = {
+            labels: [],
+            datasets: [
+                {
+                    label: '',
+                    data: [],
+                },
+            ],
+        };
+    }
+
     ngOnInit() {
         this.chartConfig = {
             type: 'bar',
-            data: {
-                labels: [''],
-                datasets: [
-                    {
-                        label: '',
-                        data: [0],
-                    },
-                ],
-            },
+            data: this.chartData,
         };
+
+        Chart.getChart('histogram')?.destroy();
+
         this.chart = new Chart('histogram', this.chartConfig);
     }
 
     ngOnChanges() {
-        if (!this.chart) {
+        if (!this.chart || !Chart.getChart('histogram')) {
             return;
         }
         if (this.chart.data.datasets[0].label === this.chartData.datasets[0].label) {
@@ -37,6 +44,6 @@ export class HistogramComponent implements OnInit, OnChanges {
         } else {
             this.chart.data = this.chartData;
         }
-        this.chart.update();
+        Chart.getChart('histogram')?.update();
     }
 }
