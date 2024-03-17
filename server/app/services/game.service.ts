@@ -101,7 +101,7 @@ export class GameService {
     async updatePlayer(pin: string, player: Player): Promise<HistogramData> {
         const game = await this.getGame(pin);
         if (!game || game.pin !== pin) {
-            return { ... NEW_HISTOGRAM_DATA };
+            return { ...NEW_HISTOGRAM_DATA };
         }
 
         const selectionChanges: number[] = [];
@@ -123,7 +123,7 @@ export class GameService {
         }
         currentSelections.forEach((currentSelection, index) => {
             selectionChanges.push(+currentSelection - +previousSelections[index]); // true true => 0, true false => 1, false true => -1, false false => 0
-            currentHistogram.datasets[0].data[index] += (+currentSelection - +previousSelections[index]); // true true = +0, true false = +1, false true = -1, false false = -0
+            currentHistogram.datasets[0].data[index] += +currentSelection - +previousSelections[index]; // true true = +0, true false = +1, false true = -1, false false = -0
         });
 
         await this.updateGame(game);

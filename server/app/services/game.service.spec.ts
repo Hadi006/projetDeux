@@ -38,21 +38,21 @@ describe('GameService', () => {
 
     it('should create a game', async () => {
         stub(gameService, 'getGames').resolves([]);
-        const result = await gameService.createGame(JSON.parse(JSON.stringify(testQuiz)));
+        const result = await gameService.createGame(testQuiz, testGame.hostId);
         expect(result.quiz).to.deep.equal(testGame.quiz);
         expect(databaseServiceStub.add.called).to.equal(true);
     });
 
     it('should not create a game', async () => {
         stub(gameService, 'getGames').resolves(new Array(GAME_ID_MAX).fill(testGame));
-        const result = await gameService.createGame(testQuiz);
+        const result = await gameService.createGame(testQuiz, testGame.hostId);
         expect(result).to.equal(undefined);
         expect(databaseServiceStub.add.called).to.equal(false);
     });
 
     it('should generate a new game pin', async () => {
         stub(gameService, 'getGames').resolves([testGame]);
-        const result = await gameService.createGame(testQuiz);
+        const result = await gameService.createGame(testQuiz, testGame.hostId);
         expect(result.pin).to.not.equal(testGame.pin);
         expect(databaseServiceStub.add.called).to.equal(true);
     });
@@ -192,8 +192,8 @@ describe('GameService', () => {
     });
 
     it('should update scores', async () => {
-        const testPlayers: Player[] = JSON.parse(JSON.stringify(TEST_PLAYERS));
-        const wrongQuestionAnswer: Question = JSON.parse(JSON.stringify(testQuestion));
+        const testPlayers: Player[] = TEST_PLAYERS;
+        const wrongQuestionAnswer: Question = testQuestion;
         wrongQuestionAnswer.choices[0].isCorrect = !wrongQuestionAnswer.choices[0].isCorrect;
         testPlayers[1].questions[0] = JSON.parse(JSON.stringify(wrongQuestionAnswer));
         const newGame: Game = { ...testGame, players: testPlayers };
