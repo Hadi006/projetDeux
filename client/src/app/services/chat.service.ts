@@ -17,14 +17,6 @@ export class ChatService {
         this.socket = io(this.url);
         this.setupSocket();
     }
-
-    private setupSocket() {
-        this.socket.on('message-received', (message: ChatMessage) => {
-            this.internalMessages.push(message);
-            this.messagesSubject.next();
-        });
-    }
-
     get messages(): ChatMessage[] {
         return this.internalMessages;
     }
@@ -45,6 +37,12 @@ export class ChatService {
         };
 
         this.socket.emit('new-message', newChatMessage);
+    }
+    private setupSocket() {
+        this.socket.on('message-received', (message: ChatMessage) => {
+            this.internalMessages.push(message);
+            this.messagesSubject.next();
+        });
     }
 
     private validateMessage(message: string): boolean {

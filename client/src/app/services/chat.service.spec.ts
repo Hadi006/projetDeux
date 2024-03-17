@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { MAX_MESSAGE_LENGTH } from '@common/constant';
+import { MAX_MESSAGE_LENGTH, TEST_PLAYERS } from '@common/constant';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { ChatService } from './chat.service';
 
 describe('ChatService', () => {
     let service: ChatService;
     const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
-
+    const player = TEST_PLAYERS[0];
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [SocketIoModule.forRoot(config)],
@@ -24,16 +24,16 @@ describe('ChatService', () => {
     });
 
     it('should do nothing when sendMessage is called with an empty string', () => {
-        service.sendMessage('');
+        service.sendMessage('', player);
         expect(service.messages.length).toBe(0);
     });
     it('should do nothing when sendMessage is called with a string longer than 200 characters', () => {
-        service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1));
+        service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1), player);
         expect(service.messages.length).toBe(0);
     });
 
     it('should do nothing when sendMessage is called with a string that is only whitespace', () => {
-        service.sendMessage('   ');
+        service.sendMessage('   ', player);
         expect(service.messages.length).toBe(0);
     });
 
@@ -69,7 +69,7 @@ describe('ChatService', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         spyOn((service as any).socket, 'emit');
         const newMessage = 'New valid message';
-        service.sendMessage(newMessage);
+        service.sendMessage(newMessage, player);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect((service as any).socket.emit).toHaveBeenCalledWith('new-message', jasmine.any(Object));
     });

@@ -26,7 +26,6 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
-import { SelectNamePageComponent } from './pages/select-name-page/select-name-page.component';
 import { TestPageComponent } from './pages/test-page/test-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
@@ -64,7 +63,6 @@ import { ChatService } from './services/chat.service';
         WaitingRoomPlayerPageComponent,
         WaitingRoomPageComponent,
         JoinRoomPageComponent,
-        SelectNamePageComponent,
     ],
     imports: [
         AppMaterialModule,

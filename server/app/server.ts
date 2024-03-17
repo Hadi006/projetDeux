@@ -9,6 +9,7 @@ import { Container, Service } from 'typedi';
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
     private server: http.Server;
     private gameController: GameController;
@@ -44,10 +45,12 @@ export class Server {
         const bind: string = typeof Server.appPort === 'string' ? 'Pipe ' + Server.appPort : 'Port ' + Server.appPort;
         switch (error.code) {
             case 'EACCES':
+                // eslint-disable-next-line no-console
                 console.error(`${bind} requires elevated privileges`);
                 process.exit(1);
                 break;
             case 'EADDRINUSE':
+                // eslint-disable-next-line no-console
                 console.error(`${bind} is already in use`);
                 process.exit(1);
                 break;
@@ -59,6 +62,7 @@ export class Server {
     private onListening(): void {
         const addr = this.server.address() as AddressInfo;
         const bind: string = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+        // eslint-disable-next-line no-console
         console.log(`Listening on ${bind}`);
     }
 }
