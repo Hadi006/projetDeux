@@ -184,7 +184,7 @@ export class HostService {
     }
 
     private emitNextQuestion() {
-        this.webSocketService.emit<RoomData<{ question?: Question; countdown?: number, histogram: HistogramData }>>('next-question', {
+        this.webSocketService.emit<RoomData<{ question?: Question; countdown?: number; histogram: HistogramData }>>('next-question', {
             pin: this.internalGame.pin,
             data: {
                 question: this.getCurrentQuestion(),
