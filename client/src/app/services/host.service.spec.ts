@@ -219,7 +219,7 @@ describe('HostService', () => {
 
     it('should emit end-game on endGame', () => {
         service.gameEndedSubject.subscribe(() => {
-            expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin);
+            expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin, jasmine.any(Function));
         });
         emitSpy.and.stub();
         service.endGame();
