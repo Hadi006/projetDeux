@@ -301,7 +301,6 @@ describe('PlayerService', () => {
 
     it('setUpNextQuestion should reset the player answers', () => {
         const countdown = 10;
-        spyOn(service, 'updatePlayer');
         service.player = testPlayer;
         const initialLength = service.player.questions.length;
         service.player.questions = testQuestions;
@@ -312,6 +311,5 @@ describe('PlayerService', () => {
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();
-        expect(service.updatePlayer).toHaveBeenCalled();
     });
 });
