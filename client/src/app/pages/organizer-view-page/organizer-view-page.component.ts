@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { PLAYERS_TEST } from '@common/constant';
 import { Player } from '@common/player';
@@ -10,7 +10,7 @@ import { QUIZ_TEST_1 } from '@common/quiz-test';
     templateUrl: './organizer-view-page.component.html',
     styleUrls: ['./organizer-view-page.component.scss'],
 })
-export class OrganizerViewPageComponent implements OnInit {
+export class OrganizerViewPageComponent implements OnInit, OnChanges {
     gameData: Quiz;
     chatBox: ChatboxComponent;
     allPlayerSubmitted: boolean = true;
@@ -21,7 +21,7 @@ export class OrganizerViewPageComponent implements OnInit {
     showNextQuestionButton: boolean = true;
     histogramData = {
         labels: ['Reponse 1', 'Reponse 2', 'Reponse 3', 'Reponse 4'],
-        data: [1, 1, 0, 0],
+        data: [1, 0, 0, 0],
     };
 
     get time(): number {
@@ -33,7 +33,13 @@ export class OrganizerViewPageComponent implements OnInit {
         this.playerList = PLAYERS_TEST;
         this.allPlayerSubmitted = this.playerList[0].answerConfirmed && this.playerList[1].answerConfirmed;
     }
-
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.currentQuestionIndex) {
+            // Update the variableToChange with the new value of inputValue
+            this.histogramData.data[1] = 1;
+            // Optionally, you can also access the previous value using changes.input
+        }
+    }
     movePlayerToNextQuestion(): void {
         this.currentQuestionIndex++;
     }

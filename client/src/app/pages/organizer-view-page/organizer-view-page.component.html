@@ -30,6 +30,7 @@
                 <mat-card class="timer-card">
                     <mat-card-content>
                         <mat-icon class="timer-icon">timer</mat-icon>
+                        <app-game-count-down></app-game-count-down>
                         <p *ngIf="gameData.duration && time" class="timer-text">{{ time }}</p>
                     </mat-card-content>
                     <div class="timer-container">

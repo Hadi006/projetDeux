@@ -2,7 +2,7 @@ import { Question, Quiz } from '@common/quiz';
 
 const QUESTION_TEST_1: Question = {
     id: '20',
-    text: 'MVP',
+    text: 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm',
     type: 'QCM',
     points: 50,
     choices: [

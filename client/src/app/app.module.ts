@@ -28,6 +28,7 @@ import { GameplayPlayerPageComponent } from './pages/gameplay-player-page/gamepl
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { OrganizerViewPageComponent } from './pages/organizer-view-page/organizer-view-page.component';
 import { ChartModule } from '@syncfusion/ej2-angular-charts';
+
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
