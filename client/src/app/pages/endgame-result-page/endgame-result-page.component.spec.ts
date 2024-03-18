@@ -12,7 +12,7 @@ describe('EndgameResultPageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        const queryParamsMap = of({ game: JSON.stringify(TEST_GAME_DATA) });
+        const queryParamsMap = of({});
         routeSpy = jasmine.createSpyObj('ActivatedRoute', [], {
             queryParams: queryParamsMap,
         });
@@ -37,5 +37,28 @@ describe('EndgameResultPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should sort players by score and name', () => {
+        routeSpy.queryParams = of({ game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) });
+        const players = [
+            { name: 'c', score: 1 },
+            { name: 'a', score: 2 },
+            { name: 'b', score: 2 },
+        ];
+        const sortedPlayers = players.sort((a, b) => {
+            return b.score - a.score || a.name.localeCompare(b.name);
+        });
+        expect(sortedPlayers).toEqual([
+            { name: 'a', score: 2 },
+            { name: 'b', score: 2 },
+            { name: 'c', score: 1 },
+        ]);
+    });
+
+    it('should do nothing if game is undefined', () => {
+        component.ngOnInit();
+        expect(component).toBeTruthy();
+        expect(component.game).toBeUndefined();
     });
 });
