@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ChatMessage } from '@app/interfaces/chat-message';
 import { Player } from '@common/player';
 import { Subject } from 'rxjs';
+import { PlayerService } from './player.service';
 import { WebSocketService } from './web-socket.service';
 
 @Injectable({
@@ -11,7 +12,10 @@ export class ChatService {
     private internalMessages: ChatMessage[] = [];
     private messagesSubject: Subject<void> = new Subject<void>();
 
-    constructor(private webSocketService: WebSocketService) {
+    constructor(
+        private webSocketService: WebSocketService,
+        private playerService: PlayerService,
+    ) {
         this.setupSocket();
     }
 
@@ -32,6 +36,7 @@ export class ChatService {
             text: newMessage,
             timestamp: new Date(),
             author: player,
+            roomId: this.playerService.pin,
         };
 
         this.webSocketService.emit('new-message', newChatMessage);

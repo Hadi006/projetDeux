@@ -38,7 +38,9 @@ export class GameController {
     private chatMessages(socket: Socket): void {
         socket.on('new-message', (message) => {
             console.log(message);
-            this.sio.emit('message-received', message);
+            const roomPin = message.roomId;
+            // this.sio.emit('message-received', message);
+            this.sio.to(roomPin).emit('message-received', message);
         });
     }
     private onCreateGame(socket: Socket): void {
