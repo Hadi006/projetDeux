@@ -129,7 +129,7 @@ export class GameController {
             game.histograms.push(roomData.data.histogram);
             await this.gameService.updateGame(game);
 
-            this.sio.to(roomData.pin).emit('next-question', { question: blankQuestion, countdown: roomData.data.countdown });
+            this.sio.to(roomData.pin).emit('question-changed', { question: blankQuestion, countdown: roomData.data.countdown });
         });
     }
 

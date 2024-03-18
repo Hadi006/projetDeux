@@ -8,6 +8,7 @@ import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
+import { QuestionChangedEventData } from '@common/question-changed-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -188,7 +189,7 @@ export class PlayerService {
     }
 
     private onNextQuestion() {
-        this.webSocketService.onEvent<{ question: Question; countdown: number }>('next-question', ({ question, countdown }) => {
+        this.webSocketService.onEvent<QuestionChangedEventData>('question-changed', ({ question, countdown }) => {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });
