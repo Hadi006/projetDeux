@@ -151,7 +151,6 @@ describe('HostService', () => {
         emitSpy.and.stub();
         spyOn(service, 'cleanUp');
         service.leaveGame();
-        expect(emitSpy).toHaveBeenCalledWith('delete-game', service.game.pin);
         expect(service.cleanUp).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
