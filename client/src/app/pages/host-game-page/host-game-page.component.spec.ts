@@ -108,6 +108,11 @@ describe('HostGamePageComponent', () => {
         expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
     });
 
+    it('showEndGameResult should end game', () => {
+        component.showEndGameResult();
+        expect(hostServiceSpy.endGame).toHaveBeenCalled();
+    });
+
     it('getPlayers should return the players from the hostService', () => {
         const players = TEST_GAME_DATA.players;
         expect(component.getPlayers()).toEqual(players);
