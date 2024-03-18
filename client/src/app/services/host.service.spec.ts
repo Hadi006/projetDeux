@@ -111,7 +111,6 @@ describe('HostService', () => {
 
     it('should set timer to 0 and reset nAnswered if all players answered', () => {
         emitSpy.and.stub();
-        spyOn(service, 'endQuestion');
         service.handleSockets();
         socketHelper.peerSideEmit('confirm-player-answer');
         socketHelper.peerSideEmit('confirm-player-answer');
@@ -229,7 +228,7 @@ describe('HostService', () => {
             expect(service.questionEnded).toBeTrue();
         });
         emitSpy.and.stub();
-        service.endQuestion();
+        service['endQuestion']();
         service.questionEndedSubject.next();
     });
 
@@ -247,7 +246,7 @@ describe('HostService', () => {
             });
         });
         emitSpy.and.stub();
-        service.endQuestion();
+        service['endQuestion']();
         service.questionEndedSubject.next();
     });
 
