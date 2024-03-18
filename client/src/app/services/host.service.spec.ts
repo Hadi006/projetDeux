@@ -260,7 +260,7 @@ describe('HostService', () => {
             expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin, jasmine.any(Function));
         });
         service.endGame();
-        service.gameEndedSubject.next(TEST_GAME_DATA);
+        service.gameEndedSubject.next();
     });
 
     it('should emit delete-game, disconnect and stop timer on cleanUp', () => {
