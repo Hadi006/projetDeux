@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { TEST_GAME_DATA, TEST_PLAYERS } from '@common/constant';
 import { Player } from '@common/player';
 import { of } from 'rxjs';
@@ -22,7 +24,7 @@ describe('EndgameResultPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [EndgameResultPageComponent],
+            declarations: [EndgameResultPageComponent, ChatboxComponent, HistogramComponent],
             providers: [
                 { provide: ActivatedRoute, useValue: routeSpy },
                 { provide: Router, useValue: routerSpy },
