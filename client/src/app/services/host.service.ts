@@ -9,6 +9,8 @@ import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
+import { NextQuestionEventData } from '@common/next-question-event-data';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -179,11 +181,11 @@ export class HostService {
     }
 
     private emitNextQuestion() {
-        this.webSocketService.emit<RoomData<{ question?: Question; countdown?: number; histogram: HistogramData }>>('next-question', {
+        this.webSocketService.emit<RoomData<NextQuestionEventData>>('next-question', {
             pin: this.internalGame.pin,
             data: {
                 question: this.getCurrentQuestion(),
-                countdown: this.internalGame.quiz?.duration,
+                countdown: this.internalGame.quiz?.duration || 0,
                 histogram: this.internalHistograms[this.internalHistograms.length - 1],
             },
         });
@@ -227,7 +229,7 @@ export class HostService {
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
+        this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
             const { players, player } = data;
             this.internalGame.players = players;
 
