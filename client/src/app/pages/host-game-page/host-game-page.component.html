@@ -7,9 +7,14 @@
                 <div class="question-display" *ngIf="getCurrentQuestion() as question">
                     <h1>{{ question.text }}</h1>
                     <p>Points: + {{ question.points }}</p>
-                    <button *ngIf="getQuestionEnded()" (click)="nextQuestion()">Prochaine question</button>
                 </div>
-                <button (click)="showEndGameResult()">Terminer la partie</button>
+                <div class="question-display">
+                    <div *ngIf="getQuestionEnded()">
+                        <h1>Question terminée</h1>
+                        <button *ngIf="getCurrentQuestion()" (click)="nextQuestion()">Prochaine question</button>
+                        <button *ngIf="!getCurrentQuestion()" (click)="showEndGameResult()">Terminer la partie</button>
+                    </div>
+                </div>
             </div>
 
             <div class="countdown">

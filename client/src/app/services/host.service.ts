@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { INITIAL_QUESTION_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -106,7 +106,6 @@ export class HostService {
 
     nextQuestion() {
         this.internalQuestionEnded = false;
-        this.currentQuestionIndex++;
         const newHistogram: HistogramData = {
             labels: this.getCurrentQuestion()?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
             datasets: [
@@ -128,6 +127,7 @@ export class HostService {
         this.emitAnswer();
         this.internalQuestionEnded = true;
         this.internalQuestionEndedSubject.next();
+        this.currentQuestionIndex++;
     }
 
     endGame() {
@@ -156,7 +156,7 @@ export class HostService {
             this.webSocketService.emit<Quiz>('create-game', quiz, (game: unknown) => {
                 if (game) {
                     this.internalGame = game as Game;
-                    this.currentQuestionIndex = INITIAL_QUESTION_INDEX;
+                    this.currentQuestionIndex = 0;
                     subscriber.next(true);
                     subscriber.complete();
                 } else {
@@ -234,7 +234,7 @@ export class HostService {
             const { players, player } = data;
             this.internalGame.players = players;
 
-            if (this.currentQuestionIndex === INITIAL_QUESTION_INDEX) {
+            if (this.currentQuestionIndex === 0) {
                 return;
             }
 
