@@ -51,7 +51,7 @@ describe('EndgameResultPageComponent', () => {
         Object.defineProperty(routeSpy, 'queryParams', { value: of({ game: JSON.stringify(testGame) }) });
         component.ngOnInit();
         players.sort((a, b) => {
-            return b.score - a.score || b.name.localeCompare(a.name);
+            return b.score - a.score || a.name.localeCompare(b.name);
         });
         expect(component.game.players).toEqual(players);
     });
