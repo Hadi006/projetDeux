@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
+import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
@@ -47,7 +49,7 @@ describe('HostGamePageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [HostGamePageComponent],
+            declarations: [HostGamePageComponent, GameCountDownComponent, HistogramComponent],
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
