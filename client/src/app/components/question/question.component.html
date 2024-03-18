@@ -1,36 +1,47 @@
-Temps restant: {{ playerService.getTime() }}
 <div *ngIf="getQuestionData() as questionData">
-    <div *ngIf="getPlayer() as player">
+    <div *ngIf="getPlayer() as player" class="player-container">
         <h2>{{ questionData.text }}</h2>
+        <p class="question-value">Valeur de la question: {{ questionData.points }} points</p>
 
-        <p>Valeur de la question: {{ questionData.points }} points</p>
-
-        <div *ngIf="questionData.type === 'QCM'" id="question-container" (keyup)="handleKeyUp($event)">
+        <div *ngIf="questionData.type === 'QCM'" class="question-container" (keyup)="handleKeyUp($event)">
             <div
-                *ngFor="let choice of playerService.player.questions[playerService.player.questions.length - 1].choices; let i = index">
-                <label>
-                    <input [disabled]="this.playerService.answerConfirmed" type="checkbox"
-                        [(ngModel)]="choice.isCorrect" (ngModelChange)="playerService.updatePlayer()" />
-                    {{ i + 1 }} ) {{ choice.text }}
+                class="choice-container"
+                *ngFor="let choice of playerService.player.questions[playerService.player.questions.length - 1].choices; let i = index"
+            >
+                <label class="choice-label">
+                    <input
+                        [disabled]="this.playerService.answerConfirmed"
+                        type="checkbox"
+                        class="choice-input"
+                        [(ngModel)]="choice.isCorrect"
+                        (ngModelChange)="playerService.updatePlayer()"
+                    />
+                    {{ i + 1 }}) {{ choice.text }}
                 </label>
             </div>
         </div>
 
-        <div *ngIf="questionData.type === 'QRL'" id="question-container">
-            <textarea [disabled]="this.playerService.answerConfirmed"
-                placeholder="Tapez votre réponse ici..."></textarea>
+        <div *ngIf="questionData.type === 'QRL'" class="question-container">
+            <textarea [disabled]="this.playerService.answerConfirmed" class="answer-textarea" placeholder="Tapez votre réponse ici..."></textarea>
         </div>
 
-        <div>Score: {{ player.score }}</div>
+        <div class="score-display">Score: {{ player.score }}</div>
 
-        <div *ngFor="let correctAnswer of playerService.answer; let i = index">
-            <p>Réponse(s): {{ correctAnswer.text }}</p>
+        <div class="correct-answers-container">
+            <div *ngFor="let correctAnswer of playerService.answer; let i = index">
+                <p>Réponse(s): {{ correctAnswer.text }}</p>
+            </div>
         </div>
-        <div *ngIf="playerService.isCorrect">
+
+        <div *ngIf="playerService.isCorrect" class="correct-answer-feedback">
             <p>Bonne réponse!</p>
         </div>
-        <button (click)="leaveGame()">Quitter</button>
-        <button [disabled]="this.playerService.answerConfirmed"
-            (click)="playerService.confirmPlayerAnswer()">Confirmer</button>
+
+        <div class="button-container">
+            <button class="button-quit" (click)="leaveGame()">Quitter</button>
+            <button class="button-confirm" [disabled]="this.playerService.answerConfirmed" (click)="playerService.confirmPlayerAnswer()">
+                Confirmer
+            </button>
+        </div>
     </div>
 </div>
