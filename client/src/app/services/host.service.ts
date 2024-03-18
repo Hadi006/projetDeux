@@ -217,7 +217,7 @@ export class HostService {
         });
     }
 
-    public emitEndGame() {
+    private emitEndGame() {
         this.webSocketService.emit<string>('end-game', this.internalGame.pin, (game: unknown) => {
             this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
         });
