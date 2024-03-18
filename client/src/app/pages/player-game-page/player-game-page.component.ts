@@ -3,7 +3,6 @@ import { Component, OnDestroy } from '@angular/core';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
 // import { AlertComponent } from '@app/components/alert/alert.component';
-
 @Component({
     selector: 'app-player-game-page',
     templateUrl: './player-game-page.component.html',
@@ -15,8 +14,7 @@ export class PlayerGamePageComponent implements OnDestroy {
     private endGameSubscription: Subscription;
 
     constructor(
-        private playerService: PlayerService,
-        // private dialog: MatDialog,
+        private playerService: PlayerService, // private dialog: MatDialog,
     ) {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             // this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
@@ -29,6 +27,11 @@ export class PlayerGamePageComponent implements OnDestroy {
 
     gameTitle() {
         return this.playerService.gameTitle;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get players() {
+        return this.playerService.players;
     }
 
     ngOnDestroy() {

@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
-import { Player } from '@common/player';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { ChatService } from './chat.service';
 
@@ -25,19 +24,16 @@ describe('ChatService', () => {
     // });
 
     it('should do nothing when sendMessage is called with an empty string', () => {
-        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
-        service.sendMessage('', player);
+        service.sendMessage('');
         expect(service.messages.length).toBe(0);
     });
     it('should do nothing when sendMessage is called with a string longer than 200 characters', () => {
-        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
-        service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1), player);
+        service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1));
         expect(service.messages.length).toBe(0);
     });
 
     it('should do nothing when sendMessage is called with a string that is only whitespace', () => {
-        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
-        service.sendMessage('   ', player);
+        service.sendMessage('   ');
         expect(service.messages.length).toBe(0);
     });
 
@@ -70,11 +66,10 @@ describe('ChatService', () => {
     // }));
 
     it('should send valid messages through the socket', () => {
-        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         spyOn((service as any).socket, 'emit');
         const newMessage = 'New valid message';
-        service.sendMessage(newMessage, player);
+        service.sendMessage(newMessage);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect((service as any).socket.emit).toHaveBeenCalledWith('new-message', jasmine.any(Object));
     });

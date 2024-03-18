@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '@app/services/chat.service';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./chatbox.component.scss'],
 })
 export class ChatboxComponent implements OnInit, OnDestroy {
-    @Input() playerName: string;
+    // @Input() participantName: string;
 
     showChat = false;
     newMessage = '';
@@ -30,12 +30,16 @@ export class ChatboxComponent implements OnInit, OnDestroy {
         this.messagesSubscription.unsubscribe();
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get participantName() {
+        return this.chatService.participantName;
+    }
     toggleChat() {
         this.showChat = !this.showChat;
     }
 
     sendMessage() {
-        this.chatService.sendMessage(this.newMessage, this.publicService.player);
+        this.chatService.sendMessage(this.newMessage);
         this.newMessage = '';
     }
 

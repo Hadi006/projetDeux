@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@app/interfaces/chat-message';
-import { Player } from '@common/player';
 import { Subject } from 'rxjs';
+import { HostService } from './host.service';
 import { PlayerService } from './player.service';
 import { WebSocketService } from './web-socket.service';
 
@@ -11,12 +11,15 @@ import { WebSocketService } from './web-socket.service';
 export class ChatService {
     private internalMessages: ChatMessage[] = [];
     private messagesSubject: Subject<void> = new Subject<void>();
+    private internalParticipantName: string;
 
     constructor(
         private webSocketService: WebSocketService,
         private playerService: PlayerService,
+        private hostService: HostService,
     ) {
         this.setupSocket();
+        this.internalParticipantName = this.playerService.player?.name || 'Organisateur';
     }
 
     get messages(): ChatMessage[] {
@@ -27,7 +30,12 @@ export class ChatService {
         return this.messagesSubject;
     }
 
-    sendMessage(newMessage: string, player: Player) {
+    // eslint-disable-next-line no-dupe-class-members
+    get participantName(): string {
+        return this.internalParticipantName;
+    }
+
+    sendMessage(newMessage: string) {
         if (!this.validateMessage(newMessage)) {
             return;
         }
@@ -35,8 +43,9 @@ export class ChatService {
         const newChatMessage: ChatMessage = {
             text: newMessage,
             timestamp: new Date(),
-            author: player,
-            roomId: this.playerService.pin,
+            // eslint-disable-next-line object-shorthand
+            author: this.participantName,
+            roomId: this.playerService.pin || this.hostService.game.pin,
         };
 
         this.webSocketService.emit('new-message', newChatMessage);

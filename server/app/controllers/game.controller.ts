@@ -1,5 +1,4 @@
 import { GameService } from '@app/services/game.service';
-import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
@@ -42,12 +41,7 @@ export class GameController {
         socket.on('new-message', async (message) => {
             console.log(message);
             const roomPin = message.roomId;
-            const game: Game = await this.gameService.getGame(message.roomId);
-            console.log(game);
-            if (game.hostId === socket.id) {
-                message.author.name = 'Organisateur';
-                return;
-            }
+            console.log(message.roomId);
             // this.sio.emit('message-received', message);
             this.sio.to(roomPin).emit('message-received', message);
         });
