@@ -181,7 +181,6 @@ export class GameController {
 
     private onEndGame(socket: Socket): void {
         socket.on('end-game', async (pin: string, callback) => {
-            console.log('end-game', typeof callback);
             const game = await this.gameService.getGame(pin);
             this.sio.to(pin).emit('game-ended', game);
             callback(game);
