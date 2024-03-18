@@ -220,7 +220,7 @@ describe('HostService', () => {
                 'update-scores',
                 {
                     pin: service.game.pin,
-                    data: -1,
+                    data: 0,
                 },
                 jasmine.any(Function),
             );
