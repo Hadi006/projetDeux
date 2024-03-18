@@ -37,7 +37,7 @@ export class GameController {
 
     private chatMessages(socket: Socket): void {
         socket.on('new-message', (message) => {
-            // console.log(message);
+            console.log(message);
             this.sio.emit('message-received', message);
         });
     }

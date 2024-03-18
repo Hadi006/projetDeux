@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular
 import { ChatService } from '@app/services/chat.service';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
-
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
@@ -13,13 +12,12 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
     showChat = false;
     newMessage = '';
-    messages: string[] = [];
     private messagesSubscription: Subscription;
 
     constructor(
         public chatService: ChatService,
+        public publicService: PlayerService,
         private cdRef: ChangeDetectorRef,
-        public playerService: PlayerService,
     ) {}
 
     ngOnInit() {
@@ -37,10 +35,10 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     }
 
     sendMessage() {
-        const currentPlayer = this.playerService.player;
-        this.chatService.sendMessage(this.newMessage, currentPlayer);
+        this.chatService.sendMessage(this.newMessage, this.publicService.player);
         this.newMessage = '';
     }
+
     handleMessagesUpdate() {
         this.cdRef.detectChanges();
     }
