@@ -38,21 +38,21 @@ export class ChatService {
 
         this.socket.emit('new-message', newChatMessage);
     }
-    // private setupSocket() {
-    //     this.socket.on('message-received', (message: ChatMessage) => {
-    //         this.internalMessages.push(message);
-    //         this.messagesSubject.next();
-    //     });
-    // }
     private setupSocket() {
-        this.socket.on('connect', () => {
-            // Socket connection is established, now set up other event listeners
-            this.socket.on('message-received', (message: ChatMessage) => {
-                this.internalMessages.push(message);
-                this.messagesSubject.next();
-            });
+        this.socket.on('message-received', (message: ChatMessage) => {
+            this.internalMessages.push(message);
+            this.messagesSubject.next();
         });
     }
+    // private setupSocket() {
+    //     this.socket.on('connect', () => {
+    //         // Socket connection is established, now set up other event listeners
+    //         this.socket.on('message-received', (message: ChatMessage) => {
+    //             this.internalMessages.push(message);
+    //             this.messagesSubject.next();
+    //         });
+    //     });
+    // }
 
     private validateMessage(message: string): boolean {
         return message.trim() !== '' && message.trim().length <= MAX_MESSAGE_LENGTH;

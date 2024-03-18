@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player.service';
 
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';
 
 describe('WaitingRoomPlayerPageComponent', () => {
@@ -21,7 +22,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [WaitingRoomPlayerPageComponent, WaitingRoomInfoComponent],
+            declarations: [WaitingRoomPlayerPageComponent, WaitingRoomInfoComponent, ChatboxComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: Router, useValue: routerSpy },
