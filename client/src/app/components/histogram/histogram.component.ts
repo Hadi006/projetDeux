@@ -49,6 +49,6 @@ export class HistogramComponent implements OnInit, OnChanges {
         } else {
             this.chart.data = this.chartData;
         }
-        Chart.getChart('histogram')!.update();
+        Chart.getChart('histogram')?.update();
     }
 }
