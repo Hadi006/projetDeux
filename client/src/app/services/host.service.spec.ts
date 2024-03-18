@@ -260,7 +260,7 @@ describe('HostService', () => {
         });
         spyOn(service, 'cleanUp');
         service.gameEndedSubject.subscribe(() => {
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { queryParams: { game: JSON.stringify(testGame) } });
             expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin, jasmine.any(Function));
             expect(service.cleanUp).toHaveBeenCalled();
         });
