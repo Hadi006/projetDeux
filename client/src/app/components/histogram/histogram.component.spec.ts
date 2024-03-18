@@ -76,4 +76,16 @@ describe('HistogramComponent', () => {
         component.ngOnChanges();
         expect(Chart.prototype.update).not.toHaveBeenCalled();
     });
+
+    it('should assign a new chart', () => {
+        if (!component.chart) {
+            fail('Chart is not defined');
+            return;
+        }
+        component.chart.destroy();
+        spyOn(Chart, 'getChart').and.returnValue(undefined);
+        component.ngOnChanges();
+        expect(Chart.getChart).toHaveBeenCalled();
+        expect(component.chart).toBeDefined();
+    });
 });
