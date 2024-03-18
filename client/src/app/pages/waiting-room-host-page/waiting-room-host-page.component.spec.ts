@@ -14,7 +14,7 @@ describe('WaitingRoomHostPageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick', 'leaveGame']);
         Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
@@ -56,7 +56,6 @@ describe('WaitingRoomHostPageComponent', () => {
 
     it('should clean up', () => {
         component.leaveGame();
-        expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+        expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
     });
 });

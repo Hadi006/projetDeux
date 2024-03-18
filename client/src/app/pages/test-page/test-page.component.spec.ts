@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
-import { GameTimersComponent } from '@app/components/game-timers/game-timers.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
 import { Router } from '@angular/router';
@@ -26,7 +25,7 @@ describe('TestPageComponent', () => {
         playerServiceSpy.joinGame.and.returnValue(of(''));
 
         const questionEndedSubject = new Subject<void>();
-        const gameEndedSubject = new Subject<void>();
+        const gameEndedSubject = new Subject<Game>();
         hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
         Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
@@ -37,7 +36,7 @@ describe('TestPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [TestPageComponent, GameTimersComponent, QuestionComponent, ChatboxComponent],
+            declarations: [TestPageComponent, QuestionComponent, ChatboxComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
@@ -71,7 +70,7 @@ describe('TestPageComponent', () => {
             done();
         });
 
-        hostServiceSpy.gameEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
     });
 
     it('ngOnInit should navigate to game page if there is no quiz', () => {
@@ -94,7 +93,7 @@ describe('TestPageComponent', () => {
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
-        hostServiceSpy.gameEndedSubject.next();
+        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
         expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);
         expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
     });

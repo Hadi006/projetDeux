@@ -94,8 +94,13 @@ describe('PlayerService', () => {
     it('should start a timer on startGame', (done) => {
         const countdown = 10;
         service.handleSockets();
+        let emitted = false;
+        service.startGameSubject.subscribe(() => {
+            emitted = true;
+        });
         socketHelper.on('start-game', () => {
             expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, countdown);
+            expect(emitted).toBeTrue();
             done();
             return {};
         });
@@ -114,23 +119,23 @@ describe('PlayerService', () => {
 
     it('should update players on player-left', (done) => {
         service.handleSockets();
-        socketHelper.on('player-left', (player) => {
-            expect(service.players).not.toContain(player.name);
+        socketHelper.on('player-left', (data) => {
+            expect(service.players).not.toContain(data.player.name);
             done();
             return {};
         });
-        socketHelper.peerSideEmit('player-left', []);
+        socketHelper.peerSideEmit('player-left', { players: [], player: testPlayer });
     });
 
     it('should navigate on kick', (done) => {
         service.player = testPlayer;
         service.handleSockets();
-        socketHelper.on('kick', () => {
+        socketHelper.on('kicked', () => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
             done();
             return {};
         });
-        socketHelper.peerSideEmit('kick', testPlayer.name);
+        socketHelper.peerSideEmit('kicked', testPlayer.name);
     });
 
     it('should confirm answer and stop timer on endQuestion', (done) => {
@@ -178,6 +183,37 @@ describe('PlayerService', () => {
         socketHelper.peerSideEmit('answer', answer);
     });
 
+    it('should navigate to endgame on game ended', (done) => {
+        service.handleSockets();
+        let emitted = false;
+        service.endGameSubject.subscribe(() => {
+            emitted = true;
+        });
+        socketHelper.on('game-ended', () => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame']);
+            expect(emitted).toBeTrue();
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('game-ended');
+    });
+
+    it('should leave game on game deleted', (done) => {
+        spyOn(service, 'leaveGame');
+        service.handleSockets();
+        let emitted = false;
+        service.endGameSubject.subscribe(() => {
+            emitted = true;
+        });
+        socketHelper.on('game-deleted', () => {
+            expect(service.leaveGame).toHaveBeenCalled();
+            expect(emitted).toBeTrue();
+            done();
+            return {};
+        });
+        socketHelper.peerSideEmit('game-deleted');
+    });
+
     it('should join game and create a player if there are no errors', (done) => {
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(playerResponse);
@@ -197,7 +233,7 @@ describe('PlayerService', () => {
             callback(response);
         });
         service.joinGame('1', 'test').subscribe((error) => {
-            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('join-game', { pin: '1', playerName: 'test' }, jasmine.any(Function));
+            expect(webSocketServiceMock.emit).toHaveBeenCalledWith('join-game', { pin: '1', data: 'test' }, jasmine.any(Function));
             expect(error).toEqual(response.error);
             expect(service.player).toBeUndefined();
             expect(service.players).toEqual([]);
@@ -211,7 +247,7 @@ describe('PlayerService', () => {
         spyOn(service, 'cleanUp');
         service.player = testPlayer;
         service.leaveGame();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, playerName: testPlayer.name });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('player-leave', { pin: service.pin, data: testPlayer.name });
         expect(service.cleanUp).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
@@ -219,7 +255,7 @@ describe('PlayerService', () => {
     it('updatePlayer should update the player', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.updatePlayer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('update-player', { pin: undefined, player: undefined });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('update-player', { pin: undefined, data: undefined });
     });
 
     it('handleKeyUp should confirm the answer if Enter is pressed', () => {
@@ -260,7 +296,7 @@ describe('PlayerService', () => {
     it('confirmPlayerAnswer should confirm the answer', () => {
         spyOn(webSocketServiceMock, 'emit');
         service.confirmPlayerAnswer();
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { pin: undefined, player: undefined });
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', { pin: undefined, data: undefined });
         expect(service.answerConfirmed).toBeTrue();
     });
 
@@ -280,7 +316,6 @@ describe('PlayerService', () => {
 
     it('setUpNextQuestion should reset the player answers', () => {
         const countdown = 10;
-        spyOn(service, 'updatePlayer');
         service.player = testPlayer;
         const initialLength = service.player.questions.length;
         service.player.questions = testQuestions;
@@ -291,6 +326,5 @@ describe('PlayerService', () => {
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();
-        expect(service.updatePlayer).toHaveBeenCalled();
     });
 });

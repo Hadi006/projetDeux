@@ -4,9 +4,12 @@ import { authGuard } from '@app/guards/auth.guard';
 import { AdminLoginPageComponent } from '@app/pages/admin-login-page/admin-login-page.component';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
+import { EndgameResultPageComponent } from '@app/pages/endgame-result-page/endgame-result-page.component';
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
+import { HostGamePageComponent } from '@app/pages/host-game-page/host-game-page.component';
 import { JoinRoomPageComponent } from '@app/pages/join-room-page/join-room-page.component';
+import { PlayerGamePageComponent } from '@app/pages/player-game-page/player-game-page.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
 import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { WaitingRoomPlayerPageComponent } from '@app/pages/waiting-room-player-page/waiting-room-player-page.component';
@@ -23,6 +26,9 @@ const routes: Routes = [
     { path: 'game', component: GameChoicePageComponent },
     { path: 'waiting-room-host', component: WaitingRoomHostPageComponent },
     { path: 'waiting-room-player', component: WaitingRoomPlayerPageComponent },
+    { path: 'game-host', component: HostGamePageComponent },
+    { path: 'game-player', component: PlayerGamePageComponent },
+    { path: 'endgame', component: EndgameResultPageComponent },
     { path: 'test', component: TestPageComponent },
     { path: '**', redirectTo: '/home' },
 ];

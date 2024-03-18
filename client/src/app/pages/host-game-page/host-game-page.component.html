@@ -1,0 +1,39 @@
+<body>
+    <div *ngIf="getGame().quiz as quiz">
+        <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()"
+            [gameName]="quiz.title"></app-game-count-down>
+        <div class="container" *ngIf="!isCountingDown">
+            <div class="organizer-container">
+                <div class="question-display" *ngIf="getCurrentQuestion() as question">
+                    <h1>{{ question.text }}</h1>
+                    <p>Points: + {{ question.points }}</p>
+                    <button *ngIf="getQuestionEnded()" (click)="nextQuestion()">Prochaine question</button>
+                </div>
+                <button (click)="showEndGameResult()">Terminer la partie</button>
+            </div>
+
+            <div class="countdown">
+                <mat-card class="timer-card">
+                    <mat-card-content>
+                        <mat-icon class="timer-icon">timer</mat-icon>
+                        <p class="timer-text">{{ getTime() }}</p>
+                    </mat-card-content>
+                </mat-card>
+                <div class="players-container">
+                    <section class="playerCardContainer">
+                        <div *ngFor="let player of getPlayers()">
+                            <h1>{{ player.name }}</h1>
+                            <h1>{{ player.score }}</h1>
+                        </div>
+                        <div *ngFor="let quitter of getQuitters()">
+                            <h1 class="quitter">{{ quitter.name }}</h1>
+                            <h1>{{ quitter.score }}</h1>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <button (click)="leaveGame()">Quitter</button>
+        </div>
+        <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
+    </div>
+</body>

@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Player } from '@common/player';
-import { Observable } from 'rxjs';
-import { Answer, Question } from '@common/quiz';
-import { WebSocketService } from './web-socket.service';
-import { TimeService } from './time.service';
-import { TRANSITION_DELAY } from '@common/constant';
 import { Router } from '@angular/router';
+import { TRANSITION_DELAY } from '@common/constant';
+import { Game } from '@common/game';
+import { Player } from '@common/player';
+import { Answer, Question } from '@common/quiz';
+import { RoomData } from '@common/room-data';
+import { Observable, Subject } from 'rxjs';
+import { TimeService } from './time.service';
+import { WebSocketService } from './web-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,13 +23,15 @@ export class PlayerService {
     private internalAnswerConfirmed: boolean = false;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
+    private internalStartGameSubject: Subject<void> = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
+    private internalEndGameSubject: Subject<Game> = new Subject<Game>(); // les subjects sont faits pour etre observes, ils devraient etre public
 
     constructor(
         private webSocketService: WebSocketService,
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.timerId = timeService.createTimerById();
+        this.timerId = timeService.createTimerById(); // soit qu'on initialise tous les attributs dans le constructeur, soit qu'on les initialise tout en dehors du constructeur
     }
 
     get pin(): string {
@@ -54,6 +58,16 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
+    get startGameSubject(): Subject<void> {
+        // utilise public readonly a la place
+        return this.internalStartGameSubject;
+    }
+
+    get endGameSubject(): Subject<Game> {
+        // utilise public readonly a la place
+        return this.internalEndGameSubject;
+    }
+
     getPlayerAnswers(): Answer[] {
         return this.player.questions[this.player.questions.length - 1].choices;
     }
@@ -75,11 +89,13 @@ export class PlayerService {
         this.onNextQuestion();
         this.onNewScore();
         this.onAnswer();
+        this.onGameEnded();
+        this.onGameDeleted();
     }
 
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.emit('join-game', { pin, playerName }, (response: unknown) => {
+            this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
                 const responseData = response as { player: Player; players: string[]; gameTitle: string; error: string };
                 if (!responseData.error) {
                     this.player = responseData.player;
@@ -129,26 +145,16 @@ export class PlayerService {
         this.timeService.stopTimerById(this.timerId);
     }
 
-    private resetPlayerAnswers(question: Question): void {
-        const resetQuestion = { ...question };
-        resetQuestion.choices = question.choices.map((choice) => ({ ...choice, isCorrect: false }));
-        this.player.questions.push(resetQuestion);
-        this.internalAnswerConfirmed = false;
-        this.internalAnswer = [];
-        this.internalIsCorrect = false;
-        this.updatePlayer();
-    }
-
     private emitLeaveGame() {
-        this.webSocketService.emit('player-leave', { pin: this.internalPin, playerName: this.player.name });
+        this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
     }
 
     private emitUpdatePlayer() {
-        this.webSocketService.emit('update-player', { pin: this.internalPin, player: this.player });
+        this.webSocketService.emit<RoomData<Player>>('update-player', { pin: this.internalPin, data: this.player });
     }
 
     private emitConfirmPlayerAnswer() {
-        this.webSocketService.emit('confirm-player-answer', { pin: this.internalPin, player: this.player });
+        this.webSocketService.emit<RoomData<Player>>('confirm-player-answer', { pin: this.internalPin, data: this.player });
     }
 
     private onPlayerJoined() {
@@ -158,13 +164,14 @@ export class PlayerService {
     }
 
     private onPlayerLeft() {
-        this.webSocketService.onEvent<Player[]>('player-left', (players) => {
+        this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
+            const { players } = data;
             this.internalPlayers = players.map((player) => player.name);
         });
     }
 
     private onKick() {
-        this.webSocketService.onEvent<string>('kick', (playerName) => {
+        this.webSocketService.onEvent<string>('kicked', (playerName) => {
             if (playerName === this.player.name) {
                 this.router.navigate(['/']);
             }
@@ -173,6 +180,7 @@ export class PlayerService {
 
     private onStartGame() {
         this.webSocketService.onEvent<number>('start-game', (countdown) => {
+            this.internalStartGameSubject.next();
             this.timeService.startTimerById(this.timerId, countdown);
         });
     }
@@ -208,8 +216,23 @@ export class PlayerService {
         });
     }
 
+    private onGameEnded() {
+        this.webSocketService.onEvent<Game>('game-ended', (game) => {
+            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
+        });
+    }
+
+    private onGameDeleted() {
+        this.webSocketService.onEvent<Game>('game-deleted', () => {
+            this.leaveGame();
+        });
+    }
+
     private setupNextQuestion(question: Question, countdown: number): void {
-        this.resetPlayerAnswers(question);
+        this.player.questions.push(question);
+        this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
+        this.internalIsCorrect = false;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
     }

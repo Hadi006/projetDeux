@@ -1,9 +1,10 @@
+import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_GAME, NEW_HISTOGRAM_DATA, NEW_PLAYER } from '@common/constant';
+import { Game } from '@common/game';
+import { HistogramData } from '@common/histogram-data';
+import { Player } from '@common/player';
+import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
-import { ANSWER_TIME_BUFFER, GOOD_ANSWER_BONUS, GAME_ID_LENGTH, GAME_ID_MAX, NEW_GAME, NEW_PLAYER } from '@common/constant';
-import { Question, Quiz } from '@common/quiz';
-import { Player } from '@common/player';
-import { Game } from '@common/game';
 
 @Service()
 export class GameService {
@@ -17,7 +18,7 @@ export class GameService {
         return (await this.database.get<Game>('games', { pin }))[0];
     }
 
-    async createGame(quiz: Quiz): Promise<Game | undefined> {
+    async createGame(quiz: Quiz, hostId: string): Promise<Game | undefined> {
         let pin: string;
 
         const games = await this.getGames();
@@ -33,6 +34,8 @@ export class GameService {
         } while (games.some((game) => game.pin === pin));
 
         const newGame: Game = { ...NEW_GAME, pin, quiz };
+        newGame.hostId = hostId;
+
         await this.database.add('games', newGame);
         return newGame;
     }
@@ -91,19 +94,33 @@ export class GameService {
         return { player, players: game.players.map((p) => p.name), gameTitle: game.quiz.title, error: '' };
     }
 
-    async updatePlayer(pin: string, player: Player): Promise<void> {
+    async updatePlayer(pin: string, player: Player): Promise<HistogramData> {
         const game = await this.getGame(pin);
         if (!game || game.pin !== pin) {
-            return;
+            return { ...NEW_HISTOGRAM_DATA };
         }
+
+        const selectionChanges: number[] = [];
+        let previousSelections: boolean[] = [];
+        let currentSelections: boolean[] = [];
 
         game.players.forEach((p, index) => {
             if (p.name === player.name) {
+                previousSelections = p.questions[p.questions.length - 1].choices.map((choice) => choice.isCorrect);
+                currentSelections = player.questions[player.questions.length - 1].choices.map((choice) => choice.isCorrect);
+
                 game.players[index] = player;
             }
         });
 
+        currentSelections.forEach((currentSelection, index) => {
+            selectionChanges.push(+currentSelection - +previousSelections[index]);
+            game.histograms[game.histograms.length - 1].datasets[0].data[index] += +currentSelection - +previousSelections[index];
+        });
+
         await this.updateGame(game);
+
+        return game.histograms[game.histograms.length - 1];
     }
 
     async updateScores(pin: string, questionIndex: number): Promise<void> {
@@ -147,6 +164,16 @@ export class GameService {
                 if (!firstCorrectPlayer) {
                     firstCorrectPlayer = player;
                 } else {
+                    const date = new Date();
+
+                    if (!player.questions[questionIndex].lastModification) {
+                        player.questions[questionIndex].lastModification = date;
+                    }
+
+                    if (!firstCorrectPlayer.questions[questionIndex].lastModification) {
+                        firstCorrectPlayer.questions[questionIndex].lastModification = date;
+                    }
+
                     const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
                     const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
                     if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
