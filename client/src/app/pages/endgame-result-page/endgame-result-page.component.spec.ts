@@ -61,4 +61,21 @@ describe('EndgameResultPageComponent', () => {
         expect(component).toBeTruthy();
         expect(component.game).toBeUndefined();
     });
+
+    it('should navigate to home page', () => {
+        component.leaveGame();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should decrement histogram index', () => {
+        component.previousHistogram();
+        expect(component.currentHistogramIndex).toBe(0);
+    });
+
+    it('should increment histogram index', () => {
+        Object.defineProperty(routeSpy, 'queryParams', { value: of({ game: JSON.stringify(TEST_GAME_DATA) }) });
+        component.ngOnInit();
+        component.nextHistogram();
+        expect(component.currentHistogramIndex).toBe(1);
+    });
 });
