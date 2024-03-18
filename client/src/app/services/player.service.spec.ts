@@ -185,13 +185,8 @@ describe('PlayerService', () => {
 
     it('should navigate to endgame on game ended', (done) => {
         service.handleSockets();
-        let emitted = false;
-        service.endGameSubject.subscribe(() => {
-            emitted = true;
-        });
         socketHelper.on('game-ended', () => {
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame']);
-            expect(emitted).toBeTrue();
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { queryParams: { game: undefined } });
             done();
             return {};
         });
