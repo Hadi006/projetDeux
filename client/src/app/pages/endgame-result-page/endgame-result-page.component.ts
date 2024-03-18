@@ -13,18 +13,17 @@ export class EndgameResultPageComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-    ) { }
+    ) {}
 
     ngOnInit() {
         this.route.queryParams.subscribe((data) => {
-            console.log(data);
             if (!data.game) {
                 return;
             }
             this.game = JSON.parse(data.game) as Game;
             this.game.players.sort((a, b) => {
                 return b.score - a.score || b.name.localeCompare(a.name);
-            })
+            });
         });
     }
 
@@ -34,11 +33,9 @@ export class EndgameResultPageComponent implements OnInit {
 
     previousHistogram() {
         this.currentHistogramIndex = Math.max(0, this.currentHistogramIndex - 1);
-        console.log(this.game, this.currentHistogramIndex);
     }
 
     nextHistogram() {
         this.currentHistogramIndex = Math.min(this.game.histograms.length - 1, this.currentHistogramIndex + 1);
-        console.log(this.game, this.currentHistogramIndex);
     }
 }
