@@ -103,8 +103,6 @@ export const START_GAME_COUNTDOWN = 5;
 
 export const TRANSITION_DELAY = 3;
 
-export const INITIAL_QUESTION_INDEX = -1;
-
 export const ANSWER_TIME_BUFFER = 1000;
 
 /* Classes */
