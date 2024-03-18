@@ -103,11 +103,12 @@ export class GameController {
             const playerName = roomData.data;
 
             const game = await this.gameService.getGame(pin);
-            game.players = game.players.filter((player) => player.name !== playerName);
+            const player = game.players.find((p) => p.name === playerName);
+            game.players = game.players.filter((p) => p.name !== playerName);
             game.bannedNames.push(playerName.toLocaleLowerCase());
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('kicked', playerName);
-            this.sio.to(pin).emit('player-left', game.players);
+            this.sio.to(pin).emit('player-left', { players: game.players, player });
         });
     }
 
