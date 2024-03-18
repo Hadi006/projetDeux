@@ -192,7 +192,7 @@ describe('GameController', () => {
         }, RESPONSE_DELAY);
     });
 
-    it('should broadcast a next question', (done) => {
+    it('should broadcast a question-changed', (done) => {
         const question = testQuestion;
         const histogram = testHistogram;
         const countdown = 5;
@@ -201,7 +201,7 @@ describe('GameController', () => {
         gameServiceStub.updateGame.resolves();
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.on('next-question', (response) => {
+            clientSocket.on('question-changed', (response) => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
                 expect(response).to.deep.equal({ question, countdown });
                 done();
@@ -217,7 +217,7 @@ describe('GameController', () => {
         gameServiceStub.updateGame.resolves();
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.on('next-question', (response) => {
+            clientSocket.on('question-changed', (response) => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
                 expect(response).to.deep.equal({ countdown });
                 done();
