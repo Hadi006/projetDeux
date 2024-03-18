@@ -17,6 +17,7 @@ export class EndgameResultPageComponent implements OnInit {
 
     ngOnInit() {
         this.route.queryParams.subscribe((data) => {
+            console.log(data);
             if (!data.game) {
                 return;
             }

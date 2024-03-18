@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TEST_GAME_DATA } from '@common/constant';
+import { TEST_GAME_DATA, TEST_PLAYERS } from '@common/constant';
+import { Player } from '@common/player';
 import { of } from 'rxjs';
 
 import { EndgameResultPageComponent } from './endgame-result-page.component';
@@ -40,20 +41,19 @@ describe('EndgameResultPageComponent', () => {
     });
 
     it('should sort players by score and name', () => {
-        routeSpy.queryParams = of({ game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) });
-        const players = [
-            { name: 'c', score: 1 },
-            { name: 'a', score: 2 },
-            { name: 'b', score: 2 },
-        ];
-        const sortedPlayers = players.sort((a, b) => {
-            return b.score - a.score || a.name.localeCompare(b.name);
+        const players: Player[] = JSON.parse(JSON.stringify([...TEST_PLAYERS, TEST_PLAYERS[0]]));
+        players[0].score = 100;
+        players[0].name = 'a';
+        players[1].score = 100;
+        players[1].name = 'b';
+        players[2].score = 50;
+        const testGame = { ...TEST_GAME_DATA, players };
+        Object.defineProperty(routeSpy, 'queryParams', { value: of({ game: JSON.stringify(testGame) }) });
+        component.ngOnInit();
+        players.sort((a, b) => {
+            return b.score - a.score || b.name.localeCompare(a.name);
         });
-        expect(sortedPlayers).toEqual([
-            { name: 'a', score: 2 },
-            { name: 'b', score: 2 },
-            { name: 'c', score: 1 },
-        ]);
+        expect(component.game.players).toEqual(players);
     });
 
     it('should do nothing if game is undefined', () => {
