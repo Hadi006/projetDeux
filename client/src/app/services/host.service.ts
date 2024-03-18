@@ -107,7 +107,6 @@ export class HostService {
     nextQuestion() {
         this.internalQuestionEnded = false;
         this.currentQuestionIndex++;
-        // create a new histogram for the new question
         const newHistogram: HistogramData = {
             labels: this.getCurrentQuestion()?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
             datasets: [
@@ -118,7 +117,6 @@ export class HostService {
             ],
         };
         this.internalHistograms.push(newHistogram);
-        //
         this.emitNextQuestion();
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
@@ -133,6 +131,7 @@ export class HostService {
     }
 
     endGame() {
+        this.router.navigate(['/endgame']);
         this.emitEndGame();
         // this.internalGameEndedSubject.next();
         // this.cleanUp();
@@ -218,11 +217,9 @@ export class HostService {
         });
     }
 
-    private emitEndGame() {
+    public emitEndGame() {
         this.webSocketService.emit<string>('end-game', this.internalGame.pin, (game: unknown) => {
-            console.log('end-game', game);
-            this.router.navigate(['/endgame']);
-            this.internalGameEndedSubject.next(game as Game);
+            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
         });
     }
 
@@ -244,7 +241,7 @@ export class HostService {
             this.internalQuitters.push(player);
 
             if (this.internalGame.players.length === 0) {
-                this.endGame();
+                // this.endGame();
             }
         });
     }
@@ -274,7 +271,7 @@ export class HostService {
         }
 
         if (!this.getCurrentQuestion()) {
-            this.endGame();
+            // this.endGame();
             return;
         }
 

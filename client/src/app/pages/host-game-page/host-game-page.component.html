@@ -9,6 +9,7 @@
                     <p>Points: + {{ question.points }}</p>
                     <button *ngIf="getQuestionEnded()" (click)="nextQuestion()">Prochaine question</button>
                 </div>
+                <button (click)="showEndGameResult()">Terminer la partie</button>
             </div>
 
             <div class="countdown">

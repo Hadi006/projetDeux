@@ -52,6 +52,10 @@ export class HostGamePageComponent implements OnDestroy {
         this.hostService.nextQuestion();
     }
 
+    showEndGameResult() {
+        this.hostService.endGame();
+    }
+
     getPlayers() {
         return this.hostService.game.players;
     }

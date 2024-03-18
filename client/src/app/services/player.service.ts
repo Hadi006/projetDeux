@@ -218,15 +218,12 @@ export class PlayerService {
 
     private onGameEnded() {
         this.webSocketService.onEvent<Game>('game-ended', (game) => {
-            this.router.navigate(['/endgame']);
-            console.log('game ended', game);
-            this.internalEndGameSubject.next(game);
+            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
         });
     }
 
     private onGameDeleted() {
-        this.webSocketService.onEvent<Game>('game-deleted', (game) => {
-            this.internalEndGameSubject.next(game);
+        this.webSocketService.onEvent<Game>('game-deleted', () => {
             this.leaveGame();
         });
     }

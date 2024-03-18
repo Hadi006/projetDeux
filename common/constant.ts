@@ -92,7 +92,7 @@ export const NEW_GAME: Game = {
     players: [],
     locked: false,
     bannedNames: [],
-    histograms: [{ ...NEW_HISTOGRAM_DATA }],
+    histograms: [], // ne change pas !, sinon va introduire des bugs
 };
 
 export const GAME_ID_MAX = 10000;

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HostService } from '@app/services/host.service';
-import { PlayerService } from '@app/services/player.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Game } from '@common/game';
 
 @Component({
@@ -12,34 +11,25 @@ export class EndgameResultPageComponent implements OnInit {
     game: Game;
     currentHistogramIndex = 0;
     constructor(
-        private playerService: PlayerService,
-        private hostService: HostService,
+        private route: ActivatedRoute,
+        private router: Router,
     ) { }
 
     ngOnInit() {
-        this.hostService.gameEndedSubject.subscribe((game: Game) => {
-            this.game = game;
-        });
-
-        this.playerService.endGameSubject.subscribe((game: Game | void) => {
-            if (!game) {
+        this.route.queryParams.subscribe((data) => {
+            console.log(data);
+            if (!data.game) {
                 return;
             }
-
-            this.game = game;
+            this.game = JSON.parse(data.game) as Game;
             this.game.players.sort((a, b) => {
-                if (a.score === b.score) {
-                    return a.name.localeCompare(b.name);
-                }
-                return b.score - a.score;
-            });
+                return b.score - a.score || b.name.localeCompare(a.name);
+            })
         });
-        // this.game = this.hostService.game;
     }
 
     leaveGame() {
-        this.playerService.cleanUp();
-        this.hostService.leaveGame();
+        this.router.navigate(['/']);
     }
 
     previousHistogram() {
@@ -47,6 +37,6 @@ export class EndgameResultPageComponent implements OnInit {
     }
 
     nextHistogram() {
-        this.currentHistogramIndex = Math.min(this.hostService.histograms.length - 1, this.currentHistogramIndex + 1);
+        this.currentHistogramIndex = Math.min(this.game.histograms.length - 1, this.currentHistogramIndex + 1);
     }
 }

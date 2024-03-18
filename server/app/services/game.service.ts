@@ -113,15 +113,14 @@ export class GameService {
             }
         });
 
-        const currentHistogram = game.histograms[game.histograms.length - 1];
         currentSelections.forEach((currentSelection, index) => {
             selectionChanges.push(+currentSelection - +previousSelections[index]);
-            currentHistogram.datasets[0].data[index] += +currentSelection - +previousSelections[index];
+            game.histograms[game.histograms.length - 1].datasets[0].data[index] += +currentSelection - +previousSelections[index];
         });
 
         await this.updateGame(game);
 
-        return currentHistogram;
+        return game.histograms[game.histograms.length - 1];
     }
 
     async updateScores(pin: string, questionIndex: number): Promise<void> {
