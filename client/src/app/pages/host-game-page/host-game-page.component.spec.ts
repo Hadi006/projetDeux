@@ -20,6 +20,7 @@ describe('HostGamePageComponent', () => {
             'nextQuestion',
             'getGame',
             'leaveGame',
+            'endGame',
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
