@@ -95,12 +95,16 @@ describe('HostService', () => {
         expect(service.quitters).not.toContain(testGame.players[0]);
     });
 
-    it('should end game if all players left', () => {
+    it('should clean up on playerLeft if all players left', (done) => {
+        spyOn(service, 'cleanUp');
         service['currentQuestionIndex'] = 1;
-        spyOn(service, 'endGame');
         service.handleSockets();
         socketHelper.peerSideEmit('player-left', { players: [], player: testGame.players[0] });
-        expect(service.endGame).toHaveBeenCalled();
+        service.gameEndedSubject.subscribe(() => {
+            expect(service.cleanUp).toHaveBeenCalled();
+            done();
+        });
+        service.gameEndedSubject.next();
     });
 
     it('should increment nAnswered on confirmPlayerAnswer', () => {
