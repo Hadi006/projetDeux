@@ -120,15 +120,6 @@ export class HostService {
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
-    private endQuestion() {
-        this.emitEndQuestion();
-        this.emitUpdateScores();
-        this.emitAnswer();
-        this.internalQuestionEnded = true;
-        this.internalQuestionEndedSubject.next();
-        this.currentQuestionIndex++;
-    }
-
     endGame() {
         this.emitEndGame();
     }
@@ -138,6 +129,15 @@ export class HostService {
         this.internalHistograms = [];
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+    }
+
+    private endQuestion() {
+        this.emitEndQuestion();
+        this.emitUpdateScores();
+        this.emitAnswer();
+        this.internalQuestionEnded = true;
+        this.internalQuestionEndedSubject.next();
+        this.currentQuestionIndex++;
     }
 
     private emitToggleLock() {
