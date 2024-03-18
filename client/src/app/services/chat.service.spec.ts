@@ -1,12 +1,14 @@
-import { TestBed } from '@angular/core/testing';
-import { MAX_MESSAGE_LENGTH, TEST_PLAYERS } from '@common/constant';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ChatMessage } from '@app/interfaces/chat-message';
+import { MAX_MESSAGE_LENGTH } from '@common/constant';
+import { Player } from '@common/player';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { ChatService } from './chat.service';
 
 describe('ChatService', () => {
     let service: ChatService;
+
     const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
-    const player = TEST_PLAYERS[0];
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [SocketIoModule.forRoot(config)],
@@ -24,48 +26,51 @@ describe('ChatService', () => {
     });
 
     it('should do nothing when sendMessage is called with an empty string', () => {
+        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
         service.sendMessage('', player);
         expect(service.messages.length).toBe(0);
     });
     it('should do nothing when sendMessage is called with a string longer than 200 characters', () => {
+        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
         service.sendMessage('a'.repeat(MAX_MESSAGE_LENGTH + 1), player);
         expect(service.messages.length).toBe(0);
     });
 
     it('should do nothing when sendMessage is called with a string that is only whitespace', () => {
+        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
         service.sendMessage('   ', player);
         expect(service.messages.length).toBe(0);
     });
 
     it('should validate message correctly', () => {
-        // Arrange
         const chatService = TestBed.inject(ChatService);
 
-        // Act & Assert
-        expect(chatService['validateMessage']('')).toBe(false); // Empty message should return false
-        expect(chatService['validateMessage']('   ')).toBe(false); // Only whitespace message should return false
-        expect(chatService['validateMessage']('valid message')).toBe(true); // Valid message should return true
-        expect(chatService['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH + 1))).toBe(false); // Message exceeding max length should return false
+        expect(chatService['validateMessage']('')).toBe(false);
+        expect(chatService['validateMessage']('   ')).toBe(false);
+        expect(chatService['validateMessage']('valid message')).toBe(true);
+        expect(chatService['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH + 1))).toBe(false);
     });
 
-    // it('should update internalMessages and notify subscribers when message is received', fakeAsync(() => {
-    //     // Arrange
-    //     const message: ChatMessage = {
-    //         text: 'Test message',
-    //         timestamp: new Date(),
-    //     };
+    it('should update internalMessages and notify subscribers when message is received', fakeAsync(() => {
+        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
+        const message: ChatMessage = {
+            text: 'Test message',
+            timestamp: new Date(),
+            author: player,
+        };
 
-    //     // Act
-    //     service['setupSocket'](); // Call the private method setupSocket
-    //     service['socket'].emit('message-received', message); // Emit the simulated message event
-    //     tick(); // Wait for the asynchronous operation
+        const messagesSubjectSpy = spyOn(service.messagesSubjectGetter, 'next').and.callThrough();
 
-    //     // Assert
-    //     expect(service['internalMessages'].length).toBe(1); // Check the length of internalMessages
-    //     expect(service['internalMessages'][0]).toEqual(message); // Check the received message
-    // }));
+        service['setupSocket']();
+        service['socket'].emit('message-received', message);
+        tick();
+        expect(service.messages.length).toBe(1);
+        expect(service.messages[0]).toEqual(message);
+        expect(messagesSubjectSpy).toHaveBeenCalled();
+    }));
 
     it('should send valid messages through the socket', () => {
+        const player: Player = { name: 'John Doe', score: 0, questions: [], fastestResponseCount: 0 };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         spyOn((service as any).socket, 'emit');
         const newMessage = 'New valid message';

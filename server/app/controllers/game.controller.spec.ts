@@ -1,14 +1,14 @@
-import { Server } from '@app/server';
 import { GameController } from '@app/controllers/game.controller';
+import { Server } from '@app/server';
+import { GameService } from '@app/services/game.service';
+import { NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { Game } from '@common/game';
+import { Player } from '@common/player';
+import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
-import { io as ioClient, Socket } from 'socket.io-client';
+import { Socket, io as ioClient } from 'socket.io-client';
 import { Container } from 'typedi';
-import { GameService } from '@app/services/game.service';
-import { Question, Quiz } from '@common/quiz';
-import { Game } from '@common/game';
-import { NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
-import { Player } from '@common/player';
 
 describe('GameController', () => {
     let service: GameController;
@@ -42,6 +42,16 @@ describe('GameController', () => {
         clientSocket.close();
         service['sio'].close();
         restore();
+    });
+
+    it('should broadcast new message to all clients', (done) => {
+        const message = 'Hello, everyone!';
+        clientSocket.emit('new-message', message);
+
+        clientSocket.on('message-received', (receivedMessage) => {
+            expect(receivedMessage).to.equal(message);
+            done();
+        });
     });
 
     it('should create a game', (done) => {
