@@ -19,7 +19,7 @@ export class HostService {
     private internalQuestionEnded: boolean;
     private timerId: number;
     private internalQuestionEndedSubject = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
-    private internalGameEndedSubject = new Subject<Game>(); // les subjects sont faits pour etre observes, ils devraient etre public
+    private internalGameEndedSubject = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
@@ -83,9 +83,8 @@ export class HostService {
     }
 
     leaveGame() {
-        this.emitDeleteGame();
         this.cleanUp();
-        this.router.navigate(['/']);
+        this.router.navigate(['/']); // peut faire dans une composante a la place
     }
 
     toggleLock() {
@@ -121,7 +120,7 @@ export class HostService {
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
-    endQuestion() {
+    private endQuestion() {
         this.emitEndQuestion();
         this.emitUpdateScores();
         this.emitAnswer();
@@ -131,10 +130,7 @@ export class HostService {
     }
 
     endGame() {
-        this.router.navigate(['/endgame']);
         this.emitEndGame();
-        // this.internalGameEndedSubject.next();
-        // this.cleanUp();
     }
 
     cleanUp() {
@@ -219,7 +215,8 @@ export class HostService {
 
     private emitEndGame() {
         this.webSocketService.emit<string>('end-game', this.internalGame.pin, (game: unknown) => {
-            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
+            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } }); // possible de faire dans une composante (avec Observable<Game>)
+            this.cleanUp();
         });
     }
 
@@ -241,7 +238,8 @@ export class HostService {
             this.internalQuitters.push(player);
 
             if (this.internalGame.players.length === 0) {
-                // this.endGame();
+                this.cleanUp();
+                this.internalGameEndedSubject.next();
             }
         });
     }
@@ -271,7 +269,8 @@ export class HostService {
         }
 
         if (!this.getCurrentQuestion()) {
-            // this.endGame();
+            this.cleanUp();
+            this.internalGameEndedSubject.next();
             return;
         }
 

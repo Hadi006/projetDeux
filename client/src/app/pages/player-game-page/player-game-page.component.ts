@@ -1,8 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
-// import { MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
-// import { AlertComponent } from '@app/components/alert/alert.component';
 
 @Component({
     selector: 'app-player-game-page',
@@ -16,10 +16,10 @@ export class PlayerGamePageComponent implements OnDestroy {
 
     constructor(
         private playerService: PlayerService,
-        // private dialog: MatDialog,
+        private dialog: MatDialog,
     ) {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
-            // this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
+            this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
         });
     }
 

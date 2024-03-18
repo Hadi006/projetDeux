@@ -36,14 +36,19 @@ export class HistogramComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges() {
-        if (!this.chart || !Chart.getChart('histogram')) {
+        if (!Chart.getChart('histogram')) {
+            this.chart = new Chart('histogram', this.chartConfig);
             return;
         }
+        if (!this.chart) {
+            return;
+        }
+
         if (this.chart.data.datasets[0].label === this.chartData.datasets[0].label) {
             this.chart.data.datasets[0].data = this.chartData.datasets[0].data;
         } else {
             this.chart.data = this.chartData;
         }
-        Chart.getChart('histogram')?.update();
+        Chart.getChart('histogram')!.update();
     }
 }

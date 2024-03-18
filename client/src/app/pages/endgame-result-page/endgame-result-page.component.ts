@@ -34,9 +34,11 @@ export class EndgameResultPageComponent implements OnInit {
 
     previousHistogram() {
         this.currentHistogramIndex = Math.max(0, this.currentHistogramIndex - 1);
+        console.log(this.game, this.currentHistogramIndex);
     }
 
     nextHistogram() {
         this.currentHistogramIndex = Math.min(this.game.histograms.length - 1, this.currentHistogramIndex + 1);
+        console.log(this.game, this.currentHistogramIndex);
     }
 }

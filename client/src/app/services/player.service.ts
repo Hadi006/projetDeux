@@ -24,7 +24,7 @@ export class PlayerService {
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean = false;
     private internalStartGameSubject: Subject<void> = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
-    private internalEndGameSubject: Subject<Game> = new Subject<Game>(); // les subjects sont faits pour etre observes, ils devraient etre public
+    private internalEndGameSubject: Subject<void> = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
 
     constructor(
         private webSocketService: WebSocketService,
@@ -63,7 +63,7 @@ export class PlayerService {
         return this.internalStartGameSubject;
     }
 
-    get endGameSubject(): Subject<Game> {
+    get endGameSubject(): Subject<void> {
         // utilise public readonly a la place
         return this.internalEndGameSubject;
     }
@@ -219,6 +219,7 @@ export class PlayerService {
     private onGameEnded() {
         this.webSocketService.onEvent<Game>('game-ended', (game) => {
             this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
+            this.cleanUp();
         });
     }
 
