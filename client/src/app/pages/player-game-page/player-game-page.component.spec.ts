@@ -4,7 +4,6 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { PlayerService } from '@app/services/player.service';
-import { TEST_GAME_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
 
 import { PlayerGamePageComponent } from './player-game-page.component';
@@ -51,7 +50,7 @@ describe('PlayerGamePageComponent', () => {
         playerServiceSpy.endGameSubject.subscribe(() => {
             expect(dialogSpy.open).toHaveBeenCalled();
         });
-        playerServiceSpy.endGameSubject.next(TEST_GAME_DATA);
+        playerServiceSpy.endGameSubject.next();
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
@@ -74,6 +73,6 @@ describe('PlayerGamePageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
         });
         component.ngOnDestroy();
-        playerServiceSpy.endGameSubject.next(TEST_GAME_DATA);
+        playerServiceSpy.endGameSubject.next();
     });
 });

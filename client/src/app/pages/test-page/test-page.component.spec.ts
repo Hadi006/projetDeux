@@ -70,7 +70,7 @@ describe('TestPageComponent', () => {
             done();
         });
 
-        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
+        hostServiceSpy.gameEndedSubject.next();
     });
 
     it('ngOnInit should navigate to game page if there is no quiz', () => {
@@ -93,7 +93,7 @@ describe('TestPageComponent', () => {
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
-        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
+        hostServiceSpy.gameEndedSubject.next();
         expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);
         expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
     });

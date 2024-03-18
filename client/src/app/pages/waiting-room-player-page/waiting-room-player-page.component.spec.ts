@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player.service';
-import { TEST_GAME_DATA } from '@common/constant';
-import { Game } from '@common/game';
 import { Subject } from 'rxjs';
 
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';
@@ -29,7 +27,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
             },
             configurable: true,
         });
-        const endGameSubject = new Subject<Game>();
+        const endGameSubject = new Subject<void>();
         Object.defineProperty(playerServiceSpy, 'endGameSubject', {
             get: () => {
                 return endGameSubject;
@@ -63,7 +61,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
     });
 
     it('should alert when game ends', () => {
-        playerServiceSpy.endGameSubject.next(TEST_GAME_DATA);
+        playerServiceSpy.endGameSubject.next();
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: "La partie n'existe plus" } });
     });
 
@@ -92,6 +90,6 @@ describe('WaitingRoomPlayerPageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
             done();
         });
-        playerServiceSpy.endGameSubject.next(TEST_GAME_DATA);
+        playerServiceSpy.endGameSubject.next();
     });
 });
