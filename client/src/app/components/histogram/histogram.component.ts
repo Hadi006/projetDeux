@@ -12,18 +12,6 @@ export class HistogramComponent implements OnInit, OnChanges, OnDestroy {
     chart: Chart | undefined;
     private chartConfig: ChartConfiguration;
 
-    constructor() {
-        this.chartData = {
-            labels: [],
-            datasets: [
-                {
-                    label: '',
-                    data: [],
-                },
-            ],
-        };
-    }
-
     ngOnInit() {
         this.chartConfig = {
             type: 'bar',
@@ -31,13 +19,21 @@ export class HistogramComponent implements OnInit, OnChanges, OnDestroy {
         };
 
         this.chart = new Chart('histogram', this.chartConfig);
+        this.updateChart();
     }
 
     ngOnChanges() {
-        if (!Chart.getChart('histogram')) {
-            this.chart = new Chart('histogram', this.chartConfig);
-            return;
+        this.updateChart();
+    }
+
+    ngOnDestroy() {
+        if (this.chart) {
+            this.chart.destroy();
+            this.chart = undefined;
         }
+    }
+
+    private updateChart() {
         if (!this.chart) {
             return;
         }
@@ -47,13 +43,7 @@ export class HistogramComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.chart.data = this.chartData;
         }
-        Chart.getChart('histogram')?.update();
-    }
 
-    ngOnDestroy() {
-        if (this.chart) {
-            this.chart.destroy();
-            this.chart = undefined;
-        }
+        Chart.getChart('histogram')?.update();
     }
 }
