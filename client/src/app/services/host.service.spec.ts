@@ -258,9 +258,11 @@ describe('HostService', () => {
         emitSpy.and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testGame);
         });
+        spyOn(service, 'cleanUp');
         service.gameEndedSubject.subscribe(() => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame']);
             expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin, jasmine.any(Function));
+            expect(service.cleanUp).toHaveBeenCalled();
         });
         service.endGame();
         service.gameEndedSubject.next();
