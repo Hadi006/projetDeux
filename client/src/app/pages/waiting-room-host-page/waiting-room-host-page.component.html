@@ -1,21 +1,16 @@
 <div *ngIf="game">
-    <div *ngIf="game.quiz">
-        <app-waiting-room-info
-            [title]="game.quiz.title"
-            [pin]="game.pin"
-            [nPlayers]="game.players.length"
-            [leaveGame]="leaveGame.bind(this)"
-        ></app-waiting-room-info>
-    </div>
-
-    <div id="players-container">
-        <p>Joueurs:</p>
-        <div class="player-container" *ngFor="let player of game.players">
-            {{ player.name }}
-            <button (click)="kick(player.name)">X</button>
-        </div>
-    </div>
-
-    <button (click)="toggleLock()">{{ game.locked ? 'Déverrouiller' : 'Verrouiller' }}</button>
-    <button *ngIf="game.quiz" [disabled]="!game.locked || !game.players.length" (click)="startGame()">Commencer la partie</button>
+    <app-waiting-room-info [title]="game.quiz.title" [pin]="game.pin" [nPlayers]="game.players.length"
+        [leaveGame]="leaveGame.bind(this)"></app-waiting-room-info>
 </div>
+
+<div id="players-container">
+    <p>Joueurs:</p>
+    <div class="player-container" *ngFor="let player of game.players">
+        {{ player.name }}
+        <button (click)="kick(player.name)">X</button>
+    </div>
+</div>
+
+<button (click)="toggleLock()">{{ game.locked ? 'Déverrouiller' : 'Verrouiller' }}</button>
+<button *ngIf="game.quiz" [disabled]="!game.locked || !game.players.length" (click)="startGame()">Commencer la
+    partie</button>

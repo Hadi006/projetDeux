@@ -68,6 +68,11 @@ describe('PlayerGamePageComponent', () => {
         expect(component.gameTitle()).toEqual('test');
     });
 
+    it('leaveGame should call the leaveGame method from the playerService', () => {
+        component.leaveGame();
+        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
+    });
+
     it('ngOnDestroy should unsubscribe from the endGameSubscription', () => {
         playerServiceSpy.endGameSubject.subscribe(() => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
