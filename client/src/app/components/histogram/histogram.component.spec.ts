@@ -51,9 +51,14 @@ describe('HistogramComponent', () => {
             fail('Chart is not defined');
             return;
         }
+        const newChartData: ChartData = {
+            labels: ['Different label'],
+            datasets: [{ label: 'Different data', data: [2] }],
+        };
+        component.chartData = newChartData;
         spyOn(component.chart, 'update');
         component.ngOnChanges();
-        expect(component.chart.data).toEqual(chartData);
+        expect(component.chart.data).toEqual(newChartData);
         expect(component.chart.update).toHaveBeenCalled();
     });
 

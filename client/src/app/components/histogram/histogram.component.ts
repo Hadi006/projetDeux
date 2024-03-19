@@ -38,9 +38,12 @@ export class HistogramComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
+        console.log(this.chart.data);
+        console.log(this.chartData);
         if (this.chart.data.datasets[0].label === this.chartData.datasets[0].label) {
             this.chart.data.datasets[0].data = this.chartData.datasets[0].data;
         } else {
+            console.log('ok');
             this.chart.data = this.chartData;
         }
 
