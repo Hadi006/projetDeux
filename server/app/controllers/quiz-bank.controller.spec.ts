@@ -11,7 +11,6 @@ describe('QuizBankController', () => {
     const MOCK_ANSWER: Answer = { text: 'Answer 1', isCorrect: true };
 
     const MOCK_QUESTION: Question = {
-        id: '1',
         text: 'Question 1',
         type: 'QCM',
         points: 1,
@@ -122,8 +121,6 @@ describe('QuizBankController', () => {
     it('GET /:quizId/download should return a quiz from quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
         const noIdQuestion = { ...MOCK_QUESTION };
-        delete noIdQuestion.id;
-        delete expectedQuiz.questions[0].id;
         quizBankServiceStub.exportQuiz.resolves({ ...MOCK_QUIZZES[0], questions: [noIdQuestion] });
 
         return supertest(expressApp)
@@ -151,7 +148,7 @@ describe('QuizBankController', () => {
 
     it('POST / should add a valid quiz to the quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
-        quizBankServiceStub.verifyQuiz.resolves({ quiz: { ...MOCK_QUIZZES[0], title: 'New title' }, errorLog: '' });
+        quizBankServiceStub.verifyQuiz.resolves({ data: { ...MOCK_QUIZZES[0], title: 'New title' }, error: '' });
         quizBankServiceStub.addQuiz.resolves();
 
         return supertest(expressApp)
@@ -167,7 +164,7 @@ describe('QuizBankController', () => {
     it('POST / shouldnt add an invalid quiz to the quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
         const errorLog = 'Invalid quiz';
-        quizBankServiceStub.verifyQuiz.resolves({ quiz: MOCK_QUIZZES[0], errorLog });
+        quizBankServiceStub.verifyQuiz.resolves({ data: MOCK_QUIZZES[0], error: errorLog });
 
         return supertest(expressApp)
             .post('/api/quizzes')
@@ -181,7 +178,7 @@ describe('QuizBankController', () => {
 
     it('PATCH /:quizId should update a valid quiz in the quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
-        quizBankServiceStub.verifyQuiz.resolves({ quiz: MOCK_QUIZZES[0], errorLog: '' });
+        quizBankServiceStub.verifyQuiz.resolves({ data: MOCK_QUIZZES[0], error: '' });
 
         return supertest(expressApp)
             .patch(`/api/quizzes/${expectedQuiz.id}`)
@@ -196,7 +193,7 @@ describe('QuizBankController', () => {
     it('PATCH /:quizId shouldnt update an invalid quiz in the quiz service', async () => {
         const expectedQuiz = EXPECTED_QUIZZES[0];
         const errorLog = 'Invalid quiz';
-        quizBankServiceStub.verifyQuiz.resolves({ quiz: MOCK_QUIZZES[0], errorLog });
+        quizBankServiceStub.verifyQuiz.resolves({ data: MOCK_QUIZZES[0], error: errorLog });
 
         return supertest(expressApp)
             .patch(`/api/quizzes/${expectedQuiz.id}`)

@@ -10,7 +10,6 @@ describe('QuizBankService', () => {
         { text: 'Answer 2', isCorrect: false },
     ];
     const MOCK_QUESTION: Question = {
-        id: '1',
         text: 'Question 1',
         type: 'QCM',
         points: 10,
@@ -70,12 +69,9 @@ describe('QuizBankService', () => {
     });
 
     it('should return a quiz without question ids', async () => {
-        const noIdQuestion = { ...MOCK_QUESTION };
-        delete noIdQuestion.id;
-        const exportFormatQuiz = { ...MOCK_QUIZ, questions: new Array(N_QUESTIONS).fill(noIdQuestion) };
-        databaseServiceStub.get.resolves([exportFormatQuiz]);
+        databaseServiceStub.get.resolves([MOCK_QUIZ]);
         const result = await quizBankService.exportQuiz('1');
-        expect(result).to.deep.equal(exportFormatQuiz);
+        expect(result).to.deep.equal(MOCK_QUIZ);
     });
 
     it('should add a quiz', async () => {
@@ -95,26 +91,26 @@ describe('QuizBankService', () => {
         databaseServiceStub.get.resolves([]);
         const result = await quizBankService.verifyQuiz(MOCK_QUIZ);
 
-        expect(result.quiz).to.ownProperty('id').to.be.a('string');
-        expect(result.quiz.lastModification).to.be.a('Date');
-        expect(result.quiz.title).to.equal(MOCK_QUIZ.title);
-        expect(result.quiz.description).to.equal(MOCK_QUIZ.description);
-        expect(result.quiz.visible).to.equal(false);
-        expect(result.quiz.duration).to.equal(MOCK_QUIZ.duration);
-        expect(result.quiz.questions.length).to.equal(MOCK_QUIZ.questions.length);
+        expect(result.data).to.ownProperty('id').to.be.a('string');
+        expect(result.data.lastModification).to.be.a('Date');
+        expect(result.data.title).to.equal(MOCK_QUIZ.title);
+        expect(result.data.description).to.equal(MOCK_QUIZ.description);
+        expect(result.data.visible).to.equal(false);
+        expect(result.data.duration).to.equal(MOCK_QUIZ.duration);
+        expect(result.data.questions.length).to.equal(MOCK_QUIZ.questions.length);
     });
 
     it('should have an error log if there is a missing field', async () => {
         const quiz = delete MOCK_QUIZ.title;
         databaseServiceStub.get.resolves([]);
         const result = await quizBankService.verifyQuiz(quiz);
-        expect(result.errorLog).to.not.equal('');
+        expect(result.error).to.not.equal('');
     });
 
     it('should have an error log if name is already taken', async () => {
         databaseServiceStub.get.resolves([{ name: MOCK_QUIZ.title }]);
         const result = await quizBankService.verifyQuiz(MOCK_QUIZ);
-        expect(result.errorLog).to.not.equal('');
+        expect(result.error).to.not.equal('');
     });
 
     it('should update a quiz', async () => {

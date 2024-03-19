@@ -6,7 +6,6 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 
 describe('QuestionBankService', () => {
     const MOCK_QUESTION: Question = {
-        id: '1',
         text: 'Question 1',
         type: 'QCM',
         points: 10,
@@ -31,12 +30,6 @@ describe('QuestionBankService', () => {
         expect(result).to.deep.equal(questions);
     });
 
-    it('should return a question', async () => {
-        databaseServiceStub.get.resolves([MOCK_QUESTION]);
-        const result = await questionBankService.getQuestion(MOCK_QUESTION.text);
-        expect(result).to.deep.equal(MOCK_QUESTION);
-    });
-
     it('should validate a question', () => {
         const result = questionBankService.validateQuestion(MOCK_QUESTION);
         expect(result).to.deep.equal({ question: MOCK_QUESTION, compilationError: '' });
@@ -44,13 +37,13 @@ describe('QuestionBankService', () => {
 
     it('should invalidate a question', () => {
         const result = questionBankService.validateQuestion({ id: '1' });
-        expect(result.compilationError).to.not.equal('');
+        expect(result.error).to.not.equal('');
     });
 
     it('should update a question', async () => {
         databaseServiceStub.update.resolves(true);
-        await questionBankService.updateQuestion(MOCK_QUESTION, MOCK_QUESTION.id);
-        expect(databaseServiceStub.update.calledWith('questions', { id: MOCK_QUESTION.id }, [{ $set: MOCK_QUESTION }])).to.equal(true);
+        await questionBankService.updateQuestion(MOCK_QUESTION, MOCK_QUESTION.text);
+        expect(databaseServiceStub.update.calledWith('questions', { text: MOCK_QUESTION.text }, [{ $set: MOCK_QUESTION }])).to.equal(true);
     });
 
     it('should add a question', async () => {
@@ -78,20 +71,5 @@ describe('QuestionBankService', () => {
         const result = await questionBankService.deleteQuestion('1');
         expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
         expect(result).to.equal(false);
-    });
-
-    it('should validate an answer and return true', async () => {
-        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [true, false]);
-        expect(result).to.equal(true);
-    });
-
-    it('should validate an answer and return false', async () => {
-        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [false, true]);
-        expect(result).to.equal(false);
-    });
-
-    it('should validate an answer for a non multiple-choices question', async () => {
-        const result = await questionBankService.validateAnswer({ ...MOCK_QUESTION, type: 'QRL' }, [true, false]);
-        expect(result).to.equal(true);
     });
 });
