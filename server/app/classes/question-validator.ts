@@ -22,7 +22,7 @@ export class QuestionValidator {
 
     validate(): ValidationResult<Question> {
         if (!this.question || typeof this.question !== 'object') {
-            return new ValidationResult('Question : doit être un objet !\n', this.newQuestion)
+            return new ValidationResult('Question : doit être un objet !\n', this.newQuestion);
         }
         return this.checkText().checkType().checkPoints().checkChoices().compile();
     }
