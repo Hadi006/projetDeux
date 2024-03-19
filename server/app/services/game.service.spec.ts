@@ -1,4 +1,4 @@
-import { GOOD_ANSWER_BONUS, GAME_ID_MAX, NEW_PLAYER, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { GOOD_ANSWER_BONUS, GAME_ID_MAX, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { DatabaseService } from './database.service';
 import { GameService } from '@app/services/game.service';
 import { Game } from '@common/game';
@@ -6,6 +6,7 @@ import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance, stub } from 'sinon';
 import { Player } from '@common/player';
+import { fail } from 'assert';
 
 describe('GameService', () => {
     let testPlayer: Player;
@@ -43,6 +44,9 @@ describe('GameService', () => {
     it('should create a game', async () => {
         stub(gameService, 'getGames').resolves([]);
         const result = await gameService.createGame(testQuiz, testGame.hostId);
+        if (!result) {
+            fail('Game not created');
+        }
         expect(result.quiz).to.deep.equal(testGame.quiz);
         expect(databaseServiceStub.add.called).to.equal(true);
     });
@@ -57,6 +61,9 @@ describe('GameService', () => {
     it('should generate a new game pin', async () => {
         stub(gameService, 'getGames').resolves([testGame]);
         const result = await gameService.createGame(testQuiz, testGame.hostId);
+        if (!result) {
+            fail('Game not created');
+        }
         expect(result.pin).to.not.equal(testGame.pin);
         expect(databaseServiceStub.add.called).to.equal(true);
     });
@@ -183,14 +190,14 @@ describe('GameService', () => {
     it('should not update a player if game is invalid', async () => {
         stub(gameService, 'getGame').resolves(undefined);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
-        await gameService.updatePlayer(testGame.pin, NEW_PLAYER);
+        await gameService.updatePlayer(testGame.pin, new Player('Player'));
         expect(updateStub.called).to.equal(false);
     });
 
     it('should not update a player if player does not exist', async () => {
         stub(gameService, 'getGame').resolves(testGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
-        await gameService.updatePlayer(testGame.pin, NEW_PLAYER);
+        await gameService.updatePlayer(testGame.pin, new Player('Player'));
         expect(updateStub.calledWith({ ...testGame })).to.equal(true);
     });
 

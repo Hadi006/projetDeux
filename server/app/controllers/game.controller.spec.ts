@@ -7,7 +7,7 @@ import { Container } from 'typedi';
 import { GameService } from '@app/services/game.service';
 import { Question, Quiz } from '@common/quiz';
 import { Game } from '@common/game';
-import { NEW_PLAYER, TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Player } from '@common/player';
 import { HistogramData } from '@common/histogram-data';
 
@@ -131,8 +131,8 @@ describe('GameController', () => {
     it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
         const result = {
-            player: { ...NEW_PLAYER, name: playerName },
-            players: [playerName],
+            player: new Player(playerName),
+            otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: '',
         };
@@ -147,8 +147,8 @@ describe('GameController', () => {
     it('should not add a player if there is an error', (done) => {
         const playerName = 'John Doe';
         const result = {
-            player: { ...NEW_PLAYER, name: playerName },
-            players: [playerName],
+            player: new Player(playerName),
+            otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: 'Error',
         };
