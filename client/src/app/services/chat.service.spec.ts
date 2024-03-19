@@ -53,7 +53,24 @@ describe('ChatService', () => {
         expect(service.messages.length).toBe(1);
     });
 
-    it('should send a message', () => {
+    it('should send a message as Organisateur', () => {
+        const message = 'Test message';
+        const expectedMessage: ChatMessage = {
+            text: message,
+            timestamp: new Date(),
+            author: 'Organisateur',
+            roomId: '12345',
+        };
+
+        const playerServiceMock = { pin: '12345' };
+        spyOn(webSocketServiceMock, 'emit');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (service as any)['playerService'] = playerServiceMock;
+        service.sendMessage(message);
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('new-message', expectedMessage);
+    });
+
+    it('should send a message as Player', () => {
         const message = 'Test message';
         const expectedMessage: ChatMessage = {
             text: message,
@@ -63,6 +80,8 @@ describe('ChatService', () => {
         };
 
         const playerServiceMock = { pin: '12345' };
+        spyOn(webSocketServiceMock, 'emit');
+        service['internalParticipantName'] = 'TestPlayer';
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (service as any)['playerService'] = playerServiceMock;
         service.sendMessage(message);
@@ -76,7 +95,7 @@ describe('ChatService', () => {
             author: 'TestPlayer',
             roomId: '12345',
         };
-        socketTestHelper.on('message-received', (receivedMessage: ChatMessage) => {
+        socketHelper.on('message-received', (receivedMessage: ChatMessage) => {
             // Assert
             expect(receivedMessage).toEqual(message);
             service['internalMessages'].push(receivedMessage);
@@ -84,7 +103,7 @@ describe('ChatService', () => {
             return {};
         });
         // service['setupSocket']();
-        socketTestHelper.peerSideEmit('message-received', message);
+        socketHelper.peerSideEmit('message-received', message);
     });
 
     it('should return false for an empty message', () => {
@@ -121,17 +140,5 @@ describe('ChatService', () => {
     it('should do nothing when sendMessage is called with an empty string', () => {
         service.sendMessage('');
         expect(service.messages.length).toBe(0);
-    });
-
-    it('should emit new-message event with newChatMessage', () => {
-        const newChatMessage = 'allo';
-        const emitSpy = spyOn(socketHelper, 'emit');
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        service['playerService'] = { pin: '123' } as any;
-
-        service.sendMessage(newChatMessage);
-
-        expect(emitSpy).toHaveBeenCalledWith('new-message', jasmine.any(Object));
     });
 });
