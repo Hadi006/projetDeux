@@ -27,17 +27,6 @@ export class GameService {
         return await this.database.add('games', new Game(this.generatePin(games), hostId, quiz));
     }
 
-    private generatePin(games: Game[]) {
-        let pin: string = '';
-        do {
-            pin = Math.floor(Math.random() * GAME_ID_MAX)
-                .toString()
-                .padStart(GAME_ID_LENGTH, '0');
-        } while (games.some((game) => game.pin === pin));
-
-        return pin;
-    }
-
     async updateGame(game: Game): Promise<boolean> {
         return await this.database.update('games', { pin: game.pin }, [{ $set: game }]);
     }
@@ -69,33 +58,6 @@ export class GameService {
         await this.updateGame(game);
 
         return new JoinGameResult(error, player, game);
-    }
-
-    private validatePin(pin: string, game: Game) {
-        if (!game || game.pin !== pin) {
-            return 'Le NIP est invalide';
-        }
-        if (game.locked) {
-            return 'La partie est verrouillée';
-        }
-        return '';
-    }
-
-    private validatePlayerName(playerName: string, game: Game) {
-        const lowerCasePlayerName = playerName.toLocaleLowerCase();
-        if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
-            return 'Ce nom est déjà utilisé';
-        }
-        if (lowerCasePlayerName === 'organisateur') {
-            return 'Pseudo interdit';
-        }
-        if (lowerCasePlayerName.trim() === '') {
-            return "Pseudo vide n'est pas permis";
-        }
-        if (game.bannedNames.includes(lowerCasePlayerName)) {
-            return 'Ce nom est banni';
-        }
-        return '';
     }
 
     async updatePlayer(pin: string, player: Player): Promise<HistogramData> {
@@ -153,6 +115,44 @@ export class GameService {
         }
 
         await this.updateGame(game);
+    }
+
+    private generatePin(games: Game[]) {
+        let pin = '';
+        do {
+            pin = Math.floor(Math.random() * GAME_ID_MAX)
+                .toString()
+                .padStart(GAME_ID_LENGTH, '0');
+        } while (games.some((game) => game.pin === pin));
+
+        return pin;
+    }
+
+    private validatePin(pin: string, game: Game) {
+        if (!game || game.pin !== pin) {
+            return 'Le NIP est invalide';
+        }
+        if (game.locked) {
+            return 'La partie est verrouillée';
+        }
+        return '';
+    }
+
+    private validatePlayerName(playerName: string, game: Game) {
+        const lowerCasePlayerName = playerName.toLocaleLowerCase();
+        if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
+            return 'Ce nom est déjà utilisé';
+        }
+        if (lowerCasePlayerName === 'organisateur') {
+            return 'Pseudo interdit';
+        }
+        if (lowerCasePlayerName.trim() === '') {
+            return "Pseudo vide n'est pas permis";
+        }
+        if (game.bannedNames.includes(lowerCasePlayerName)) {
+            return 'Ce nom est banni';
+        }
+        return '';
     }
 
     private findFirstCorrectAndUniquePlayer(
