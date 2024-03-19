@@ -24,7 +24,6 @@ import { WaitingRoomInfoComponent } from './components/waiting-room-info/waiting
 import { AdminLoginPageComponent } from './pages/admin-login-page/admin-login-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-page.component';
-import { EndgameResultPageComponent } from './pages/endgame-result-page/endgame-result-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
 import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
@@ -32,6 +31,7 @@ import { PlayerGamePageComponent } from './pages/player-game-page/player-game-pa
 import { TestPageComponent } from './pages/test-page/test-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 import { ChatService } from './services/chat.service';
+import { EndgameResultPageComponent } from './pages/endgame-result-page/endgame-result-page.component';
 
 /**
  * Main module that is used in main.ts.
