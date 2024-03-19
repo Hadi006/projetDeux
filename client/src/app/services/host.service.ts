@@ -252,7 +252,6 @@ export class HostService {
 
             this.internalQuitters.push(player);
 
-            console.log(this.internalGame.players);
             if (this.internalGame.players.length === 0) {
                 this.internalGameEndedSubject.next();
             }

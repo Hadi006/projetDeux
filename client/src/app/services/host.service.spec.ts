@@ -99,12 +99,13 @@ describe('HostService', () => {
 
     it('should end game on playerLeft if no players left', () => {
         service.handleSockets();
+        emitSpy.and.stub();
+        service.startGame(0);
         let emitted = false;
         service.gameEndedSubject.subscribe(() => {
             emitted = true;
         });
         socketHelper.peerSideEmit('player-left', { players: [], player: testGame.players[0] });
-        service.gameEndedSubject.next();
         expect(emitted).toBeTrue();
     });
 
