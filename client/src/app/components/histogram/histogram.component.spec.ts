@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Chart } from 'chart.js';
+import { Chart, ChartData } from 'chart.js';
 
 import { HistogramComponent } from './histogram.component';
 
 describe('HistogramComponent', () => {
     let component: HistogramComponent;
     let fixture: ComponentFixture<HistogramComponent>;
+    let chartData: ChartData;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
@@ -16,6 +17,16 @@ describe('HistogramComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(HistogramComponent);
         component = fixture.componentInstance;
+        chartData = {
+            labels: [''],
+            datasets: [
+                {
+                    label: 'Different label',
+                    data: [0],
+                },
+            ],
+        };
+        component.chartData = chartData;
         fixture.detectChanges();
     });
 
@@ -29,17 +40,7 @@ describe('HistogramComponent', () => {
             fail('Chart is not defined');
             return;
         }
-        const chartData = {
-            labels: [''],
-            datasets: [
-                {
-                    label: '',
-                    data: [0],
-                },
-            ],
-        };
         spyOn(component.chart, 'update');
-        component.chartData = chartData;
         component.ngOnChanges();
         expect(component.chart.data.datasets[0].data).toEqual(chartData.datasets[0].data);
         expect(component.chart.update).toHaveBeenCalled();
@@ -50,17 +51,7 @@ describe('HistogramComponent', () => {
             fail('Chart is not defined');
             return;
         }
-        const chartData = {
-            labels: [''],
-            datasets: [
-                {
-                    label: 'Different label',
-                    data: [0],
-                },
-            ],
-        };
         spyOn(component.chart, 'update');
-        component.chartData = chartData;
         component.ngOnChanges();
         expect(component.chart.data).toEqual(chartData);
         expect(component.chart.update).toHaveBeenCalled();
