@@ -33,7 +33,6 @@ Temps restant: {{ playerService.getTime() }}
         </div>
 
         <div class="button-container">
-            <button class="button-quit" (click)="leaveGame()">Quitter</button>
             <button class="button-confirm" [disabled]="this.playerService.answerConfirmed"
                 (click)="playerService.confirmPlayerAnswer()">
                 Confirmer
