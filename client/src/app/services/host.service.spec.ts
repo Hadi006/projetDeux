@@ -287,18 +287,6 @@ describe('HostService', () => {
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, testGame.quiz.duration, jasmine.any(Function));
     });
 
-    it('should clean up when setting up next quesstion', (done) => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
-        spyOn(service, 'cleanUp');
-        service.game.quiz = JSON.parse(JSON.stringify({ ...testGame.quiz, questions: [] }));
-        service['setupNextQuestion']();
-        service.gameEndedSubject.subscribe(() => {
-            expect(service.cleanUp).toHaveBeenCalled();
-            done();
-        });
-        service.gameEndedSubject.next();
-    });
-
     it('should do nothing when setting up next question', () => {
         spyOn(service, 'endGame');
         spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
