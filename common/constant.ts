@@ -69,13 +69,6 @@ export const BLANK_QUESTION = {
     ],
 };
 
-export const NEW_PLAYER: Player = {
-    name: '',
-    score: 0,
-    questions: [],
-    fastestResponseCount: 0,
-};
-
 export const NEW_HISTOGRAM_DATA: HistogramData = {
     labels: [],
     datasets: [
@@ -84,15 +77,6 @@ export const NEW_HISTOGRAM_DATA: HistogramData = {
             data: [],
         },
     ],
-};
-
-export const NEW_GAME: Game = {
-    pin: '',
-    hostId: '',
-    players: [],
-    locked: false,
-    bannedNames: [],
-    histograms: [], // ne change pas !, sinon va introduire des bugs
 };
 
 export const GAME_ID_MAX = 10000;

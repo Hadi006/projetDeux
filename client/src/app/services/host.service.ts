@@ -34,42 +34,42 @@ export class HostService {
         this.timerId = timeService.createTimerById();
     }
 
-    get game() {
+    get game(): Game {
         return this.internalGame;
     }
 
-    get nAnswered() {
+    get nAnswered(): number {
         return this.internalNAnswered;
     }
 
-    get questionEnded() {
+    get questionEnded(): boolean {
         return this.internalQuestionEnded;
     }
-    get questionEndedSubject() {
+    get questionEndedSubject(): Subject<void> {
         return this.internalQuestionEndedSubject;
     }
 
-    get gameEndedSubject() {
+    get gameEndedSubject(): Subject<void> {
         return this.internalGameEndedSubject;
     }
 
-    get quitters() {
+    get quitters(): Player[] {
         return this.internalQuitters;
     }
 
-    get histograms() {
+    get histograms(): HistogramData[] {
         return this.internalHistograms;
     }
 
-    getTime() {
+    getTime(): number {
         return this.timeService.getTimeById(this.timerId);
     }
 
     getCurrentQuestion(): Question | undefined {
-        return this.internalGame.quiz?.questions[this.currentQuestionIndex];
+        return this.internalGame.quiz.questions[this.currentQuestionIndex];
     }
 
-    handleSockets() {
+    handleSockets(): void {
         if (!this.webSocketService.isSocketAlive()) {
             this.webSocketService.connect();
         }
@@ -84,28 +84,28 @@ export class HostService {
         return this.emitCreateGame(quiz);
     }
 
-    leaveGame() {
+    leaveGame(): void {
         this.cleanUp();
         this.router.navigate(['/']);
     }
 
-    toggleLock() {
+    toggleLock(): void {
         this.internalGame.locked = !this.internalGame.locked;
         this.emitToggleLock();
     }
 
-    kick(playerName: string) {
+    kick(playerName: string): void {
         this.emitKick(playerName);
     }
 
-    startGame(countdown: number) {
+    startGame(countdown: number): void {
         this.emitStartGame(countdown);
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }
 
-    nextQuestion() {
+    nextQuestion(): void {
         this.internalQuestionEnded = false;
         const newHistogram: HistogramData = {
             labels: this.getCurrentQuestion()?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
@@ -122,18 +122,18 @@ export class HostService {
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
-    endGame() {
+    endGame(): void {
         this.emitEndGame();
     }
 
-    cleanUp() {
+    cleanUp(): void {
         this.emitDeleteGame();
         this.internalHistograms = [];
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
     }
 
-    private endQuestion() {
+    private endQuestion(): void {
         this.emitEndQuestion();
         this.emitUpdateScores();
         this.emitAnswer();
@@ -142,7 +142,7 @@ export class HostService {
         this.currentQuestionIndex++;
     }
 
-    private emitToggleLock() {
+    private emitToggleLock(): void {
         this.webSocketService.emit<RoomData<boolean>>('toggle-lock', {
             pin: this.internalGame.pin,
             data: this.internalGame.locked,
@@ -169,33 +169,38 @@ export class HostService {
         this.webSocketService.emit<string>('delete-game', this.internalGame.pin);
     }
 
-    private emitKick(playerName: string) {
+    private emitKick(playerName: string): void {
         this.webSocketService.emit<RoomData<string>>('kick', { pin: this.internalGame.pin, data: playerName });
     }
 
-    private emitStartGame(countdown: number) {
+    private emitStartGame(countdown: number): void {
         this.webSocketService.emit<RoomData<number>>('start-game', {
             pin: this.internalGame.pin,
             data: countdown,
         });
     }
 
-    private emitNextQuestion() {
+    private emitNextQuestion(): void {
+        const currentQuestion = this.getCurrentQuestion();
+        if (!currentQuestion) {
+            return;
+        }
+
         this.webSocketService.emit<RoomData<NextQuestionEventData>>('next-question', {
             pin: this.internalGame.pin,
             data: {
-                question: this.getCurrentQuestion(),
-                countdown: this.internalGame.quiz?.duration || 0,
+                question: currentQuestion,
+                countdown: this.internalGame.quiz.duration,
                 histogram: this.internalHistograms[this.internalHistograms.length - 1],
             },
         });
     }
 
-    private emitEndQuestion() {
+    private emitEndQuestion(): void {
         this.webSocketService.emit<string>('end-question', this.internalGame.pin);
     }
 
-    private emitUpdateScores() {
+    private emitUpdateScores(): void {
         this.webSocketService.emit<RoomData<number>>(
             'update-scores',
             {
@@ -208,27 +213,32 @@ export class HostService {
         );
     }
 
-    private emitAnswer() {
+    private emitAnswer(): void {
+        const currentAnswer = this.getCurrentAnswer();
+        if (!currentAnswer) {
+            return;
+        }
+
         this.webSocketService.emit<RoomData<Answer[]>>('answer', {
             pin: this.internalGame.pin,
-            data: this.getCurrentAnswer(),
+            data: currentAnswer,
         });
     }
 
-    private emitEndGame() {
+    private emitEndGame(): void {
         this.webSocketService.emit<string>('end-game', this.internalGame.pin, (game: unknown) => {
             this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
             this.cleanUp();
         });
     }
 
-    private onPlayerJoined() {
+    private onPlayerJoined(): void {
         this.webSocketService.onEvent<Player>('player-joined', (player) => {
             this.internalGame.players.push(player);
         });
     }
 
-    private onPlayerLeft() {
+    private onPlayerLeft(): void {
         this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
             const { players, player } = data;
             this.internalGame.players = players;
@@ -246,7 +256,7 @@ export class HostService {
         });
     }
 
-    private onConfirmPlayerAnswer() {
+    private onConfirmPlayerAnswer(): void {
         this.webSocketService.onEvent<void>('confirm-player-answer', () => {
             if (++this.internalNAnswered >= this.internalGame.players.length) {
                 this.timeService.setTimeById(this.timerId, 0);
@@ -255,21 +265,17 @@ export class HostService {
         });
     }
 
-    private onPlayerUpdated() {
+    private onPlayerUpdated(): void {
         this.webSocketService.onEvent('player-updated', (histogramdData: HistogramData) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramdData;
         });
     }
 
-    private getCurrentAnswer(): Answer[] {
-        return this.getCurrentQuestion()?.choices.filter((answer) => answer.isCorrect) || [];
+    private getCurrentAnswer(): Answer[] | undefined {
+        return this.getCurrentQuestion()?.choices.filter((answer) => answer.isCorrect);
     }
 
-    private setupNextQuestion() {
-        if (!this.internalGame.quiz) {
-            return;
-        }
-
+    private setupNextQuestion(): void {
         if (!this.getCurrentQuestion()) {
             this.cleanUp();
             this.internalGameEndedSubject.next();
@@ -277,6 +283,6 @@ export class HostService {
         }
 
         this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, this.internalGame.quiz?.duration, this.endQuestion.bind(this));
+        this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
     }
 }

@@ -119,7 +119,7 @@ export class GameController {
     private onNextQuestion(socket: Socket): void {
         socket.on('next-question', async (roomData: RoomData<NextQuestionEventData>) => {
             const blankQuestion: Question = roomData.data.question;
-            blankQuestion?.choices.forEach((choice) => {
+            blankQuestion.choices.forEach((choice) => {
                 choice.isCorrect = false;
             });
             const game = await this.gameService.getGame(roomData.pin);

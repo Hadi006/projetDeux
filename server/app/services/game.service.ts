@@ -95,7 +95,7 @@ export class GameService {
             return;
         }
 
-        const question = game.quiz?.questions[questionIndex];
+        const question = game.quiz.questions[questionIndex];
         if (!question) {
             return;
         }

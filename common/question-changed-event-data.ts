@@ -1,4 +1,4 @@
-import { Question } from '@common/question';
+import { Question } from '@common/quiz';
 
 export interface QuestionChangedEventData {
     question: Question;
