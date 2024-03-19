@@ -1,5 +1,6 @@
 import { GameService } from '@app/services/game.service';
-import { HistogramData } from '@common/histogram-data';
+import { JoinGameResult } from '@common/join-game-result';
+import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
@@ -68,10 +69,7 @@ export class GameController {
         socket.on('join-game', async (roomData: RoomData<string>, callback) => {
             const pin = roomData.pin;
 
-            const result: { player: Player; players: string[]; gameTitle: string; error: string } = await this.gameService.addPlayer(
-                pin,
-                roomData.data,
-            );
+            const result: JoinGameResult = await this.gameService.addPlayer(pin, roomData.data);
 
             if (!result.error) {
                 socket.join(pin);
@@ -113,11 +111,12 @@ export class GameController {
             const playerName = roomData.data;
 
             const game = await this.gameService.getGame(pin);
-            game.players = game.players.filter((player) => player.name !== playerName);
+            const player = game.players.find((p) => p.name === playerName);
+            game.players = game.players.filter((p) => p.name !== playerName);
             game.bannedNames.push(playerName.toLocaleLowerCase());
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('kicked', playerName);
-            this.sio.to(pin).emit('player-left', game.players);
+            this.sio.to(pin).emit('player-left', { players: game.players, player });
         });
     }
 
@@ -128,9 +127,9 @@ export class GameController {
     }
 
     private onNextQuestion(socket: Socket): void {
-        socket.on('next-question', async (roomData: RoomData<{ question: Question; countdown: number; histogram: HistogramData }>) => {
+        socket.on('next-question', async (roomData: RoomData<NextQuestionEventData>) => {
             const blankQuestion: Question = roomData.data.question;
-            blankQuestion?.choices.forEach((choice) => {
+            blankQuestion.choices.forEach((choice) => {
                 choice.isCorrect = false;
             });
             const game = await this.gameService.getGame(roomData.pin);
@@ -140,7 +139,7 @@ export class GameController {
             game.histograms.push(roomData.data.histogram);
             await this.gameService.updateGame(game);
 
-            this.sio.to(roomData.pin).emit('next-question', { question: blankQuestion, countdown: roomData.data.countdown });
+            this.sio.to(roomData.pin).emit('question-changed', { question: blankQuestion, countdown: roomData.data.countdown });
         });
     }
 
@@ -190,7 +189,6 @@ export class GameController {
 
     private onEndGame(socket: Socket): void {
         socket.on('end-game', async (pin: string, callback) => {
-            console.log('end-game', typeof callback);
             const game = await this.gameService.getGame(pin);
             this.sio.to(pin).emit('game-ended', game);
             callback(game);

@@ -1,8 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
+import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host.service';
+import { WebSocketService } from '@app/services/web-socket.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
-import { Game } from '@common/game';
 import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
@@ -12,6 +15,7 @@ describe('HostGamePageComponent', () => {
     let fixture: ComponentFixture<HostGamePageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
+    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', [
@@ -21,6 +25,7 @@ describe('HostGamePageComponent', () => {
             'nextQuestion',
             'getGame',
             'leaveGame',
+            'endGame',
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
@@ -28,7 +33,7 @@ describe('HostGamePageComponent', () => {
             },
             configurable: true,
         });
-        const gameEndedSubject = new Subject<Game>();
+        const gameEndedSubject = new Subject<void>();
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', {
             get: () => {
                 return gameEndedSubject;
@@ -43,14 +48,16 @@ describe('HostGamePageComponent', () => {
         });
 
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [HostGamePageComponent],
+            declarations: [HostGamePageComponent, GameCountDownComponent, HistogramComponent, ChatboxComponent],
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
+                { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
     }));
@@ -71,7 +78,7 @@ describe('HostGamePageComponent', () => {
             expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
             done();
         });
-        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
+        hostServiceSpy.gameEndedSubject.next();
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
@@ -109,6 +116,11 @@ describe('HostGamePageComponent', () => {
         expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
     });
 
+    it('showEndGameResult should end game', () => {
+        component.showEndGameResult();
+        expect(hostServiceSpy.endGame).toHaveBeenCalled();
+    });
+
     it('getPlayers should return the players from the hostService', () => {
         const players = TEST_GAME_DATA.players;
         expect(component.getPlayers()).toEqual(players);
@@ -135,6 +147,6 @@ describe('HostGamePageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
             expect(hostServiceSpy.leaveGame).not.toHaveBeenCalled();
         });
-        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
+        hostServiceSpy.gameEndedSubject.next();
     });
 });

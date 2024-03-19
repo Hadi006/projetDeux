@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
 import { HostService } from '@app/services/host.service';
 import { PlayerService } from '@app/services/player.service';
+import { WebSocketService } from '@app/services/web-socket.service';
 import { TEST_GAME_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { Subject, of } from 'rxjs';
@@ -16,6 +18,7 @@ describe('TestPageComponent', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
@@ -31,15 +34,17 @@ describe('TestPageComponent', () => {
         Object.defineProperty(hostServiceSpy, 'game', { get: () => testGame, configurable: true });
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [TestPageComponent, QuestionComponent],
+            declarations: [TestPageComponent, QuestionComponent, ChatboxComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
     }));
@@ -65,17 +70,11 @@ describe('TestPageComponent', () => {
 
     it('should navigate to game page on game ended', (done) => {
         hostServiceSpy.gameEndedSubject.subscribe(() => {
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/home/create-game']);
             done();
         });
 
-        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
-    });
-
-    it('ngOnInit should navigate to game page if there is no quiz', () => {
-        hostServiceSpy.game.quiz = undefined;
-        component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
+        hostServiceSpy.gameEndedSubject.next();
     });
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
@@ -92,7 +91,7 @@ describe('TestPageComponent', () => {
         expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
         expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
         hostServiceSpy.questionEndedSubject.next();
-        hostServiceSpy.gameEndedSubject.next(TEST_GAME_DATA);
+        hostServiceSpy.gameEndedSubject.next();
         expect(hostServiceSpy.nextQuestion).not.toHaveBeenCalledTimes(2);
         expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
     });

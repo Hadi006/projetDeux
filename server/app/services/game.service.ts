@@ -1,6 +1,7 @@
-import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_GAME, NEW_HISTOGRAM_DATA, NEW_PLAYER } from '@common/constant';
+import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
+import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
@@ -18,26 +19,12 @@ export class GameService {
         return (await this.database.get<Game>('games', { pin }))[0];
     }
 
-    async createGame(quiz: Quiz, hostId: string): Promise<Game | undefined> {
-        let pin: string;
-
+    async createGame(quiz: Quiz, hostId: string): Promise<Game | void> {
         const games = await this.getGames();
-
         if (games.length >= GAME_ID_MAX) {
-            return undefined;
+            return;
         }
-
-        do {
-            pin = Math.floor(Math.random() * GAME_ID_MAX)
-                .toString()
-                .padStart(GAME_ID_LENGTH, '0');
-        } while (games.some((game) => game.pin === pin));
-
-        const newGame: Game = { ...NEW_GAME, pin, quiz };
-        newGame.hostId = hostId;
-
-        await this.database.add('games', newGame);
-        return newGame;
+        return await this.database.add('games', new Game(this.generatePin(games), hostId, quiz));
     }
 
     async updateGame(game: Game): Promise<boolean> {
@@ -59,39 +46,18 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(pin: string, playerName: string): Promise<{ player: Player; players: string[]; gameTitle: string; error: string }> {
+    async addPlayer(pin: string, playerName: string): Promise<JoinGameResult> {
         const game = await this.getGame(pin);
-        const player: Player = { ...NEW_PLAYER, name: playerName };
-        const lowerCasePlayerName = playerName.toLocaleLowerCase();
-
-        if (!game || game.pin !== pin) {
-            return { player, players: [], gameTitle: '', error: 'Le NIP est invalide' };
-        }
-
-        if (game.locked) {
-            return { player, players: [], gameTitle: '', error: 'La partie est verrouillée' };
-        }
-
-        if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
-            return { player, players: [], gameTitle: '', error: 'Ce nom est déjà utilisé' };
-        }
-
-        if (lowerCasePlayerName === 'organisateur') {
-            return { player, players: [], gameTitle: '', error: 'Pseudo interdit' };
-        }
-
-        if (lowerCasePlayerName.trim() === '') {
-            return { player, players: [], gameTitle: '', error: "Pseudo vide n'est pas permis" };
-        }
-
-        if (game.bannedNames.includes(lowerCasePlayerName)) {
-            return { player, players: [], gameTitle: '', error: 'Ce nom est banni' };
+        const player: Player = new Player(playerName);
+        const error = this.validatePin(pin, game) || this.validatePlayerName(playerName, game);
+        if (error) {
+            return new JoinGameResult(error, player);
         }
 
         game.players.push(player);
         await this.updateGame(game);
 
-        return { player, players: game.players.map((p) => p.name), gameTitle: game.quiz.title, error: '' };
+        return new JoinGameResult(error, player, game);
     }
 
     async updatePlayer(pin: string, player: Player): Promise<HistogramData> {
@@ -129,7 +95,7 @@ export class GameService {
             return;
         }
 
-        const question = game.quiz?.questions[questionIndex];
+        const question = game.quiz.questions[questionIndex];
         if (!question) {
             return;
         }
@@ -149,6 +115,44 @@ export class GameService {
         }
 
         await this.updateGame(game);
+    }
+
+    private generatePin(games: Game[]) {
+        let pin = '';
+        do {
+            pin = Math.floor(Math.random() * GAME_ID_MAX)
+                .toString()
+                .padStart(GAME_ID_LENGTH, '0');
+        } while (games.some((game) => game.pin === pin));
+
+        return pin;
+    }
+
+    private validatePin(pin: string, game: Game) {
+        if (!game || game.pin !== pin) {
+            return 'Le NIP est invalide';
+        }
+        if (game.locked) {
+            return 'La partie est verrouillée';
+        }
+        return '';
+    }
+
+    private validatePlayerName(playerName: string, game: Game) {
+        const lowerCasePlayerName = playerName.toLocaleLowerCase();
+        if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
+            return 'Ce nom est déjà utilisé';
+        }
+        if (lowerCasePlayerName === 'organisateur') {
+            return 'Pseudo interdit';
+        }
+        if (lowerCasePlayerName.trim() === '') {
+            return "Pseudo vide n'est pas permis";
+        }
+        if (game.bannedNames.includes(lowerCasePlayerName)) {
+            return 'Ce nom est banni';
+        }
+        return '';
     }
 
     private findFirstCorrectAndUniquePlayer(

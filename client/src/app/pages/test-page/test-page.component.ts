@@ -22,15 +22,11 @@ export class TestPageComponent implements OnInit, OnDestroy {
             this.hostService.nextQuestion();
         });
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
-            this.router.navigate(['game']);
+            this.router.navigate(['/home/create-game']);
         });
     }
 
     ngOnInit(): void {
-        if (!this.hostService.game.quiz) {
-            this.router.navigate(['game']);
-        }
-
         this.playerService.handleSockets();
         this.playerService.joinGame(this.hostService.game.pin, 'Test').subscribe(() => {
             this.hostService.startGame(0);

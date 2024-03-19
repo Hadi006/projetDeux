@@ -69,13 +69,6 @@ export const BLANK_QUESTION = {
     ],
 };
 
-export const NEW_PLAYER: Player = {
-    name: '',
-    score: 0,
-    questions: [],
-    fastestResponseCount: 0,
-};
-
 export const NEW_HISTOGRAM_DATA: HistogramData = {
     labels: [],
     datasets: [
@@ -86,15 +79,6 @@ export const NEW_HISTOGRAM_DATA: HistogramData = {
     ],
 };
 
-export const NEW_GAME: Game = {
-    pin: '',
-    hostId: '',
-    players: [],
-    locked: false,
-    bannedNames: [],
-    histograms: [], // ne change pas !, sinon va introduire des bugs
-};
-
 export const GAME_ID_MAX = 10000;
 
 export const GAME_ID_LENGTH = 4;
@@ -102,8 +86,6 @@ export const GAME_ID_LENGTH = 4;
 export const START_GAME_COUNTDOWN = 5;
 
 export const TRANSITION_DELAY = 3;
-
-export const INITIAL_QUESTION_INDEX = -1;
 
 export const ANSWER_TIME_BUFFER = 1000;
 
