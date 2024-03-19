@@ -41,7 +41,7 @@ describe('QuestionValidator', () => {
 
     it('should check if the question is an object and fail', () => {
         questionValidator = new QuestionValidator('This is a test question');
-        const compiledQuestion = questionValidator.compile();
+        const compiledQuestion = questionValidator.validate();
         expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('Question : doit être un objet !\n');
     });
@@ -64,7 +64,7 @@ describe('QuestionValidator', () => {
     it('should check if the question has a text and fail if it is not an object', () => {
         questionValidator = new QuestionValidator('This is a test question');
         questionValidator.checkText();
-        const compiledQuestion = questionValidator.compile();
+        const compiledQuestion = questionValidator.validate();
         expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('Question : doit être un objet !\n');
     });
@@ -87,7 +87,7 @@ describe('QuestionValidator', () => {
     it('should check if the question has a type and fail if it is not an object', () => {
         questionValidator = new QuestionValidator('This is a test question');
         questionValidator.checkType();
-        const compiledQuestion = questionValidator.compile();
+        const compiledQuestion = questionValidator.validate();
         expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('Question : doit être un objet !\n');
     });
@@ -118,7 +118,7 @@ describe('QuestionValidator', () => {
     it('should check if the question has points and fail if it is not an object', () => {
         questionValidator = new QuestionValidator('This is a test question');
         questionValidator.checkPoints();
-        const compiledQuestion = questionValidator.compile();
+        const compiledQuestion = questionValidator.validate();
         expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('Question : doit être un objet !\n');
     });
@@ -149,7 +149,7 @@ describe('QuestionValidator', () => {
     it('should check if the question has choices and fail if it is not an object', () => {
         questionValidator = new QuestionValidator('This is a test question');
         questionValidator.checkChoices();
-        const compiledQuestion = questionValidator.compile();
+        const compiledQuestion = questionValidator.validate();
         expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('Question : doit être un objet !\n');
     });
