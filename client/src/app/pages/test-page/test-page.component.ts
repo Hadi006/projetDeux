@@ -22,7 +22,7 @@ export class TestPageComponent implements OnInit, OnDestroy {
             this.hostService.nextQuestion();
         });
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
-            this.router.navigate(['game']);
+            this.router.navigate(['create-game']);
         });
     }
 
