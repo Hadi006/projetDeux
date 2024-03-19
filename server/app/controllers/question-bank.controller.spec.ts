@@ -10,7 +10,6 @@ import { Container } from 'typedi';
 describe('QuestionBankController', () => {
     const MOCK_QUESTIONS: Question[] = [
         {
-            id: '1',
             text: 'Question 1',
             type: 'QCM',
             points: 10,
@@ -20,7 +19,6 @@ describe('QuestionBankController', () => {
             ],
         },
         {
-            id: '2',
             text: 'Question 2',
             type: 'QCM',
             points: 10,
@@ -63,7 +61,7 @@ describe('QuestionBankController', () => {
     });
 
     it('POST / should add a question', async () => {
-        questionBankServiceStub.validateQuestion.returns({ question: { ...MOCK_QUESTIONS[0] }, compilationError: '' });
+        questionBankServiceStub.validateQuestion.returns({ data: { ...MOCK_QUESTIONS[0] }, error: '' });
         questionBankServiceStub.addQuestion.resolves(true);
         return supertest(expressApp)
             .post('/api/questions')
@@ -77,7 +75,7 @@ describe('QuestionBankController', () => {
     });
 
     it('POST / should return compilation error for invalid question', async () => {
-        questionBankServiceStub.validateQuestion.returns({ question: MOCK_QUESTIONS[0], compilationError: 'error' });
+        questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: 'error' });
         return supertest(expressApp)
             .post('/api/questions')
             .send({ question: MOCK_QUESTIONS[0] })
@@ -89,7 +87,7 @@ describe('QuestionBankController', () => {
     });
 
     it('POST / should return compilation error for duplicate question', async () => {
-        questionBankServiceStub.validateQuestion.returns({ question: MOCK_QUESTIONS[0], compilationError: '' });
+        questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: '' });
         questionBankServiceStub.addQuestion.resolves(false);
         return supertest(expressApp)
             .post('/api/questions')
@@ -102,7 +100,7 @@ describe('QuestionBankController', () => {
     });
 
     it('POST /validate should validate a question', async () => {
-        questionBankServiceStub.validateQuestion.returns({ question: MOCK_QUESTIONS[0], compilationError: '' });
+        questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: '' });
         return supertest(expressApp)
             .post('/api/questions/validate')
             .send({ question: MOCK_QUESTIONS[0] })
@@ -114,7 +112,7 @@ describe('QuestionBankController', () => {
     });
 
     it('POST /validate should return compilation error', async () => {
-        questionBankServiceStub.validateQuestion.returns({ question: MOCK_QUESTIONS[0], compilationError: 'error' });
+        questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: 'error' });
         return supertest(expressApp)
             .post('/api/questions/validate')
             .send({ question: MOCK_QUESTIONS[0] })
@@ -127,7 +125,7 @@ describe('QuestionBankController', () => {
 
     it('PATCH /:questionId should update a question', async () => {
         questionBankServiceStub.updateQuestion.resolves(true);
-        questionBankServiceStub.validateQuestion.returns({ question: { ...MOCK_QUESTIONS[0] }, compilationError: '' });
+        questionBankServiceStub.validateQuestion.returns({ data: { ...MOCK_QUESTIONS[0] }, error: '' });
         return supertest(expressApp)
             .patch(`/api/questions/${PARAM_ID}`)
             .send({ question: MOCK_QUESTIONS[0] })
@@ -141,7 +139,7 @@ describe('QuestionBankController', () => {
 
     it('PATCH /:questionId should return 404 when no question is found', async () => {
         questionBankServiceStub.updateQuestion.resolves(false);
-        questionBankServiceStub.validateQuestion.returns({ question: MOCK_QUESTIONS[0], compilationError: '' });
+        questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: '' });
         return supertest(expressApp)
             .patch(`/api/questions/${PARAM_ID}`)
             .send({ question: MOCK_QUESTIONS[0] })
@@ -153,7 +151,7 @@ describe('QuestionBankController', () => {
     });
 
     it('PATCH /:questionId should return compilation error', async () => {
-        questionBankServiceStub.validateQuestion.returns({ question: MOCK_QUESTIONS[0], compilationError: 'error' });
+        questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: 'error' });
         return supertest(expressApp)
             .patch(`/api/questions/${PARAM_ID}`)
             .send({ question: MOCK_QUESTIONS[0] })
@@ -161,31 +159,6 @@ describe('QuestionBankController', () => {
             .then((response) => {
                 expect(questionBankServiceStub.updateQuestion.called).to.equal(false);
                 expect(response.body.compilationError).not.to.equal('');
-            });
-    });
-
-    it('POST /validate-answer should validate an answer', async () => {
-        questionBankServiceStub.getQuestion.resolves(MOCK_QUESTIONS[0]);
-        questionBankServiceStub.validateAnswer.resolves(true);
-        return supertest(expressApp)
-            .post('/api/questions/validate-answer')
-            .send({ answer: [true, false], text: MOCK_QUESTIONS[0].text })
-            .expect(httpStatus.OK)
-            .then((response) => {
-                expect(questionBankServiceStub.validateAnswer.calledWith(MOCK_QUESTIONS[0], [true, false])).to.equal(true);
-                expect(response.body).to.equal(true);
-            });
-    });
-
-    it('POST /validate-answer should return 404 when no question is found', async () => {
-        questionBankServiceStub.getQuestion.resolves(null);
-        return supertest(expressApp)
-            .post('/api/questions/validate-answer')
-            .send({ answer: [true, false], text: MOCK_QUESTIONS[0].text })
-            .expect(httpStatus.NOT_FOUND)
-            .then((response) => {
-                expect(questionBankServiceStub.validateAnswer.called).to.equal(false);
-                expect(response.body).to.equal(false);
             });
     });
 

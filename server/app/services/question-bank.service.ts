@@ -8,14 +8,6 @@ import { Service } from 'typedi';
 export class QuestionBankService {
     constructor(private database: DatabaseService) {}
 
-    async getQuestions(): Promise<Question[]> {
-        return await this.database.get<Question>('questions');
-    }
-
-    private async getQuestion(text: string): Promise<Question> {
-        return (await this.database.get<Question>('questions', { text }))[0];
-    }
-
     validateQuestion(question: unknown): ValidationResult<Question> {
         return new QuestionValidator(question).validate();
     }
@@ -34,5 +26,12 @@ export class QuestionBankService {
 
     async deleteQuestion(questionText: string): Promise<boolean> {
         return await this.database.delete('questions', { text: questionText });
+    }
+    async getQuestions(): Promise<Question[]> {
+        return await this.database.get<Question>('questions');
+    }
+
+    private async getQuestion(text: string): Promise<Question> {
+        return (await this.database.get<Question>('questions', { text }))[0];
     }
 }
