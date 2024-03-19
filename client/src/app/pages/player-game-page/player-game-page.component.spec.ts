@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { PlayerService } from '@app/services/player.service';
@@ -29,7 +28,7 @@ describe('PlayerGamePageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [PlayerGamePageComponent, GameCountDownComponent, QuestionComponent, ChatboxComponent],
+            declarations: [PlayerGamePageComponent, GameCountDownComponent, QuestionComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },

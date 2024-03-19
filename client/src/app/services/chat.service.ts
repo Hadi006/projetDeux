@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@app/interfaces/chat-message';
+import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { Subject } from 'rxjs';
 import { HostService } from './host.service';
 import { PlayerService } from './player.service';
@@ -30,7 +31,6 @@ export class ChatService {
         return this.messagesSubject;
     }
 
-    // eslint-disable-next-line no-dupe-class-members
     get participantName(): string {
         return this.internalParticipantName;
     }
@@ -43,7 +43,6 @@ export class ChatService {
         const newChatMessage: ChatMessage = {
             text: newMessage,
             timestamp: new Date(),
-            // eslint-disable-next-line object-shorthand
             author: this.participantName,
             roomId: this.playerService.pin || this.hostService.game.pin,
         };
@@ -58,6 +57,6 @@ export class ChatService {
     }
 
     private validateMessage(message: string): boolean {
-        return message.trim() !== '';
+        return message.trim() !== '' && message.trim().length <= MAX_MESSAGE_LENGTH;
     }
 }

@@ -1,13 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { Router } from '@angular/router';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
-import { Router } from '@angular/router';
-import { PlayerService } from '@app/services/player.service';
 import { HostService } from '@app/services/host.service';
-import { Game } from '@common/game';
-import { of, Subject } from 'rxjs';
+import { PlayerService } from '@app/services/player.service';
 import { TEST_GAME_DATA } from '@common/constant';
+import { Game } from '@common/game';
+import { Subject, of } from 'rxjs';
 
 describe('TestPageComponent', () => {
     let testGame: Game;
@@ -36,7 +35,7 @@ describe('TestPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [TestPageComponent, QuestionComponent, ChatboxComponent],
+            declarations: [TestPageComponent, QuestionComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },

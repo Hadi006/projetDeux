@@ -8,7 +8,6 @@ import { TEST_GAME_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { Subject } from 'rxjs';
 
-import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';
 
 describe('WaitingRoomPlayerPageComponent', () => {
@@ -44,7 +43,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [WaitingRoomPlayerPageComponent, WaitingRoomInfoComponent, ChatboxComponent],
+            declarations: [WaitingRoomPlayerPageComponent, WaitingRoomInfoComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: Router, useValue: routerSpy },

@@ -44,6 +44,10 @@ describe('ChatboxComponent', () => {
         expect(chatServiceSpy.sendMessage).toHaveBeenCalled();
     });
 
+    it('should return participant name from chat service', () => {
+        expect(component.participantName).toBe(chatServiceSpy.participantName);
+    });
+
     it('should reset newMessage to an empty string after sendMessage is called', () => {
         component.newMessage = 'test message';
         component.sendMessage();

@@ -5,7 +5,6 @@ import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { Subject } from 'rxjs';
 
-import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { HostGamePageComponent } from './host-game-page.component';
 
 describe('HostGamePageComponent', () => {
@@ -48,7 +47,7 @@ describe('HostGamePageComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [HostGamePageComponent, ChatboxComponent],
+            declarations: [HostGamePageComponent],
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },

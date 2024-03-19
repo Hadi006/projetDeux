@@ -34,6 +34,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     get participantName() {
         return this.chatService.participantName;
     }
+
     toggleChat() {
         this.showChat = !this.showChat;
     }
