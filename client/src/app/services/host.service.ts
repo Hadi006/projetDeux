@@ -100,6 +100,7 @@ export class HostService {
 
     startGame(countdown: number): void {
         this.emitStartGame(countdown);
+        this.internalQuitters = [];
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
@@ -242,10 +243,6 @@ export class HostService {
         this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
             const { players, player } = data;
             this.internalGame.players = players;
-
-            if (this.currentQuestionIndex === 0) {
-                return;
-            }
 
             this.internalQuitters.push(player);
 
