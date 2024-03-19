@@ -62,6 +62,19 @@ describe('PlayerGamePageComponent', () => {
         expect(component.isCountingDown).toBeFalse();
     });
 
+    it('leaveGame should call leaveGame method from PlayerService', () => {
+        component.leaveGame();
+        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
+    });
+
+    it('get players should return players from PlayerService', () => {
+        const player1 = { id: 1, name: 'Player 1' };
+        const player2 = { id: 2, name: 'Player 2' };
+        const testPlayers = [player1, player2];
+        spyOnProperty(playerServiceSpy, 'players', 'get').and.returnValue(testPlayers.map((player) => player.name));
+        expect(component.players).toEqual(['Player 1', 'Player 2']);
+    });
+
     it('gameTitle should return the gameTitle from the playerService', () => {
         Object.defineProperty(playerServiceSpy, 'gameTitle', {
             get: () => {
