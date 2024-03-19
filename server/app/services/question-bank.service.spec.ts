@@ -32,11 +32,11 @@ describe('QuestionBankService', () => {
 
     it('should validate a question', () => {
         const result = questionBankService.validateQuestion(MOCK_QUESTION);
-        expect(result).to.deep.equal({ question: MOCK_QUESTION, compilationError: '' });
+        expect(result).to.deep.equal({ data: MOCK_QUESTION, error: '' });
     });
 
     it('should invalidate a question', () => {
-        const result = questionBankService.validateQuestion({ id: '1' });
+        const result = questionBankService.validateQuestion({ text: '1' });
         expect(result.error).to.not.equal('');
     });
 
@@ -62,14 +62,14 @@ describe('QuestionBankService', () => {
     it('should delete a question', async () => {
         databaseServiceStub.delete.resolves(true);
         const result = await questionBankService.deleteQuestion('1');
-        expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
+        expect(databaseServiceStub.delete.calledWith('questions', { text: '1' })).to.equal(true);
         expect(result).to.equal(true);
     });
 
     it('should not delete a question', async () => {
         databaseServiceStub.delete.resolves(false);
         const result = await questionBankService.deleteQuestion('1');
-        expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
+        expect(databaseServiceStub.delete.calledWith('questions', { text: '1' })).to.equal(true);
         expect(result).to.equal(false);
     });
 });
