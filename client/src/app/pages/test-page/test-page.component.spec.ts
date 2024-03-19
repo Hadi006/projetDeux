@@ -66,7 +66,7 @@ describe('TestPageComponent', () => {
 
     it('should navigate to game page on game ended', (done) => {
         hostServiceSpy.gameEndedSubject.subscribe(() => {
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/home/create-game']);
             done();
         });
 
