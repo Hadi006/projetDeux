@@ -278,7 +278,6 @@ export class HostService {
 
     private setupNextQuestion(): void {
         if (!this.getCurrentQuestion()) {
-            this.internalGameEndedSubject.next();
             return;
         }
 
