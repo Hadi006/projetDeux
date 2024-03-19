@@ -9,6 +9,7 @@ import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
 import { QuestionChangedEventData } from '@common/question-changed-event-data';
+import { JoinGameResult } from '@common/join-game-result';
 
 @Injectable({
     providedIn: 'root',
@@ -72,7 +73,7 @@ export class PlayerService {
         return this.getPlayerAnswers().map((answer) => answer.isCorrect);
     }
 
-    handleSockets() {
+    handleSockets(): void {
         if (!this.webSocketService.isSocketAlive()) {
             this.webSocketService.connect();
         }
@@ -92,10 +93,10 @@ export class PlayerService {
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
             this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
-                const responseData = response as { player: Player; players: string[]; gameTitle: string; error: string };
+                const responseData = response as JoinGameResult;
                 if (!responseData.error) {
                     this.player = responseData.player;
-                    this.internalPlayers = responseData.players;
+                    this.internalPlayers = responseData.otherPlayers;
                     this.internalGameTitle = responseData.gameTitle;
                     this.internalPin = pin;
                 }
@@ -141,32 +142,32 @@ export class PlayerService {
         this.timeService.stopTimerById(this.timerId);
     }
 
-    private emitLeaveGame() {
+    private emitLeaveGame(): void {
         this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
     }
 
-    private emitUpdatePlayer() {
+    private emitUpdatePlayer(): void {
         this.webSocketService.emit<RoomData<Player>>('update-player', { pin: this.internalPin, data: this.player });
     }
 
-    private emitConfirmPlayerAnswer() {
+    private emitConfirmPlayerAnswer(): void {
         this.webSocketService.emit<RoomData<Player>>('confirm-player-answer', { pin: this.internalPin, data: this.player });
     }
 
-    private onPlayerJoined() {
+    private onPlayerJoined(): void {
         this.webSocketService.onEvent<Player>('player-joined', (player) => {
             this.internalPlayers.push(player.name);
         });
     }
 
-    private onPlayerLeft() {
+    private onPlayerLeft(): void {
         this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
             const { players } = data;
             this.internalPlayers = players.map((player) => player.name);
         });
     }
 
-    private onKick() {
+    private onKick(): void {
         this.webSocketService.onEvent<string>('kicked', (playerName) => {
             if (playerName === this.player.name) {
                 this.router.navigate(['/']);
@@ -174,28 +175,28 @@ export class PlayerService {
         });
     }
 
-    private onStartGame() {
+    private onStartGame(): void {
         this.webSocketService.onEvent<number>('start-game', (countdown) => {
             this.startGameSubject.next();
             this.timeService.startTimerById(this.timerId, countdown);
         });
     }
 
-    private onEndQuestion() {
+    private onEndQuestion(): void {
         this.webSocketService.onEvent<void>('end-question', () => {
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
     }
 
-    private onNextQuestion() {
+    private onNextQuestion(): void {
         this.webSocketService.onEvent<QuestionChangedEventData>('question-changed', ({ question, countdown }) => {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });
     }
 
-    private onNewScore() {
+    private onNewScore(): void {
         this.webSocketService.onEvent<Player>('new-score', (player) => {
             if (player.name === this.player.name) {
                 if (player.score > this.player.score) {
@@ -206,20 +207,20 @@ export class PlayerService {
         });
     }
 
-    private onAnswer() {
+    private onAnswer(): void {
         this.webSocketService.onEvent<Answer[]>('answer', (answer) => {
             this.internalAnswer = answer;
         });
     }
 
-    private onGameEnded() {
+    private onGameEnded(): void {
         this.webSocketService.onEvent<Game>('game-ended', (game) => {
             this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
             this.cleanUp();
         });
     }
 
-    private onGameDeleted() {
+    private onGameDeleted(): void {
         this.webSocketService.onEvent<Game>('game-deleted', () => {
             this.leaveGame();
         });

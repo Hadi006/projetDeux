@@ -1,11 +1,11 @@
 import { GameService } from '@app/services/game.service';
+import { JoinGameResult } from '@common/join-game-result';
+import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Server as HTTPServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
-import { JoinGameEventData } from '@common/join-game-event-data';
-import { NextQuestionEventData } from '@common/next-question-event-data';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -59,7 +59,7 @@ export class GameController {
         socket.on('join-game', async (roomData: RoomData<string>, callback) => {
             const pin = roomData.pin;
 
-            const result: JoinGameEventData = await this.gameService.addPlayer(pin, roomData.data);
+            const result: JoinGameResult = await this.gameService.addPlayer(pin, roomData.data);
 
             if (!result.error) {
                 socket.join(pin);
@@ -119,7 +119,7 @@ export class GameController {
     private onNextQuestion(socket: Socket): void {
         socket.on('next-question', async (roomData: RoomData<NextQuestionEventData>) => {
             const blankQuestion: Question = roomData.data.question;
-            blankQuestion?.choices.forEach((choice) => {
+            blankQuestion.choices.forEach((choice) => {
                 choice.isCorrect = false;
             });
             const game = await this.gameService.getGame(roomData.pin);
