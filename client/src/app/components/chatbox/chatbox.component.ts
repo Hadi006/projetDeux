@@ -8,8 +8,6 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./chatbox.component.scss'],
 })
 export class ChatboxComponent implements OnInit, OnDestroy {
-    // @Input() participantName: string;
-
     showChat = false;
     newMessage = '';
     private messagesSubscription: Subscription;
@@ -20,6 +18,10 @@ export class ChatboxComponent implements OnInit, OnDestroy {
         private cdRef: ChangeDetectorRef,
     ) {}
 
+    get participantName() {
+        return this.chatService.participantName;
+    }
+
     ngOnInit() {
         this.messagesSubscription = this.chatService.messagesSubjectGetter.subscribe(() => {
             this.handleMessagesUpdate();
@@ -28,11 +30,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.messagesSubscription.unsubscribe();
-    }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get participantName() {
-        return this.chatService.participantName;
     }
 
     toggleChat() {

@@ -42,7 +42,6 @@ export class GameController {
             console.log(message);
             const roomPin = message.roomId;
             console.log(message.roomId);
-            // this.sio.emit('message-received', message);
             this.sio.to(roomPin).emit('message-received', message);
         });
     }

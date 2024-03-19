@@ -11,7 +11,6 @@ describe('ChatService', () => {
     let service: ChatService;
     let webSocketServiceSpy: jasmine.SpyObj<WebSocketService>;
     let socketTestHelper: SocketTestHelper;
-    // let playerService: PlayerService;
 
     beforeEach(() => {
         const webSocketServiceSpyObj = jasmine.createSpyObj('WebSocketService', ['emit', 'onEvent']);
@@ -47,12 +46,30 @@ describe('ChatService', () => {
             roomId: '12345',
         };
 
-        // Stub playerService.pin
         const playerServiceMock = { pin: '12345' };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (service as any)['playerService'] = playerServiceMock;
         service.sendMessage(message);
+        socketTestHelper.peerSideEmit('new-message', expectedMessage);
         expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('new-message', expectedMessage);
+    });
+
+    it('should add message to internalMessages when message-received event is received', () => {
+        const message: ChatMessage = {
+            text: 'Test message',
+            timestamp: new Date(),
+            author: 'TestPlayer',
+            roomId: '12345',
+        };
+        socketTestHelper.on('message-received', (receivedMessage: ChatMessage) => {
+            // Assert
+            expect(receivedMessage).toEqual(message);
+            service['internalMessages'].push(receivedMessage);
+            expect(service['internalMessages']).toContain(receivedMessage);
+            return {};
+        });
+        // service['setupSocket']();
+        socketTestHelper.peerSideEmit('message-received', message);
     });
 
     it('should return false for an empty message', () => {
