@@ -140,8 +140,8 @@ export class HostService {
         this.emitUpdateScores();
         this.emitAnswer();
         this.internalQuestionEnded = true;
-        this.internalQuestionEndedSubject.next();
         this.currentQuestionIndex++;
+        this.internalQuestionEndedSubject.next();
     }
 
     private emitToggleLock(): void {
