@@ -221,4 +221,12 @@ describe('QuizValidator', () => {
         expect(compiledQuiz.error).to.equal('Question : doit être un objet !\n');
         expect(compiledQuiz.data.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
+
+    it('should check visibility and fail', async () => {
+        quizValidator = new QuizValidator({ ...MOCK_QUIZ, visible: '' }, getDataStub);
+        quizValidator.checkVisibility();
+        const compiledQuiz = await quizValidator.compile();
+        expect(compiledQuiz.error).to.equal('');
+        expect(compiledQuiz.data.visible).to.equal(false);
+    });
 });
