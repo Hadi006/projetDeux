@@ -2,6 +2,7 @@ import { HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BLANK_QUESTION } from '@common/constant';
 import { Question } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { CommunicationService } from './communication.service';
 
@@ -29,17 +30,17 @@ export class QuestionBankService {
     }
 
     addQuestion(question: Question): Observable<string> {
-        return this.http.post<{ question: Question; compilationError: string }>('questions', { question }).pipe(
+        return this.http.post<ValidationResult<Question>>('questions', { question }).pipe(
             map((response) => {
                 if (!response.body) {
                     return 'Server error';
                 }
 
-                if (response.body.compilationError) {
-                    return response.body.compilationError;
+                if (response.body.error) {
+                    return response.body.error;
                 }
 
-                this.questions.push(response.body.question);
+                this.questions.push(response.body.data!);
                 this.questions$.next(this.questions);
 
                 return '';
@@ -48,18 +49,18 @@ export class QuestionBankService {
     }
 
     updateQuestion(question: Question): Observable<string> {
-        return this.http.patch<{ question: Question; compilationError: string }>(`questions/${question.text}`, { question }).pipe(
+        return this.http.patch<ValidationResult<Question>>(`questions/${question.text}`, { question }).pipe(
             map((response) => {
-                if (!response.body || !response.body.question || response.body.compilationError === undefined) {
+                if (!response.body || !response.body.data || response.body.error === undefined) {
                     return 'Server error';
                 }
 
-                if (response.body.compilationError) {
-                    return response.body.compilationError;
+                if (response.body.error) {
+                    return response.body.error;
                 }
 
                 const INDEX: number = this.questions.findIndex((q: Question) => q.text === question.text);
-                this.questions[INDEX] = response.body.question;
+                this.questions[INDEX] = response.body.data;
                 this.questions$.next(this.questions);
 
                 return '';
@@ -74,6 +75,7 @@ export class QuestionBankService {
         }
 
         this.http.delete<string>(`questions/${question.text}`).subscribe((response) => {
+            console.log(question)
             if (response.status === HttpStatusCode.Ok) {
                 this.questions.splice(index, 1);
                 this.questions$.next(this.questions);

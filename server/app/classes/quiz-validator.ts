@@ -1,5 +1,6 @@
 import { MAX_DURATION, MIN_DURATION } from '@common/constant';
-import { Question, Quiz } from '@common/quiz';
+import { Quiz } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { randomUUID } from 'crypto';
 import { QuestionValidator } from './question-validator';
 
@@ -26,11 +27,11 @@ export class QuizValidator {
         };
     }
 
-    async validate(): Promise<{ quiz: Quiz; compilationError: string }> {
+    async validate(): Promise<ValidationResult<Quiz>> {
         if (!this.quiz || typeof this.quiz !== 'object') {
-            return { quiz: this.newQuiz, compilationError: 'Quiz : doit être un objet !\n' };
+            return new ValidationResult('Quiz : doit être un objet !\n', this.newQuiz);
         }
-        return await this.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
+        return await this.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().checkVisibility().compile();
     }
 
     checkId(): QuizValidator {
@@ -107,11 +108,11 @@ export class QuizValidator {
             }
 
             for (const question of this.quiz.questions) {
-                const result: { question: Question; compilationError: string } = new QuestionValidator(question).validate();
-                if (result.compilationError) {
-                    this.compilationError += result.compilationError;
+                const result = new QuestionValidator(question).validate();
+                if (result.error) {
+                    this.compilationError += result.error;
                 } else {
-                    this.newQuiz.questions.push(result.question);
+                    this.newQuiz.questions.push(result.data);
                 }
             }
         });
@@ -119,13 +120,22 @@ export class QuizValidator {
         return this;
     }
 
-    async compile(): Promise<{ quiz: Quiz; compilationError: string }> {
+    checkVisibility(): QuizValidator {
+        this.tasks.push(async () => {
+            if ('visible' in this.quiz && typeof this.quiz.visible === 'boolean') {
+                this.newQuiz.visible = this.quiz.visible;
+            }
+        });
+
+        return this;
+    }
+
+    async compile(): Promise<ValidationResult<Quiz>> {
         for (const task of this.tasks) {
             await task();
         }
         this.newQuiz.lastModification = new Date();
-        this.newQuiz.visible = false;
 
-        return { quiz: this.newQuiz, compilationError: this.compilationError };
+        return new ValidationResult(this.compilationError, this.newQuiz);
     }
 }

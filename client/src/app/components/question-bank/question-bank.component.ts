@@ -7,7 +7,7 @@ import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
 import { INVALID_INDEX } from '@common/constant';
 import { Question } from '@common/quiz';
-import { Observable, map } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 import { QuestionBankService } from 'src/app/services/question-bank.service';
 
 @Component({
@@ -58,12 +58,10 @@ export class QuestionBankComponent implements OnInit {
 
         const newQuestion: Question = event.previousContainer.data[event.previousIndex];
 
-        const subscription = this.questionBank.addQuestion(newQuestion).subscribe((error: string) => {
+        this.questionBank.addQuestion(newQuestion).pipe(take(1)).subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             }
-
-            subscription.unsubscribe();
         });
     }
 
@@ -72,24 +70,21 @@ export class QuestionBankComponent implements OnInit {
         const question = this.questionBank.getQuestion(isNewQuestion ? INVALID_INDEX : index);
         this.admin.selectedQuestion = question;
 
-        const subscriptino = this.openQuestionFormRef()
+        this.openQuestionFormRef()
             .afterClosed()
+            .pipe(take(1))
             .subscribe((editedQuestion?: Question) => {
                 if (editedQuestion) {
                     this.processQuestion(editedQuestion, isNewQuestion);
                 }
-
-                subscriptino.unsubscribe();
             });
     }
 
     private processQuestion(question: Question, isNew: boolean) {
-        const subscription = this.submitQuestionChange(question, isNew).subscribe((error: string) => {
+        this.submitQuestionChange(question, isNew).pipe(take(1)).subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             }
-
-            subscription.unsubscribe();
         });
     }
 

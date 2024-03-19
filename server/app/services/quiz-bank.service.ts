@@ -1,6 +1,7 @@
 import { QuizValidator } from '@app/classes/quiz-validator';
 import { DatabaseService } from '@app/services/database.service';
 import { Quiz } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { Service } from 'typedi';
 
 @Service()
@@ -43,10 +44,9 @@ export class QuizBankService {
         }
     }
 
-    async verifyQuiz(quiz: unknown): Promise<{ quiz: Quiz; errorLog: string }> {
+    async verifyQuiz(quiz: unknown): Promise<ValidationResult<Quiz>> {
         const quizValidator = new QuizValidator(quiz, async (query: object) => this.database.get<Quiz>('quizzes', query));
-        const result = await quizValidator.validate();
-        return { quiz: result.quiz, errorLog: result.compilationError };
+        return await quizValidator.validate();
     }
 
     async changeQuizVisibility(quizId: string): Promise<boolean> {

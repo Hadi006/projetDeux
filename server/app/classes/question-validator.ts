@@ -1,5 +1,6 @@
 import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { AnswerValidator } from './answer-validator';
 
 export class QuestionValidator {
@@ -19,9 +20,9 @@ export class QuestionValidator {
         };
     }
 
-    validate(): { question: Question; compilationError: string } {
+    validate(): ValidationResult<Question> {
         if (!this.question || typeof this.question !== 'object') {
-            return { question: this.newQuestion, compilationError: 'Question : doit être un objet !\n' };
+            return new ValidationResult('Question : doit être un objet !\n', this.newQuestion)
         }
         return this.checkText().checkType().checkPoints().checkChoices().compile();
     }
@@ -88,9 +89,9 @@ export class QuestionValidator {
         return this;
     }
 
-    compile(): { question: Question; compilationError: string } {
+    compile(): ValidationResult<Question> {
         this.tasks.forEach((task) => task());
-        return { question: this.newQuestion, compilationError: this.compilationError };
+        return new ValidationResult(this.compilationError, this.newQuestion);
     }
 
     private hasBothCorrectAndIncorrectAnswers(choices: Answer[]): boolean {
@@ -98,12 +99,12 @@ export class QuestionValidator {
         let hasIncorrectAnswer = false;
         for (const choice of choices) {
             const result = new AnswerValidator(choice).validate();
-            this.newQuestion.choices.push(result.answer);
-            this.compilationError += result.compilationError;
+            this.newQuestion.choices.push(result.data);
+            this.compilationError += result.error;
 
-            if (!result.compilationError) {
-                hasCorrectAnswer = hasCorrectAnswer || result.answer.isCorrect;
-                hasIncorrectAnswer = hasIncorrectAnswer || !result.answer.isCorrect;
+            if (!result.error) {
+                hasCorrectAnswer = hasCorrectAnswer || result.data.isCorrect;
+                hasIncorrectAnswer = hasIncorrectAnswer || !result.data.isCorrect;
             }
         }
 

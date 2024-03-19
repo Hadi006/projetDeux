@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HostService } from '@app/services/host.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes.service';
 import { Quiz } from '@common/quiz';
-import { map, Observable, of } from 'rxjs';
+import { Observable, map, of, take } from 'rxjs';
 
 @Component({
     selector: 'app-game-choice-page',
@@ -28,7 +28,7 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
+        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).pipe(take(1)).subscribe((isAvailable) => {
             this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
                 if (success) {
                     this.router.navigate(['waiting-room-host']);
@@ -40,7 +40,7 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     testGame() {
-        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
+        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).pipe(take(1)).subscribe((isAvailable) => {
             this.handleChosenQuiz(isAvailable).subscribe((success) => {
                 if (success) {
                     this.router.navigate(['test']);

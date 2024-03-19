@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PromptComponent } from '@app/components/prompt/prompt.component';
 import { Action, ActionType } from '@common/action';
 import { INVALID_INDEX } from '@common/constant';
 import { Quiz } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { Observable } from 'rxjs';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
+
 
 @Component({
     selector: 'app-admin-page',
@@ -34,19 +36,26 @@ export class AdminPageComponent implements OnInit {
             return;
         }
 
-        const subscription = this.adminService.uploadQuiz(quizFile).subscribe((response: { quiz?: Quiz; errorLog: string }) => {
-            if (!response.errorLog) {
+        this.adminService.uploadQuiz(quizFile).subscribe((response: ValidationResult<Quiz>) => {
+            if (!response.error) {
                 return;
             }
-            if (response.errorLog.includes('titre déjà utilisé')) {
-                this.promptForNewTitle();
+
+            if (response.error.includes('titre déjà utilisé')) {
+                this.promptForNewTitle()
+                    .afterClosed()
+                    .subscribe((newTitle: string) => {
+                        if (!newTitle) {
+                            return;
+                        }
+                        this.adminService.submitQuiz(response.data, newTitle).subscribe();
+                    });
             }
 
-            this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
-
-            subscription.unsubscribe();
+            this.dialog.open(AlertComponent, { data: { message: response.error } });
         });
     }
+
 
     goToQuizPage(index?: number) {
         this.adminService.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
@@ -72,14 +81,8 @@ export class AdminPageComponent implements OnInit {
         }
     }
 
-    private promptForNewTitle() {
-        const subscription = this.dialog.open(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } }).afterClosed().subscribe((newTitle: string) => {
-            if (!newTitle) {
-                return;
-            }
-            this.adminService.submitQuiz(undefined, newTitle).subscribe().unsubscribe();
-
-            subscription.unsubscribe();
-        });
+    private promptForNewTitle(): MatDialogRef<PromptComponent> {
+        return this.dialog.open(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } });
     }
+
 }

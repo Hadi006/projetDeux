@@ -4,6 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Question } from '@common/quiz';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-question-form',
@@ -18,7 +19,7 @@ export class QuestionFormComponent {
         private admin: AdminQuizzesService,
         private dialog: MatDialog,
     ) {
-        this.question = { ...admin.selectedQuestion };
+        this.question = JSON.parse(JSON.stringify(this.admin.selectedQuestion));
     }
 
     addChoice() {
@@ -38,14 +39,12 @@ export class QuestionFormComponent {
     }
 
     submit() {
-        const subscribtion = this.admin.submitQuestion(this.question).subscribe((error: string) => {
+        this.admin.submitQuestion(this.question).pipe(take(1)).subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             } else {
                 this.dialogRef.close(this.question);
             }
-
-            subscribtion.unsubscribe();
         });
     }
 }

@@ -45,22 +45,22 @@ export class QuizBankController {
         });
 
         this.router.post('/', async (req: Request, res: Response) => {
-            if (req.body.newTitle) {
+            if (req.body.newTitle && req.body.quiz) {
                 req.body.quiz.title = req.body.newTitle;
             }
-            const result: { quiz: Quiz; errorLog: string } = await this.quizBankService.verifyQuiz(req.body.quiz);
-            if (!result.errorLog) {
-                await this.quizBankService.addQuiz(result.quiz);
+            const result = await this.quizBankService.verifyQuiz(req.body.quiz);
+            if (!result.error) {
+                await this.quizBankService.addQuiz(result.data);
             }
 
-            res.status(!result.errorLog ? httpStatus.CREATED : httpStatus.BAD_REQUEST).json(result);
+            res.status(!result.error ? httpStatus.CREATED : httpStatus.BAD_REQUEST).json(result);
         });
 
         this.router.patch('/:quizId', async (req: Request, res: Response) => {
-            const result: { quiz: Quiz; errorLog: string } = await this.quizBankService.verifyQuiz(req.body.quiz);
+            const result = await this.quizBankService.verifyQuiz(req.body.quiz);
 
-            if (result.errorLog.replace('Quiz : titre déjà utilisé !\n', '') === '') {
-                await this.quizBankService.updateQuiz(result.quiz);
+            if (result.error.replace('Quiz : titre déjà utilisé !\n', '') === '') {
+                await this.quizBankService.updateQuiz(result.data);
                 res.status(httpStatus.OK).json({});
                 return;
             }

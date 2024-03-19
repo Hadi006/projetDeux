@@ -8,6 +8,9 @@ import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
 import { BLANK_QUESTION } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
+import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-create-quiz-page',
@@ -49,12 +52,10 @@ export class CreateQuizPageComponent implements OnInit {
             height: '80%',
         });
 
-        const subscription = questionForm.afterClosed().subscribe((question?: Question) => {
+        questionForm.afterClosed().pipe(take(1)).subscribe((question?: Question) => {
             if (question) {
                 this.quiz.questions[questionIndex] = question;
             }
-
-            subscription.unsubscribe();
         });
     }
 
@@ -75,14 +76,12 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     private processQuiz(quiz: Quiz, isNew: boolean) {
-        const subscription = this.submitQuizUpdate(quiz, isNew).subscribe((response: { errorLog: string }) => {
-            if (response.errorLog) {
-                this.alert(response.errorLog);
+        this.submitQuizUpdate(quiz, isNew).pipe(take(1)).subscribe((response: ValidationResult<Quiz>) => {
+            if (response.error) {
+                this.alert(response.error);
             } else {
                 this.close();
             }
-
-            subscription.unsubscribe();
         });
     }
 
@@ -102,7 +101,7 @@ export class CreateQuizPageComponent implements OnInit {
         return this.quiz.id === '';
     }
 
-    private submitQuizUpdate(quiz: Quiz, isNew: boolean) {
+    private submitQuizUpdate(quiz: Quiz, isNew: boolean): Observable<ValidationResult<Quiz>> {
         return isNew ? this.adminService.submitQuiz(quiz) : this.adminService.updateQuiz(quiz);
     }
 }

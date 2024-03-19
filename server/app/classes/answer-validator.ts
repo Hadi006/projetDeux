@@ -1,4 +1,5 @@
 import { Answer } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 
 export class AnswerValidator {
     private tasks: (() => void)[];
@@ -10,15 +11,12 @@ export class AnswerValidator {
         this.tasks = [];
         this.answer = answer as Answer;
         this.compilationError = '';
-        this.newAnswer = {
-            text: '',
-            isCorrect: false,
-        };
+        this.newAnswer = new Answer();
     }
 
-    validate(): { answer: Answer; compilationError: string } {
+    validate(): ValidationResult<Answer> {
         if (!this.answer || typeof this.answer !== 'object') {
-            return { answer: this.newAnswer, compilationError: 'Reponse : doit être un objet !\n' };
+            return new ValidationResult('Reponse : doit être un objet !\n', this.newAnswer);
         }
         return this.checkText().checkType().compile();
     }
@@ -45,9 +43,9 @@ export class AnswerValidator {
         return this;
     }
 
-    compile(): { answer: Answer; compilationError: string } {
+    compile(): ValidationResult<Answer> {
         this.tasks.forEach((task) => task());
 
-        return { answer: this.newAnswer, compilationError: this.compilationError };
+        return new ValidationResult(this.compilationError, this.newAnswer);
     }
 }

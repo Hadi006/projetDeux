@@ -1,6 +1,7 @@
 import { QuestionValidator } from '@app/classes/question-validator';
 import { DatabaseService } from '@app/services/database.service';
 import { Question } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { Service } from 'typedi';
 
 @Service()
@@ -15,12 +16,12 @@ export class QuestionBankService {
         return (await this.database.get<Question>('questions', { text }))[0];
     }
 
-    validateQuestion(question: unknown): { question: Question; compilationError: string } {
+    validateQuestion(question: unknown): ValidationResult<Question> {
         return new QuestionValidator(question).validate();
     }
 
-    async updateQuestion(question: Question, id: string): Promise<boolean> {
-        return await this.database.update('questions', { id }, [{ $set: question }]);
+    async updateQuestion(question: Question, text: string): Promise<boolean> {
+        return await this.database.update('questions', { text }, [{ $set: question }]);
     }
 
     async addQuestion(question: Question): Promise<boolean> {
@@ -31,7 +32,7 @@ export class QuestionBankService {
         return true;
     }
 
-    async deleteQuestion(questionId: string): Promise<boolean> {
-        return await this.database.delete('questions', { id: questionId });
+    async deleteQuestion(questionText: string): Promise<boolean> {
+        return await this.database.delete('questions', { text: questionText });
     }
 }
