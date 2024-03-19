@@ -203,11 +203,11 @@ describe('HostService', () => {
         expect(service.questionEnded).toBeFalse();
     });
 
-    it('should add empty histogram on nextQuestion if no quiz', () => {
+    it('should do nothing if question is undefined', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         emitSpy.and.stub();
         service.nextQuestion();
-        expect(emitSpy).toHaveBeenCalledWith('next-question', {
+        expect(emitSpy).not.toHaveBeenCalledWith('next-question', {
             pin: service.game.pin,
             data: { question: undefined, countdown: service.game.quiz?.duration, histogram: { labels: [], datasets: [{ label: '', data: [] }] } },
         });
