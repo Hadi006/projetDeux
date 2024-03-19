@@ -157,7 +157,7 @@ describe('QuizBankController', () => {
             .expect(httpStatus.CREATED)
             .then((response) => {
                 expect(quizBankServiceStub.verifyQuiz.calledOnceWith({ ...expectedQuiz, title: 'New title' })).to.equal(true);
-                expect(response.body).to.deep.equal({ quiz: { ...expectedQuiz, title: 'New title' }, errorLog: '' });
+                expect(response.body).to.deep.equal({ data: { ...expectedQuiz, title: 'New title' }, error: '' });
             });
     });
 
@@ -172,7 +172,7 @@ describe('QuizBankController', () => {
             .expect(httpStatus.BAD_REQUEST)
             .then((response) => {
                 expect(quizBankServiceStub.addQuiz.called).to.equal(false);
-                expect(response.body).to.deep.equal({ quiz: expectedQuiz, errorLog });
+                expect(response.body).to.deep.equal({ data: expectedQuiz, error: errorLog });
             });
     });
 
@@ -201,7 +201,7 @@ describe('QuizBankController', () => {
             .expect(httpStatus.BAD_REQUEST)
             .then((response) => {
                 expect(quizBankServiceStub.verifyQuiz.calledOnceWith(expectedQuiz)).to.equal(true);
-                expect(response.body).to.deep.equal({ quiz: expectedQuiz, errorLog });
+                expect(response.body).to.deep.equal({ data: expectedQuiz, error: errorLog });
             });
     });
 
