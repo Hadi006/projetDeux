@@ -48,7 +48,7 @@ describe('AnswerValidator', () => {
         answerValidator.checkText();
         const compiledAnswer = answerValidator.validate();
         expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
+        expect(compiledAnswer.error).to.equal('Reponse : doit être un objet !\n');
     });
 
     it('should check if the answer has a type', () => {
@@ -71,6 +71,6 @@ describe('AnswerValidator', () => {
         answerValidator.checkText().checkType();
         const compiledAnswer = answerValidator.validate();
         expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
+        expect(compiledAnswer.error).to.equal('Reponse : doit être un objet !\n');
     });
 });
