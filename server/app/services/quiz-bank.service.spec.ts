@@ -95,7 +95,7 @@ describe('QuizBankService', () => {
         expect(result.data.lastModification).to.be.a('Date');
         expect(result.data.title).to.equal(MOCK_QUIZ.title);
         expect(result.data.description).to.equal(MOCK_QUIZ.description);
-        expect(result.data.visible).to.equal(false);
+        expect(result.data.visible).to.equal(MOCK_QUIZ.visible);
         expect(result.data.duration).to.equal(MOCK_QUIZ.duration);
         expect(result.data.questions.length).to.equal(MOCK_QUIZ.questions.length);
     });
