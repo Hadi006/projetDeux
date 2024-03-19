@@ -1,8 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
-// import { MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
 // import { AlertComponent } from '@app/components/alert/alert.component';
+
 @Component({
     selector: 'app-player-game-page',
     templateUrl: './player-game-page.component.html',
@@ -14,11 +16,16 @@ export class PlayerGamePageComponent implements OnDestroy {
     private endGameSubscription: Subscription;
 
     constructor(
-        private playerService: PlayerService, // private dialog: MatDialog,
+        private playerService: PlayerService,
+        private dialog: MatDialog,
     ) {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
-            // this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
+            this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
         });
+    }
+
+    get players() {
+        return this.playerService.players;
     }
 
     stopCountDown() {
@@ -28,10 +35,8 @@ export class PlayerGamePageComponent implements OnDestroy {
     gameTitle() {
         return this.playerService.gameTitle;
     }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get players() {
-        return this.playerService.players;
+    leaveGame() {
+        this.playerService.leaveGame();
     }
 
     ngOnDestroy() {

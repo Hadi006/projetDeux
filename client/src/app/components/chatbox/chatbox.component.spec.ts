@@ -59,7 +59,7 @@ describe('ChatboxComponent', () => {
 
         component.ngOnInit();
 
-        component.chatService.messagesSubjectGetter.next();
+        chatServiceSpy.messagesSubjectGetter.next();
 
         expect(spyHandleMessagesUpdate).toHaveBeenCalled();
     });

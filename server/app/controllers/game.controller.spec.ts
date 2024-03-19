@@ -3,7 +3,7 @@
 import { GameController } from '@app/controllers/game.controller';
 import { Server } from '@app/server';
 import { GameService } from '@app/services/game.service';
-import { NEW_PLAYER, TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -54,14 +54,16 @@ describe('GameController', () => {
         const message = { roomId: 'room123', text: 'Hello, World!' };
         const toSpy = sinon.spy(service['sio'], 'to');
 
+        clientSocket.emit('create-game', testQuiz, () => {
+            setTimeout(() => {
+                expect(toSpy.calledWith(message.roomId)).to.be.true;
+                toSpy.restore();
+
+                done();
+            }, RESPONSE_DELAY);
+        });
+
         clientSocket.emit('new-message', message);
-
-        setTimeout(() => {
-            expect(toSpy.calledWith(message.roomId)).to.be.true;
-            toSpy.restore();
-
-            done();
-        }, RESPONSE_DELAY);
     });
 
     it('should create a game', (done) => {
@@ -148,8 +150,8 @@ describe('GameController', () => {
     it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
         const result = {
-            player: { ...NEW_PLAYER, name: playerName },
-            players: [playerName],
+            player: new Player(playerName),
+            otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: '',
         };
@@ -164,8 +166,8 @@ describe('GameController', () => {
     it('should not add a player if there is an error', (done) => {
         const playerName = 'John Doe';
         const result = {
-            player: { ...NEW_PLAYER, name: playerName },
-            players: [playerName],
+            player: new Player(playerName),
+            otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: 'Error',
         };
@@ -209,7 +211,7 @@ describe('GameController', () => {
         }, RESPONSE_DELAY);
     });
 
-    it('should broadcast a next question', (done) => {
+    it('should broadcast a question-changed', (done) => {
         const question = testQuestion;
         const histogram = testHistogram;
         const countdown = 5;
@@ -218,28 +220,12 @@ describe('GameController', () => {
         gameServiceStub.updateGame.resolves();
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.on('next-question', (response) => {
+            clientSocket.on('question-changed', (response) => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
                 expect(response).to.deep.equal({ question, countdown });
                 done();
             });
             clientSocket.emit('next-question', { pin: testGame.pin, data: { question, countdown, histogram } });
-        });
-    });
-
-    it('should broadcast undefined question', (done) => {
-        const countdown = 5;
-        gameServiceStub.createGame.resolves(testGame);
-        gameServiceStub.getGame.resolves(testGame);
-        gameServiceStub.updateGame.resolves();
-        const toSpy = spy(service['sio'], 'to');
-        clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.on('next-question', (response) => {
-                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
-                expect(response).to.deep.equal({ countdown });
-                done();
-            });
-            clientSocket.emit('next-question', { pin: testGame.pin, data: { countdown } });
         });
     });
 

@@ -13,18 +13,17 @@ export class EndgameResultPageComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-    ) { }
+    ) {}
 
     ngOnInit() {
         this.route.queryParams.subscribe((data) => {
-            console.log(data);
             if (!data.game) {
                 return;
             }
             this.game = JSON.parse(data.game) as Game;
             this.game.players.sort((a, b) => {
-                return b.score - a.score || b.name.localeCompare(a.name);
-            })
+                return b.score - a.score || a.name.localeCompare(b.name);
+            });
         });
     }
 

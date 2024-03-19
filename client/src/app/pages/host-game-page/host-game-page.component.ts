@@ -24,16 +24,16 @@ export class HostGamePageComponent implements OnDestroy {
         });
     }
 
+    get histogramData() {
+        return this.hostService.histograms[this.hostService.histograms.length - 1];
+    }
+
     stopCountDown() {
         this.isCountingDown = false;
     }
 
     getGame() {
         return this.hostService.game;
-    }
-
-    get histogramData() {
-        return this.hostService.histograms[this.hostService.histograms.length - 1];
     }
 
     getCurrentQuestion() {

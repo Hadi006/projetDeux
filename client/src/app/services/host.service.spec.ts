@@ -83,6 +83,8 @@ describe('HostService', () => {
     it('should remove player on playerLeft and add to quitters', () => {
         service['currentQuestionIndex'] = 1;
         service.handleSockets();
+        emitSpy.and.stub();
+        service.startGame(0);
         socketHelper.peerSideEmit('player-left', { players: testGame.players, player: testGame.players[0] });
         expect(service.game.players.length).toBe(testGame.players.length);
         expect(service.quitters).toContain(testGame.players[0]);
@@ -95,14 +97,6 @@ describe('HostService', () => {
         expect(service.quitters).not.toContain(testGame.players[0]);
     });
 
-    it('should end game if all players left', () => {
-        service['currentQuestionIndex'] = 1;
-        spyOn(service, 'endGame');
-        service.handleSockets();
-        socketHelper.peerSideEmit('player-left', { players: [], player: testGame.players[0] });
-        expect(service.endGame).toHaveBeenCalled();
-    });
-
     it('should increment nAnswered on confirmPlayerAnswer', () => {
         service.handleSockets();
         socketHelper.peerSideEmit('confirm-player-answer');
@@ -111,7 +105,6 @@ describe('HostService', () => {
 
     it('should set timer to 0 and reset nAnswered if all players answered', () => {
         emitSpy.and.stub();
-        spyOn(service, 'endQuestion');
         service.handleSockets();
         socketHelper.peerSideEmit('confirm-player-answer');
         socketHelper.peerSideEmit('confirm-player-answer');
@@ -148,7 +141,6 @@ describe('HostService', () => {
         emitSpy.and.stub();
         spyOn(service, 'cleanUp');
         service.leaveGame();
-        expect(emitSpy).toHaveBeenCalledWith('delete-game', service.game.pin);
         expect(service.cleanUp).toHaveBeenCalled();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
@@ -201,11 +193,11 @@ describe('HostService', () => {
         expect(service.questionEnded).toBeFalse();
     });
 
-    it('should add empty histogram on nextQuestion if no quiz', () => {
+    it('should do nothing if question is undefined', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         emitSpy.and.stub();
         service.nextQuestion();
-        expect(emitSpy).toHaveBeenCalledWith('next-question', {
+        expect(emitSpy).not.toHaveBeenCalledWith('next-question', {
             pin: service.game.pin,
             data: { question: undefined, countdown: service.game.quiz?.duration, histogram: { labels: [], datasets: [{ label: '', data: [] }] } },
         });
@@ -218,7 +210,7 @@ describe('HostService', () => {
                 'update-scores',
                 {
                     pin: service.game.pin,
-                    data: -1,
+                    data: 0,
                 },
                 jasmine.any(Function),
             );
@@ -229,7 +221,7 @@ describe('HostService', () => {
             expect(service.questionEnded).toBeTrue();
         });
         emitSpy.and.stub();
-        service.endQuestion();
+        service['endQuestion']();
         service.questionEndedSubject.next();
     });
 
@@ -238,16 +230,16 @@ describe('HostService', () => {
         expect(service.game).toEqual(testGame);
     });
 
-    it('should emit empty answer if no quiz', () => {
-        service.game.quiz = undefined;
+    it('should do nothing if there is no answer', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         service.questionEndedSubject.subscribe(() => {
-            expect(emitSpy).toHaveBeenCalledWith('answer', {
+            expect(emitSpy).not.toHaveBeenCalledWith('answer', {
                 pin: service.game.pin,
                 data: [],
             });
         });
         emitSpy.and.stub();
-        service.endQuestion();
+        service['endQuestion']();
         service.questionEndedSubject.next();
     });
 
@@ -255,12 +247,14 @@ describe('HostService', () => {
         emitSpy.and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(testGame);
         });
+        spyOn(service, 'cleanUp');
         service.gameEndedSubject.subscribe(() => {
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame']);
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { queryParams: { game: JSON.stringify(testGame) } });
             expect(emitSpy).toHaveBeenCalledWith('end-game', service.game.pin, jasmine.any(Function));
+            expect(service.cleanUp).toHaveBeenCalled();
         });
         service.endGame();
-        service.gameEndedSubject.next(TEST_GAME_DATA);
+        service.gameEndedSubject.next();
     });
 
     it('should emit delete-game, disconnect and stop timer on cleanUp', () => {
@@ -283,16 +277,9 @@ describe('HostService', () => {
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, testGame.quiz.duration, jasmine.any(Function));
     });
 
-    it('should end game when setting up next question', () => {
-        spyOn(service, 'endGame');
-        service.game.quiz = JSON.parse(JSON.stringify({ ...testGame.quiz, questions: [] }));
-        service['setupNextQuestion']();
-        expect(service.endGame).toHaveBeenCalled();
-    });
-
     it('should do nothing when setting up next question', () => {
         spyOn(service, 'endGame');
-        service.game.quiz = undefined;
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         service['setupNextQuestion']();
         expect(service.endGame).not.toHaveBeenCalled();
     });
