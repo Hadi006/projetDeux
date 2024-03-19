@@ -38,8 +38,9 @@ export class DatabaseService {
             ?.toArray() || []) as T[];
     }
 
-    async add(collection: string, data: object): Promise<void> {
+    async add<T>(collection: string, data: T): Promise<T> {
         this.db?.collection(collection)?.insertOne(data);
+        return data;
     }
 
     async update(collection: string, query: object, update: object): Promise<boolean> {
