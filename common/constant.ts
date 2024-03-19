@@ -1,9 +1,8 @@
 import { AccessToken } from '@common/access-token';
-import { Quiz } from '@common/quiz';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
-import { Question } from '@common/quiz';
-import { Answer } from '@common/quiz';
+import { Answer, Question, Quiz } from '@common/quiz';
+import { HistogramData } from './histogram-data';
 
 /* Components */
 export const DEFAULT_WIDTH = 200;
@@ -70,18 +69,14 @@ export const BLANK_QUESTION = {
     ],
 };
 
-export const NEW_PLAYER: Player = {
-    name: '',
-    score: 0,
-    questions: [],
-    fastestResponseCount: 0,
-};
-
-export const NEW_GAME: Game = {
-    pin: '',
-    players: [],
-    locked: false,
-    bannedNames: [],
+export const NEW_HISTOGRAM_DATA: HistogramData = {
+    labels: [],
+    datasets: [
+        {
+            label: 'Answers',
+            data: [],
+        },
+    ],
 };
 
 export const GAME_ID_MAX = 10000;
@@ -91,8 +86,6 @@ export const GAME_ID_LENGTH = 4;
 export const START_GAME_COUNTDOWN = 5;
 
 export const TRANSITION_DELAY = 3;
-
-export const INITIAL_QUESTION_INDEX = -1;
 
 export const ANSWER_TIME_BUFFER = 1000;
 
@@ -166,11 +159,33 @@ export const TEST_PLAYERS: Player[] = [
     },
 ];
 
+export const TEST_HISTOGRAM_DATA: HistogramData[] = [{
+    labels: ['Test Label 1', 'Test Label 2'],
+    datasets: [
+        {
+            label: 'Test Dataset',
+            data: [1, 2],
+        },
+    ],
+},
+{
+    labels: ['Test Label 3', 'Test Label 4'],
+    datasets: [
+        {
+            label: 'Test Dataset 2',
+            data: [3, 4],
+        },
+    ],
+}];
+
+
 export const TEST_GAME_DATA: Game = {
     pin: '1',
+    hostId: '1',
     players: TEST_PLAYERS,
     quiz: TEST_QUIZZES[0],
     locked: false,
     bannedNames: [],
+    histograms: TEST_HISTOGRAM_DATA,
 };
 

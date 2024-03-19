@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TimeService } from '@app/services/time.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
@@ -8,27 +7,22 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     templateUrl: './game-count-down.component.html',
     styleUrls: ['./game-count-down.component.scss'],
 })
-export class GameCountDownComponent implements OnInit {
+export class GameCountDownComponent {
     @Input() gameName: string;
+    @Output() countdownEnded = new EventEmitter<void>();
 
     private timerId: number;
 
-    constructor(
-        private timeService: TimeService,
-        private router: Router,
-    ) {
+    constructor(private timeService: TimeService) {
         this.timerId = this.timeService.createTimerById();
+        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN, this.stopCountDown.bind(this));
     }
 
-    get time() {
+    getTime() {
         return this.timeService.getTimeById(this.timerId);
     }
 
-    ngOnInit(): void {
-        this.timeService.startTimerById(this.timerId, START_GAME_COUNTDOWN, this.startGame.bind(this));
-    }
-
-    private startGame() {
-        this.router.navigate(['/']);
+    private stopCountDown() {
+        this.countdownEnded.emit();
     }
 }

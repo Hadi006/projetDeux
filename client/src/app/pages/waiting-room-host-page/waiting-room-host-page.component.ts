@@ -27,11 +27,11 @@ export class WaitingRoomHostPageComponent {
     }
 
     startGame() {
+        this.router.navigate(['game-host']);
         this.hostService.startGame(START_GAME_COUNTDOWN);
     }
 
     leaveGame() {
-        this.hostService.cleanUp();
-        this.router.navigate(['/']);
+        this.hostService.leaveGame();
     }
 }
