@@ -102,6 +102,7 @@ export class HostService {
     startGame(countdown: number): void {
         this.emitStartGame(countdown);
         this.gameStarted = true;
+        this.internalQuitters = [];
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
