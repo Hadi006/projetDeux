@@ -83,6 +83,8 @@ describe('HostService', () => {
     it('should remove player on playerLeft and add to quitters', () => {
         service['currentQuestionIndex'] = 1;
         service.handleSockets();
+        emitSpy.and.stub();
+        service.startGame(0);
         socketHelper.peerSideEmit('player-left', { players: testGame.players, player: testGame.players[0] });
         expect(service.game.players.length).toBe(testGame.players.length);
         expect(service.quitters).toContain(testGame.players[0]);
