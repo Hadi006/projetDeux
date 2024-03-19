@@ -252,7 +252,6 @@ export class HostService {
             this.internalQuitters.push(player);
 
             if (this.internalGame.players.length === 0) {
-                this.cleanUp();
                 this.internalGameEndedSubject.next();
             }
         });
