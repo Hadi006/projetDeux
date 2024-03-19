@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ChatMessage } from '@app/interfaces/chat-message';
+import { ChatMessage } from '@common/chat-message';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { ChatService } from './chat.service';
