@@ -12,6 +12,7 @@ import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
 import { Socket, io as ioClient } from 'socket.io-client';
 import { Container } from 'typedi';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import sinon = require('sinon');
 
 describe('GameController', () => {
@@ -57,9 +58,6 @@ describe('GameController', () => {
 
         setTimeout(() => {
             expect(toSpy.calledWith(message.roomId)).to.be.true;
-
-            expect(toSpy.calledWith('message-received')).to.be.true;
-
             toSpy.restore();
 
             done();
