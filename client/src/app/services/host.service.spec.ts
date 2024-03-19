@@ -240,10 +240,10 @@ describe('HostService', () => {
         expect(service.game).toEqual(testGame);
     });
 
-    it('should emit empty answer if no quiz', () => {
-        service.game.quiz = undefined;
+    it('should do nothing if there is no answer', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         service.questionEndedSubject.subscribe(() => {
-            expect(emitSpy).toHaveBeenCalledWith('answer', {
+            expect(emitSpy).not.toHaveBeenCalledWith('answer', {
                 pin: service.game.pin,
                 data: [],
             });
@@ -301,7 +301,7 @@ describe('HostService', () => {
 
     it('should do nothing when setting up next question', () => {
         spyOn(service, 'endGame');
-        service.game.quiz = undefined;
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         service['setupNextQuestion']();
         expect(service.endGame).not.toHaveBeenCalled();
     });

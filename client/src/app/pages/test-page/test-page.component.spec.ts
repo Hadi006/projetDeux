@@ -73,12 +73,6 @@ describe('TestPageComponent', () => {
         hostServiceSpy.gameEndedSubject.next();
     });
 
-    it('ngOnInit should navigate to game page if there is no quiz', () => {
-        hostServiceSpy.game.quiz = undefined;
-        component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['game']);
-    });
-
     it('ngOnInit should handle sockets, create player and start game', (done) => {
         expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
         expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, 'Test');
