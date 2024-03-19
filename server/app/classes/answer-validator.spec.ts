@@ -17,60 +17,60 @@ describe('AnswerValidator', () => {
     it('should create a simple AnswerValidator', () => {
         expect(answerValidator).to.be.instanceOf(AnswerValidator);
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('');
+        expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
+        expect(compiledAnswer.error).to.equal('');
     });
 
     it('should check if the answer is an object and fail', () => {
         answerValidator = new AnswerValidator('This is a test answer');
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Reponse : doit etre un objet !\n');
+        expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
+        expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
     });
 
     it('should check if the answer has a text', () => {
         answerValidator.checkText();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ ...MOCK_ANSWER, isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('');
+        expect(compiledAnswer.data).to.deep.equal({ ...MOCK_ANSWER, isCorrect: false });
+        expect(compiledAnswer.error).to.equal('');
     });
 
     it('should check if the answer has a text and fail', () => {
         answerValidator = new AnswerValidator({ isCorrect: true });
         answerValidator.checkText();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Reponse : texte manquant !\n');
+        expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
+        expect(compiledAnswer.error).to.equal('Reponse : texte manquant !\n');
     });
 
     it('should check if the answer has a text and fail if it is not an object', () => {
         answerValidator = new AnswerValidator('This is a test answer');
         answerValidator.checkText();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Reponse : doit etre un objet !\n');
+        expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
+        expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
     });
 
     it('should check if the answer has a type', () => {
         answerValidator.checkText().checkType();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal(MOCK_ANSWER);
-        expect(compiledAnswer.compilationError).to.equal('');
+        expect(compiledAnswer.data).to.deep.equal(MOCK_ANSWER);
+        expect(compiledAnswer.error).to.equal('');
     });
 
     it('should check if the answer has a type and fail', () => {
         answerValidator = new AnswerValidator({ text: 'This is a test answer' });
         answerValidator.checkText().checkType();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ text: 'This is a test answer', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Reponse : type manquant !\n');
+        expect(compiledAnswer.data).to.deep.equal({ text: 'This is a test answer', isCorrect: false });
+        expect(compiledAnswer.error).to.equal('Reponse : type manquant !\n');
     });
 
     it('should check if the answer has a type and fail if it is not an object', () => {
         answerValidator = new AnswerValidator('This is a test answer');
         answerValidator.checkText().checkType();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.answer).to.deep.equal({ text: '', isCorrect: false });
-        expect(compiledAnswer.compilationError).to.equal('Reponse : doit etre un objet !\n');
+        expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
+        expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
     });
 });
