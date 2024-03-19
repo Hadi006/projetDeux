@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import { GameController } from '@app/controllers/game.controller';
 import { Server } from '@app/server';
 import { GameService } from '@app/services/game.service';
@@ -10,13 +12,13 @@ import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
 import { Socket, io as ioClient } from 'socket.io-client';
 import { Container } from 'typedi';
+import sinon = require('sinon');
 
 describe('GameController', () => {
     let service: GameController;
     let gameServiceStub: SinonStubbedInstance<GameService>;
     let server: Server;
     let clientSocket: Socket;
-
     const urlString = 'http://localhost:3000';
 
     let testQuestion: Question;
@@ -47,14 +49,21 @@ describe('GameController', () => {
         restore();
     });
 
-    it('should broadcast new message to all clients', (done) => {
-        const message = 'Hello, everyone!';
+    it('should emit message-received event to room when new message is received', (done) => {
+        const message = { roomId: 'room123', text: 'Hello, World!' };
+        const toSpy = sinon.spy(service['sio'], 'to');
+
         clientSocket.emit('new-message', message);
 
-        clientSocket.on('message-received', (receivedMessage) => {
-            expect(receivedMessage).to.equal(message);
+        setTimeout(() => {
+            expect(toSpy.calledWith(message.roomId)).to.be.true;
+
+            expect(toSpy.calledWith('message-received')).to.be.true;
+
+            toSpy.restore();
+
             done();
-        });
+        }, RESPONSE_DELAY);
     });
 
     it('should create a game', (done) => {
