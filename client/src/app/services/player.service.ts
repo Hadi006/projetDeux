@@ -97,7 +97,6 @@ export class PlayerService {
                 if (!responseData.error) {
                     this.player = responseData.player;
                     this.internalPlayers = responseData.otherPlayers;
-                    this.internalPlayers.push(this.player.name);
                     this.internalGameTitle = responseData.gameTitle;
                     this.internalPin = pin;
                 }
