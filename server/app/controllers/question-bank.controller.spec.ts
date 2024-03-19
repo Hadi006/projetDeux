@@ -28,7 +28,7 @@ describe('QuestionBankController', () => {
             ],
         },
     ];
-    const PARAM_ID = '1';
+    const PARAM_TEXT = 'Question 1';
 
     let questionBankServiceStub: SinonStubbedInstance<QuestionBankService>;
     let expressApp: Express.Application;
@@ -70,7 +70,7 @@ describe('QuestionBankController', () => {
             .then((response) => {
                 expect(questionBankServiceStub.validateQuestion.calledWith(match(MOCK_QUESTIONS[0]))).to.equal(true);
                 expect(questionBankServiceStub.addQuestion.calledWith(match(MOCK_QUESTIONS[0]))).to.equal(true);
-                expect(response.body.compilationError).to.equal('');
+                expect(response.body.error).to.equal('');
             });
     });
 
@@ -82,7 +82,7 @@ describe('QuestionBankController', () => {
             .expect(httpStatus.BAD_REQUEST)
             .then((response) => {
                 expect(questionBankServiceStub.addQuestion.called).to.equal(false);
-                expect(response.body).to.deep.equal({ question: MOCK_QUESTIONS[0], compilationError: 'error' });
+                expect(response.body).to.deep.equal({ data: MOCK_QUESTIONS[0], error: 'error' });
             });
     });
 
@@ -95,7 +95,7 @@ describe('QuestionBankController', () => {
             .expect(httpStatus.BAD_REQUEST)
             .then((response) => {
                 expect(questionBankServiceStub.addQuestion.calledWith(match(MOCK_QUESTIONS[0]))).to.equal(true);
-                expect(response.body).to.deep.equal({ question: MOCK_QUESTIONS[0], compilationError: 'Question : text must be unique !' });
+                expect(response.body).to.deep.equal({ data: MOCK_QUESTIONS[0], error: 'Question : text must be unique !' });
             });
     });
 
@@ -107,7 +107,7 @@ describe('QuestionBankController', () => {
             .expect(httpStatus.OK)
             .then((response) => {
                 expect(questionBankServiceStub.validateQuestion.calledWith(MOCK_QUESTIONS[0])).to.equal(true);
-                expect(response.body).to.deep.equal({ question: MOCK_QUESTIONS[0], compilationError: '' });
+                expect(response.body).to.deep.equal({ data: MOCK_QUESTIONS[0], error: '' });
             });
     });
 
@@ -119,7 +119,7 @@ describe('QuestionBankController', () => {
             .expect(httpStatus.BAD_REQUEST)
             .then((response) => {
                 expect(questionBankServiceStub.validateQuestion.calledWith(MOCK_QUESTIONS[0])).to.equal(true);
-                expect(response.body).to.deep.equal({ question: MOCK_QUESTIONS[0], compilationError: 'error' });
+                expect(response.body).to.deep.equal({ data: MOCK_QUESTIONS[0], error: 'error' });
             });
     });
 
@@ -127,13 +127,13 @@ describe('QuestionBankController', () => {
         questionBankServiceStub.updateQuestion.resolves(true);
         questionBankServiceStub.validateQuestion.returns({ data: { ...MOCK_QUESTIONS[0] }, error: '' });
         return supertest(expressApp)
-            .patch(`/api/questions/${PARAM_ID}`)
+            .patch(`/api/questions/${PARAM_TEXT}`)
             .send({ question: MOCK_QUESTIONS[0] })
             .expect(httpStatus.OK)
             .then((response) => {
                 expect(questionBankServiceStub.validateQuestion.calledWith(match(MOCK_QUESTIONS[0]))).to.equal(true);
                 expect(questionBankServiceStub.updateQuestion.calledOnce).to.equal(true);
-                expect(response.body.compilationError).to.equal('');
+                expect(response.body.error).to.equal('');
             });
     });
 
@@ -141,19 +141,19 @@ describe('QuestionBankController', () => {
         questionBankServiceStub.updateQuestion.resolves(false);
         questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: '' });
         return supertest(expressApp)
-            .patch(`/api/questions/${PARAM_ID}`)
-            .send({ question: MOCK_QUESTIONS[0] })
+            .patch(`/api/questions/${PARAM_TEXT}`)
+            .send({ question: MOCK_QUESTIONS[1] })
             .expect(httpStatus.NOT_FOUND)
             .then((response) => {
-                expect(questionBankServiceStub.updateQuestion.calledWith(MOCK_QUESTIONS[0]), PARAM_ID).to.equal(true);
-                expect(response.body.compilationError).to.equal('');
+                expect(questionBankServiceStub.updateQuestion.called).to.equal(true);
+                expect(response.body.error).to.equal('');
             });
     });
 
     it('PATCH /:questionId should return compilation error', async () => {
         questionBankServiceStub.validateQuestion.returns({ data: MOCK_QUESTIONS[0], error: 'error' });
         return supertest(expressApp)
-            .patch(`/api/questions/${PARAM_ID}`)
+            .patch(`/api/questions/${PARAM_TEXT}`)
             .send({ question: MOCK_QUESTIONS[0] })
             .expect(httpStatus.BAD_REQUEST)
             .then((response) => {
@@ -165,10 +165,10 @@ describe('QuestionBankController', () => {
     it('DELETE /:questionId should delete a question', async () => {
         questionBankServiceStub.deleteQuestion.resolves(true);
         return supertest(expressApp)
-            .delete(`/api/questions/${PARAM_ID}`)
+            .delete(`/api/questions/${PARAM_TEXT}`)
             .expect(httpStatus.OK)
             .then((response) => {
-                expect(questionBankServiceStub.deleteQuestion.calledWith(PARAM_ID)).to.equal(true);
+                expect(questionBankServiceStub.deleteQuestion.calledWith(PARAM_TEXT)).to.equal(true);
                 expect(response.body).to.deep.equal({});
             });
     });
@@ -176,10 +176,10 @@ describe('QuestionBankController', () => {
     it('DELETE /:questionId should return 404 when no question is found', async () => {
         questionBankServiceStub.deleteQuestion.resolves(false);
         return supertest(expressApp)
-            .delete(`/api/questions/${PARAM_ID}`)
+            .delete(`/api/questions/${PARAM_TEXT}`)
             .expect(httpStatus.NOT_FOUND)
             .then((response) => {
-                expect(questionBankServiceStub.deleteQuestion.calledWith(PARAM_ID)).to.equal(true);
+                expect(questionBankServiceStub.deleteQuestion.calledWith(PARAM_TEXT)).to.equal(true);
                 expect(response.body).to.deep.equal({});
             });
     });
