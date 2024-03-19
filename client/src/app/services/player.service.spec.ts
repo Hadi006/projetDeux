@@ -150,15 +150,15 @@ describe('PlayerService', () => {
         socketHelper.peerSideEmit('end-question');
     });
 
-    it('should start a timer on nextQuestion', (done) => {
+    it('should start a timer on question changed', (done) => {
         const countdown = 10;
         service.handleSockets();
-        socketHelper.on('next-question', () => {
+        socketHelper.on('question-changed', () => {
             expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
             done();
             return {};
         });
-        socketHelper.peerSideEmit('next-question', { countdown });
+        socketHelper.peerSideEmit('question-changed', { countdown });
     });
 
     it('should update scores on newScore', () => {
