@@ -6,36 +6,52 @@ import { ChatService } from './chat.service';
 import { HostService } from './host.service';
 import { PlayerService } from './player.service';
 import { WebSocketService } from './web-socket.service';
+import { Socket } from 'socket.io-client';
+
+class WebSocketServiceMock extends WebSocketService {
+    override connect() {
+        return;
+    }
+}
 
 describe('ChatService', () => {
     let service: ChatService;
-    let webSocketServiceSpy: jasmine.SpyObj<WebSocketService>;
-    let socketTestHelper: SocketTestHelper;
+    let webSocketServiceMock: WebSocketServiceMock;
+    let socketHelper: SocketTestHelper;
     // let playerService: PlayerService;
 
     beforeEach(() => {
-        const webSocketServiceSpyObj = jasmine.createSpyObj('WebSocketService', ['emit', 'onEvent']);
+        socketHelper = new SocketTestHelper();
+        webSocketServiceMock = new WebSocketServiceMock();
+        webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
         const playerServiceSpyObj = jasmine.createSpyObj('PlayerService', ['']);
         const hostServiceSpyObj = jasmine.createSpyObj('HostService', ['']);
 
         TestBed.configureTestingModule({
             providers: [
                 ChatService,
-                { provide: WebSocketService, useValue: webSocketServiceSpyObj },
+                { provide: WebSocketService, useValue: webSocketServiceMock },
                 { provide: PlayerService, useValue: playerServiceSpyObj },
                 { provide: HostService, useValue: hostServiceSpyObj },
             ],
         });
 
         service = TestBed.inject(ChatService);
-        webSocketServiceSpy = TestBed.inject(WebSocketService) as jasmine.SpyObj<WebSocketService>;
-        socketTestHelper = new SocketTestHelper();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        service['webSocketService'] = socketTestHelper as any;
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should add a message to the internal messages array', () => {
+        const message: ChatMessage = {
+            text: 'Test message',
+            timestamp: new Date(),
+            author: 'TestPlayer',
+            roomId: '12345',
+        };
+        socketHelper.peerSideEmit('message-received', message);
+        expect(service.messages.length).toBe(1);
     });
 
     it('should send a message', () => {
@@ -52,7 +68,7 @@ describe('ChatService', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (service as any)['playerService'] = playerServiceMock;
         service.sendMessage(message);
-        expect(webSocketServiceSpy.emit).toHaveBeenCalledWith('new-message', expectedMessage);
+        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('new-message', expectedMessage);
     });
 
     it('should return false for an empty message', () => {
@@ -93,7 +109,7 @@ describe('ChatService', () => {
 
     it('should emit new-message event with newChatMessage', () => {
         const newChatMessage = 'allo';
-        const emitSpy = spyOn(socketTestHelper, 'emit');
+        const emitSpy = spyOn(socketHelper, 'emit');
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         service['playerService'] = { pin: '123' } as any;
