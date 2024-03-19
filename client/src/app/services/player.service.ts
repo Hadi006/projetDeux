@@ -9,6 +9,7 @@ import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
 import { QuestionChangedEventData } from '@common/question-changed-event-data';
+import { JoinGameResult } from '@common/join-game-result';
 
 @Injectable({
     providedIn: 'root',
@@ -92,10 +93,11 @@ export class PlayerService {
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
             this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
-                const responseData = response as { player: Player; players: string[]; gameTitle: string; error: string };
+                const responseData = response as JoinGameResult;
                 if (!responseData.error) {
                     this.player = responseData.player;
-                    this.internalPlayers = responseData.players;
+                    this.internalPlayers = responseData.otherPlayers;
+                    this.internalPlayers.push(this.player.name);
                     this.internalGameTitle = responseData.gameTitle;
                     this.internalPin = pin;
                 }
