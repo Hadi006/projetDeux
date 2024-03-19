@@ -8,30 +8,36 @@ import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
+import { QuestionChangedEventData } from '@common/question-changed-event-data';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
     player: Player;
+    readonly startGameSubject: Subject<void>;
+    readonly endGameSubject: Subject<void>;
 
     private internalPin: string;
     private internalGameTitle: string;
-    private internalPlayers: string[] = [];
+    private internalPlayers: string[];
 
     private timerId: number;
-    private internalAnswerConfirmed: boolean = false;
+    private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
-    private internalIsCorrect: boolean = false;
-    private internalStartGameSubject: Subject<void> = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
-    private internalEndGameSubject: Subject<void> = new Subject<void>(); // les subjects sont faits pour etre observes, ils devraient etre public
+    private internalIsCorrect: boolean;
 
     constructor(
         private webSocketService: WebSocketService,
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.timerId = timeService.createTimerById(); // soit qu'on initialise tous les attributs dans le constructeur, soit qu'on les initialise tout en dehors du constructeur
+        this.timerId = timeService.createTimerById();
+        this.startGameSubject = new Subject<void>();
+        this.endGameSubject = new Subject<void>();
+        this.internalPlayers = [];
+        this.internalAnswerConfirmed = false;
+        this.internalIsCorrect = false;
     }
 
     get pin(): string {
@@ -56,16 +62,6 @@ export class PlayerService {
 
     get isCorrect(): boolean {
         return this.internalIsCorrect;
-    }
-
-    get startGameSubject(): Subject<void> {
-        // utilise public readonly a la place
-        return this.internalStartGameSubject;
-    }
-
-    get endGameSubject(): Subject<void> {
-        // utilise public readonly a la place
-        return this.internalEndGameSubject;
     }
 
     getPlayerAnswers(): Answer[] {
@@ -180,7 +176,7 @@ export class PlayerService {
 
     private onStartGame() {
         this.webSocketService.onEvent<number>('start-game', (countdown) => {
-            this.internalStartGameSubject.next();
+            this.startGameSubject.next();
             this.timeService.startTimerById(this.timerId, countdown);
         });
     }
@@ -193,7 +189,7 @@ export class PlayerService {
     }
 
     private onNextQuestion() {
-        this.webSocketService.onEvent<{ question: Question; countdown: number }>('next-question', ({ question, countdown }) => {
+        this.webSocketService.onEvent<QuestionChangedEventData>('question-changed', ({ question, countdown }) => {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });

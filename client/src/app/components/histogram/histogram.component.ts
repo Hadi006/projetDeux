@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ChartData } from 'chart.js';
 import { Chart, ChartConfiguration } from 'chart.js/auto';
 
@@ -7,22 +7,10 @@ import { Chart, ChartConfiguration } from 'chart.js/auto';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss'],
 })
-export class HistogramComponent implements OnInit, OnChanges {
+export class HistogramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() chartData: ChartData;
     chart: Chart | undefined;
     private chartConfig: ChartConfiguration;
-
-    constructor() {
-        this.chartData = {
-            labels: [],
-            datasets: [
-                {
-                    label: '',
-                    data: [],
-                },
-            ],
-        };
-    }
 
     ngOnInit() {
         this.chartConfig = {
@@ -30,16 +18,22 @@ export class HistogramComponent implements OnInit, OnChanges {
             data: this.chartData,
         };
 
-        Chart.getChart('histogram')?.destroy();
-
         this.chart = new Chart('histogram', this.chartConfig);
+        this.updateChart();
     }
 
     ngOnChanges() {
-        if (!Chart.getChart('histogram')) {
-            this.chart = new Chart('histogram', this.chartConfig);
-            return;
+        this.updateChart();
+    }
+
+    ngOnDestroy() {
+        if (this.chart) {
+            this.chart.destroy();
+            this.chart = undefined;
         }
+    }
+
+    private updateChart() {
         if (!this.chart) {
             return;
         }
@@ -49,6 +43,7 @@ export class HistogramComponent implements OnInit, OnChanges {
         } else {
             this.chart.data = this.chartData;
         }
+
         Chart.getChart('histogram')?.update();
     }
 }
