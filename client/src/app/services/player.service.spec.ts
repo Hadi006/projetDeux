@@ -9,6 +9,7 @@ import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
 import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Router } from '@angular/router';
+import { JoinGameResult } from '@common/join-game-result';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -19,7 +20,7 @@ class WebSocketServiceMock extends WebSocketService {
 describe('PlayerService', () => {
     let testQuestions: Question[];
     let testPlayer: Player;
-    let playerResponse: { player: Player; players: string[]; gameTitle: string; error: string };
+    let playerResponse: JoinGameResult;
 
     let service: PlayerService;
     let webSocketServiceMock: WebSocketServiceMock;
@@ -32,7 +33,7 @@ describe('PlayerService', () => {
         testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
         playerResponse = {
             player: { ...testPlayer },
-            players: [],
+            otherPlayers: [],
             gameTitle: '',
             error: '',
         };
@@ -211,7 +212,7 @@ describe('PlayerService', () => {
         service.joinGame('1', 'test').subscribe((error) => {
             expect(error).toEqual(playerResponse.error);
             expect(service.player).toEqual(playerResponse.player);
-            expect(service.players).toEqual(playerResponse.players);
+            expect(service.players).toEqual(playerResponse.otherPlayers);
             expect(service.gameTitle).toEqual(playerResponse.gameTitle);
             done();
         });
