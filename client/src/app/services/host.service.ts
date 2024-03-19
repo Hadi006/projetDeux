@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
+import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
-import { NextQuestionEventData } from '@common/next-question-event-data';
-import { PlayerLeftEventData } from '@common/player-left-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -279,6 +279,7 @@ export class HostService {
 
     private setupNextQuestion(): void {
         if (!this.getCurrentQuestion()) {
+            this.gameEndedSubject.next();
             return;
         }
 
