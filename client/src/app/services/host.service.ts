@@ -25,6 +25,7 @@ export class HostService {
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
+    private gameStarted = false;
 
     constructor(
         private webSocketService: WebSocketService,
@@ -100,7 +101,7 @@ export class HostService {
 
     startGame(countdown: number): void {
         this.emitStartGame(countdown);
-        this.internalQuitters = [];
+        this.gameStarted = true;
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
@@ -243,6 +244,10 @@ export class HostService {
         this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
             const { players, player } = data;
             this.internalGame.players = players;
+
+            if (!this.gameStarted) {
+                return;
+            }
 
             this.internalQuitters.push(player);
 
