@@ -63,7 +63,7 @@ describe('QuizValidator', () => {
 
     it('should check if the quiz is an object and fail', async () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
-        const compiledQuiz = await quizValidator.compile();
+        const compiledQuiz = await quizValidator.validate();
         expect(compiledQuiz.error).to.equal('Quiz : doit être un objet !\n');
     });
 
@@ -100,7 +100,7 @@ describe('QuizValidator', () => {
     it('should check title and fail if it is not an object', async () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkTitle();
-        const compiledQuiz = await quizValidator.compile();
+        const compiledQuiz = await quizValidator.validate();
         expect(compiledQuiz.error).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.data.title).to.equal(EMPTY_QUIZ.title);
     });
@@ -131,7 +131,7 @@ describe('QuizValidator', () => {
     it('should check description and fail if it is not an object', async () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkDescription();
-        const compiledQuiz = await quizValidator.compile();
+        const compiledQuiz = await quizValidator.validate();
         expect(compiledQuiz.error).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.data.description).to.equal(EMPTY_QUIZ.description);
     });
@@ -154,7 +154,7 @@ describe('QuizValidator', () => {
     it('should check duration and fail if it is not an object', async () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkDuration();
-        const compiledQuiz = await quizValidator.compile();
+        const compiledQuiz = await quizValidator.validate();
         expect(compiledQuiz.error).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.data.duration).to.equal(EMPTY_QUIZ.duration);
     });
@@ -193,7 +193,7 @@ describe('QuizValidator', () => {
     it('should check questions and fail if it is not an object', async () => {
         quizValidator = new QuizValidator('This is a test quiz', getDataStub);
         quizValidator.checkQuestions();
-        const compiledQuiz = await quizValidator.compile();
+        const compiledQuiz = await quizValidator.validate();
         expect(compiledQuiz.error).to.equal('Quiz : doit être un objet !\n');
         expect(compiledQuiz.data.questions).to.deep.equal(EMPTY_QUIZ.questions);
     });
