@@ -4,7 +4,6 @@ interface Answer {
 }
 
 interface Question {
-    id: string;
     text: string;
     type: 'QCM' | 'QRL' | '';
     points: number;

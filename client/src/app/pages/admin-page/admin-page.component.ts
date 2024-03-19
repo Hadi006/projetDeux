@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { PromptComponent } from '@app/components/prompt/prompt.component';
+import { Action, ActionType } from '@common/action';
 import { INVALID_INDEX } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Observable } from 'rxjs';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
-import { PromptComponent } from '@app/components/prompt/prompt.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -33,51 +34,52 @@ export class AdminPageComponent implements OnInit {
             return;
         }
 
-        this.adminService.uploadQuiz(quizFile).subscribe((response: { quiz?: Quiz; errorLog: string }) => {
+        const subscription = this.adminService.uploadQuiz(quizFile).subscribe((response: { quiz?: Quiz; errorLog: string }) => {
             if (!response.errorLog) {
                 return;
             }
-
             if (response.errorLog.includes('titre déjà utilisé')) {
-                this.promptForNewTitle()
-                    .afterClosed()
-                    .subscribe((newTitle: string) => {
-                        if (!newTitle) {
-                            return;
-                        }
-                        this.adminService.submitQuiz(response.quiz, newTitle).subscribe();
-                    });
+                this.promptForNewTitle();
             }
 
             this.dialog.open(AlertComponent, { data: { message: response.errorLog } });
+
+            subscription.unsubscribe();
         });
     }
 
-    gotoQuizPage(index?: number) {
+    goToQuizPage(index?: number) {
         this.adminService.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
         this.router.navigate(['/home/admin/quizzes/quiz']);
     }
 
-    handle(action: { type: string; quizIndex: number }) {
+    handle(action : Action) {
         switch (action.type) {
-            case 'change visibility':
-                this.adminService.changeQuizVisibility(action.quizIndex);
+            case ActionType.CHANGE_VISIBILITY:
+                this.adminService.changeQuizVisibility(action.target);
                 break;
-            case 'edit':
-                this.gotoQuizPage(action.quizIndex);
+            case ActionType.EDIT:
+                this.goToQuizPage(action.target);
                 break;
-            case 'export':
-                this.adminService.downloadQuiz(action.quizIndex);
+            case ActionType.EXPORT:
+                this.adminService.downloadQuiz(action.target);
                 break;
-            case 'delete':
-                this.adminService.deleteQuiz(action.quizIndex);
+            case ActionType.DELETE:
+                this.adminService.deleteQuiz(action.target);
                 break;
             default:
                 break;
         }
     }
 
-    private promptForNewTitle(): MatDialogRef<PromptComponent> {
-        return this.dialog.open(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } });
+    private promptForNewTitle() {
+        const subscription = this.dialog.open(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } }).afterClosed().subscribe((newTitle: string) => {
+            if (!newTitle) {
+                return;
+            }
+            this.adminService.submitQuiz(undefined, newTitle).subscribe().unsubscribe();
+
+            subscription.unsubscribe();
+        });
     }
 }

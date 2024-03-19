@@ -1,9 +1,9 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BLANK_QUESTION } from '@common/constant';
 import { Question } from '@common/quiz';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { CommunicationService } from './communication.service';
-import { BLANK_QUESTION } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
@@ -48,7 +48,7 @@ export class QuestionBankService {
     }
 
     updateQuestion(question: Question): Observable<string> {
-        return this.http.patch<{ question: Question; compilationError: string }>(`questions/${question.id}`, { question }).pipe(
+        return this.http.patch<{ question: Question; compilationError: string }>(`questions/${question.text}`, { question }).pipe(
             map((response) => {
                 if (!response.body || !response.body.question || response.body.compilationError === undefined) {
                     return 'Server error';
@@ -58,7 +58,7 @@ export class QuestionBankService {
                     return response.body.compilationError;
                 }
 
-                const INDEX: number = this.questions.findIndex((q: Question) => q.id === question.id);
+                const INDEX: number = this.questions.findIndex((q: Question) => q.text === question.text);
                 this.questions[INDEX] = response.body.question;
                 this.questions$.next(this.questions);
 
@@ -73,7 +73,7 @@ export class QuestionBankService {
             return;
         }
 
-        this.http.delete<string>(`questions/${question.id}`).subscribe((response) => {
+        this.http.delete<string>(`questions/${question.text}`).subscribe((response) => {
             if (response.status === HttpStatusCode.Ok) {
                 this.questions.splice(index, 1);
                 this.questions$.next(this.questions);

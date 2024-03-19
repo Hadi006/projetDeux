@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Action, ActionType } from '@common/action';
 import { Question } from '@common/quiz';
 
 @Component({
@@ -10,7 +11,7 @@ import { Question } from '@common/quiz';
 export class QuestionItemComponent {
     @Input() question: Question;
     @Input() index: number;
-    @Output() action: EventEmitter<{ type: string; questionIndex: number }> = new EventEmitter();
+    @Output() action: EventEmitter<Action> = new EventEmitter();
 
     displayDate: boolean = false;
 
@@ -21,7 +22,7 @@ export class QuestionItemComponent {
     }
 
     onAction(actionType: string) {
-        this.action.emit({ type: actionType, questionIndex: this.index });
+        this.action.emit({ type: actionType as ActionType, target: this.index });
     }
 
     private joinUrl(): string {

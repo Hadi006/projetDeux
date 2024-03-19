@@ -11,12 +11,12 @@ export class QuestionBankService {
         return await this.database.get<Question>('questions');
     }
 
-    async getQuestion(text: string): Promise<Question> {
+    private async getQuestion(text: string): Promise<Question> {
         return (await this.database.get<Question>('questions', { text }))[0];
     }
 
     validateQuestion(question: unknown): { question: Question; compilationError: string } {
-        return new QuestionValidator(question).checkId().checkText().checkType().checkPoints().checkChoices().compile();
+        return new QuestionValidator(question).validate();
     }
 
     async updateQuestion(question: Question, id: string): Promise<boolean> {
@@ -33,19 +33,5 @@ export class QuestionBankService {
 
     async deleteQuestion(questionId: string): Promise<boolean> {
         return await this.database.delete('questions', { id: questionId });
-    }
-
-    async validateAnswer(question: Question, playerAnswers: boolean[]): Promise<boolean> {
-        if (question.type !== 'QCM') {
-            return true;
-        }
-
-        for (let i = 0; i < question.choices.length; i++) {
-            if (question.choices[i].isCorrect !== playerAnswers[i]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

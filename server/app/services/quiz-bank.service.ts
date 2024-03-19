@@ -24,7 +24,6 @@ export class QuizBankService {
         let quiz = result[0];
         quiz = { ...quiz, questions: [] };
         result[0]?.questions.forEach((question) => {
-            delete question.id;
             quiz.questions.push(question);
         });
         return result[0] as Quiz;
@@ -46,7 +45,7 @@ export class QuizBankService {
 
     async verifyQuiz(quiz: unknown): Promise<{ quiz: Quiz; errorLog: string }> {
         const quizValidator = new QuizValidator(quiz, async (query: object) => this.database.get<Quiz>('quizzes', query));
-        const result = await quizValidator.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
+        const result = await quizValidator.validate();
         return { quiz: result.quiz, errorLog: result.compilationError };
     }
 

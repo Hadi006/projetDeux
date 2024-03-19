@@ -38,12 +38,14 @@ export class QuestionFormComponent {
     }
 
     submit() {
-        this.admin.submitQuestion(this.question).subscribe((error: string) => {
+        const subscribtion = this.admin.submitQuestion(this.question).subscribe((error: string) => {
             if (error) {
                 this.dialog.open(AlertComponent, { data: { message: error } });
             } else {
                 this.dialogRef.close(this.question);
             }
+
+            subscribtion.unsubscribe();
         });
     }
 }

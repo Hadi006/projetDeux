@@ -1,6 +1,5 @@
 import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
-import { randomUUID } from 'crypto';
 import { AnswerValidator } from './answer-validator';
 
 export class QuestionValidator {
@@ -8,44 +7,27 @@ export class QuestionValidator {
     private question: Question;
     private newQuestion: Question;
     private compilationError: string;
-    private isObject: boolean;
-
     constructor(question: unknown) {
         this.tasks = [];
         this.question = question as Question;
-        this.isObject = false;
         this.compilationError = '';
         this.newQuestion = {
-            id: undefined,
             text: '',
             type: '',
             points: 0,
             choices: [],
         };
-        this.checkObject();
     }
 
-    checkId(): QuestionValidator {
-        this.tasks.push(() => {
-            if (!this.isObject) {
-                return;
-            }
-
-            if (!('id' in this.question) || !(typeof this.question.id === 'string') || this.question.id === '') {
-                this.newQuestion.id = randomUUID();
-                return;
-            }
-            this.newQuestion.id = this.question.id;
-        });
-        return this;
+    validate(): { question: Question; compilationError: string } {
+        if (!this.question || typeof this.question !== 'object') {
+            return { question: this.newQuestion, compilationError: 'Question : doit être un objet !\n' };
+        }
+        return this.checkText().checkType().checkPoints().checkChoices().compile();
     }
 
     checkText(): QuestionValidator {
-        this.tasks.push(async () => {
-            if (!this.isObject) {
-                return;
-            }
-
+        this.tasks.push(() => {
             if (!('text' in this.question) || typeof this.question.text !== 'string' || this.question.text === '') {
                 this.compilationError += 'Question : texte manquant !\n';
                 return;
@@ -58,10 +40,6 @@ export class QuestionValidator {
 
     checkType(): QuestionValidator {
         this.tasks.push(() => {
-            if (!this.isObject) {
-                return;
-            }
-
             if (!('type' in this.question) || typeof this.question.type !== 'string') {
                 this.compilationError += 'Question : type manquant !\n';
                 return;
@@ -77,10 +55,6 @@ export class QuestionValidator {
 
     checkPoints(): QuestionValidator {
         this.tasks.push(() => {
-            if (!this.isObject) {
-                return;
-            }
-
             if (!('points' in this.question) || typeof this.question.points !== 'number') {
                 this.compilationError += 'Question : points manquants !\n';
                 return;
@@ -97,10 +71,6 @@ export class QuestionValidator {
 
     checkChoices(): QuestionValidator {
         this.tasks.push(() => {
-            if (!this.isObject) {
-                return;
-            }
-
             if (!('choices' in this.question) || !Array.isArray(this.question.choices)) {
                 this.compilationError += 'Question : choix manquants !\n';
                 return;
@@ -110,19 +80,8 @@ export class QuestionValidator {
                 this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
                 return;
             }
-            let hasCorrectAnswer = false;
-            let hasIncorrectAnswer = false;
-            for (const choice of this.question.choices) {
-                const result: { answer: Answer; compilationError: string } = new AnswerValidator(choice).checkText().checkType().compile();
 
-                this.newQuestion.choices.push(result.answer);
-                this.compilationError += result.compilationError;
-                if (!result.compilationError) {
-                    hasCorrectAnswer = hasCorrectAnswer || result.answer.isCorrect;
-                    hasIncorrectAnswer = hasIncorrectAnswer || !result.answer.isCorrect;
-                }
-            }
-            if (!hasCorrectAnswer || !hasIncorrectAnswer) {
+            if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
                 this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
             }
         });
@@ -134,15 +93,20 @@ export class QuestionValidator {
         return { question: this.newQuestion, compilationError: this.compilationError };
     }
 
-    private checkObject(): QuestionValidator {
-        this.tasks.push(() => {
-            if (!this.question || typeof this.question !== 'object') {
-                this.compilationError += 'Question : doit être un objet !\n';
-                this.isObject = false;
-                return;
+    private hasBothCorrectAndIncorrectAnswers(choices: Answer[]): boolean {
+        let hasCorrectAnswer = false;
+        let hasIncorrectAnswer = false;
+        for (const choice of choices) {
+            const result = new AnswerValidator(choice).validate();
+            this.newQuestion.choices.push(result.answer);
+            this.compilationError += result.compilationError;
+
+            if (!result.compilationError) {
+                hasCorrectAnswer = hasCorrectAnswer || result.answer.isCorrect;
+                hasIncorrectAnswer = hasIncorrectAnswer || !result.answer.isCorrect;
             }
-            this.isObject = true;
-        });
-        return this;
+        }
+
+        return hasCorrectAnswer && hasIncorrectAnswer;
     }
 }

@@ -1,9 +1,7 @@
 import { AccessToken } from '@common/access-token';
-import { Quiz } from '@common/quiz';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
-import { Question } from '@common/quiz';
-import { Answer } from '@common/quiz';
+import { Answer, Question, Quiz } from '@common/quiz';
 
 /* Components */
 export const DEFAULT_WIDTH = 200;
@@ -26,8 +24,6 @@ export const SHOW_ANSWER_DELAY = 3;
 export const INVALID_TOKEN: AccessToken = { id: '', expirationDate: -1 };
 
 export const GOOD_ANSWER_BONUS = 0.2;
-
-export const TEN = 10;
 
 export const LOWER_BOUND = 10;
 
@@ -113,7 +109,6 @@ export const TEST_ANSWERS: Answer[] = [
 
 export const TEST_QUESTIONS: Question[] = [
     {
-        id: '1',
         text: 'Test Question',
         type: 'QCM',
         points: 10,
@@ -121,7 +116,6 @@ export const TEST_QUESTIONS: Question[] = [
         choices: TEST_ANSWERS,
     },
     {
-        id: '2',
         text: 'Test Question 2',
         type: 'QRL',
         points: 10,

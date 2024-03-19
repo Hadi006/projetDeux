@@ -10,14 +10,15 @@ import { CommunicationService } from './communication.service';
 export class AdminQuizzesService {
     selectedQuestion: Question;
     readonly quizzes$: BehaviorSubject<Quiz[]>;
-    private quizzes: Quiz[] = [];
+    private quizzes: Quiz[];
 
-    private selectedQuizIndex: number = INVALID_INDEX;
+    private selectedQuizIndex: number;
 
     constructor(private http: CommunicationService) {
+        this.selectedQuizIndex = INVALID_INDEX;
+        this.quizzes = [];
         this.quizzes$ = new BehaviorSubject<Quiz[]>(this.quizzes);
         this.selectedQuestion = {
-            id: '',
             text: '',
             type: 'QCM',
             points: 0,
@@ -30,17 +31,7 @@ export class AdminQuizzesService {
 
     fetchQuizzes() {
         this.http.get<Quiz[]>('quizzes').subscribe((response: HttpResponse<Quiz[]>) => {
-            if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
-                return;
-            }
-            this.quizzes = response.body;
-            this.quizzes$.next(this.quizzes);
-        });
-    }
-
-    fetchVisibleQuizzes() {
-        this.http.get<Quiz[]>('quizzes/visible').subscribe((response: HttpResponse<Quiz[]>) => {
-            if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+            if (!response.body || response.status !== HttpStatusCode.Ok) {
                 return;
             }
             this.quizzes = response.body;

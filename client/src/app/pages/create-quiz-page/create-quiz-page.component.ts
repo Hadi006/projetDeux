@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { Action, ActionType } from '@common/action';
 import { BLANK_QUESTION } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 
@@ -26,13 +27,13 @@ export class CreateQuizPageComponent implements OnInit {
         this.quiz = this.adminService.getSelectedQuiz();
     }
 
-    handle(action: { type: string; questionIndex: number }) {
+    handle(action: Action) {
         switch (action.type) {
-            case 'edit':
-                this.openQuestionForm(action.questionIndex);
+            case ActionType.EDIT:
+                this.openQuestionForm(action.target);
                 break;
-            case 'delete':
-                this.quiz.questions.splice(action.questionIndex, 1);
+            case ActionType.DELETE:
+                this.quiz.questions.splice(action.target, 1);
                 break;
             default:
                 break;
@@ -48,10 +49,12 @@ export class CreateQuizPageComponent implements OnInit {
             height: '80%',
         });
 
-        questionForm.afterClosed().subscribe((question?: Question) => {
+        const subscription = questionForm.afterClosed().subscribe((question?: Question) => {
             if (question) {
                 this.quiz.questions[questionIndex] = question;
             }
+
+            subscription.unsubscribe();
         });
     }
 
@@ -72,12 +75,14 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     private processQuiz(quiz: Quiz, isNew: boolean) {
-        this.submitQuizUpdate(quiz, isNew).subscribe((response: { errorLog: string }) => {
+        const subscription = this.submitQuizUpdate(quiz, isNew).subscribe((response: { errorLog: string }) => {
             if (response.errorLog) {
                 this.alert(response.errorLog);
             } else {
                 this.close();
             }
+
+            subscription.unsubscribe();
         });
     }
 

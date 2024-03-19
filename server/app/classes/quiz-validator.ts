@@ -8,14 +8,12 @@ export class QuizValidator {
     private quiz: Quiz;
     private newQuiz: Quiz;
     private compilationError: string;
-    private isObject: boolean;
     private getData: (query: object) => Promise<Quiz[]>;
 
     constructor(quiz: unknown, getData: (query: object) => Promise<Quiz[]>) {
         this.tasks = [];
         this.quiz = quiz as Quiz;
         this.getData = getData;
-        this.isObject = false;
         this.compilationError = '';
         this.newQuiz = {
             id: '',
@@ -26,14 +24,17 @@ export class QuizValidator {
             visible: false,
             questions: [],
         };
-        this.checkType();
+    }
+
+    async validate(): Promise<{ quiz: Quiz; compilationError: string }> {
+        if (!this.quiz || typeof this.quiz !== 'object') {
+            return { quiz: this.newQuiz, compilationError: 'Quiz : doit être un objet !\n' };
+        }
+        return await this.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().compile();
     }
 
     checkId(): QuizValidator {
         this.tasks.push(async () => {
-            if (!this.isObject) {
-                return;
-            }
             if (!('id' in this.quiz) || typeof this.quiz.id !== 'string' || this.quiz.id === '') {
                 this.newQuiz.id = randomUUID();
                 return;
@@ -47,10 +48,6 @@ export class QuizValidator {
 
     checkTitle(): QuizValidator {
         this.tasks.push(async () => {
-            if (!this.isObject) {
-                return;
-            }
-
             if (!('title' in this.quiz) || typeof this.quiz.title !== 'string' || this.quiz.title === '') {
                 this.compilationError += 'Quiz : titre manquant !\n';
                 return;
@@ -70,11 +67,7 @@ export class QuizValidator {
 
     checkDescription(): QuizValidator {
         this.tasks.push(async () => {
-            if (!this.isObject) {
-                return;
-            }
-
-            if (!('description' in this.quiz) || typeof this.quiz.description !== 'string') {
+            if (!('description' in this.quiz) || typeof this.quiz.description !== 'string' || this.quiz.description === '') {
                 this.compilationError += 'Quiz : description manquante !\n';
                 return;
             }
@@ -86,10 +79,6 @@ export class QuizValidator {
 
     checkDuration(): QuizValidator {
         this.tasks.push(async () => {
-            if (!this.isObject) {
-                return;
-            }
-
             if (!('duration' in this.quiz) || typeof this.quiz.duration !== 'number') {
                 this.compilationError += 'Quiz : durée manquante !\n';
                 return;
@@ -107,10 +96,6 @@ export class QuizValidator {
 
     checkQuestions(): QuizValidator {
         this.tasks.push(async () => {
-            if (!this.isObject) {
-                return;
-            }
-
             if (!('questions' in this.quiz) || !Array.isArray(this.quiz.questions)) {
                 this.compilationError += 'Quiz : questions manquantes !\n';
                 return;
@@ -122,13 +107,7 @@ export class QuizValidator {
             }
 
             for (const question of this.quiz.questions) {
-                const result: { question: Question; compilationError: string } = new QuestionValidator(question)
-                    .checkId()
-                    .checkText()
-                    .checkType()
-                    .checkPoints()
-                    .checkChoices()
-                    .compile();
+                const result: { question: Question; compilationError: string } = new QuestionValidator(question).validate();
                 if (result.compilationError) {
                     this.compilationError += result.compilationError;
                 } else {
@@ -148,18 +127,5 @@ export class QuizValidator {
         this.newQuiz.visible = false;
 
         return { quiz: this.newQuiz, compilationError: this.compilationError };
-    }
-
-    private checkType(): QuizValidator {
-        this.tasks.push(async () => {
-            if (!this.quiz || typeof this.quiz !== 'object') {
-                this.compilationError += 'Quiz : doit être un objet !\n';
-                this.isObject = false;
-                return;
-            }
-            this.isObject = true;
-        });
-
-        return this;
     }
 }
