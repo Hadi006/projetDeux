@@ -46,7 +46,7 @@ describe('AnswerValidator', () => {
     it('should check if the answer has a text and fail if it is not an object', () => {
         answerValidator = new AnswerValidator('This is a test answer');
         answerValidator.checkText();
-        const compiledAnswer = answerValidator.compile();
+        const compiledAnswer = answerValidator.validate();
         expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
         expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
     });
@@ -69,7 +69,7 @@ describe('AnswerValidator', () => {
     it('should check if the answer has a type and fail if it is not an object', () => {
         answerValidator = new AnswerValidator('This is a test answer');
         answerValidator.checkText().checkType();
-        const compiledAnswer = answerValidator.compile();
+        const compiledAnswer = answerValidator.validate();
         expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
         expect(compiledAnswer.error).to.equal('Reponse : doit etre un objet !\n');
     });
