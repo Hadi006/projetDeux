@@ -205,7 +205,7 @@ describe('AdminQuizzesService', () => {
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.error).toBe('');
+                expect(result.error).toBe('titre déjà utilisé');
                 expect(result.data).toBeUndefined();
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
