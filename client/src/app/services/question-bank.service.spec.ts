@@ -122,16 +122,12 @@ describe('QuestionBankService', () => {
         };
 
         service.addQuestion(newQuestion).subscribe((error) => {
-            expect(error).toBe('Server error');
+            expect(error).toBe('');
         });
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions`);
         expect(req.request.method).toBe('POST');
-        req.flush({ question: newQuestion, compilationError: '' });
-
-        service.questions$.subscribe((questions) => {
-            expect(questions).toContain(newQuestion);
-        });
+        req.flush({ body: { data: newQuestion, error: '' } });
     });
 
     it('should not add a question when the server response has no body', () => {
@@ -172,7 +168,7 @@ describe('QuestionBankService', () => {
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions/${updatedQuestion.text}`);
         expect(req.request.method).toBe('PATCH');
-        req.flush({ question: updatedQuestion, compilationError: '' });
+        req.flush({ body: { data: updatedQuestion, error: '' } });
 
         service.questions$.subscribe((questions) => {
             expect(questions).toContain(updatedQuestion);

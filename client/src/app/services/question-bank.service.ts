@@ -40,7 +40,7 @@ export class QuestionBankService {
                     return response.body.error;
                 }
 
-                this.questions.push(response.body.data!);
+                this.questions.push(response.body.data as Question);
                 this.questions$.next(this.questions);
 
                 return '';
@@ -75,7 +75,6 @@ export class QuestionBankService {
         }
 
         this.http.delete<string>(`questions/${question.text}`).subscribe((response) => {
-            console.log(question)
             if (response.status === HttpStatusCode.Ok) {
                 this.questions.splice(index, 1);
                 this.questions$.next(this.questions);
