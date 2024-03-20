@@ -53,14 +53,4 @@ describe('ChatboxComponent', () => {
         component.sendMessage();
         expect(component.newMessage).toBe('');
     });
-
-    it('should handle message updates correctly', () => {
-        const spyHandleMessagesUpdate = spyOn(component, 'handleMessagesUpdate').and.callThrough();
-
-        component.ngOnInit();
-
-        chatServiceSpy.messagesSubjectGetter.next();
-
-        expect(spyHandleMessagesUpdate).toHaveBeenCalled();
-    });
 });

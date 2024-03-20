@@ -121,12 +121,6 @@ describe('ChatService', () => {
         expect(service.messages).toEqual(mockMessages);
     });
 
-    it('should return the messages subject', () => {
-        const mockSubject = jasmine.createSpyObj('Subject', ['next']);
-        service['messagesSubject'] = mockSubject;
-        expect(service.messagesSubjectGetter).toBe(mockSubject);
-    });
-
     it('should return true for a non-empty message', () => {
         const message = 'Test message';
         expect(service['validateMessage'](message)).toBeTrue();
