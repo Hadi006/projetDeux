@@ -53,17 +53,6 @@ describe('ChatService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should add a message to the internal messages array', () => {
-        const message: ChatMessage = {
-            text: 'Test message',
-            timestamp: new Date(),
-            author: 'TestPlayer',
-            roomId: '12345',
-        };
-        socketHelper.peerSideEmit('message-received', message);
-        expect(service.messages.length).toBe(1);
-    });
-
     it('should send a message as Player', () => {
         const message = 'Test message';
         const expectedMessage: ChatMessage = {
@@ -101,9 +90,9 @@ describe('ChatService', () => {
             author: 'TestPlayer',
             roomId: '12345',
         };
+        service.init();
         socketHelper.on('message-received', (receivedMessage: ChatMessage) => {
             expect(receivedMessage).toEqual(message);
-            service['internalMessages'].push(receivedMessage);
             expect(service['internalMessages']).toContain(receivedMessage);
             return {};
         });
