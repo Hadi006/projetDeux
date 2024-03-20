@@ -79,6 +79,7 @@ describe('ChatService', () => {
         };
         const emitSpy = spyOn(webSocketServiceMock, 'emit');
         spyOnProperty(playerServiceSpy, 'pin', 'get').and.returnValue(undefined as unknown as string);
+        service.init();
         service.sendMessage(message);
         expect(emitSpy).toHaveBeenCalledWith('new-message', expectedMessage);
     });
