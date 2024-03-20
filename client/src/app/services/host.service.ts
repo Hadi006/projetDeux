@@ -147,7 +147,6 @@ export class HostService {
         this.emitAnswer();
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
-        this.internalQuestionEndedSubject.next();
     }
 
     private emitToggleLock(): void {
@@ -217,6 +216,7 @@ export class HostService {
             },
             (game: unknown) => {
                 this.internalGame = game as Game;
+                this.internalQuestionEndedSubject.next();
             },
         );
     }
@@ -284,6 +284,7 @@ export class HostService {
 
     private setupNextQuestion(): void {
         if (!this.getCurrentQuestion()) {
+            this.gameEndedSubject.next();
             return;
         }
 

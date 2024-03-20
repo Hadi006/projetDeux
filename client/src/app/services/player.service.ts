@@ -224,6 +224,7 @@ export class PlayerService {
     private onGameDeleted(): void {
         this.webSocketService.onEvent<Game>('game-deleted', () => {
             this.leaveGame();
+            this.endGameSubject.next();
         });
     }
 
