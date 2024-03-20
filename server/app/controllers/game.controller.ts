@@ -40,9 +40,8 @@ export class GameController {
 
     private chatMessages(socket: Socket): void {
         socket.on('new-message', async (message) => {
-            console.log(message);
+            console.log({ ...message, socketId: socket.id, allSockets: this.sio.sockets.sockets.keys(), connected: socket.connected });
             const roomPin = message.roomId;
-            console.log(message.roomId);
             this.sio.to(roomPin).emit('message-received', message);
         });
     }

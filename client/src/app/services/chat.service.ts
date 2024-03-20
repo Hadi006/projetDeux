@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@common/chat-message';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
-import { Subject } from 'rxjs';
 import { HostService } from './host.service';
 import { PlayerService } from './player.service';
 import { WebSocketService } from './web-socket.service';
@@ -11,24 +10,17 @@ import { WebSocketService } from './web-socket.service';
 })
 export class ChatService {
     private internalMessages: ChatMessage[] = [];
-    private messagesSubject: Subject<void> = new Subject<void>();
-    private internalParticipantName: string;
+    private internalParticipantName: string = '';
 
     constructor(
         private webSocketService: WebSocketService,
         private playerService: PlayerService,
         private hostService: HostService,
     ) {
-        this.setupSocket();
-        this.internalParticipantName = this.playerService.player?.name || 'Organisateur';
     }
 
     get messages(): ChatMessage[] {
         return this.internalMessages;
-    }
-
-    get messagesSubjectGetter(): Subject<void> {
-        return this.messagesSubject;
     }
 
     get participantName(): string {
@@ -50,8 +42,11 @@ export class ChatService {
         this.webSocketService.emit('new-message', newChatMessage);
     }
 
-    private setupSocket() {
+    init() {
+        this.internalMessages = [];
+        this.internalParticipantName = this.playerService.player?.name || 'Organisateur';
         this.webSocketService.onEvent<ChatMessage>('message-received', (message) => {
+            console.log('chatService message-received', message);
             this.internalMessages.push(message);
         });
     }

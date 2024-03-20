@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '@app/services/chat.service';
 import { PlayerService } from '@app/services/player.service';
-import { Subscription } from 'rxjs';
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
@@ -10,7 +9,7 @@ import { Subscription } from 'rxjs';
 export class ChatboxComponent implements OnInit, OnDestroy {
     showChat = false;
     newMessage = '';
-    private messagesSubscription: Subscription;
+    // private messagesSubscription: Subscription;
 
     constructor(
         public chatService: ChatService,
@@ -23,13 +22,14 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.messagesSubscription = this.chatService.messagesSubjectGetter.subscribe(() => {
-            this.handleMessagesUpdate();
-        });
+        // this.messagesSubscription = this.chatService.messagesSubjectGetter.subscribe(() => {
+        //     this.handleMessagesUpdate();
+        // });
+        this.chatService.init();
     }
 
     ngOnDestroy() {
-        this.messagesSubscription.unsubscribe();
+        // this.messagesSubscription.unsubscribe();
     }
 
     toggleChat() {
