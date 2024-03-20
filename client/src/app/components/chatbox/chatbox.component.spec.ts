@@ -8,13 +8,15 @@ describe('ChatboxComponent', () => {
     let fixture: ComponentFixture<ChatboxComponent>;
     let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(() => {
         chatServiceSpy = jasmine.createSpyObj('ChatService', ['sendMessage']);
 
         const messagesSubject = new Subject<void>();
 
         Object.defineProperty(chatServiceSpy, 'messagesSubjectGetter', { value: messagesSubject });
+    });
 
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [ChatboxComponent],
             providers: [{ provide: ChatService, useValue: chatServiceSpy }],
