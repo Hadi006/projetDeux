@@ -63,6 +63,7 @@ describe('ChatService', () => {
         };
         const emitSpy = spyOn(webSocketServiceMock, 'emit');
         spyOnProperty(hostServiceSpy, 'game', 'get').and.returnValue(undefined as unknown as Game);
+        service.init();
 
         service.sendMessage(message);
 
