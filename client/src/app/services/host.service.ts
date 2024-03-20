@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ChatMessage } from '@common/chat-message';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
+import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
-import { NextQuestionEventData } from '@common/next-question-event-data';
-import { PlayerLeftEventData } from '@common/player-left-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -74,6 +75,9 @@ export class HostService {
         if (!this.webSocketService.isSocketAlive()) {
             this.webSocketService.connect();
         }
+        this.webSocketService.onEvent<ChatMessage>('message-received', (message) => {
+            console.log('hostService message-received', message);
+        });
 
         this.onPlayerJoined();
         this.onPlayerLeft();
@@ -86,6 +90,7 @@ export class HostService {
     }
 
     leaveGame(): void {
+        // this.chatService.clearChatbox(); Sa nous donne erreur lorsquon create game
         this.cleanUp();
         this.router.navigate(['/']);
     }
@@ -142,7 +147,6 @@ export class HostService {
         this.emitAnswer();
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
-        this.internalQuestionEndedSubject.next();
     }
 
     private emitToggleLock(): void {
@@ -212,6 +216,7 @@ export class HostService {
             },
             (game: unknown) => {
                 this.internalGame = game as Game;
+                this.internalQuestionEndedSubject.next();
             },
         );
     }
@@ -279,6 +284,7 @@ export class HostService {
 
     private setupNextQuestion(): void {
         if (!this.getCurrentQuestion()) {
+            this.gameEndedSubject.next();
             return;
         }
 

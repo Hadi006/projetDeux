@@ -64,7 +64,7 @@ describe('ChatService', () => {
         expect(service.messages.length).toBe(1);
     });
 
-    it('should send a message as a player', () => {
+    it('should send a message as Player', () => {
         const message = 'Test message';
         const expectedMessage: ChatMessage = {
             text: message,

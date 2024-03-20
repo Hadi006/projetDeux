@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
+import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
+import { QuestionChangedEventData } from '@common/question-changed-event-data';
 import { Answer, Question } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from './time.service';
 import { WebSocketService } from './web-socket.service';
-import { QuestionChangedEventData } from '@common/question-changed-event-data';
-import { JoinGameResult } from '@common/join-game-result';
 
 @Injectable({
     providedIn: 'root',
@@ -109,6 +109,7 @@ export class PlayerService {
 
     leaveGame(): void {
         this.emitLeaveGame();
+        // this.chatService.clearChatbox(); Erreur lorsquon join game
         this.cleanUp();
         this.router.navigate(['/']);
     }
@@ -223,6 +224,7 @@ export class PlayerService {
     private onGameDeleted(): void {
         this.webSocketService.onEvent<Game>('game-deleted', () => {
             this.leaveGame();
+            this.endGameSubject.next();
         });
     }
 
