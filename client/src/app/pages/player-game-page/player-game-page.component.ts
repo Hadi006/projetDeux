@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
-// import { AlertComponent } from '@app/components/alert/alert.component';
 
 @Component({
     selector: 'app-player-game-page',

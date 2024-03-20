@@ -109,6 +109,7 @@ export class PlayerService {
 
     leaveGame(): void {
         this.emitLeaveGame();
+        // this.chatService.clearChatbox(); Erreur lorsquon join game
         this.cleanUp();
         this.router.navigate(['/']);
     }
