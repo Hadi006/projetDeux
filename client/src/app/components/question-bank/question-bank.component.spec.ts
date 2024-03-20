@@ -106,6 +106,13 @@ describe('QuestionBankComponent', () => {
         expect(questionBankServiceSpy.deleteQuestion).toHaveBeenCalledWith(0);
     });
 
+    it('should do nothing when handle is called with an invalid type', () => {
+        spyOn(component, 'openQuestionForm');
+        component.handle({ type: ActionType.EXPORT, target: 0 });
+        expect(questionBankServiceSpy.deleteQuestion).not.toHaveBeenCalled();
+        expect(component.openQuestionForm).not.toHaveBeenCalled();
+    });
+
     it('should do nothing when drop is called with invalid data', () => {
         component.drop({ container: { data: null }, previousContainer: { data: null } } as CdkDragDrop<Question[] | null>);
         expect(questionBankServiceSpy.addQuestion).not.toHaveBeenCalled();
