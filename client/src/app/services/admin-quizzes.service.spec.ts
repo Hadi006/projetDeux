@@ -206,7 +206,7 @@ describe('AdminQuizzesService', () => {
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
                 expect(result.error).toBe('titre déjà utilisé');
-                expect(result.data).toBeUndefined();
+                expect(result.data?.title).toEqual(testQuizzes[0].title);
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
         });
