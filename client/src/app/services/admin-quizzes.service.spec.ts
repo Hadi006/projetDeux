@@ -184,12 +184,12 @@ describe('AdminQuizzesService', () => {
     it('should not update quizzes list if submission fails', () => {
         const responseBodyMock = {
             data: undefined,
-            error: 'submission failed',
+            error: 'Submission failed',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.error).toBe('submission failed');
+                expect(result.error).toBe('Submission failed');
                 expect(result.data).toBeUndefined();
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
