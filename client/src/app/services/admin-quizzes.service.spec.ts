@@ -67,7 +67,7 @@ describe('AdminQuizzesService', () => {
                 new HttpResponse({
                     status: 200,
                     statusText: 'OK',
-                    body: { quiz: { ...testQuizzes[0] }, error: '' },
+                    body: { data: { ...testQuizzes[0] }, error: '' },
                 }),
             ),
         );
@@ -169,7 +169,7 @@ describe('AdminQuizzesService', () => {
 
     it('should submit a quiz and update quizzes list if successful', () => {
         const responseBodyMock = {
-            quiz: testQuiz,
+            data: testQuiz,
             error: '',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
@@ -183,7 +183,7 @@ describe('AdminQuizzesService', () => {
 
     it('should not update quizzes list if submission fails', () => {
         const responseBodyMock = {
-            quiz: undefined,
+            data: undefined,
             error: 'submission failed',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
@@ -198,7 +198,7 @@ describe('AdminQuizzesService', () => {
 
     it('should not update quizzes if title is not unique', () => {
         const responseBodyMock = {
-            quiz: { title: testQuizzes[0].title },
+            data: { title: testQuizzes[0].title },
             error: '',
         };
         service['quizzes'].push(testQuizzes[0]);
@@ -214,7 +214,7 @@ describe('AdminQuizzesService', () => {
 
     it('should return error if submission returns an error', () => {
         const responseBodyMock = {
-            quiz: testQuiz,
+            data: testQuiz,
             error: 'submission failed',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error', body: responseBodyMock })));
@@ -229,7 +229,7 @@ describe('AdminQuizzesService', () => {
 
     it('should update a quiz and update quizzes list if successful', () => {
         const responseBodyMock = {
-            quiz: testQuizzes[0],
+            data: testQuizzes[0],
             error: '',
         };
         communicationServiceSpy.patch.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
@@ -275,7 +275,7 @@ describe('AdminQuizzesService', () => {
 
     it('should return a compilation error when response has compilationError', (done) => {
         const compilationError = 'Compilation error: Incorrect syntax.';
-        communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: { compilationError } })));
+        communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: { error: compilationError } })));
         service.submitQuestion({ ...testQuizzes[0].questions[0] }).subscribe((result) => {
             expect(result).toBe(compilationError);
             done();
