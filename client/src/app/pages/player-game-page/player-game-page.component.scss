@@ -1,45 +1,32 @@
 /* Structure de base pour le chatbox */
-app-chatbox {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 300px;
-    height: 200px;
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    overflow-y: auto;
-    z-index: 1000;
+app-question {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    padding: 20px;
+    background-color: #e6e6e6;
+    border-radius: 10px;
+    border: 2px solid #333333;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-    app-question {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 60%;
-        padding: 20px;
-        background-color: #e6e6e6;
-        border-radius: 10px;
-        border: 2px solid #333333;
-        text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+app-question:before,
+app-question:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #333, #333);
+}
 
-    app-question:before,
-    app-question:after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(to right, #333, #333);
-    }
+app-question:before {
+    top: 0;
+}
 
-    app-question:before {
-        top: 0;
-    }
-
-    app-question:after {
-        bottom: 0;
-    }
+app-question:after {
+    bottom: 0;
 }

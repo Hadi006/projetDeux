@@ -2,7 +2,7 @@
     position: fixed;
     bottom: 0;
     margin: 10px;
-    max-height: 400px; /* Adjust as needed */
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -51,6 +51,7 @@
 
 .author {
     font-weight: bold;
+    color: black;
 }
 
 .timestamp {
@@ -58,5 +59,6 @@
 }
 
 .message-body {
-    margin-left: 20px; /* Adjust as needed */
+    margin-left: 20px;
+    color: black;
 }
