@@ -148,4 +148,12 @@ describe('AdminPageComponent', () => {
         component.handle(action);
         expect(adminService.downloadQuiz).toHaveBeenCalledWith(expectedIndex);
     });
+
+    it('should do nothing when handle is called with an invalid type', () => {
+        const action = { type: 'invalid' as ActionType, target: 123 };
+        component.handle(action);
+        expect(adminService.changeQuizVisibility).not.toHaveBeenCalled();
+        expect(adminService.deleteQuiz).not.toHaveBeenCalled();
+        expect(adminService.downloadQuiz).not.toHaveBeenCalled();
+    });
 });
