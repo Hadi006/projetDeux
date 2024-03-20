@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="input-container">
-            <input [(ngModel)]="newMessage" placeholder="Type your message..." />
+            <input [(ngModel)]="newMessage" placeholder="Type your message..." (keyup)="keyEnter($event)" />
             <button id="sendButton" (click)="sendMessage()">Send</button>
         </div>
     </div>
