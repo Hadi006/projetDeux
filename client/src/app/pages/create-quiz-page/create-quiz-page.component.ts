@@ -52,11 +52,14 @@ export class CreateQuizPageComponent implements OnInit {
             height: '80%',
         });
 
-        questionForm.afterClosed().pipe(take(1)).subscribe((question?: Question) => {
-            if (question) {
-                this.quiz.questions[questionIndex] = question;
-            }
-        });
+        questionForm
+            .afterClosed()
+            .pipe(take(1))
+            .subscribe((question?: Question) => {
+                if (question) {
+                    this.quiz.questions[questionIndex] = question;
+                }
+            });
     }
 
     drop(event: CdkDragDrop<Question[]>) {
@@ -76,13 +79,15 @@ export class CreateQuizPageComponent implements OnInit {
     }
 
     private processQuiz(quiz: Quiz, isNew: boolean) {
-        this.submitQuizUpdate(quiz, isNew).pipe(take(1)).subscribe((response: ValidationResult<Quiz>) => {
-            if (response.error) {
-                this.alert(response.error);
-            } else {
-                this.close();
-            }
-        });
+        this.submitQuizUpdate(quiz, isNew)
+            .pipe(take(1))
+            .subscribe((response: ValidationResult<Quiz>) => {
+                if (response.error) {
+                    this.alert(response.error);
+                } else {
+                    this.close();
+                }
+            });
     }
 
     private getQuestion(index: number): Question {

@@ -58,11 +58,14 @@ export class QuestionBankComponent implements OnInit {
 
         const newQuestion: Question = event.previousContainer.data[event.previousIndex];
 
-        this.questionBank.addQuestion(newQuestion).pipe(take(1)).subscribe((error: string) => {
-            if (error) {
-                this.dialog.open(AlertComponent, { data: { message: error } });
-            }
-        });
+        this.questionBank
+            .addQuestion(newQuestion)
+            .pipe(take(1))
+            .subscribe((error: string) => {
+                if (error) {
+                    this.dialog.open(AlertComponent, { data: { message: error } });
+                }
+            });
     }
 
     openQuestionForm(index?: number) {
@@ -81,11 +84,13 @@ export class QuestionBankComponent implements OnInit {
     }
 
     private processQuestion(question: Question, isNew: boolean) {
-        this.submitQuestionChange(question, isNew).pipe(take(1)).subscribe((error: string) => {
-            if (error) {
-                this.dialog.open(AlertComponent, { data: { message: error } });
-            }
-        });
+        this.submitQuestionChange(question, isNew)
+            .pipe(take(1))
+            .subscribe((error: string) => {
+                if (error) {
+                    this.dialog.open(AlertComponent, { data: { message: error } });
+                }
+            });
     }
 
     private openQuestionFormRef(): MatDialogRef<QuestionFormComponent> {

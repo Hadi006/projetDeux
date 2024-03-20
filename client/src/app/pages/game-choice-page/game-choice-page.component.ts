@@ -28,27 +28,33 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).pipe(take(1)).subscribe((isAvailable) => {
-            this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
-                if (success) {
-                    this.router.navigate(['waiting-room-host']);
-                } else {
-                    this.hostService.cleanUp();
-                }
+        this.publicQuizzesService
+            .checkQuizAvailability(this.chosenQuiz?.id)
+            .pipe(take(1))
+            .subscribe((isAvailable) => {
+                this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
+                    if (success) {
+                        this.router.navigate(['waiting-room-host']);
+                    } else {
+                        this.hostService.cleanUp();
+                    }
+                });
             });
-        });
     }
 
     testGame() {
-        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).pipe(take(1)).subscribe((isAvailable) => {
-            this.handleChosenQuiz(isAvailable).subscribe((success) => {
-                if (success) {
-                    this.router.navigate(['test']);
-                } else {
-                    this.hostService.cleanUp();
-                }
+        this.publicQuizzesService
+            .checkQuizAvailability(this.chosenQuiz?.id)
+            .pipe(take(1))
+            .subscribe((isAvailable) => {
+                this.handleChosenQuiz(isAvailable).subscribe((success) => {
+                    if (success) {
+                        this.router.navigate(['test']);
+                    } else {
+                        this.hostService.cleanUp();
+                    }
+                });
             });
-        });
     }
 
     private handleChosenQuiz(isAvailable: boolean): Observable<boolean> {
