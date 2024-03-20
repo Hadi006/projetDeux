@@ -1,9 +1,9 @@
 import { Application } from '@app/app';
-import * as http from 'http';
-import { AddressInfo } from 'net';
-import { Service, Container } from 'typedi';
 import { GameController } from '@app/controllers/game.controller';
 import { GameService } from '@app/services/game.service';
+import * as http from 'http';
+import { AddressInfo } from 'net';
+import { Container, Service } from 'typedi';
 
 @Service()
 export class Server {
@@ -19,6 +19,7 @@ export class Server {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
         return isNaN(port) ? val : port >= 0 ? port : false;
     }
+
     init(): void {
         this.application.app.set('port', Server.appPort);
 
@@ -53,9 +54,6 @@ export class Server {
         }
     }
 
-    /**
-     * Se produit lorsque le serveur se met à écouter sur le port.
-     */
     private onListening(): void {
         const addr = this.server.address() as AddressInfo;
         const bind: string = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;

@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { HostService } from '@app/services/host.service';
+import { WebSocketService } from '@app/services/web-socket.service';
 import { START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
 
 describe('WaitingRoomHostPageComponent', () => {
@@ -11,19 +13,22 @@ describe('WaitingRoomHostPageComponent', () => {
     let fixture: ComponentFixture<WaitingRoomHostPageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', ['cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick', 'leaveGame']);
         Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [WaitingRoomHostPageComponent, GameCountDownComponent, WaitingRoomInfoComponent],
+            declarations: [WaitingRoomHostPageComponent, GameCountDownComponent, WaitingRoomInfoComponent, ChatboxComponent],
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
     }));

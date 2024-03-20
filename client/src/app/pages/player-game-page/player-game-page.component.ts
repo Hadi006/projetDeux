@@ -23,6 +23,10 @@ export class PlayerGamePageComponent implements OnDestroy {
         });
     }
 
+    get players() {
+        return this.playerService.players;
+    }
+
     stopCountDown() {
         this.isCountingDown = false;
     }
@@ -30,7 +34,6 @@ export class PlayerGamePageComponent implements OnDestroy {
     gameTitle() {
         return this.playerService.gameTitle;
     }
-
     leaveGame() {
         this.playerService.leaveGame();
     }

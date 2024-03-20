@@ -32,11 +32,18 @@ export class GameController {
             this.onEndQuestion(socket);
             this.onConfirmPlayerAnswer(socket);
             this.onAnswer(socket);
+            this.chatMessages(socket);
             this.onEndGame(socket);
             this.onDisconnect(socket);
         });
     }
 
+    private chatMessages(socket: Socket): void {
+        socket.on('new-message', async (message) => {
+            const roomPin = message.roomId;
+            this.sio.to(roomPin).emit('message-received', message);
+        });
+    }
     private onCreateGame(socket: Socket): void {
         socket.on('create-game', async (quiz: Quiz, callback) => {
             const game = await this.gameService.createGame(quiz, socket.id);

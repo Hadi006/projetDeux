@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
+import { WebSocketService } from '@app/services/web-socket.service';
 import { TEST_GAME_DATA, TEST_PLAYERS } from '@common/constant';
 import { Player } from '@common/player';
 import { of } from 'rxjs';
@@ -13,6 +14,7 @@ describe('EndgameResultPageComponent', () => {
     let fixture: ComponentFixture<EndgameResultPageComponent>;
     let routeSpy: jasmine.SpyObj<ActivatedRoute>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         const queryParamsMap = of({});
@@ -20,6 +22,7 @@ describe('EndgameResultPageComponent', () => {
             queryParams: queryParamsMap,
         });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -28,6 +31,7 @@ describe('EndgameResultPageComponent', () => {
             providers: [
                 { provide: ActivatedRoute, useValue: routeSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
     }));

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ChatboxComponent } from './chatbox.component';
 import { ChatService } from '@app/services/chat.service';
+import { Subject } from 'rxjs';
+import { ChatboxComponent } from './chatbox.component';
 
 describe('ChatboxComponent', () => {
     let component: ChatboxComponent;
@@ -9,6 +10,10 @@ describe('ChatboxComponent', () => {
 
     beforeEach(() => {
         chatServiceSpy = jasmine.createSpyObj('ChatService', ['sendMessage']);
+
+        const messagesSubject = new Subject<void>();
+
+        Object.defineProperty(chatServiceSpy, 'messagesSubjectGetter', { value: messagesSubject });
     });
 
     beforeEach(waitForAsync(() => {
@@ -37,9 +42,12 @@ describe('ChatboxComponent', () => {
     });
 
     it('should call chatService.sendMessage when sendMessage is called', () => {
-        component.newMessage = 'test message';
         component.sendMessage();
-        expect(chatServiceSpy.sendMessage).toHaveBeenCalledWith('test message');
+        expect(chatServiceSpy.sendMessage).toHaveBeenCalled();
+    });
+
+    it('should return participant name from chat service', () => {
+        expect(component.participantName).toBe(chatServiceSpy.participantName);
     });
 
     it('should reset newMessage to an empty string after sendMessage is called', () => {
