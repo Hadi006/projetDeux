@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
 import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
 
-
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
@@ -56,13 +55,12 @@ export class AdminPageComponent implements OnInit {
         });
     }
 
-
     goToQuizPage(index?: number) {
         this.adminService.setSelectedQuiz(index !== undefined ? index : INVALID_INDEX);
         this.router.navigate(['/home/admin/quizzes/quiz']);
     }
 
-    handle(action : Action) {
+    handle(action: Action) {
         switch (action.type) {
             case ActionType.CHANGE_VISIBILITY:
                 this.adminService.changeQuizVisibility(action.target);
@@ -84,5 +82,4 @@ export class AdminPageComponent implements OnInit {
     private promptForNewTitle(): MatDialogRef<PromptComponent> {
         return this.dialog.open(PromptComponent, { data: { message: 'Veuillez entrer un nouveau titre pour le quiz' } });
     }
-
 }

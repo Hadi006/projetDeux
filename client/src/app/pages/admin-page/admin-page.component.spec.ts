@@ -119,6 +119,11 @@ describe('AdminPageComponent', () => {
         expect(adminService.submitQuiz).not.toHaveBeenCalled();
     });
 
+    it('should navigate to quiz page when goToQuizPage is called', () => {
+        component.goToQuizPage(0);
+        expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
+    });
+
     it('should handle change visibility', () => {
         component.handle({ type: ActionType.CHANGE_VISIBILITY, target: 0 });
         expect(adminService.changeQuizVisibility).toHaveBeenCalledWith(0);
