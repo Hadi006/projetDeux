@@ -39,12 +39,15 @@ export class QuestionFormComponent {
     }
 
     submit() {
-        this.admin.submitQuestion(this.question).pipe(take(1)).subscribe((error: string) => {
-            if (error) {
-                this.dialog.open(AlertComponent, { data: { message: error } });
-            } else {
-                this.dialogRef.close(this.question);
-            }
-        });
+        this.admin
+            .submitQuestion(this.question)
+            .pipe(take(1))
+            .subscribe((error: string) => {
+                if (error) {
+                    this.dialog.open(AlertComponent, { data: { message: error } });
+                } else {
+                    this.dialogRef.close(this.question);
+                }
+            });
     }
 }
