@@ -124,6 +124,11 @@ describe('AdminPageComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
     });
 
+    it('should navigate to quiz page with invalid index when goToQuizPage is called with undefined index', () => {
+        component.goToQuizPage();
+        expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
+    });
+
     it('should handle change visibility', () => {
         component.handle({ type: ActionType.CHANGE_VISIBILITY, target: 0 });
         expect(adminService.changeQuizVisibility).toHaveBeenCalledWith(0);
