@@ -129,6 +129,12 @@ describe('AdminPageComponent', () => {
         expect(adminService.changeQuizVisibility).toHaveBeenCalledWith(0);
     });
 
+    it('should handle edit', () => {
+        component.handle({ type: ActionType.EDIT, target: 0 });
+        expect(adminService.setSelectedQuiz).toHaveBeenCalledWith(0);
+        expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
+    });
+
     it('should call deleteQuiz when delete action is handled', () => {
         const action = { type: ActionType.DELETE, target: 123 };
         const expectedIndex = 123;
