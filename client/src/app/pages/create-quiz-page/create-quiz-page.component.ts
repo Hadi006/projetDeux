@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
-import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
 import { BLANK_QUESTION } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';

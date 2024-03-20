@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlayerService } from '@app/services/player.service';
+import { PlayerService } from '@app/services/player/player.service';
 
 @Component({
     selector: 'app-join-room-page',

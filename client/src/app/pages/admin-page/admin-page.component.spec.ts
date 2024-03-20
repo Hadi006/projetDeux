@@ -5,11 +5,11 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
-import { of } from 'rxjs';
-import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
-import { AdminPageComponent } from './admin-page.component';
 import { PromptComponent } from '@app/components/prompt/prompt.component';
+import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
+import { of } from 'rxjs';
+import { AdminPageComponent } from './admin-page.component';
 import { ActionType } from '@common/action';
 
 describe('AdminPageComponent', () => {

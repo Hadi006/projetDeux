@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
-import { HostService } from '@app/services/host.service';
-import { WebSocketService } from '@app/services/web-socket.service';
+import { HostService } from '@app/services/host/host.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
 

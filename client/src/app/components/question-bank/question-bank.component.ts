@@ -3,12 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
-import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
+import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
 import { INVALID_INDEX } from '@common/constant';
 import { Question } from '@common/quiz';
 import { Observable, map, take } from 'rxjs';
-import { QuestionBankService } from 'src/app/services/question-bank.service';
 
 @Component({
     selector: 'app-question-bank',

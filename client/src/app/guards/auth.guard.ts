@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '@app/services/auth.service';
+import { AuthService } from '@app/services/auth/auth.service';
 import { UNAUTHORIZED_REDIRECT_URL } from '@common/constant';
 import { catchError, map, Observable, of } from 'rxjs';
 /**

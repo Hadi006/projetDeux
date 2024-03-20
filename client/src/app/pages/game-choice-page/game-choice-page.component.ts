@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HostService } from '@app/services/host.service';
-import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { HostService } from '@app/services/host/host.service';
+import { PublicQuizzesService } from '@app/services/public-quizzes/public-quizzes.service';
 import { Quiz } from '@common/quiz';
 import { Observable, map, of, take } from 'rxjs';
 

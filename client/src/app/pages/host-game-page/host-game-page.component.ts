@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { HostService } from '@app/services/host.service';
+import { HostService } from '@app/services/host/host.service';
 import { Subscription } from 'rxjs';
 
 @Component({

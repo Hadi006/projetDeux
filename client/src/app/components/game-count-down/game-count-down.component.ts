@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TimeService } from '@app/services/time.service';
+import { TimeService } from '@app/services/time/time.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({

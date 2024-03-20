@@ -4,8 +4,8 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
-import { HostService } from '@app/services/host.service';
-import { WebSocketService } from '@app/services/web-socket.service';
+import { HostService } from '@app/services/host/host.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
 
 describe('WaitingRoomHostPageComponent', () => {

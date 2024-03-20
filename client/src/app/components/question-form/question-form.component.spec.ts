@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
-import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { TEST_QUESTIONS } from '@common/constant';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';

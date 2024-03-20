@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PromptComponent } from '@app/components/prompt/prompt.component';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
 import { INVALID_INDEX } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { Observable } from 'rxjs';
 import { AlertComponent } from 'src/app/components/alert/alert.component';
-import { AdminQuizzesService } from 'src/app/services/admin-quizzes.service';
 
 @Component({
     selector: 'app-admin-page',

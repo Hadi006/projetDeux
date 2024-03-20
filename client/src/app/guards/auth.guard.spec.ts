@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { authGuard } from '@app/guards/auth.guard';
-import { AuthService } from '@app/services/auth.service';
+import { AuthService } from '@app/services/auth/auth.service';
 import { UNAUTHORIZED_REDIRECT_URL } from '@common/constant';
 import { of, throwError } from 'rxjs';
 describe('authGuard', () => {

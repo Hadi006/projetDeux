@@ -1,4 +1,4 @@
-import { HttpException } from '@app/classes/http.exception';
+import { HttpException } from '@app/classes/http-exception/http.exception';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -6,9 +6,9 @@ import { StatusCodes } from 'http-status-codes';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
-import { AuthController } from './controllers/auth.controller';
-import { QuestionBankController } from './controllers/question-bank.controller';
-import { QuizBankController } from './controllers/quiz-bank.controller';
+import { AuthController } from './controllers/auth/auth.controller';
+import { QuestionBankController } from './controllers/question-bank/question-bank.controller';
+import { QuizBankController } from './controllers/quiz-bank/quiz-bank.controller';
 
 @Service()
 export class Application {

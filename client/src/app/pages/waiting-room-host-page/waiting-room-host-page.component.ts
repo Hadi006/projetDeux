@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HostService } from '@app/services/host.service';
+import { HostService } from '@app/services/host/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
