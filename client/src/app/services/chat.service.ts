@@ -16,8 +16,7 @@ export class ChatService {
         private webSocketService: WebSocketService,
         private playerService: PlayerService,
         private hostService: HostService,
-    ) {
-    }
+    ) {}
 
     get messages(): ChatMessage[] {
         return this.internalMessages;
@@ -46,7 +45,6 @@ export class ChatService {
         this.internalMessages = [];
         this.internalParticipantName = this.playerService.player?.name || 'Organisateur';
         this.webSocketService.onEvent<ChatMessage>('message-received', (message) => {
-            console.log('chatService message-received', message);
             this.internalMessages.push(message);
         });
     }
