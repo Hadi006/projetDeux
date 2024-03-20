@@ -2,45 +2,29 @@ import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BLANK_QUIZ, INVALID_INDEX } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
+import { ValidationResult } from '@common/validation-result';
 import { BehaviorSubject, Observable, catchError, map, of, switchMap } from 'rxjs';
-import { CommunicationService } from '../communication/communication.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
 @Injectable({
     providedIn: 'root',
 })
 export class AdminQuizzesService {
     selectedQuestion: Question;
     readonly quizzes$: BehaviorSubject<Quiz[]>;
-    private quizzes: Quiz[] = [];
+    private quizzes: Quiz[];
 
-    private selectedQuizIndex: number = INVALID_INDEX;
+    private selectedQuizIndex: number;
 
     constructor(private http: CommunicationService) {
+        this.selectedQuizIndex = INVALID_INDEX;
+        this.quizzes = [];
         this.quizzes$ = new BehaviorSubject<Quiz[]>(this.quizzes);
-        this.selectedQuestion = {
-            id: '',
-            text: '',
-            type: 'QCM',
-            points: 0,
-            choices: [
-                { text: '', isCorrect: false },
-                { text: '', isCorrect: false },
-            ],
-        };
+        this.selectedQuestion = new Question();
     }
 
     fetchQuizzes() {
         this.http.get<Quiz[]>('quizzes').subscribe((response: HttpResponse<Quiz[]>) => {
-            if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
-                return;
-            }
-            this.quizzes = response.body;
-            this.quizzes$.next(this.quizzes);
-        });
-    }
-
-    fetchVisibleQuizzes() {
-        this.http.get<Quiz[]>('quizzes/visible').subscribe((response: HttpResponse<Quiz[]>) => {
-            if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+            if (!response.body || response.status !== HttpStatusCode.Ok) {
                 return;
             }
             this.quizzes = response.body;
@@ -63,31 +47,31 @@ export class AdminQuizzesService {
         return BLANK_QUIZ;
     }
 
-    uploadQuiz(quizFile: File): Observable<{ quiz?: Quiz; errorLog: string }> {
+    uploadQuiz(quizFile: File): Observable<ValidationResult<Quiz>> {
         return this.readQuizFile(quizFile).pipe(
             switchMap((quiz: unknown) => this.submitQuiz(quiz)),
             catchError(() => {
-                return of({ quiz: undefined, errorLog: 'Error occurred while uploading quiz' });
+                return of(new ValidationResult<Quiz>('Error occurred while uploading quiz'));
             }),
         );
     }
 
-    submitQuiz(quiz: unknown, newTitle?: string): Observable<{ quiz?: Quiz; errorLog: string }> {
-        return this.http.post<{ quiz: Quiz; errorLog: string }>('quizzes', { quiz, newTitle }).pipe(
-            map((response: HttpResponse<{ quiz: Quiz; errorLog: string }>) => {
-                if (!response.body || response.body.errorLog === undefined || !response.body.quiz) {
-                    return { quiz: undefined, errorLog: 'submission failed' };
+    submitQuiz(quiz: unknown, newTitle?: string): Observable<ValidationResult<Quiz>> {
+        return this.http.post<ValidationResult<Quiz>>('quizzes', { quiz, newTitle }).pipe(
+            map((response: HttpResponse<ValidationResult<Quiz>>) => {
+                if (!response.body || response.body.error === undefined || !response.body.data) {
+                    return new ValidationResult<Quiz>('Submission failed');
                 }
 
-                if (response.body.errorLog) {
+                if (response.body.error) {
                     return response.body;
                 }
 
-                if (this.verifyDuplicateTitle(response.body.quiz.title)) {
-                    return { quiz: undefined, errorLog: '' };
+                if (this.verifyDuplicateTitle(response.body.data.title)) {
+                    return new ValidationResult('titre déjà utilisé', response.body.data);
                 }
 
-                this.quizzes.push(response.body.quiz);
+                this.quizzes.push(response.body.data);
                 this.quizzes$.next(this.quizzes);
 
                 return response.body;
@@ -95,14 +79,14 @@ export class AdminQuizzesService {
         );
     }
 
-    updateQuiz(quiz: Quiz): Observable<{ quiz?: Quiz; errorLog: string }> {
-        return this.http.patch<{ quiz: Quiz; errorLog: string }>(`quizzes/${quiz.id}`, { quiz }).pipe(
-            map((response: HttpResponse<{ quiz: Quiz; errorLog: string }>) => {
+    updateQuiz(quiz: Quiz): Observable<ValidationResult<Quiz>> {
+        return this.http.patch<ValidationResult<Quiz>>(`quizzes/${quiz.id}`, { quiz }).pipe(
+            map((response: HttpResponse<ValidationResult<Quiz>>) => {
                 if (!response.body) {
-                    return { quiz: undefined, errorLog: 'update failed' };
+                    return new ValidationResult<Quiz>('update failed');
                 }
 
-                if (response.body.errorLog) {
+                if (response.body.error) {
                     return response.body;
                 }
 
@@ -115,14 +99,14 @@ export class AdminQuizzesService {
     }
 
     submitQuestion(question: Question): Observable<string> {
-        return this.http.post<{ question: Question; compilationError: string }>('questions/validate', { question }).pipe(
+        return this.http.post<ValidationResult<Question>>('questions/validate', { question }).pipe(
             map((response) => {
                 if (!response.body) {
                     return 'Server error';
                 }
 
-                if (response.status !== HttpStatusCode.Ok || response.body.compilationError) {
-                    return response.body.compilationError;
+                if (response.status !== HttpStatusCode.Ok || response.body.error) {
+                    return response.body.error;
                 }
 
                 return '';
@@ -173,7 +157,7 @@ export class AdminQuizzesService {
                     const quiz = JSON.parse(result);
                     observer.next(quiz);
                 } catch (error) {
-                    observer.error({ errorLog: 'Invalid or empty quiz file' });
+                    observer.error({ error: 'Invalid or empty quiz file' });
                 }
                 observer.complete();
             };

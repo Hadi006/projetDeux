@@ -26,8 +26,6 @@ export const INVALID_TOKEN: AccessToken = { id: '', expirationDate: -1 };
 
 export const GOOD_ANSWER_BONUS = 0.2;
 
-export const TEN = 10;
-
 export const LOWER_BOUND = 10;
 
 export const UPPER_BOUND = 100;
@@ -106,7 +104,6 @@ export const TEST_ANSWERS: Answer[] = [
 
 export const TEST_QUESTIONS: Question[] = [
     {
-        id: '1',
         text: 'Test Question',
         type: 'QCM',
         points: 10,
@@ -114,7 +111,6 @@ export const TEST_QUESTIONS: Question[] = [
         choices: TEST_ANSWERS,
     },
     {
-        id: '2',
         text: 'Test Question 2',
         type: 'QRL',
         points: 10,

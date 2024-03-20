@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@common/chat-message';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
-import { HostService } from '../host/host.service';
-import { PlayerService } from '../player/player.service';
-import { WebSocketService } from '../web-socket/web-socket.service';
+import { HostService } from '@app/services/host/host.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 
 @Injectable({
     providedIn: 'root',

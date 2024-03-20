@@ -24,7 +24,7 @@ export class PublicQuizzesService {
     fetchVisibleQuizzes(): Observable<void> {
         return this.http.get<Quiz[]>('quizzes/visible').pipe(
             map((response: HttpResponse<Quiz[]>) => {
-                if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+                if (!response.body || response.status !== HttpStatusCode.Ok) {
                     return;
                 }
                 this.internalQuizzes = response.body;
@@ -39,10 +39,7 @@ export class PublicQuizzesService {
 
         return this.http.get<Quiz>(`quizzes/${quizId}`).pipe(
             map((response: HttpResponse<Quiz>) => {
-                if (!response.body || response.status !== HttpStatusCode.Ok || !response.body.visible) {
-                    return false;
-                }
-                return true;
+                return !!response.body && response.status === HttpStatusCode.Ok && response.body.visible;
             }),
         );
     }

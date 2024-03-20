@@ -4,9 +4,9 @@ import { ChatMessage } from '@common/chat-message';
 import { MAX_MESSAGE_LENGTH, TEST_GAME_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { Socket } from 'socket.io-client';
-import { HostService } from '../host/host.service';
-import { PlayerService } from '../player/player.service';
-import { WebSocketService } from '../web-socket/web-socket.service';
+import { HostService } from '@app/services/host/host.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { ChatService } from './chat.service';
 
 class WebSocketServiceMock extends WebSocketService {

@@ -9,7 +9,7 @@ import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 import { Socket } from 'socket.io-client';
-import { TimeService } from '../time/time.service';
+import { TimeService } from '@app/services/time/time.service';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {

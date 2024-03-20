@@ -4,7 +4,7 @@ import { AccessToken } from '@common/access-token';
 import { INVALID_TOKEN } from '@common/constant';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { CommunicationService } from '../communication/communication.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
 
 @Injectable({
     providedIn: 'root',

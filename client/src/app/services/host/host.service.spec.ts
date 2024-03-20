@@ -7,8 +7,8 @@ import { Game } from '@common/game';
 import { Quiz } from '@common/quiz';
 import { firstValueFrom } from 'rxjs';
 import { Socket } from 'socket.io-client';
-import { TimeService } from '../time/time.service';
-import { WebSocketService } from '../web-socket/web-socket.service';
+import { TimeService } from '@app/services/time/time.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {

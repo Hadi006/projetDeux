@@ -6,7 +6,7 @@ import { AlertComponent } from '@app/components/alert/alert.component';
 import { TEST_QUIZZES } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { of } from 'rxjs';
-import { CommunicationService } from '../communication/communication.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { PublicQuizzesService } from './public-quizzes.service';
 
 describe('PublicQuizzesService', () => {
@@ -56,8 +56,8 @@ describe('PublicQuizzesService', () => {
         });
     });
 
-    it('fetchVisibleQuizzes() should do nothing if response body is not an array', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: {} })));
+    it('fetchVisibleQuizzes() should do nothing if response body is undefined', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK' })));
         service.fetchVisibleQuizzes().subscribe(() => {
             expect(service.quizzes).toEqual([]);
             done();

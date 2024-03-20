@@ -10,6 +10,7 @@ import { QuestionBankComponent } from '@app/components/question-bank/question-ba
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { of } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
+import { ActionType } from '@common/action';
 
 describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
@@ -58,7 +59,7 @@ describe('AdminPageComponent', () => {
     it('should upload quiz file and show alert on success', () => {
         const quizFile = new File(['quiz data'], 'quiz.json', { type: 'application/json' });
         const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
-        const response = { quiz: undefined, errorLog: '' };
+        const response = { data: undefined, error: '' };
         adminService.uploadQuiz.and.returnValue(of(response));
 
         component.importQuiz(event as unknown as Event);
@@ -70,13 +71,13 @@ describe('AdminPageComponent', () => {
     it('should handle error when uploading quiz file', () => {
         const quizFile = new File(['quiz data'], 'quiz.json', { type: 'application/json' });
         const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
-        const errorResponse = { quiz: undefined, errorLog: 'Error occurred while uploading quiz' };
+        const errorResponse = { quiz: undefined, error: 'Error occurred while uploading quiz' };
         adminService.uploadQuiz.and.returnValue(of(errorResponse));
 
         component.importQuiz(event as unknown as Event);
 
         expect(adminService.uploadQuiz).toHaveBeenCalledWith(quizFile);
-        expect(dialog.open).toHaveBeenCalledWith(AlertComponent, { data: { message: errorResponse.errorLog } });
+        expect(dialog.open).toHaveBeenCalledWith(AlertComponent, { data: { message: errorResponse.error } });
     });
 
     it('should do nothing when importQuiz is called with undefined event', () => {
@@ -91,7 +92,7 @@ describe('AdminPageComponent', () => {
     it('should prompt for new title and submit quiz when title must be unique', () => {
         const quizFile = new File(['quiz data'], 'quiz.json', { type: 'application/json' });
         const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
-        const response = { quiz: undefined, errorLog: 'Quiz : titre déjà utilisé !\n' };
+        const response = { quiz: undefined, error: 'Quiz : titre déjà utilisé !\n' };
         adminService.uploadQuiz.and.returnValue(of(response));
         dialogRefSpy.afterClosed.and.returnValue(of('New title'));
         adminService.submitQuiz.and.returnValue(of());
@@ -106,7 +107,7 @@ describe('AdminPageComponent', () => {
     it('should do nothing when prompt for new title is cancelled', () => {
         const quizFile = new File(['quiz data'], 'quiz.json', { type: 'application/json' });
         const event = { target: { files: [quizFile] } as unknown as HTMLInputElement };
-        const response = { quiz: undefined, errorLog: 'Quiz : titre déjà utilisé !\n' };
+        const response = { data: undefined, error: 'Quiz : titre déjà utilisé !\n' };
         adminService.uploadQuiz.and.returnValue(of(response));
         dialogRefSpy.afterClosed.and.returnValue(of(''));
         adminService.submitQuiz.and.returnValue(of());
@@ -118,50 +119,46 @@ describe('AdminPageComponent', () => {
         expect(adminService.submitQuiz).not.toHaveBeenCalled();
     });
 
-    it('should set selected quiz and navigate to correct URL with index', () => {
-        const index = 1;
-        component.gotoQuizPage(index);
-        expect(adminService.setSelectedQuiz).toHaveBeenCalledWith(index);
+    it('should navigate to quiz page when goToQuizPage is called', () => {
+        component.goToQuizPage(0);
         expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
     });
 
-    it('should set selected quiz to -1 and navigate to correct URL without index', () => {
-        component.gotoQuizPage();
-        const invalidIndex = -1;
-        expect(adminService.setSelectedQuiz).toHaveBeenCalledWith(invalidIndex);
+    it('should navigate to quiz page with invalid index when goToQuizPage is called with undefined index', () => {
+        component.goToQuizPage();
         expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
     });
 
     it('should handle change visibility', () => {
-        component.handle({ type: 'change visibility', quizIndex: 0 });
+        component.handle({ type: ActionType.CHANGE_VISIBILITY, target: 0 });
         expect(adminService.changeQuizVisibility).toHaveBeenCalledWith(0);
     });
 
-    it('should call goToQuizPage when edit action is handled', () => {
-        spyOn(component, 'gotoQuizPage');
-        component.handle({ type: 'edit', quizIndex: 1 });
-        expect(component.gotoQuizPage).toHaveBeenCalledWith(1);
+    it('should handle edit', () => {
+        component.handle({ type: ActionType.EDIT, target: 0 });
+        expect(adminService.setSelectedQuiz).toHaveBeenCalledWith(0);
+        expect(router.navigate).toHaveBeenCalledWith(['/home/admin/quizzes/quiz']);
     });
 
     it('should call deleteQuiz when delete action is handled', () => {
-        const action = { type: 'delete', quizIndex: 123 };
+        const action = { type: ActionType.DELETE, target: 123 };
         const expectedIndex = 123;
         component.handle(action);
         expect(adminService.deleteQuiz).toHaveBeenCalledWith(expectedIndex);
     });
 
     it('should call dowloadQuiz when export action is handled', () => {
-        const action = { type: 'export', quizIndex: 123 };
+        const action = { type: ActionType.EXPORT, target: 123 };
         const expectedIndex = 123;
         component.handle(action);
         expect(adminService.downloadQuiz).toHaveBeenCalledWith(expectedIndex);
     });
 
-    it('should call nothing when an unknown action is handled', () => {
-        const action = { type: 'unknown', quizIndex: 123 };
+    it('should do nothing when handle is called with an invalid type', () => {
+        const action = { type: 'invalid' as ActionType, target: 123 };
         component.handle(action);
         expect(adminService.changeQuizVisibility).not.toHaveBeenCalled();
-        expect(adminService.downloadQuiz).not.toHaveBeenCalled();
         expect(adminService.deleteQuiz).not.toHaveBeenCalled();
+        expect(adminService.downloadQuiz).not.toHaveBeenCalled();
     });
 });

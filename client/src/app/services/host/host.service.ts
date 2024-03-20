@@ -9,8 +9,8 @@ import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
-import { TimeService } from '../time/time.service';
-import { WebSocketService } from '../web-socket/web-socket.service';
+import { TimeService } from '@app/services/time/time.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 
 @Injectable({
     providedIn: 'root',

@@ -21,31 +21,31 @@ export class QuestionBankController {
         });
 
         this.router.post('/', async (req: Request, res: Response) => {
-            const result: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(req.body.question);
-            if (!result.compilationError) {
-                const added = await this.questionBankService.addQuestion(result.question);
+            const result = this.questionBankService.validateQuestion(req.body.question);
+            if (!result.error) {
+                const added = await this.questionBankService.addQuestion(result.data);
                 if (!added) {
-                    result.compilationError = 'Question : text must be unique !';
+                    result.error = 'Question : text must be unique !';
                     res.status(httpStatus.BAD_REQUEST).json(result);
                     return;
                 }
-                result.question.lastModification = new Date();
+                result.data.lastModification = new Date();
             }
 
-            res.status(result.compilationError ? httpStatus.BAD_REQUEST : httpStatus.CREATED).json(result);
+            res.status(result.error ? httpStatus.BAD_REQUEST : httpStatus.CREATED).json(result);
         });
 
         this.router.post('/validate', async (req: Request, res: Response) => {
-            const result: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(req.body.question);
+            const result = this.questionBankService.validateQuestion(req.body.question);
 
-            res.status(result.compilationError ? httpStatus.BAD_REQUEST : httpStatus.OK).json(result);
+            res.status(result.error ? httpStatus.BAD_REQUEST : httpStatus.OK).json(result);
         });
 
-        this.router.patch('/:questionId', async (req: Request, res: Response) => {
-            const result: { question: Question; compilationError: string } = this.questionBankService.validateQuestion(req.body.question);
-            if (!result.compilationError) {
-                result.question.lastModification = new Date();
-                const updated = await this.questionBankService.updateQuestion(result.question, req.params.questionId);
+        this.router.patch('/:questionText', async (req: Request, res: Response) => {
+            const result = this.questionBankService.validateQuestion(req.body.question);
+            if (!result.error) {
+                result.data.lastModification = new Date();
+                const updated = await this.questionBankService.updateQuestion(result.data, req.params.questionText);
                 res.status(updated ? httpStatus.OK : httpStatus.NOT_FOUND).json(result);
                 return;
             }
@@ -53,19 +53,8 @@ export class QuestionBankController {
             res.status(httpStatus.BAD_REQUEST).json(result);
         });
 
-        this.router.post('/validate-answer', async (req: Request, res: Response) => {
-            const question = await this.questionBankService.getQuestion(req.body.text);
-            if (!question) {
-                res.status(httpStatus.NOT_FOUND).send(false);
-                return;
-            }
-
-            const result = await this.questionBankService.validateAnswer(question, req.body.answer);
-            res.status(httpStatus.OK).send(result);
-        });
-
-        this.router.delete('/:questionId', async (req: Request, res: Response) => {
-            const deleted = await this.questionBankService.deleteQuestion(req.params.questionId);
+        this.router.delete('/:questionText', async (req: Request, res: Response) => {
+            const deleted = await this.questionBankService.deleteQuestion(req.params.questionText);
             res.status(deleted ? httpStatus.OK : httpStatus.NOT_FOUND).json({});
         });
     }

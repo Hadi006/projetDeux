@@ -6,7 +6,7 @@ import { Question, Quiz } from '@common/quiz';
 import { fail } from 'assert';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, stub } from 'sinon';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from '@app/services/database/database.service';
 
 describe('GameService', () => {
     let testPlayer: Player;

@@ -5,7 +5,7 @@ import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from '@app/services/database/database.service';
 
 @Service()
 export class GameService {

@@ -2,7 +2,7 @@ import { AccessToken } from '@common/access-token';
 import { TOKEN_EXPIRATION } from '@common/constant';
 import { randomUUID } from 'crypto';
 import { Service } from 'typedi';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from '@app/services/database/database.service';
 
 @Service()
 export class AuthService {

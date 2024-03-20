@@ -4,10 +4,11 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
+import { Action, ActionType } from '@common/action';
 import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
 import { INVALID_INDEX } from '@common/constant';
 import { Question } from '@common/quiz';
-import { Observable, map } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 
 @Component({
     selector: 'app-question-bank',
@@ -37,13 +38,13 @@ export class QuestionBankComponent implements OnInit {
         this.questionBank.fetchQuestions();
     }
 
-    handle(action: { type: string; questionIndex: number }) {
+    handle(action: Action) {
         switch (action.type) {
-            case 'edit':
-                this.openQuestionForm(action.questionIndex);
+            case ActionType.EDIT:
+                this.openQuestionForm(action.target);
                 break;
-            case 'delete':
-                this.questionBank.deleteQuestion(action.questionIndex);
+            case ActionType.DELETE:
+                this.questionBank.deleteQuestion(action.target);
                 break;
             default:
                 break;
@@ -57,11 +58,14 @@ export class QuestionBankComponent implements OnInit {
 
         const newQuestion: Question = event.previousContainer.data[event.previousIndex];
 
-        this.questionBank.addQuestion(newQuestion).subscribe((error: string) => {
-            if (error) {
-                this.dialog.open(AlertComponent, { data: { message: error } });
-            }
-        });
+        this.questionBank
+            .addQuestion(newQuestion)
+            .pipe(take(1))
+            .subscribe((error: string) => {
+                if (error) {
+                    this.dialog.open(AlertComponent, { data: { message: error } });
+                }
+            });
     }
 
     openQuestionForm(index?: number) {
@@ -71,6 +75,7 @@ export class QuestionBankComponent implements OnInit {
 
         this.openQuestionFormRef()
             .afterClosed()
+            .pipe(take(1))
             .subscribe((editedQuestion?: Question) => {
                 if (editedQuestion) {
                     this.processQuestion(editedQuestion, isNewQuestion);
@@ -79,11 +84,13 @@ export class QuestionBankComponent implements OnInit {
     }
 
     private processQuestion(question: Question, isNew: boolean) {
-        this.submitQuestionChange(question, isNew).subscribe((error: string) => {
-            if (error) {
-                this.dialog.open(AlertComponent, { data: { message: error } });
-            }
-        });
+        this.submitQuestionChange(question, isNew)
+            .pipe(take(1))
+            .subscribe((error: string) => {
+                if (error) {
+                    this.dialog.open(AlertComponent, { data: { message: error } });
+                }
+            });
     }
 
     private openQuestionFormRef(): MatDialogRef<QuestionFormComponent> {
