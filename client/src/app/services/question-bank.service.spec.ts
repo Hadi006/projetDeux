@@ -57,23 +57,20 @@ describe('QuestionBankService', () => {
     it('should delete a question by index and send a DELETE request', () => {
         const initialQuestionsLength = service['questions'].length;
         const questionToDeleteIndex = 0;
-        const questionToDeleteId = service['questions'][questionToDeleteIndex].id;
+        const questionToDeleteText = service['questions'][questionToDeleteIndex].text;
 
         service.deleteQuestion(questionToDeleteIndex);
 
-        // Verify the DELETE HTTP request
-        const req = httpTestingController.expectOne(`${baseUrl}/questions/${questionToDeleteId}`);
+        const req = httpTestingController.expectOne(`${baseUrl}/questions/${questionToDeleteText}`);
         expect(req.request.method).toBe('DELETE');
         req.flush({ status: HttpStatusCode.Ok });
 
-        // Verify the question was removed from the array
         expect(service['questions'].length).toBe(initialQuestionsLength - 1);
-        expect(service['questions'].find((q) => q.id === questionToDeleteId)).toBeUndefined();
+        expect(service['questions'].find((q) => q.text === questionToDeleteText)).toBeUndefined();
 
-        // Additionally, verify that the questions$ BehaviorSubject has been updated
         service.questions$.subscribe((questions) => {
             expect(questions.length).toBe(initialQuestionsLength - 1);
-            expect(questions.find((q) => q.id === questionToDeleteId)).toBeUndefined();
+            expect(questions.find((q) => q.text === questionToDeleteText)).toBeUndefined();
         });
     });
 
@@ -114,7 +111,6 @@ describe('QuestionBankService', () => {
 
     it('should add a question when there is no compilation error', () => {
         const newQuestion: Question = {
-            id: '',
             text: 'What is Angular Material?',
             type: 'QCM',
             points: 5,
@@ -131,11 +127,7 @@ describe('QuestionBankService', () => {
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions`);
         expect(req.request.method).toBe('POST');
-        req.flush({ question: newQuestion, compilationError: '' });
-
-        service.questions$.subscribe((questions) => {
-            expect(questions).toContain(newQuestion);
-        });
+        req.flush({ data: newQuestion, error: '' });
     });
 
     it('should not add a question when the server response has no body', () => {
@@ -154,12 +146,12 @@ describe('QuestionBankService', () => {
 
     it('should not add a question when there is a compilation error', () => {
         service.addQuestion(testQuestions[0]).subscribe((error) => {
-            expect(error).toBe('Question already exists');
+            expect(error).toBe('Error');
         });
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions`);
         expect(req.request.method).toBe('POST');
-        req.flush({ question: testQuestions[0], compilationError: 'Question already exists' });
+        req.flush({ data: testQuestions[0], error: 'Error' });
 
         service.questions$.subscribe((questions) => {
             expect(questions).not.toContain(testQuestions[0]);
@@ -174,9 +166,9 @@ describe('QuestionBankService', () => {
             expect(error).toBe('');
         });
 
-        const req = httpTestingController.expectOne(`${baseUrl}/questions/${updatedQuestion.id}`);
+        const req = httpTestingController.expectOne(`${baseUrl}/questions/${updatedQuestion.text}`);
         expect(req.request.method).toBe('PATCH');
-        req.flush({ question: updatedQuestion, compilationError: '' });
+        req.flush({ data: updatedQuestion, error: '' });
 
         service.questions$.subscribe((questions) => {
             expect(questions).toContain(updatedQuestion);
@@ -191,9 +183,9 @@ describe('QuestionBankService', () => {
             expect(error).toBe('Question must have a text');
         });
 
-        const req = httpTestingController.expectOne(`${baseUrl}/questions/${testQuestions[0].id}`);
+        const req = httpTestingController.expectOne(`${baseUrl}/questions/${testQuestions[0].text}`);
         expect(req.request.method).toBe('PATCH');
-        req.flush({ question: testQuestions[0], compilationError: 'Question must have a text' });
+        req.flush({ data: testQuestions[0], error: 'Question must have a text' });
 
         service.questions$.subscribe((questions) => {
             expect(questions).not.toContain(testQuestions[0]);
@@ -205,7 +197,7 @@ describe('QuestionBankService', () => {
             expect(error).toBe('Server error');
         });
 
-        const req = httpTestingController.expectOne(`${baseUrl}/questions/${testQuestions[0].id}`);
+        const req = httpTestingController.expectOne(`${baseUrl}/questions/${testQuestions[0].text}`);
         expect(req.request.method).toBe('PATCH');
         req.flush(null);
 

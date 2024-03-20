@@ -1,10 +1,10 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertComponent } from '@app/components/alert/alert.component';
 import { CommunicationService } from '@app/services/communication.service';
 import { Quiz } from '@common/quiz';
-import { AlertComponent } from '@app/components/alert/alert.component';
-import { MatDialog } from '@angular/material/dialog';
-import { map, Observable, of } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +24,7 @@ export class PublicQuizzesService {
     fetchVisibleQuizzes(): Observable<void> {
         return this.http.get<Quiz[]>('quizzes/visible').pipe(
             map((response: HttpResponse<Quiz[]>) => {
-                if (!response.body || response.status !== HttpStatusCode.Ok || !Array.isArray(response.body)) {
+                if (!response.body || response.status !== HttpStatusCode.Ok) {
                     return;
                 }
                 this.internalQuizzes = response.body;
@@ -39,10 +39,7 @@ export class PublicQuizzesService {
 
         return this.http.get<Quiz>(`quizzes/${quizId}`).pipe(
             map((response: HttpResponse<Quiz>) => {
-                if (!response.body || response.status !== HttpStatusCode.Ok || !response.body.visible) {
-                    return false;
-                }
-                return true;
+                return !!response.body && response.status === HttpStatusCode.Ok && response.body.visible;
             }),
         );
     }

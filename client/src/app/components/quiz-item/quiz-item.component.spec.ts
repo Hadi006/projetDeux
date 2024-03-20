@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActionType } from '@common/action';
 import { TEST_QUIZZES } from '@common/constant';
 import { QuizItemComponent } from './quiz-item.component';
 
@@ -22,9 +23,9 @@ describe('QuizItemComponent', () => {
 
     it('should emit an action with the quiz index', () => {
         spyOn(component.action, 'emit');
-        const ACTION_TYPE = 'delete';
+        const ACTION_TYPE = ActionType.DELETE;
         component.index = 0;
         component.onAction(ACTION_TYPE);
-        expect(component.action.emit).toHaveBeenCalledWith({ type: ACTION_TYPE, quizIndex: component.index });
+        expect(component.action.emit).toHaveBeenCalledWith({ type: ACTION_TYPE, target: component.index });
     });
 });

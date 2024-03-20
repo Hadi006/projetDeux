@@ -11,6 +11,7 @@ import { QuestionFormComponent } from '@app/components/question-form/question-fo
 import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { ActionType } from '@common/action';
 import { TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { of } from 'rxjs';
@@ -124,20 +125,20 @@ describe('CreateQuizPageComponent', () => {
 
     it('should handle edit action', () => {
         spyOn(component, 'openQuestionForm');
-        component.handle({ type: 'edit', questionIndex: 0 });
+        component.handle({ type: ActionType.EDIT, target: 0 });
         expect(component.openQuestionForm).toHaveBeenCalledWith(0);
     });
 
     it('should handle delete action', () => {
         spyOn(component.quiz.questions, 'splice');
-        component.handle({ type: 'delete', questionIndex: 0 });
+        component.handle({ type: ActionType.DELETE, target: 0 });
         expect(component.quiz.questions.splice).toHaveBeenCalledWith(0, 1);
     });
 
-    it('should handle unknown action', () => {
+    it('should handle invalid action', () => {
         spyOn(component, 'openQuestionForm');
         spyOn(component.quiz.questions, 'splice');
-        component.handle({ type: 'unknown', questionIndex: 0 });
+        component.handle({ type: ActionType.CHANGE_VISIBILITY, target: 0 });
         expect(component.openQuestionForm).not.toHaveBeenCalled();
         expect(component.quiz.questions.splice).not.toHaveBeenCalled();
     });
@@ -145,10 +146,10 @@ describe('CreateQuizPageComponent', () => {
     it('should subscribe to submitted quiz', () => {
         spyOn(component, 'close');
         component.quiz.id = '';
-        adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ quiz: { ...testQuiz }, errorLog: '' }));
+        adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ data: { ...testQuiz }, error: '' }));
         component.submitQuiz();
         expect(component.close).toHaveBeenCalled();
-        adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ quiz: undefined, errorLog: 'error' }));
+        adminQuizzesServiceSpy.submitQuiz.and.returnValue(of({ data: undefined, error: 'error' }));
         component.submitQuiz();
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
             data: { message: 'error' },
@@ -160,10 +161,10 @@ describe('CreateQuizPageComponent', () => {
 
     it('should subscribe to updated quiz', () => {
         spyOn(component, 'close');
-        adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ quiz: { ...testQuiz }, errorLog: '' }));
+        adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ data: { ...testQuiz }, error: '' }));
         component.submitQuiz();
         expect(component.close).toHaveBeenCalled();
-        adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ quiz: undefined, errorLog: 'error' }));
+        adminQuizzesServiceSpy.updateQuiz.and.returnValue(of({ data: undefined, error: 'error' }));
         component.submitQuiz();
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, {
             data: { message: 'error' },

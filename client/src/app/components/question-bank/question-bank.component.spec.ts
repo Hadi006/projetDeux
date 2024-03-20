@@ -10,6 +10,7 @@ import { QuestionFormComponent } from '@app/components/question-form/question-fo
 import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
 import { QuestionBankService } from '@app/services/question-bank.service';
+import { ActionType } from '@common/action';
 import { TEST_QUESTIONS } from '@common/constant';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';
@@ -96,17 +97,20 @@ describe('QuestionBankComponent', () => {
 
     it('should call openQuestionForm when handle is called with type edit', () => {
         const openQuestionFormSpy = spyOn(component, 'openQuestionForm');
-        component.handle({ type: 'edit', questionIndex: 0 });
+        component.handle({ type: ActionType.EDIT, target: 0 });
         expect(openQuestionFormSpy).toHaveBeenCalledWith(0);
     });
 
     it('should call questionBank.deleteQuestion when handle is called with type delete', () => {
-        component.handle({ type: 'delete', questionIndex: 0 });
+        component.handle({ type: ActionType.DELETE, target: 0 });
         expect(questionBankServiceSpy.deleteQuestion).toHaveBeenCalledWith(0);
     });
 
-    it('should do nothing when handle is called with an unknown type', () => {
-        expect(() => component.handle({ type: 'unknown', questionIndex: 0 })).not.toThrow();
+    it('should do nothing when handle is called with an invalid type', () => {
+        spyOn(component, 'openQuestionForm');
+        component.handle({ type: ActionType.EXPORT, target: 0 });
+        expect(questionBankServiceSpy.deleteQuestion).not.toHaveBeenCalled();
+        expect(component.openQuestionForm).not.toHaveBeenCalled();
     });
 
     it('should do nothing when drop is called with invalid data', () => {
