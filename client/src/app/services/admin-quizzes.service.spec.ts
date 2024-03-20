@@ -57,22 +57,6 @@ describe('AdminQuizzesService', () => {
         });
     });
 
-    it('fetchVisibleQuizzes() should make GET request and update quizzes', () => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: testQuizzes })));
-        service.fetchVisibleQuizzes();
-        service.quizzes$.subscribe((quizzes) => {
-            expect(quizzes).toEqual(testQuizzes);
-        });
-    });
-
-    it('fetchVisibleQuizzes() should handle error if HTTP request fails', () => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error' })));
-        service.fetchVisibleQuizzes();
-        service.quizzes$.subscribe((quizzes) => {
-            expect(quizzes).toEqual([]);
-        });
-    });
-
     it('uploadQuiz should read a quiz file and validate the uploaded quiz', (done) => {
         const quizJson = JSON.stringify(testQuizzes[0]);
         const mockQuizFile = new File([quizJson], 'quiz.txt', {
@@ -83,15 +67,15 @@ describe('AdminQuizzesService', () => {
                 new HttpResponse({
                     status: 200,
                     statusText: 'OK',
-                    body: { quiz: { ...testQuizzes[0] }, errorLog: '' },
+                    body: { quiz: { ...testQuizzes[0] }, error: '' },
                 }),
             ),
         );
-        spyOn(service, 'submitQuiz').and.returnValue(of({ quiz: testQuizzes[0], errorLog: '' }));
+        spyOn(service, 'submitQuiz').and.returnValue(of({ data: testQuizzes[0], error: '' }));
         service.uploadQuiz(mockQuizFile).subscribe({
             next: (response) => {
-                expect(response.quiz).toEqual(testQuizzes[0]);
-                expect(response.errorLog).toBe('');
+                expect(response.data).toEqual(testQuizzes[0]);
+                expect(response.error).toBe('');
                 done();
             },
             error: done.fail,
@@ -102,7 +86,7 @@ describe('AdminQuizzesService', () => {
         const mockQuizFile = new File([''], 'quiz.txt', { type: 'text/plain' });
         service.uploadQuiz(mockQuizFile).subscribe({
             next: (response) => {
-                expect(response.errorLog).toBe('Error occurred while uploading quiz');
+                expect(response.error).toBe('Error occurred while uploading quiz');
                 done();
             },
             error: () => {
@@ -116,7 +100,7 @@ describe('AdminQuizzesService', () => {
         spyOn(window, 'FileReader').and.throwError('File reading error');
         service.uploadQuiz(mockQuizFile).subscribe({
             next: (response) => {
-                expect(response.errorLog).toBe('Error occurred while uploading quiz');
+                expect(response.error).toBe('Error occurred while uploading quiz');
                 done();
             },
             error: () => {
@@ -186,12 +170,12 @@ describe('AdminQuizzesService', () => {
     it('should submit a quiz and update quizzes list if successful', () => {
         const responseBodyMock = {
             quiz: testQuiz,
-            errorLog: '',
+            error: '',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.quiz).toEqual(testQuiz);
+                expect(result.data).toEqual(testQuiz);
                 expect(service['quizzes']).toContain(testQuiz);
             },
         });
@@ -200,13 +184,13 @@ describe('AdminQuizzesService', () => {
     it('should not update quizzes list if submission fails', () => {
         const responseBodyMock = {
             quiz: undefined,
-            errorLog: 'submission failed',
+            error: 'submission failed',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.errorLog).toBe('submission failed');
-                expect(result.quiz).toBeUndefined();
+                expect(result.error).toBe('submission failed');
+                expect(result.data).toBeUndefined();
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
         });
@@ -215,29 +199,29 @@ describe('AdminQuizzesService', () => {
     it('should not update quizzes if title is not unique', () => {
         const responseBodyMock = {
             quiz: { title: testQuizzes[0].title },
-            errorLog: '',
+            error: '',
         };
         service['quizzes'].push(testQuizzes[0]);
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.errorLog).toBe('');
-                expect(result.quiz).toBeUndefined();
+                expect(result.error).toBe('');
+                expect(result.data).toBeUndefined();
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
         });
     });
 
-    it('should return errorLog if submission returns an error', () => {
+    it('should return error if submission returns an error', () => {
         const responseBodyMock = {
             quiz: testQuiz,
-            errorLog: 'submission failed',
+            error: 'submission failed',
         };
         communicationServiceSpy.post.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error', body: responseBodyMock })));
         service.submitQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.errorLog).toBe('submission failed');
-                expect(result.quiz).toEqual(testQuiz);
+                expect(result.error).toBe('submission failed');
+                expect(result.data).toEqual(testQuiz);
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
         });
@@ -246,12 +230,12 @@ describe('AdminQuizzesService', () => {
     it('should update a quiz and update quizzes list if successful', () => {
         const responseBodyMock = {
             quiz: testQuizzes[0],
-            errorLog: '',
+            error: '',
         };
         communicationServiceSpy.patch.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.updateQuiz(testQuizzes[0]).subscribe({
             next: (result) => {
-                expect(result.quiz).toEqual(testQuizzes[0]);
+                expect(result.data).toEqual(testQuizzes[0]);
                 expect(service['quizzes']).toContain(testQuizzes[0]);
             },
         });
@@ -261,22 +245,22 @@ describe('AdminQuizzesService', () => {
         communicationServiceSpy.patch.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error' })));
         service.updateQuiz({ ...testQuizzes[0] }).subscribe({
             next: (response) => {
-                expect(response.quiz).toBeUndefined();
-                expect(response.errorLog).toBe('update failed');
+                expect(response.data).toBeUndefined();
+                expect(response.error).toBe('update failed');
             },
         });
     });
 
     it('should not update quizzes list if update fails', () => {
         const responseBodyMock = {
-            quiz: undefined,
-            errorLog: 'update failed',
+            data: undefined,
+            error: 'update failed',
         };
         communicationServiceSpy.patch.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: responseBodyMock })));
         service.updateQuiz(testQuiz).subscribe({
             next: (result) => {
-                expect(result.errorLog).toBe('update failed');
-                expect(result.quiz).toBeUndefined();
+                expect(result.error).toBe('update failed');
+                expect(result.data).toBeUndefined();
                 expect(service['quizzes']).not.toContain(testQuiz);
             },
         });

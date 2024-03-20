@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
+import { ActionType } from '@common/action';
 import { TEST_QUESTIONS } from '@common/constant';
 import { Question } from '@common/quiz';
 
@@ -40,8 +41,8 @@ describe('QuestionItemComponent', () => {
 
     it('should emit an action with the index', () => {
         spyOn(component.action, 'emit');
-        const ACTION_TYPE = 'delete';
+        const ACTION_TYPE = ActionType.DELETE;
         component.onAction(ACTION_TYPE);
-        expect(component.action.emit).toHaveBeenCalledWith({ type: ACTION_TYPE, questionIndex: component.index });
+        expect(component.action.emit).toHaveBeenCalledWith({ type: ACTION_TYPE, target: component.index });
     });
 });
