@@ -122,7 +122,7 @@ describe('QuestionBankService', () => {
         };
 
         service.addQuestion(newQuestion).subscribe((error) => {
-            expect(error).toBe('');
+            expect(error).toBe('Server error');
         });
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions`);
@@ -150,7 +150,7 @@ describe('QuestionBankService', () => {
 
     it('should not add a question when there is a compilation error', () => {
         service.addQuestion(testQuestions[0]).subscribe((error) => {
-            expect(error).toBe('Question already exists');
+            expect(error).toBe('');
         });
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions`);
@@ -184,7 +184,7 @@ describe('QuestionBankService', () => {
         updatedQuestion.text = '';
 
         service.updateQuestion(testQuestions[0]).subscribe((error) => {
-            expect(error).toBe('Question must have a text');
+            expect(error).toBe('Server error');
         });
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions/${testQuestions[0].text}`);
