@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
+import { PlayerService } from '@app/services/player/player.service';
 import { Player } from '@common/player';
-import { PlayerService } from '@app/services/player.service';
 import { Question } from '@common/quiz';
 
 @Component({

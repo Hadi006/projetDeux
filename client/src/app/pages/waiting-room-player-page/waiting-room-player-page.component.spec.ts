@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
-import { PlayerService } from '@app/services/player.service';
-import { WebSocketService } from '@app/services/web-socket.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { Subject } from 'rxjs';
 
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';

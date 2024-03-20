@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PlayerService } from '@app/services/player.service';
+import { PlayerService } from '@app/services/player/player.service';
 import { of } from 'rxjs';
 
 import { JoinRoomPageComponent } from './join-room-page.component';

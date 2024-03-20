@@ -10,7 +10,7 @@ import { QuestionBankComponent } from '@app/components/question-bank/question-ba
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
 import { CreateQuizPageComponent } from '@app/pages/create-quiz-page/create-quiz-page.component';
-import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { of } from 'rxjs';

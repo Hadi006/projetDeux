@@ -1,0 +1,97 @@
+import { DatabaseService } from '@app/services/database/database.service';
+import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
+import { Question } from '@common/quiz';
+import { expect } from 'chai';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
+
+describe('QuestionBankService', () => {
+    const MOCK_QUESTION: Question = {
+        id: '1',
+        text: 'Question 1',
+        type: 'QCM',
+        points: 10,
+        choices: [
+            { text: 'Answer 1', isCorrect: true },
+            { text: 'Answer 2', isCorrect: false },
+        ],
+    };
+
+    let questionBankService: QuestionBankService;
+    let databaseServiceStub: SinonStubbedInstance<DatabaseService>;
+
+    beforeEach(async () => {
+        databaseServiceStub = createStubInstance(DatabaseService);
+        questionBankService = new QuestionBankService(databaseServiceStub);
+    });
+
+    it('should return all questions', async () => {
+        const questions = new Array(3).fill(MOCK_QUESTION);
+        databaseServiceStub.get.resolves(questions);
+        const result = await questionBankService.getQuestions();
+        expect(result).to.deep.equal(questions);
+    });
+
+    it('should return a question', async () => {
+        databaseServiceStub.get.resolves([MOCK_QUESTION]);
+        const result = await questionBankService.getQuestion(MOCK_QUESTION.text);
+        expect(result).to.deep.equal(MOCK_QUESTION);
+    });
+
+    it('should validate a question', () => {
+        const result = questionBankService.validateQuestion(MOCK_QUESTION);
+        expect(result).to.deep.equal({ question: MOCK_QUESTION, compilationError: '' });
+    });
+
+    it('should invalidate a question', () => {
+        const result = questionBankService.validateQuestion({ id: '1' });
+        expect(result.compilationError).to.not.equal('');
+    });
+
+    it('should update a question', async () => {
+        databaseServiceStub.update.resolves(true);
+        await questionBankService.updateQuestion(MOCK_QUESTION, MOCK_QUESTION.id);
+        expect(databaseServiceStub.update.calledWith('questions', { id: MOCK_QUESTION.id }, [{ $set: MOCK_QUESTION }])).to.equal(true);
+    });
+
+    it('should add a question', async () => {
+        databaseServiceStub.get.resolves([]);
+        await questionBankService.addQuestion(MOCK_QUESTION);
+        expect(databaseServiceStub.add.calledWith('questions', MOCK_QUESTION)).to.equal(true);
+    });
+
+    it('should not add a question', async () => {
+        databaseServiceStub.get.resolves([MOCK_QUESTION]);
+        const result = await questionBankService.addQuestion(MOCK_QUESTION);
+        expect(databaseServiceStub.add.calledWith('questions', MOCK_QUESTION)).to.equal(false);
+        expect(result).to.equal(false);
+    });
+
+    it('should delete a question', async () => {
+        databaseServiceStub.delete.resolves(true);
+        const result = await questionBankService.deleteQuestion('1');
+        expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
+        expect(result).to.equal(true);
+    });
+
+    it('should not delete a question', async () => {
+        databaseServiceStub.delete.resolves(false);
+        const result = await questionBankService.deleteQuestion('1');
+        expect(databaseServiceStub.delete.calledWith('questions', { id: '1' })).to.equal(true);
+        expect(result).to.equal(false);
+    });
+
+    it('should validate an answer and return true', async () => {
+        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [true, false]);
+        expect(result).to.equal(true);
+    });
+
+    it('should validate an answer and return false', async () => {
+        const result = await questionBankService.validateAnswer(MOCK_QUESTION, [false, true]);
+        expect(result).to.equal(false);
+    });
+
+    it('should validate an answer for a non multiple-choices question', async () => {
+        const result = await questionBankService.validateAnswer({ ...MOCK_QUESTION, type: 'QRL' }, [true, false]);
+        expect(result).to.equal(true);
+    });
+});

@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { PlayerService } from '@app/services/player.service';
+import { PlayerService } from '@app/services/player/player.service';
 import { Subscription } from 'rxjs';
 
 @Component({

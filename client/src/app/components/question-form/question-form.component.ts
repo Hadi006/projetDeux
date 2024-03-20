@@ -2,7 +2,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { AdminQuizzesService } from '@app/services/admin-quizzes.service';
+import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Question } from '@common/quiz';
 
 @Component({

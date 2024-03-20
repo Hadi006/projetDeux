@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { TimeService } from '@app/services/time.service';
-import { GameCountDownComponent } from './game-count-down.component';
-import { START_GAME_COUNTDOWN } from '@common/constant';
 import { Router } from '@angular/router';
+import { TimeService } from '@app/services/time/time.service';
+import { START_GAME_COUNTDOWN } from '@common/constant';
+import { GameCountDownComponent } from './game-count-down.component';
 
 describe('GameCountDownComponent', () => {
     const TEST_ID = 1;

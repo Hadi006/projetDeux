@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { PlayerService } from '@app/services/player.service';
-import { Question } from '@common/quiz';
-import { QuestionComponent } from './question.component';
-import { of } from 'rxjs';
-import { Player } from '@common/player';
+import { PlayerService } from '@app/services/player/player.service';
 import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
+import { Player } from '@common/player';
+import { Question } from '@common/quiz';
+import { of } from 'rxjs';
+import { QuestionComponent } from './question.component';
 
 describe('QuestionComponent', () => {
     let testQuestions: Question[];

@@ -4,7 +4,7 @@ import 'reflect-metadata';
 // eslint-disable-next-line import/first
 import { Server } from '@app/server';
 import { Container } from 'typedi';
-import { DatabaseService } from './services/database.service';
+import { DatabaseService } from './services/database/database.service';
 
 const server: Server = Container.get(Server);
 server.init();

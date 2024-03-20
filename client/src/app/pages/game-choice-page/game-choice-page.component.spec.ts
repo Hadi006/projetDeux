@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
-import { HostService } from '@app/services/host.service';
-import { PublicQuizzesService } from '@app/services/public-quizzes.service';
+import { HostService } from '@app/services/host/host.service';
+import { PublicQuizzesService } from '@app/services/public-quizzes/public-quizzes.service';
 import { TEST_QUIZZES } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, of } from 'rxjs';

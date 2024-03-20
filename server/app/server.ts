@@ -1,6 +1,6 @@
 import { Application } from '@app/app';
-import { GameController } from '@app/controllers/game.controller';
-import { GameService } from '@app/services/game.service';
+import { GameController } from '@app/controllers/game/game.controller';
+import { GameService } from '@app/services/game/game.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Container, Service } from 'typedi';

@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { QuestionComponent } from '@app/components/question/question.component';
-import { PlayerService } from '@app/services/player.service';
-import { WebSocketService } from '@app/services/web-socket.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { Subject } from 'rxjs';
 
 import { PlayerGamePageComponent } from './player-game-page.component';
