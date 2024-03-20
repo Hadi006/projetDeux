@@ -22,6 +22,7 @@ describe('QuestionFormComponent', () => {
         testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
 
         adminQuizzesServiceSpy = jasmine.createSpyObj('AdminQuizzesService', ['submitQuestion']);
+        adminQuizzesServiceSpy.selectedQuestion = testQuestion;
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     });
