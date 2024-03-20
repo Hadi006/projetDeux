@@ -75,9 +75,6 @@ export class HostService {
         if (!this.webSocketService.isSocketAlive()) {
             this.webSocketService.connect();
         }
-        this.webSocketService.onEvent<ChatMessage>('message-received', (message) => {
-            console.log('hostService message-received', message);
-        });
 
         this.onPlayerJoined();
         this.onPlayerLeft();
