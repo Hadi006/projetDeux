@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChatService } from '@app/services/chat.service';
 import { HostService } from '@app/services/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
@@ -9,18 +8,11 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     templateUrl: './waiting-room-host-page.component.html',
     styleUrls: ['./waiting-room-host-page.component.scss'],
 })
-export class WaitingRoomHostPageComponent implements OnInit {
+export class WaitingRoomHostPageComponent {
     constructor(
         private hostService: HostService,
         private router: Router,
-        private chatService: ChatService,
     ) {}
-
-    ngOnInit() {
-        if (this.hostService.game) {
-            this.chatService.init();
-        }
-    }
 
     get game() {
         return this.hostService.game;

@@ -1,8 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { ChatService } from '@app/services/chat.service';
 import { PlayerService } from '@app/services/player.service';
 import { Subscription } from 'rxjs';
 
@@ -11,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './waiting-room-player-page.component.html',
     styleUrls: ['./waiting-room-player-page.component.scss'],
 })
-export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
+export class WaitingRoomPlayerPageComponent implements OnDestroy {
     private startGameSubscription: Subscription;
     private endGameSubscription: Subscription;
 
@@ -19,7 +18,6 @@ export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
         private playerService: PlayerService,
         private router: Router,
         private dialog: MatDialog,
-        private chatService: ChatService,
     ) {
         this.startGameSubscription = this.playerService.startGameSubject.subscribe(() => {
             router.navigate(['game-player']);
@@ -27,12 +25,6 @@ export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
         });
-    }
-
-    ngOnInit() {
-        if (this.playerService.pin) {
-            this.chatService.init();
-        }
     }
 
     get pin() {
