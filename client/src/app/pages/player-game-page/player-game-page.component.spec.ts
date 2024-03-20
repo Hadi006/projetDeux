@@ -18,6 +18,12 @@ describe('PlayerGamePageComponent', () => {
 
     beforeEach(() => {
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['gameTitle', 'leaveGame']);
+        Object.defineProperty(playerServiceSpy, 'players', {
+            get: () => {
+                return [];
+            },
+            configurable: true,
+        });
         const endGameSubject = new Subject<void>();
         Object.defineProperty(playerServiceSpy, 'endGameSubject', {
             get: () => {
@@ -83,6 +89,11 @@ describe('PlayerGamePageComponent', () => {
             configurable: true,
         });
         expect(component.gameTitle()).toEqual('test');
+    });
+
+    it('leaveGame should call the leaveGame method from the playerService', () => {
+        component.leaveGame();
+        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
     });
 
     it('ngOnDestroy should unsubscribe from the endGameSubscription', () => {

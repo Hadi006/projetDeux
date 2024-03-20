@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { ChatMessage } from '@common/chat-message';
-import { MAX_MESSAGE_LENGTH } from '@common/constant';
+import { MAX_MESSAGE_LENGTH, TEST_GAME_DATA } from '@common/constant';
+import { Game } from '@common/game';
 import { Socket } from 'socket.io-client';
 import { ChatService } from './chat.service';
 import { HostService } from './host.service';
@@ -18,20 +19,30 @@ describe('ChatService', () => {
     let service: ChatService;
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
+    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
+    let hostServiceSpy: jasmine.SpyObj<HostService>;
 
     beforeEach(() => {
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
-        const playerServiceSpyObj = jasmine.createSpyObj('PlayerService', ['']);
-        const hostServiceSpyObj = jasmine.createSpyObj('HostService', ['']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['']);
+        Object.defineProperty(playerServiceSpy, 'pin', { get: () => '12345', configurable: true });
+        Object.defineProperty(playerServiceSpy, 'player', {
+            get: () => {
+                return { name: 'TestPlayer' };
+            },
+            configurable: true,
+        });
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['']);
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
 
         TestBed.configureTestingModule({
             providers: [
                 ChatService,
                 { provide: WebSocketService, useValue: webSocketServiceMock },
-                { provide: PlayerService, useValue: playerServiceSpyObj },
-                { provide: HostService, useValue: hostServiceSpyObj },
+                { provide: PlayerService, useValue: playerServiceSpy },
+                { provide: HostService, useValue: hostServiceSpy },
             ],
         });
 
@@ -53,23 +64,6 @@ describe('ChatService', () => {
         expect(service.messages.length).toBe(1);
     });
 
-    it('should send a message as Organisateur', () => {
-        const message = 'Test message';
-        const expectedMessage: ChatMessage = {
-            text: message,
-            timestamp: new Date(),
-            author: 'Organisateur',
-            roomId: '12345',
-        };
-
-        const playerServiceMock = { pin: '12345' };
-        spyOn(webSocketServiceMock, 'emit');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (service as any)['playerService'] = playerServiceMock;
-        service.sendMessage(message);
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('new-message', expectedMessage);
-    });
-
     it('should send a message as Player', () => {
         const message = 'Test message';
         const expectedMessage: ChatMessage = {
@@ -78,14 +72,26 @@ describe('ChatService', () => {
             author: 'TestPlayer',
             roomId: '12345',
         };
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        spyOnProperty(hostServiceSpy, 'game', 'get').and.returnValue(undefined as unknown as Game);
 
-        const playerServiceMock = { pin: '12345' };
-        spyOn(webSocketServiceMock, 'emit');
-        service['internalParticipantName'] = 'TestPlayer';
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (service as any)['playerService'] = playerServiceMock;
         service.sendMessage(message);
-        expect(webSocketServiceMock.emit).toHaveBeenCalledWith('new-message', expectedMessage);
+
+        expect(emitSpy).toHaveBeenCalledWith('new-message', expectedMessage);
+    });
+
+    it('should send a message as a host', () => {
+        const message = 'Test message';
+        const expectedMessage: ChatMessage = {
+            text: message,
+            timestamp: jasmine.any(Date) as unknown as Date,
+            author: 'TestPlayer',
+            roomId: TEST_GAME_DATA.pin,
+        };
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        spyOnProperty(playerServiceSpy, 'pin', 'get').and.returnValue(undefined as unknown as string);
+        service.sendMessage(message);
+        expect(emitSpy).toHaveBeenCalledWith('new-message', expectedMessage);
     });
 
     it('should add message to internalMessages when message-received event is received', () => {
@@ -96,13 +102,11 @@ describe('ChatService', () => {
             roomId: '12345',
         };
         socketHelper.on('message-received', (receivedMessage: ChatMessage) => {
-            // Assert
             expect(receivedMessage).toEqual(message);
             service['internalMessages'].push(receivedMessage);
             expect(service['internalMessages']).toContain(receivedMessage);
             return {};
         });
-        // service['setupSocket']();
         socketHelper.peerSideEmit('message-received', message);
     });
 

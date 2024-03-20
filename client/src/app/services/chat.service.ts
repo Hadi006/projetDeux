@@ -50,6 +50,11 @@ export class ChatService {
         this.webSocketService.emit('new-message', newChatMessage);
     }
 
+    clearChatbox() {
+        this.internalMessages = [];
+        this.messagesSubject.next();
+    }
+
     private setupSocket() {
         this.webSocketService.onEvent<ChatMessage>('message-received', (message) => {
             this.internalMessages.push(message);
