@@ -86,6 +86,7 @@ export class HostService {
     }
 
     leaveGame(): void {
+        // this.chatService.clearChatbox(); Sa nous donne erreur lorsquon create game
         this.cleanUp();
         this.router.navigate(['/']);
     }

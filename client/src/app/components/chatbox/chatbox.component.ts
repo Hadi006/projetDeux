@@ -12,6 +12,10 @@ export class ChatboxComponent {
 
     constructor(public chatService: ChatService) {}
 
+    get participantName() {
+        return this.chatService.participantName;
+    }
+
     toggleChat() {
         this.showChat = !this.showChat;
     }

@@ -30,6 +30,7 @@ import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.com
 import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
 import { TestPageComponent } from './pages/test-page/test-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
+import { ChatService } from './services/chat.service';
 import { EndgameResultPageComponent } from './pages/endgame-result-page/endgame-result-page.component';
 
 /**
@@ -76,7 +77,7 @@ import { EndgameResultPageComponent } from './pages/endgame-result-page/endgame-
         DragDropModule,
         ReactiveFormsModule,
     ],
-    providers: [],
+    providers: [ChatService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

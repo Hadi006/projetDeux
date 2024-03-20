@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
-import { Router } from '@angular/router';
-import { PlayerService } from '@app/services/player.service';
 import { HostService } from '@app/services/host.service';
-import { Game } from '@common/game';
-import { of, Subject } from 'rxjs';
+import { PlayerService } from '@app/services/player.service';
+import { WebSocketService } from '@app/services/web-socket.service';
 import { TEST_GAME_DATA } from '@common/constant';
+import { Game } from '@common/game';
+import { Subject, of } from 'rxjs';
 
 describe('TestPageComponent', () => {
     let testGame: Game;
@@ -17,6 +18,7 @@ describe('TestPageComponent', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
@@ -32,6 +34,7 @@ describe('TestPageComponent', () => {
         Object.defineProperty(hostServiceSpy, 'game', { get: () => testGame, configurable: true });
 
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -41,6 +44,7 @@ describe('TestPageComponent', () => {
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
     }));

@@ -1,22 +1,25 @@
-import { Server } from '@app/server';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import { GameController } from '@app/controllers/game.controller';
+import { Server } from '@app/server';
+import { GameService } from '@app/services/game.service';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { Game } from '@common/game';
+import { HistogramData } from '@common/histogram-data';
+import { Player } from '@common/player';
+import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
-import { io as ioClient, Socket } from 'socket.io-client';
+import { Socket, io as ioClient } from 'socket.io-client';
 import { Container } from 'typedi';
-import { GameService } from '@app/services/game.service';
-import { Question, Quiz } from '@common/quiz';
-import { Game } from '@common/game';
-import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
-import { Player } from '@common/player';
-import { HistogramData } from '@common/histogram-data';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+import sinon = require('sinon');
 
 describe('GameController', () => {
     let service: GameController;
     let gameServiceStub: SinonStubbedInstance<GameService>;
     let server: Server;
     let clientSocket: Socket;
-
     const urlString = 'http://localhost:3000';
 
     let testQuestion: Question;
@@ -45,6 +48,22 @@ describe('GameController', () => {
         clientSocket.close();
         service['sio'].close();
         restore();
+    });
+
+    it('should emit message-received event to room when new message is received', (done) => {
+        const message = { roomId: 'room123', text: 'Hello, World!' };
+        const toSpy = sinon.spy(service['sio'], 'to');
+
+        clientSocket.emit('create-game', testQuiz, () => {
+            setTimeout(() => {
+                expect(toSpy.calledWith(message.roomId)).to.be.true;
+                toSpy.restore();
+
+                done();
+            }, RESPONSE_DELAY);
+        });
+
+        clientSocket.emit('new-message', message);
     });
 
     it('should create a game', (done) => {

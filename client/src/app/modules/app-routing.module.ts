@@ -16,6 +16,7 @@ import { WaitingRoomPlayerPageComponent } from '@app/pages/waiting-room-player-p
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: 'home/join-game', component: JoinRoomPageComponent },
     { path: 'home', component: HomePageComponent },
     { path: 'home/create-game', component: GameChoicePageComponent },
     { path: 'home/join-game', component: JoinRoomPageComponent },
