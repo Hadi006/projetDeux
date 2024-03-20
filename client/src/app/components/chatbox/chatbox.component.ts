@@ -24,4 +24,9 @@ export class ChatboxComponent {
         this.chatService.sendMessage(this.newMessage);
         this.newMessage = '';
     }
+    keyEnter(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            this.sendMessage();
+        }
+    }
 }

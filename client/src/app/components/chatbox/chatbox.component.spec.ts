@@ -55,4 +55,13 @@ describe('ChatboxComponent', () => {
         component.sendMessage();
         expect(component.newMessage).toBe('');
     });
+
+    it('should call sendMessage when Enter key is pressed', () => {
+        const sendMessageSpy = spyOn(component, 'sendMessage');
+
+        const event = new KeyboardEvent('keydown', { key: 'Enter' });
+        component.keyEnter(event);
+
+        expect(sendMessageSpy).toHaveBeenCalled();
+    });
 });
