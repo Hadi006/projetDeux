@@ -59,7 +59,6 @@ export class AdminQuizzesService {
     submitQuiz(quiz: unknown, newTitle?: string): Observable<ValidationResult<Quiz>> {
         return this.http.post<ValidationResult<Quiz>>('quizzes', { quiz, newTitle }).pipe(
             map((response: HttpResponse<ValidationResult<Quiz>>) => {
-                console.log(response);
                 if (!response.body || response.body.error === undefined || !response.body.data) {
                     return new ValidationResult<Quiz>('Submission failed');
                 }
