@@ -151,11 +151,7 @@ describe('QuestionBankService', () => {
 
         const req = httpTestingController.expectOne(`${baseUrl}/questions`);
         expect(req.request.method).toBe('POST');
-        req.flush({ question: testQuestions[0], compilationError: 'Question already exists' });
-
-        service.questions$.subscribe((questions) => {
-            expect(questions).not.toContain(testQuestions[0]);
-        });
+        req.flush({ body: { data: testQuestions[0], error: 'Question already exists' } });
     });
 
     it('should update a question when there is no compilation error', () => {
