@@ -56,8 +56,8 @@ describe('PublicQuizzesService', () => {
         });
     });
 
-    it('fetchVisibleQuizzes() should do nothing if response body is not an array', (done) => {
-        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: {} })));
+    it('fetchVisibleQuizzes() should do nothing if response body is undefined', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK' })));
         service.fetchVisibleQuizzes().subscribe(() => {
             expect(service.quizzes).toEqual([]);
             done();
