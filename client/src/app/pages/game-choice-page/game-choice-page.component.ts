@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes/public-quizzes.service';
-import { Quiz } from '@common/quiz';
-import { Observable, map, of, take } from 'rxjs';
+import { RANDOM_QUIZ_ID } from '@common/constant';
+import { Question, Quiz } from '@common/quiz';
+import { Observable, map, of, concatMap } from 'rxjs';
 
 @Component({
     selector: 'app-game-choice-page',
@@ -32,33 +33,27 @@ export class GameChoicePageComponent implements OnInit {
     }
 
     startGame() {
-        this.publicQuizzesService
-            .checkQuizAvailability(this.chosenQuiz?.id)
-            .pipe(take(1))
-            .subscribe((isAvailable) => {
-                this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
-                    if (success) {
-                        this.router.navigate(['waiting-room-host']);
-                    } else {
-                        this.hostService.cleanUp();
-                    }
-                });
+        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
+            this.handleChosenQuiz(isAvailable).subscribe((success: boolean) => {
+                if (success) {
+                    this.router.navigate(['waiting-room-host']);
+                } else {
+                    this.hostService.cleanUp();
+                }
             });
+        });
     }
 
     testGame() {
-        this.publicQuizzesService
-            .checkQuizAvailability(this.chosenQuiz?.id)
-            .pipe(take(1))
-            .subscribe((isAvailable) => {
-                this.handleChosenQuiz(isAvailable).subscribe((success) => {
-                    if (success) {
-                        this.router.navigate(['test']);
-                    } else {
-                        this.hostService.cleanUp();
-                    }
-                });
+        this.publicQuizzesService.checkQuizAvailability(this.chosenQuiz?.id).subscribe((isAvailable) => {
+            this.handleChosenQuiz(isAvailable).subscribe((success) => {
+                if (success) {
+                    this.router.navigate(['test']);
+                } else {
+                    this.hostService.cleanUp();
+                }
             });
+        });
     }
 
     private handleChosenQuiz(isAvailable: boolean): Observable<boolean> {
@@ -74,6 +69,28 @@ export class GameChoicePageComponent implements OnInit {
         }
 
         this.hostService.handleSockets();
+
+        if (this.chosenQuiz.id === RANDOM_QUIZ_ID) {
+            return this.publicQuizzesService.createRandomQuestions().pipe(
+                concatMap((questions: Question[]) => {
+                    return this.createGame(questions);
+                }),
+            );
+        } else {
+            return this.createGame();
+        }
+    }
+
+    private createGame(questions?: Question[]): Observable<boolean> {
+        if (questions?.length === 0 || !this.chosenQuiz) {
+            this.publicQuizzesService.alertNoQuizAvailable('Erreur lors de la création du jeu');
+            return of(false);
+        }
+
+        if (questions) {
+            this.chosenQuiz.questions = questions;
+        }
+
         return this.hostService.createGame(this.chosenQuiz).pipe(
             map((success: boolean) => {
                 if (!success) {

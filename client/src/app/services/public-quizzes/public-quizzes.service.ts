@@ -64,6 +64,29 @@ export class PublicQuizzesService {
         });
     }
 
+    createRandomQuestions(): Observable<Question[]> {
+        return this.http.get<Question[]>('questions').pipe(
+            map((response: HttpResponse<Question[]>) => {
+                if (!response.body || response.status !== HttpStatusCode.Ok) {
+                    return [];
+                }
+
+                if (response.body.length < N_RANDOM_QUESTIONS) {
+                    return [];
+                }
+
+                const questions: Question[] = [];
+                const shuffledQuestions: Question[] = this.getShuffledQuestions(response.body);
+
+                for (let i = 0; i < N_RANDOM_QUESTIONS; i++) {
+                    questions.push(shuffledQuestions[i]);
+                }
+
+                return questions;
+            }),
+        );
+    }
+
     private createRandomQuiz(): Observable<Quiz | undefined> {
         return this.http.get<Question[]>('questions').pipe(
             map((response: HttpResponse<Question[]>) => {
@@ -85,5 +108,14 @@ export class PublicQuizzesService {
                 return quiz;
             }),
         );
+    }
+
+    private getShuffledQuestions(questions: Question[]): Question[] {
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+
+        return questions;
     }
 }
