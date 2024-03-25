@@ -89,6 +89,8 @@ export const ANSWER_TIME_BUFFER = 1000;
 
 export const N_RANDOM_QUESTIONS = 5;
 
+export const RANDOM_QUIZ_DURATION = 20;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 

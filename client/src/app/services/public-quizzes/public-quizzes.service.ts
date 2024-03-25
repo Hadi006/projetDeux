@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
-import { N_RANDOM_QUESTIONS } from '@common/constant';
+import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { Observable, map, of } from 'rxjs';
 
@@ -66,23 +66,13 @@ export class PublicQuizzesService {
                 }
 
                 const quiz = new Quiz();
-                const shuffledQuestions = this.getShuffledQuestions(response.body);
-
-                for (let i = 0; i < N_RANDOM_QUESTIONS; i++) {
-                    quiz.questions.push(shuffledQuestions[i]);
-                }
+                quiz.title = 'Mode aléatoire';
+                quiz.visible = true;
+                quiz.description = 'Mode aléatoire';
+                quiz.duration = RANDOM_QUIZ_DURATION;
 
                 return quiz;
             }),
         );
-    }
-
-    private getShuffledQuestions(questions: Question[]): Question[] {
-        for (let i = questions.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [questions[i], questions[j]] = [questions[j], questions[i]];
-        }
-
-        return questions;
     }
 }
