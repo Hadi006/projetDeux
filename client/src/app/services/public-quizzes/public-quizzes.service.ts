@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
-import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION } from '@common/constant';
-import { Question, Quiz } from '@common/quiz';
+// import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION } from '@common/constant';
+import { /* Question,  */ Quiz } from '@common/quiz';
 import { Observable, map, of } from 'rxjs';
 
 @Injectable({
@@ -28,6 +28,7 @@ export class PublicQuizzesService {
                 if (!response.body || response.status !== HttpStatusCode.Ok) {
                     return;
                 }
+
                 this.internalQuizzes = response.body;
             }),
         );
@@ -38,9 +39,9 @@ export class PublicQuizzesService {
             return of(false);
         }
 
-        return this.http.get<Quiz>(`quizzes/${quizId}`).pipe(
-            map((response: HttpResponse<Quiz>) => {
-                return !!response.body && response.status === HttpStatusCode.Ok && response.body.visible;
+        return this.fetchVisibleQuizzes().pipe(
+            map(() => {
+                return !!this.quizzes.find((quiz) => quiz.id === quizId);
             }),
         );
     }
@@ -54,25 +55,25 @@ export class PublicQuizzesService {
         });
     }
 
-    private createRandomQuiz(): Observable<Quiz | undefined> {
-        return this.http.get<Question[]>('questions').pipe(
-            map((response: HttpResponse<Question[]>) => {
-                if (!response.body || response.status !== HttpStatusCode.Ok) {
-                    return;
-                }
+    // private createRandomQuiz(): Observable<Quiz | undefined> {
+    //     return this.http.get<Question[]>('questions').pipe(
+    //         map((response: HttpResponse<Question[]>) => {
+    //             if (!response.body || response.status !== HttpStatusCode.Ok) {
+    //                 return;
+    //             }
 
-                if (response.body.length < N_RANDOM_QUESTIONS) {
-                    return;
-                }
+    //             if (response.body.length < N_RANDOM_QUESTIONS) {
+    //                 return;
+    //             }
 
-                const quiz = new Quiz();
-                quiz.title = 'Mode aléatoire';
-                quiz.visible = true;
-                quiz.description = 'Mode aléatoire';
-                quiz.duration = RANDOM_QUIZ_DURATION;
+    //             const quiz = new Quiz();
+    //             quiz.title = 'Mode aléatoire';
+    //             quiz.visible = true;
+    //             quiz.description = 'Mode aléatoire';
+    //             quiz.duration = RANDOM_QUIZ_DURATION;
 
-                return quiz;
-            }),
-        );
-    }
+    //             return quiz;
+    //         }),
+    //     );
+    // }
 }
