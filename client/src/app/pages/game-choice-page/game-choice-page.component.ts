@@ -14,13 +14,17 @@ export class GameChoicePageComponent implements OnInit {
     chosenQuiz: Quiz | null = null;
 
     constructor(
-        public publicQuizzesService: PublicQuizzesService,
+        private publicQuizzesService: PublicQuizzesService,
         private router: Router,
         private hostService: HostService,
     ) {}
 
     ngOnInit() {
         this.publicQuizzesService.fetchVisibleQuizzes().subscribe();
+    }
+
+    getQuizzes(): Quiz[] {
+        return this.publicQuizzesService.quizzes;
     }
 
     chooseQuiz(quiz: Quiz) {

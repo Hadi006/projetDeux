@@ -26,6 +26,9 @@ describe('GameChoicePageComponent', () => {
             'alertNoQuizAvailable',
         ]);
         publicQuizzesServiceSpy.fetchVisibleQuizzes.and.returnValue(of(undefined));
+        Object.defineProperty(publicQuizzesServiceSpy, 'quizzes', {
+            value: [testQuiz],
+        });
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes$', {
             value: new Subject<Quiz[]>(),
         });
@@ -61,6 +64,10 @@ describe('GameChoicePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should return quizzes from service', () => {
+        expect(component.getQuizzes()).toEqual(publicQuizzesServiceSpy.quizzes);
     });
 
     it('should call fetchVisibleQuizzes on init', (done) => {
