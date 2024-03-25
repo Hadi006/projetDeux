@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
-// import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION } from '@common/constant';
-import { /* Question,  */ Quiz } from '@common/quiz';
-import { Observable, map, of } from 'rxjs';
+import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION } from '@common/constant';
+import { Question, Quiz } from '@common/quiz';
+import { Observable, map, of, forkJoin } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -23,13 +23,22 @@ export class PublicQuizzesService {
     }
 
     fetchVisibleQuizzes(): Observable<void> {
-        return this.http.get<Quiz[]>('quizzes/visible').pipe(
-            map((response: HttpResponse<Quiz[]>) => {
+        const randomQuizObservable: Observable<Quiz | undefined> = this.createRandomQuiz();
+        const visibleQuizzesObservable: Observable<HttpResponse<Quiz[]>> = this.http.get<Quiz[]>('quizzes/visible');
+
+        return forkJoin([randomQuizObservable, visibleQuizzesObservable]).pipe(
+            map(([randomQuiz, response]) => {
                 if (!response.body || response.status !== HttpStatusCode.Ok) {
                     return;
                 }
 
-                this.internalQuizzes = response.body;
+                this.internalQuizzes = [];
+
+                if (randomQuiz) {
+                    this.internalQuizzes.push(randomQuiz);
+                }
+
+                this.internalQuizzes = this.internalQuizzes.concat(response.body);
             }),
         );
     }
@@ -41,7 +50,7 @@ export class PublicQuizzesService {
 
         return this.fetchVisibleQuizzes().pipe(
             map(() => {
-                return !!this.quizzes.find((quiz) => quiz.id === quizId);
+                return !!this.internalQuizzes.find((quiz) => quiz.id === quizId);
             }),
         );
     }
@@ -55,25 +64,25 @@ export class PublicQuizzesService {
         });
     }
 
-    // private createRandomQuiz(): Observable<Quiz | undefined> {
-    //     return this.http.get<Question[]>('questions').pipe(
-    //         map((response: HttpResponse<Question[]>) => {
-    //             if (!response.body || response.status !== HttpStatusCode.Ok) {
-    //                 return;
-    //             }
+    private createRandomQuiz(): Observable<Quiz | undefined> {
+        return this.http.get<Question[]>('questions').pipe(
+            map((response: HttpResponse<Question[]>) => {
+                if (!response.body || response.status !== HttpStatusCode.Ok) {
+                    return;
+                }
 
-    //             if (response.body.length < N_RANDOM_QUESTIONS) {
-    //                 return;
-    //             }
+                if (response.body.length < N_RANDOM_QUESTIONS) {
+                    return;
+                }
 
-    //             const quiz = new Quiz();
-    //             quiz.title = 'Mode aléatoire';
-    //             quiz.visible = true;
-    //             quiz.description = 'Mode aléatoire';
-    //             quiz.duration = RANDOM_QUIZ_DURATION;
+                const quiz = new Quiz();
+                quiz.title = 'Mode aléatoire';
+                quiz.visible = true;
+                quiz.description = 'Mode aléatoire';
+                quiz.duration = RANDOM_QUIZ_DURATION;
 
-    //             return quiz;
-    //         }),
-    //     );
-    // }
+                return quiz;
+            }),
+        );
+    }
 }
