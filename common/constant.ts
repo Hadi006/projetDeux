@@ -87,6 +87,8 @@ export const TRANSITION_DELAY = 3;
 
 export const ANSWER_TIME_BUFFER = 1000;
 
+export const N_RANDOM_QUESTIONS = 5;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 
