@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { CommunicationService } from '@app/services/communication/communication.service';
-import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION } from '@common/constant';
+import { N_RANDOM_QUESTIONS, RANDOM_QUIZ_DURATION, RANDOM_QUIZ_ID } from '@common/constant';
 import { Question, Quiz } from '@common/quiz';
 import { Observable, map, of, forkJoin } from 'rxjs';
 
@@ -76,6 +76,7 @@ export class PublicQuizzesService {
                 }
 
                 const quiz = new Quiz();
+                quiz.id = RANDOM_QUIZ_ID;
                 quiz.title = 'Mode aléatoire';
                 quiz.visible = true;
                 quiz.description = 'Mode aléatoire';
