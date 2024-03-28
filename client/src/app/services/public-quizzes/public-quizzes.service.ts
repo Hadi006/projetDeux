@@ -102,7 +102,6 @@ export class PublicQuizzesService {
                 quiz.id = RANDOM_QUIZ_ID;
                 quiz.title = 'Mode aléatoire';
                 quiz.visible = true;
-                quiz.description = 'Mode aléatoire';
                 quiz.duration = RANDOM_QUIZ_DURATION;
 
                 return quiz;
