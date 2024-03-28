@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
+import { PlayerService } from '@app/services/player/player.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
 
 @Component({
@@ -8,14 +9,28 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     templateUrl: './waiting-room-host-page.component.html',
     styleUrls: ['./waiting-room-host-page.component.scss'],
 })
-export class WaitingRoomHostPageComponent {
+export class WaitingRoomHostPageComponent implements OnInit {
     constructor(
         private hostService: HostService,
         private router: Router,
+        private playerService: PlayerService,
     ) {}
 
     get game() {
         return this.hostService.game;
+    }
+
+    ngOnInit() {
+        if (this.hostService.game.quiz.id === '-1') {
+            this.playerService.handleSockets();
+            this.playerService.joinGame(this.hostService.game.pin, 'Organisateur').subscribe((error) => {
+                if (error) {
+                    this.hostService.cleanUp();
+                    this.playerService.cleanUp();
+                    this.router.navigate(['/']);
+                }
+            });
+        }
     }
 
     toggleLock() {
