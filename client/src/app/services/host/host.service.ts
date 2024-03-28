@@ -71,6 +71,10 @@ export class HostService {
         this.pauseTimerForEveryone();
         return this.timeService.toggleTimerById(this.timerId);
     }
+    startPanicMode(): void {
+        this.startPanicModeForEveryone();
+        return this.timeService.startPanicMode();
+    }
     // toggleTimer(): void{
     //     if(this.timeService.counterToggled){
     //         this.
@@ -300,5 +304,9 @@ export class HostService {
     }
     private pauseTimerForEveryone(): void {
         this.webSocketService.emit<string>('pause-timer', this.internalGame.pin);
+    }
+
+    private startPanicModeForEveryone(): void {
+        this.webSocketService.emit<string>('panic-mode', this.internalGame.pin);
     }
 }

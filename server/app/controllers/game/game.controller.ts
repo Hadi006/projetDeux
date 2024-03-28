@@ -36,6 +36,7 @@ export class GameController {
             this.onEndGame(socket);
             this.onDisconnect(socket);
             this.onPauseTimer(socket);
+            this.onPanicMode(socket);
         });
     }
 
@@ -202,6 +203,12 @@ export class GameController {
     private onPauseTimer(socket: Socket): void {
         socket.on('pause-timer', (pin: string) => {
             this.sio.to(pin).emit('timer-paused');
+        });
+    }
+
+    private onPanicMode(socket: Socket): void {
+        socket.on('panic-mode', (pin: string) => {
+            this.sio.to(pin).emit('in-panic');
         });
     }
 }

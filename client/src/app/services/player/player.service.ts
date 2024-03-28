@@ -141,10 +141,18 @@ export class PlayerService {
     pauseTimer(): void {
         return this.timeService.toggleTimerById(this.timerId);
     }
+    panicMode(): void {
+        return this.timeService.startPanicMode();
+    }
 
     pauseTimerForPLayers(): void {
         this.webSocketService.onEvent('timer-paused', () => {
             this.pauseTimer();
+        });
+    }
+    startPanicModeForPlayers(): void {
+        this.webSocketService.onEvent('in-panic', () => {
+            this.panicMode();
         });
     }
 

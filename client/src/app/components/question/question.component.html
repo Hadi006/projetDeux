@@ -14,12 +14,6 @@ Temps restant: {{ getTime() }}
                 </label>
             </div>
         </div>
-        <div>
-            <button >
-                test
-            </button>
-        </div>
-
         <div *ngIf="questionData.type === 'QRL'" class="question-container">
             <textarea [disabled]="this.playerService.answerConfirmed" class="answer-textarea"
                 placeholder="Tapez votre réponse ici..."></textarea>

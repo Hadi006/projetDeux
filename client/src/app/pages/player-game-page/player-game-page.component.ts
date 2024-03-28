@@ -27,6 +27,7 @@ export class PlayerGamePageComponent implements OnDestroy, OnInit {
     }
     ngOnInit(): void {
         this.playerService.pauseTimerForPLayers();
+        this.playerService.startPanicModeForPlayers();
     }
 
     stopCountDown() {

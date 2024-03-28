@@ -45,7 +45,9 @@ export class HostGamePageComponent implements OnDestroy {
     pauseTimer() {
         return this.hostService.pauseTimer();
     }
-
+    startPanicMode() {
+        return this.hostService.startPanicMode();
+    }
     getQuestionEnded() {
         return this.hostService.questionEnded;
     }
