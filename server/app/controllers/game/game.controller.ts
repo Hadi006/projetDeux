@@ -6,6 +6,7 @@ import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Server as HTTPServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
+import { JoinGameEventData } from '@common/join-game-event-data';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -63,7 +64,7 @@ export class GameController {
     }
 
     private onJoinGame(socket: Socket): void {
-        socket.on('join-game', async (roomData: RoomData<string>, callback) => {
+        socket.on('join-game', async (roomData: RoomData<JoinGameEventData>, callback) => {
             const pin = roomData.pin;
 
             const result: JoinGameResult = await this.gameService.addPlayer(pin, roomData.data);

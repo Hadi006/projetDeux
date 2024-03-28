@@ -20,7 +20,7 @@ export class JoinRoomPageComponent {
     }
 
     joinGame() {
-        this.playerService.joinGame(this.gamePin, this.playerName).subscribe((error: string) => {
+        this.playerService.joinGame(this.gamePin, { playerName: this.playerName, isHost: false }).subscribe((error: string) => {
             this.error = error;
             if (error) {
                 return;

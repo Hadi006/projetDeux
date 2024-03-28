@@ -10,6 +10,7 @@ import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
 import { TimeService } from '@app/services/time/time.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
+import { JoinGameEventData } from '@common/join-game-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -90,9 +91,9 @@ export class PlayerService {
         this.onGameDeleted();
     }
 
-    joinGame(pin: string, playerName: string): Observable<string> {
+    joinGame(pin: string, playerName: JoinGameEventData): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
+            this.webSocketService.emit<RoomData<JoinGameEventData>>('join-game', { pin, data: playerName }, (response: unknown) => {
                 const responseData = response as JoinGameResult;
                 if (!responseData.error) {
                     this.player = responseData.player;

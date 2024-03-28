@@ -6,6 +6,7 @@ import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
 import { DatabaseService } from '@app/services/database/database.service';
+import { JoinGameEventData } from '@common/join-game-event-data';
 
 @Service()
 export class GameService {
@@ -46,10 +47,11 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(pin: string, playerName: string): Promise<JoinGameResult> {
+    async addPlayer(pin: string, joinGameData: JoinGameEventData): Promise<JoinGameResult> {
         const game = await this.getGame(pin);
-        const player: Player = new Player(playerName);
-        const error = this.validatePin(pin, game) || this.validatePlayerName(playerName, game);
+        const name: string = joinGameData.playerName;
+        const player: Player = new Player(name);
+        const error = this.validatePin(pin, game) || this.validatePlayerName(name, game, joinGameData.isHost);
         if (error) {
             return new JoinGameResult(error, player);
         }
@@ -138,12 +140,12 @@ export class GameService {
         return '';
     }
 
-    private validatePlayerName(playerName: string, game: Game) {
+    private validatePlayerName(playerName: string, game: Game, isHost: boolean) {
         const lowerCasePlayerName = playerName.toLocaleLowerCase();
         if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
             return 'Ce nom est déjà utilisé';
         }
-        if (lowerCasePlayerName === 'organisateur') {
+        if (lowerCasePlayerName === 'organisateur' && !isHost) {
             return 'Pseudo interdit';
         }
         if (lowerCasePlayerName.trim() === '') {

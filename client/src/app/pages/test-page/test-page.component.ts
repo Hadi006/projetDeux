@@ -28,7 +28,7 @@ export class TestPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.playerService.handleSockets();
-        this.playerService.joinGame(this.hostService.game.pin, 'Test').subscribe(() => {
+        this.playerService.joinGame(this.hostService.game.pin, { playerName: 'Organisateur', isHost: true }).subscribe(() => {
             this.hostService.startGame(0);
         });
     }

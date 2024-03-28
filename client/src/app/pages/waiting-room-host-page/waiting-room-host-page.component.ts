@@ -23,7 +23,7 @@ export class WaitingRoomHostPageComponent implements OnInit {
     ngOnInit() {
         if (this.hostService.game.quiz.id === '-1') {
             this.playerService.handleSockets();
-            this.playerService.joinGame(this.hostService.game.pin, 'Organisateur').subscribe((error) => {
+            this.playerService.joinGame(this.hostService.game.pin, { playerName: 'Organisateur', isHost: true }).subscribe((error) => {
                 if (error) {
                     this.hostService.cleanUp();
                     this.playerService.cleanUp();
