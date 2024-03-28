@@ -69,8 +69,13 @@ export class HostService {
 
     pauseTimer(): void {
         this.pauseTimerForEveryone();
-        return this.timeService.pauseTimerById(this.timerId);
+        return this.timeService.toggleTimerById(this.timerId);
     }
+    // toggleTimer(): void{
+    //     if(this.timeService.counterToggled){
+    //         this.
+    //     }
+    // }
 
     getCurrentQuestion(): Question | undefined {
         return this.internalGame.quiz.questions[this.currentQuestionIndex];

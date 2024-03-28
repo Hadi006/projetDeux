@@ -65,9 +65,6 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
-    testFunction(): void {
-        return this.timeService.testFunction();
-    }
     getPlayerAnswers(): Answer[] {
         return this.player.questions[this.player.questions.length - 1].choices;
     }
@@ -142,8 +139,7 @@ export class PlayerService {
     }
 
     pauseTimer(): void {
-        console.log("wsolte");
-        return this.timeService.pauseTimerById(this.timerId);
+        return this.timeService.toggleTimerById(this.timerId);
     }
 
     pauseTimerForPLayers(): void {

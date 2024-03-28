@@ -201,7 +201,6 @@ export class GameController {
 
     private onPauseTimer(socket: Socket): void {
         socket.on('pause-timer', (pin: string) => {
-            console.log("alloo");
             this.sio.to(pin).emit('timer-paused');
         });
     }
