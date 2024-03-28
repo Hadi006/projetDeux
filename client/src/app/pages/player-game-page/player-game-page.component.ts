@@ -1,15 +1,14 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { PlayerService } from '@app/services/player/player.service';
 import { Subscription } from 'rxjs';
-
 @Component({
     selector: 'app-player-game-page',
     templateUrl: './player-game-page.component.html',
     styleUrls: ['./player-game-page.component.scss'],
 })
-export class PlayerGamePageComponent implements OnDestroy {
+export class PlayerGamePageComponent implements OnDestroy, OnInit {
     isCountingDown = true;
 
     private endGameSubscription: Subscription;
@@ -26,6 +25,9 @@ export class PlayerGamePageComponent implements OnDestroy {
     get players() {
         return this.playerService.players;
     }
+    ngOnInit(): void {
+        this.playerService.pauseTimerForPLayers();
+    }
 
     stopCountDown() {
         this.isCountingDown = false;
@@ -37,7 +39,6 @@ export class PlayerGamePageComponent implements OnDestroy {
     leaveGame() {
         this.playerService.leaveGame();
     }
-
     ngOnDestroy() {
         this.endGameSubscription.unsubscribe();
     }

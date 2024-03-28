@@ -1,4 +1,4 @@
-Temps restant: {{ playerService.getTime() }}
+Temps restant: {{ getTime() }}
 <div *ngIf="getQuestionData() as questionData">
     <div *ngIf="getPlayer() as player" class="player-container">
         <h2>{{ questionData.text }}</h2>
@@ -13,6 +13,11 @@ Temps restant: {{ playerService.getTime() }}
                     {{ i + 1 }}) {{ choice.text }}
                 </label>
             </div>
+        </div>
+        <div>
+            <button >
+                test
+            </button>
         </div>
 
         <div *ngIf="questionData.type === 'QRL'" class="question-container">

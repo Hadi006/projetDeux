@@ -35,6 +35,7 @@ export class GameController {
             this.chatMessages(socket);
             this.onEndGame(socket);
             this.onDisconnect(socket);
+            this.onPauseTimer(socket);
         });
     }
 
@@ -195,6 +196,13 @@ export class GameController {
     private onDisconnect(socket: Socket): void {
         socket.on('disconnect', () => {
             return;
+        });
+    }
+
+    private onPauseTimer(socket: Socket): void {
+        socket.on('pause-timer', (pin: string) => {
+            console.log("alloo");
+            this.sio.to(pin).emit('timer-paused');
         });
     }
 }

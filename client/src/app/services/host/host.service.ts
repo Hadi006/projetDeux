@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { TimeService } from '@app/services/time/time.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
@@ -9,13 +11,12 @@ import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
-import { TimeService } from '@app/services/time/time.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class HostService {
+    commonValue: number;
     private internalGame: Game;
     private internalNAnswered = 0;
     private internalQuestionEnded: boolean;
@@ -64,6 +65,11 @@ export class HostService {
 
     getTime(): number {
         return this.timeService.getTimeById(this.timerId);
+    }
+
+    pauseTimer(): void {
+        this.pauseTimerForEveryone();
+        return this.timeService.pauseTimerById(this.timerId);
     }
 
     getCurrentQuestion(): Question | undefined {
@@ -286,5 +292,8 @@ export class HostService {
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
+    }
+    private pauseTimerForEveryone(): void {
+        this.webSocketService.emit<string>('pause-timer', this.internalGame.pin);
     }
 }

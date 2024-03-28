@@ -2,7 +2,6 @@ import { Component, HostListener } from '@angular/core';
 import { PlayerService } from '@app/services/player/player.service';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
-
 @Component({
     selector: 'app-question',
     templateUrl: './question.component.html',
@@ -10,7 +9,6 @@ import { Question } from '@common/quiz';
 })
 export class QuestionComponent {
     constructor(public playerService: PlayerService) {}
-
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
         if (!this.getPlayer()) {
@@ -28,7 +26,13 @@ export class QuestionComponent {
     getPlayer(): Player | undefined {
         return this.playerService.player;
     }
+    getTime(): number {
+        return this.playerService.getTime();
+    }
 
+    pauseTimer(): void {
+        return this.playerService.pauseTimer();
+    }
     getQuestionData(): Question | undefined {
         const player = this.getPlayer();
 

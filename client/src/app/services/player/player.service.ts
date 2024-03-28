@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { TimeService } from '@app/services/time/time.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { JoinGameResult } from '@common/join-game-result';
@@ -8,8 +10,6 @@ import { QuestionChangedEventData } from '@common/question-changed-event-data';
 import { Answer, Question } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
-import { TimeService } from '@app/services/time/time.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -65,6 +65,9 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
+    testFunction(): void {
+        return this.timeService.testFunction();
+    }
     getPlayerAnswers(): Answer[] {
         return this.player.questions[this.player.questions.length - 1].choices;
     }
@@ -136,6 +139,17 @@ export class PlayerService {
 
     getTime(): number {
         return this.timeService.getTimeById(this.timerId);
+    }
+
+    pauseTimer(): void {
+        console.log("wsolte");
+        return this.timeService.pauseTimerById(this.timerId);
+    }
+
+    pauseTimerForPLayers(): void {
+        this.webSocketService.onEvent('timer-paused', () => {
+            this.pauseTimer();
+        });
     }
 
     cleanUp(): void {

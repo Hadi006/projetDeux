@@ -27,7 +27,6 @@ export class HostGamePageComponent implements OnDestroy {
     get histogramData() {
         return this.hostService.histograms[this.hostService.histograms.length - 1];
     }
-
     stopCountDown() {
         this.isCountingDown = false;
     }
@@ -42,6 +41,9 @@ export class HostGamePageComponent implements OnDestroy {
 
     getTime() {
         return this.hostService.getTime();
+    }
+    pauseTimer() {
+        return this.hostService.pauseTimer();
     }
 
     getQuestionEnded() {
