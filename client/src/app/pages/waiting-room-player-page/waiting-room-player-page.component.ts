@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './waiting-room-player-page.component.html',
     styleUrls: ['./waiting-room-player-page.component.scss'],
 })
-export class WaitingRoomPlayerPageComponent implements OnDestroy {
+export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
     private startGameSubscription: Subscription;
     private endGameSubscription: Subscription;
 
@@ -39,6 +39,12 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
         return this.playerService.players;
     }
 
+    ngOnInit(): void {
+        if (!this.playerService.pin) {
+            this.router.navigate(['/home/join-game']);
+        }
+    }
+
     leaveGame() {
         this.playerService.leaveGame();
         this.playerService.cleanUp();
@@ -48,5 +54,16 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
     ngOnDestroy() {
         this.startGameSubscription.unsubscribe();
         this.endGameSubscription.unsubscribe();
+    }
+
+    @HostListener('window:beforeunload')
+    onBeforeUnload() {
+        this.playerService.emitLeaveGame();
+    }
+
+    @HostListener('window:popstate')
+    onPopState() {
+        this.playerService.emitLeaveGame();
+        this.playerService.cleanUp();
     }
 }

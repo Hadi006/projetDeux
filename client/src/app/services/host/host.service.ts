@@ -137,6 +137,13 @@ export class HostService {
         this.internalHistograms = [];
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+        this.internalGame = null as unknown as Game;
+        this.internalNAnswered = 0;
+        this.internalQuestionEnded = false;
+        this.currentQuestionIndex = 0;
+        this.internalQuitters = [];
+        this.internalHistograms = [];
+        this.gameStarted = false;
     }
 
     private endQuestion(): void {
@@ -170,7 +177,7 @@ export class HostService {
         });
     }
 
-    private emitDeleteGame(): void {
+    emitDeleteGame(): void {
         this.webSocketService.emit<string>('delete-game', this.internalGame.pin);
     }
 

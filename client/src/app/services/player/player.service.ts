@@ -143,9 +143,17 @@ export class PlayerService {
     cleanUp(): void {
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+        this.player = null as unknown as Player;
+        this.internalPin = '';
+        this.internalGameTitle = '';
+        this.internalPlayers = [];
+        this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
+        this.internalIsCorrect = false;
     }
 
-    private emitLeaveGame(): void {
+    emitLeaveGame(): void {
+        console.log('emit leave game', this.webSocketService['socket'].id, this.webSocketService.isSocketAlive());
         this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
     }
 
