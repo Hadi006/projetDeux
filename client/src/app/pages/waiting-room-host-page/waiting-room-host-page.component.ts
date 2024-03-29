@@ -42,7 +42,11 @@ export class WaitingRoomHostPageComponent implements OnInit {
     }
 
     startGame() {
-        this.router.navigate(['game-host']);
+        if (this.hostService.game.quiz.id === '-1') {
+            this.router.navigate(['host-player']);
+        } else {
+            this.router.navigate(['game-host']);
+        }
         this.hostService.startGame(START_GAME_COUNTDOWN);
     }
 
