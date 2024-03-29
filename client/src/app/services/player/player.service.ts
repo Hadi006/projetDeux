@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { GameStateService } from '@app/services/game-state/game-state.service';
+import { TimeService } from '@app/services/time/time.service';
+import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { JoinGameResult } from '@common/join-game-result';
@@ -8,8 +11,6 @@ import { QuestionChangedEventData } from '@common/question-changed-event-data';
 import { Answer, Question } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
-import { TimeService } from '@app/services/time/time.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -32,6 +33,7 @@ export class PlayerService {
         private webSocketService: WebSocketService,
         private timeService: TimeService,
         private router: Router,
+        private gameState: GameStateService,
     ) {
         this.timerId = timeService.createTimerById();
         this.startGameSubject = new Subject<void>();
@@ -216,7 +218,8 @@ export class PlayerService {
 
     private onGameEnded(): void {
         this.webSocketService.onEvent<Game>('game-ended', (game) => {
-            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
+            this.gameState.game = game;
+            this.router.navigate(['/endgame']);
             this.cleanUp();
         });
     }
