@@ -156,7 +156,6 @@ export class HostService {
     cleanUp(): void {
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
-        this.reset();
     }
 
     private verifyUsesSockets(): void {
