@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameStateService } from '@app/services/game-state/game-state.service';
 import { Game } from '@common/game';
 
 @Component({
@@ -11,13 +10,10 @@ import { Game } from '@common/game';
 export class EndgameResultPageComponent implements OnInit {
     game: Game;
     currentHistogramIndex = 0;
-    constructor(
-        private router: Router,
-        private gameState: GameStateService,
-    ) {}
+    constructor(private router: Router) {}
 
     ngOnInit() {
-        this.game = this.gameState.game;
+        this.game = history.state.game;
         this.game.players.sort((a, b) => {
             return b.score - a.score || a.name.localeCompare(b.name);
         });

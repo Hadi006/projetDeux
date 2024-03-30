@@ -17,14 +17,26 @@ export class WebSocketService {
     }
 
     disconnect() {
+        if (!this.socket) {
+            return;
+        }
+
         this.socket.disconnect();
     }
 
     onEvent<T>(event: string, action: (data: T) => void) {
+        if (!this.socket) {
+            return;
+        }
+
         this.socket.on(event, action);
     }
 
     emit<T>(event: string, data?: T, callback?: (data: unknown) => void) {
+        if (!this.socket) {
+            return;
+        }
+
         this.socket.emit(event, data, callback);
     }
 }

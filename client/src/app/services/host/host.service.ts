@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { GameStateService } from '@app/services/game-state/game-state.service';
 import { TimeService } from '@app/services/time/time.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TRANSITION_DELAY } from '@common/constant';
@@ -34,7 +33,6 @@ export class HostService {
         private webSocketService: WebSocketService,
         private timeService: TimeService,
         private router: Router,
-        private gameState: GameStateService,
     ) {
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
@@ -284,8 +282,7 @@ export class HostService {
         }
 
         this.webSocketService.emit<string>('end-game', this.internalGame.pin, (game: unknown) => {
-            this.gameState.game = game as Game;
-            this.router.navigate(['/endgame']);
+            this.router.navigate(['/endgame'], { state: { game } });
             this.cleanUp();
         });
     }
