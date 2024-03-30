@@ -207,9 +207,6 @@ export class GameController {
                 }
 
                 const player = game.players.find((p) => p.id === socket.id);
-                if (!player) {
-                    return;
-                }
 
                 game.players = game.players.filter((p) => p.id !== socket.id);
                 await this.gameService.updateGame(game);
