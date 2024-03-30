@@ -1,3 +1,4 @@
+import { DatabaseService } from '@app/services/database/database.service';
 import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
@@ -5,7 +6,6 @@ import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
-import { DatabaseService } from '@app/services/database/database.service';
 
 @Service()
 export class GameService {
@@ -29,6 +29,10 @@ export class GameService {
 
     async updateGame(game: Game): Promise<boolean> {
         return await this.database.update('games', { pin: game.pin }, [{ $set: game }]);
+    }
+
+    async deleteEndedGames(): Promise<boolean> {
+        return await this.database.delete('games', { ended: true });
     }
 
     async deleteGame(pin: string): Promise<boolean> {

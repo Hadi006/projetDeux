@@ -97,7 +97,10 @@ export class GameController {
 
     private onDeleteGame(socket: Socket): void {
         socket.on('delete-game', async (pin: string) => {
-            await this.gameService.deleteGame(pin);
+            const game = await this.gameService.getGame(pin);
+            if (game && !game.ended) {
+                await this.gameService.deleteGame(pin);
+            }
             this.sio.to(pin).emit('game-deleted');
         });
     }
@@ -118,7 +121,12 @@ export class GameController {
     }
 
     private onStartGame(socket: Socket): void {
-        socket.on('start-game', (roomData: RoomData<number>) => {
+        socket.on('start-game', async (roomData: RoomData<number>) => {
+            const game = await this.gameService.getGame(roomData.pin);
+            if (!game) {
+                return;
+            }
+            game.nPlayers = game.players.length;
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
@@ -187,6 +195,10 @@ export class GameController {
     private onEndGame(socket: Socket): void {
         socket.on('end-game', async (pin: string, callback) => {
             const game = await this.gameService.getGame(pin);
+            game.ended = true;
+            game.bestScore = Math.max(...game.players.map((p) => p.score));
+            game.nPlayers = game.players.length;
+            await this.gameService.updateGame(game);
             this.sio.to(pin).emit('game-ended', game);
             callback(game);
         });

@@ -10,6 +10,11 @@ interface Game {
     locked: boolean;
     bannedNames: string[];
     histograms: HistogramData[];
+    name: string;
+    date: Date;
+    nPlayers: number;
+    bestScore: number;
+    ended: boolean;
 }
 
 class Game implements Game {
@@ -21,6 +26,11 @@ class Game implements Game {
         this.locked = false;
         this.bannedNames = [];
         this.histograms = [];
+        this.name = quiz.title;
+        this.date = new Date();
+        this.nPlayers = 0;
+        this.bestScore = 0;
+        this.ended = false;
     }
 }
 

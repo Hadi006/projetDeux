@@ -183,5 +183,10 @@ export const TEST_GAME_DATA: Game = {
     locked: false,
     bannedNames: [],
     histograms: TEST_HISTOGRAM_DATA,
+    name: TEST_QUIZZES[0].title,
+    date: new Date(),
+    nPlayers: TEST_PLAYERS.length,
+    bestScore: 0,
+    ended: false,
 };
 
