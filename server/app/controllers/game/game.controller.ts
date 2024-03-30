@@ -64,7 +64,6 @@ export class GameController {
 
     private onJoinGame(socket: Socket): void {
         socket.on('join-game', async (roomData: RoomData<string>, callback) => {
-            console.log('join-game', roomData, socket.id);
             const pin = roomData.pin;
 
             const result: JoinGameResult = await this.gameService.addPlayer(pin, roomData.data);
@@ -80,7 +79,6 @@ export class GameController {
 
     private onPlayerLeave(socket: Socket): void {
         socket.on('player-leave', async (roomData: RoomData<string>) => {
-            console.log('leave-game', roomData, socket.id);
             const pin = roomData.pin;
             const playerName = roomData.data;
 
@@ -196,7 +194,6 @@ export class GameController {
 
     private onDisconnect(socket: Socket): void {
         socket.on('disconnect', () => {
-            console.log('user disconnected', socket.id);
             return;
         });
     }

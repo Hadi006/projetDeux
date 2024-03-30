@@ -1,6 +1,5 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { PlayerService } from '@app/services/player/player.service';
 import { Subscription } from 'rxjs';
@@ -10,7 +9,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './player-game-page.component.html',
     styleUrls: ['./player-game-page.component.scss'],
 })
-export class PlayerGamePageComponent implements OnInit, OnDestroy {
+export class PlayerGamePageComponent implements OnDestroy {
     isCountingDown = true;
 
     private endGameSubscription: Subscription;
@@ -18,7 +17,6 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
     constructor(
         private playerService: PlayerService,
         private dialog: MatDialog,
-        private router: Router,
     ) {
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
@@ -27,23 +25,6 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
 
     get players() {
         return this.playerService.players;
-    }
-
-    ngOnInit(): void {
-        if (!this.playerService.pin) {
-            this.router.navigate(['/home/join-game']);
-        }
-    }
-
-    @HostListener('window:beforeunload')
-    onBeforeUnload() {
-        this.playerService.emitLeaveGame();
-    }
-
-    @HostListener('window:popstate')
-    onPopState() {
-        this.playerService.emitLeaveGame();
-        this.playerService.cleanUp();
     }
 
     stopCountDown() {

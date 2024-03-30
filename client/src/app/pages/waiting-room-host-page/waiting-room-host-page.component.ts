@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
@@ -8,7 +8,7 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     templateUrl: './waiting-room-host-page.component.html',
     styleUrls: ['./waiting-room-host-page.component.scss'],
 })
-export class WaitingRoomHostPageComponent implements OnInit {
+export class WaitingRoomHostPageComponent {
     constructor(
         private hostService: HostService,
         private router: Router,
@@ -16,22 +16,6 @@ export class WaitingRoomHostPageComponent implements OnInit {
 
     get game() {
         return this.hostService.game;
-    }
-
-    ngOnInit(): void {
-        if (!this.hostService.game) {
-            this.router.navigate(['/home/create-game']);
-        }
-    }
-
-    @HostListener('window:beforeunload')
-    onBeforeUnload() {
-        this.hostService.emitDeleteGame();
-    }
-
-    @HostListener('window:popstate')
-    onPopState() {
-        this.hostService.cleanUp();
     }
 
     toggleLock() {
