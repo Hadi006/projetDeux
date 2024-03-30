@@ -22,6 +22,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     ) {
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: 'Tous les joueurs on quittés' } });
+            this.router.navigate(['/']);
         });
     }
 
