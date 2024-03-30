@@ -1,10 +1,5 @@
 <div *ngIf="game">
-    <app-waiting-room-info
-        [title]="game.quiz.title"
-        [pin]="game.pin"
-        [nPlayers]="game.players.length"
-        [leaveGame]="leaveGame.bind(this)"
-    ></app-waiting-room-info>
+    <app-waiting-room-info [title]="game.quiz.title" [pin]="game.pin" [nPlayers]="game.players.length"></app-waiting-room-info>
 </div>
 <app-chatbox> </app-chatbox>
 

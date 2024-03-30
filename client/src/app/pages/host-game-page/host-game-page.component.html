@@ -35,7 +35,7 @@
                 </section>
             </div>
         </div>
-        <button (click)="leaveGame()">Quitter</button>
+        <button routerLink="/home">Quitter</button>
     </div>
     <app-chatbox> </app-chatbox>
     <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>

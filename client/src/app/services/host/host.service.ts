@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { GameStateService } from '@app/services/game-state/game-state.service';
 import { TimeService } from '@app/services/time/time.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
@@ -34,6 +34,12 @@ export class HostService {
         private router: Router,
         private gameState: GameStateService,
     ) {
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.verifyUsesSockets();
+            }
+        });
+
         this.timerId = timeService.createTimerById();
     }
 
@@ -87,12 +93,6 @@ export class HostService {
         return this.emitCreateGame(quiz);
     }
 
-    leaveGame(): void {
-        // this.chatService.clearChatbox(); Sa nous donne erreur lorsquon create game
-        this.cleanUp();
-        this.router.navigate(['/']);
-    }
-
     toggleLock(): void {
         this.internalGame.locked = !this.internalGame.locked;
         this.emitToggleLock();
@@ -137,6 +137,18 @@ export class HostService {
         this.internalHistograms = [];
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+    }
+
+    private verifyUsesSockets(): void {
+        let currentRoute = this.router.routerState.snapshot.root;
+
+        while (currentRoute.firstChild) {
+            currentRoute = currentRoute.firstChild;
+        }
+
+        if (!currentRoute.data.usesSockets) {
+            this.cleanUp();
+        }
     }
 
     private endQuestion(): void {
@@ -258,6 +270,7 @@ export class HostService {
 
             if (this.internalGame.players.length === 0) {
                 this.internalGameEndedSubject.next();
+                this.router.navigate(['/']);
             }
         });
     }
@@ -283,7 +296,7 @@ export class HostService {
 
     private setupNextQuestion(): void {
         if (!this.getCurrentQuestion()) {
-            this.gameEndedSubject.next();
+            this.internalGameEndedSubject.next();
             return;
         }
 

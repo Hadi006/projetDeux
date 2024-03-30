@@ -34,10 +34,6 @@ export class PlayerGamePageComponent implements OnDestroy {
     gameTitle() {
         return this.playerService.gameTitle;
     }
-    leaveGame() {
-        this.playerService.leaveGame();
-    }
-
     ngOnDestroy() {
         this.endGameSubscription.unsubscribe();
     }

@@ -20,7 +20,7 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
         private dialog: MatDialog,
     ) {
         this.startGameSubscription = this.playerService.startGameSubject.subscribe(() => {
-            router.navigate(['game-player']);
+            this.router.navigate(['game-player']);
         });
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
@@ -37,12 +37,6 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
 
     get players() {
         return this.playerService.players;
-    }
-
-    leaveGame() {
-        this.playerService.leaveGame();
-        this.playerService.cleanUp();
-        this.router.navigate(['/']);
     }
 
     ngOnDestroy() {

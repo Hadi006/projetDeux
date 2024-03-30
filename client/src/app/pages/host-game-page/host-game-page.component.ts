@@ -20,7 +20,6 @@ export class HostGamePageComponent implements OnDestroy {
     ) {
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: 'Tous les joueurs on quittés' } });
-            this.hostService.leaveGame();
         });
     }
 
@@ -62,10 +61,6 @@ export class HostGamePageComponent implements OnDestroy {
 
     getQuitters() {
         return this.hostService.quitters;
-    }
-
-    leaveGame() {
-        this.hostService.leaveGame();
     }
 
     ngOnDestroy() {

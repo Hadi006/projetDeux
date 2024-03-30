@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { GameStateService } from '@app/services/game-state/game-state.service';
 import { TimeService } from '@app/services/time/time.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
@@ -35,6 +35,12 @@ export class PlayerService {
         private router: Router,
         private gameState: GameStateService,
     ) {
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.verifyUsesSockets();
+            }
+        });
+
         this.timerId = timeService.createTimerById();
         this.startGameSubject = new Subject<void>();
         this.endGameSubject = new Subject<void>();
@@ -109,13 +115,6 @@ export class PlayerService {
         });
     }
 
-    leaveGame(): void {
-        this.emitLeaveGame();
-        // this.chatService.clearChatbox(); Erreur lorsquon join game
-        this.cleanUp();
-        this.router.navigate(['/']);
-    }
-
     updatePlayer(): void {
         this.emitUpdatePlayer();
     }
@@ -141,8 +140,21 @@ export class PlayerService {
     }
 
     cleanUp(): void {
+        this.emitLeaveGame();
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+    }
+
+    private verifyUsesSockets(): void {
+        let currentRoute = this.router.routerState.snapshot.root;
+
+        while (currentRoute.firstChild) {
+            currentRoute = currentRoute.firstChild;
+        }
+
+        if (!currentRoute.data.usesSockets) {
+            this.cleanUp();
+        }
     }
 
     private emitLeaveGame(): void {
@@ -226,7 +238,7 @@ export class PlayerService {
 
     private onGameDeleted(): void {
         this.webSocketService.onEvent<Game>('game-deleted', () => {
-            this.leaveGame();
+            this.cleanUp();
             this.endGameSubject.next();
         });
     }
