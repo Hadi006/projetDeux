@@ -6,15 +6,17 @@ import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class HostService {
-    readonly internalQuestionEndedSubject = new Subject<void>();
-    readonly internalGameEndedSubject = new Subject<void>();
+    readonly internalQuestionEndedSubject: Subject<void>;
+    readonly internalGameEndedSubject: Subject<void>;
+
+    private socketSubscription: Subscription;
 
     private timerId: number;
 
@@ -37,8 +39,10 @@ export class HostService {
             }
         });
 
-        this.timerId = timeService.createTimerById();
+        this.internalQuestionEndedSubject = new Subject<void>();
+        this.internalGameEndedSubject = new Subject<void>();
 
+        this.timerId = timeService.createTimerById();
         this.reset();
     }
 
@@ -78,6 +82,7 @@ export class HostService {
     }
 
     reset(): void {
+        this.socketSubscription = new Subscription();
         this.internalGame = null;
         this.internalNAnswered = 0;
         this.internalQuestionEnded = false;
@@ -95,10 +100,10 @@ export class HostService {
             this.hostSocketService.connect();
         }
 
-        this.subscribeToPlayerJoined();
-        this.subscribeToPlayerLeft();
-        this.subscribeToConfirmPlayerAnswer();
-        this.subscribeToPlayerUpdated();
+        this.socketSubscription.add(this.subscribeToPlayerJoined());
+        this.socketSubscription.add(this.subscribeToPlayerLeft());
+        this.socketSubscription.add(this.subscribeToConfirmPlayerAnswer());
+        this.socketSubscription.add(this.subscribeToPlayerUpdated());
     }
 
     createGame(quiz: Quiz): Observable<boolean> {
@@ -188,7 +193,9 @@ export class HostService {
 
     cleanUp(): void {
         this.hostSocketService.disconnect();
+        this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
+        this.reset();
     }
 
     private verifyUsesSockets(): void {
@@ -219,14 +226,14 @@ export class HostService {
         this.currentQuestionIndex++;
     }
 
-    private subscribeToPlayerJoined() {
-        this.hostSocketService.onPlayerJoined().subscribe((player: Player) => {
+    private subscribeToPlayerJoined(): Subscription {
+        return this.hostSocketService.onPlayerJoined().subscribe((player: Player) => {
             this.internalGame?.players.push(player);
         });
     }
 
-    private subscribeToPlayerLeft(): void {
-        this.hostSocketService.onPlayerLeft().subscribe((data) => {
+    private subscribeToPlayerLeft(): Subscription {
+        return this.hostSocketService.onPlayerLeft().subscribe((data) => {
             if (!this.internalGame || !this.gameStarted) {
                 return;
             }
@@ -242,8 +249,8 @@ export class HostService {
         });
     }
 
-    private subscribeToConfirmPlayerAnswer(): void {
-        this.hostSocketService.onConfirmPlayerAnswer().subscribe(() => {
+    private subscribeToConfirmPlayerAnswer(): Subscription {
+        return this.hostSocketService.onConfirmPlayerAnswer().subscribe(() => {
             if (!this.internalGame) {
                 return;
             }
@@ -255,8 +262,8 @@ export class HostService {
         });
     }
 
-    private subscribeToPlayerUpdated(): void {
-        this.hostSocketService.onPlayerUpdated().subscribe((histogramData: HistogramData) => {
+    private subscribeToPlayerUpdated(): Subscription {
+        return this.hostSocketService.onPlayerUpdated().subscribe((histogramData: HistogramData) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
         });
     }

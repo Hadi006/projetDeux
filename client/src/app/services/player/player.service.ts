@@ -5,7 +5,7 @@ import { TRANSITION_DELAY } from '@common/constant';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Answer, Question } from '@common/quiz';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 
 @Injectable({
@@ -16,6 +16,8 @@ export class PlayerService {
 
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
+
+    private socketSubscription: Subscription;
 
     private timerId: number;
 
@@ -86,6 +88,7 @@ export class PlayerService {
     }
 
     reset() {
+        this.socketSubscription = new Subscription();
         this.player = null;
         this.internalPin = '';
         this.internalGameTitle = '';
@@ -105,16 +108,16 @@ export class PlayerService {
             this.playerSocketService.connect();
         }
 
-        this.subscribeToPlayerJoined();
-        this.subscribeToPlayerLeft();
-        this.subscribeToOnKick();
-        this.subscribeToOnStartGame();
-        this.subscribeToOnEndQuestion();
-        this.subscribeToQuestionChanged();
-        this.subscribeToOnNewScore();
-        this.subscribeToOnAnswer();
-        this.subscribeToOnGameEnded();
-        this.subscribeToOnGameDeleted();
+        this.socketSubscription.add(this.subscribeToPlayerJoined());
+        this.socketSubscription.add(this.subscribeToPlayerLeft());
+        this.socketSubscription.add(this.subscribeToOnKick());
+        this.socketSubscription.add(this.subscribeToOnStartGame());
+        this.socketSubscription.add(this.subscribeToOnEndQuestion());
+        this.socketSubscription.add(this.subscribeToQuestionChanged());
+        this.socketSubscription.add(this.subscribeToOnNewScore());
+        this.socketSubscription.add(this.subscribeToOnAnswer());
+        this.socketSubscription.add(this.subscribeToOnGameEnded());
+        this.socketSubscription.add(this.subscribeToOnGameDeleted());
     }
 
     joinGame(pin: string, playerName: string): Observable<string> {
@@ -167,6 +170,7 @@ export class PlayerService {
 
     cleanUp(): void {
         this.playerSocketService.disconnect();
+        this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
     }
@@ -183,20 +187,20 @@ export class PlayerService {
         }
     }
 
-    private subscribeToPlayerJoined(): void {
-        this.playerSocketService.onPlayerJoined().subscribe((playerName) => {
+    private subscribeToPlayerJoined(): Subscription {
+        return this.playerSocketService.onPlayerJoined().subscribe((playerName) => {
             this.internalPlayers.push(playerName);
         });
     }
 
-    private subscribeToPlayerLeft(): void {
-        this.playerSocketService.onPlayerLeft().subscribe((players) => {
+    private subscribeToPlayerLeft(): Subscription {
+        return this.playerSocketService.onPlayerLeft().subscribe((players) => {
             this.internalPlayers = players.map((player) => player.name);
         });
     }
 
-    private subscribeToOnKick(): void {
-        this.playerSocketService.onKick().subscribe((playerName) => {
+    private subscribeToOnKick(): Subscription {
+        return this.playerSocketService.onKick().subscribe((playerName) => {
             if (!this.player) {
                 return;
             }
@@ -207,30 +211,30 @@ export class PlayerService {
         });
     }
 
-    private subscribeToOnStartGame(): void {
-        this.playerSocketService.onStartGame().subscribe((countdown) => {
+    private subscribeToOnStartGame(): Subscription {
+        return this.playerSocketService.onStartGame().subscribe((countdown) => {
             this.startGameSubject.next();
             this.internalGameStarted = true;
             this.timeService.startTimerById(this.timerId, countdown);
         });
     }
 
-    private subscribeToOnEndQuestion(): void {
-        this.playerSocketService.onEndQuestion().subscribe(() => {
+    private subscribeToOnEndQuestion(): Subscription {
+        return this.playerSocketService.onEndQuestion().subscribe(() => {
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
     }
 
-    private subscribeToQuestionChanged(): void {
-        this.playerSocketService.onQuestionChanged().subscribe(({ question, countdown }) => {
+    private subscribeToQuestionChanged(): Subscription {
+        return this.playerSocketService.onQuestionChanged().subscribe(({ question, countdown }) => {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });
     }
 
-    private subscribeToOnNewScore(): void {
-        this.playerSocketService.onNewScore().subscribe((player) => {
+    private subscribeToOnNewScore(): Subscription {
+        return this.playerSocketService.onNewScore().subscribe((player) => {
             if (!this.player) {
                 return;
             }
@@ -244,21 +248,21 @@ export class PlayerService {
         });
     }
 
-    private subscribeToOnAnswer(): void {
-        this.playerSocketService.onAnswer().subscribe((answer) => {
+    private subscribeToOnAnswer(): Subscription {
+        return this.playerSocketService.onAnswer().subscribe((answer) => {
             this.internalAnswer = answer;
         });
     }
 
-    private subscribeToOnGameEnded(): void {
-        this.playerSocketService.onGameEnded().subscribe((game) => {
+    private subscribeToOnGameEnded(): Subscription {
+        return this.playerSocketService.onGameEnded().subscribe((game) => {
             this.router.navigate(['/endgame'], { state: { game } });
             this.cleanUp();
         });
     }
 
-    private subscribeToOnGameDeleted(): void {
-        this.playerSocketService.onGameDeleted().subscribe(() => {
+    private subscribeToOnGameDeleted(): Subscription {
+        return this.playerSocketService.onGameDeleted().subscribe(() => {
             this.endGameSubject.next();
             this.router.navigate(['/']);
         });

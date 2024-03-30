@@ -13,6 +13,17 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class PlayerSocketService {
+    private readonly playerJoinedSubject = new Subject<string>();
+    private readonly playerLeftSubject = new Subject<Player[]>();
+    private readonly kickSubject = new Subject<string>();
+    private readonly startGameSubject = new Subject<number>();
+    private readonly endQuestionSubject = new Subject<void>();
+    private readonly questionChangedSubject = new Subject<QuestionChangedEventData>();
+    private readonly newScoreSubject = new Subject<Player>();
+    private readonly answerSubject = new Subject<Answer[]>();
+    private readonly gameEndedSubject = new Subject<Game>();
+    private readonly gameDeletedSubject = new Subject<void>();
+
     constructor(private webSocketService: WebSocketService) {}
 
     isConnected(): boolean {
@@ -28,103 +39,83 @@ export class PlayerSocketService {
     }
 
     onPlayerJoined(): Subject<string> {
-        const playerJoinedSubject = new Subject<string>();
-
         this.webSocketService.onEvent<Player>('player-joined', (player) => {
-            playerJoinedSubject.next(player.name);
+            this.playerJoinedSubject.next(player.name);
         });
 
-        return playerJoinedSubject;
+        return this.playerJoinedSubject;
     }
 
     onPlayerLeft(): Subject<Player[]> {
-        const playerLeftSubject = new Subject<Player[]>();
-
         this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
-            playerLeftSubject.next(data.players);
+            this.playerLeftSubject.next(data.players);
         });
 
-        return playerLeftSubject;
+        return this.playerLeftSubject;
     }
 
     onKick(): Subject<string> {
-        const kickSubject = new Subject<string>();
-
         this.webSocketService.onEvent<string>('kick', (playerName) => {
-            kickSubject.next(playerName);
+            this.kickSubject.next(playerName);
         });
 
-        return kickSubject;
+        return this.kickSubject;
     }
 
     onStartGame(): Subject<number> {
-        const startGameSubject = new Subject<number>();
-
         this.webSocketService.onEvent<number>('start-game', (countdown) => {
-            startGameSubject.next(countdown);
+            this.startGameSubject.next(countdown);
         });
 
-        return startGameSubject;
+        return this.startGameSubject;
     }
 
     onEndQuestion(): Subject<void> {
-        const endQuestionSubject = new Subject<void>();
-
         this.webSocketService.onEvent<void>('end-question', () => {
-            endQuestionSubject.next();
+            this.endQuestionSubject.next();
         });
 
-        return endQuestionSubject;
+        return this.endQuestionSubject;
     }
 
     onQuestionChanged(): Subject<QuestionChangedEventData> {
-        const questionChangedSubject = new Subject<QuestionChangedEventData>();
-
         this.webSocketService.onEvent<QuestionChangedEventData>('question-changed', (data) => {
-            questionChangedSubject.next(data);
+            this.questionChangedSubject.next(data);
         });
 
-        return questionChangedSubject;
+        return this.questionChangedSubject;
     }
 
     onNewScore(): Subject<Player> {
-        const newScoreSubject = new Subject<Player>();
-
         this.webSocketService.onEvent<Player>('new-score', (player) => {
-            newScoreSubject.next(player);
+            this.newScoreSubject.next(player);
         });
 
-        return newScoreSubject;
+        return this.newScoreSubject;
     }
 
     onAnswer(): Subject<Answer[]> {
-        const answerSubject = new Subject<Answer[]>();
-
         this.webSocketService.onEvent<Answer[]>('answer', (answer) => {
-            answerSubject.next(answer);
+            this.answerSubject.next(answer);
         });
 
-        return answerSubject;
+        return this.answerSubject;
     }
 
     onGameEnded(): Subject<Game> {
-        const gameEndedSubject = new Subject<Game>();
-
         this.webSocketService.onEvent<Game>('game-ended', (game) => {
-            gameEndedSubject.next(game);
+            this.gameEndedSubject.next(game);
         });
 
-        return gameEndedSubject;
+        return this.gameEndedSubject;
     }
 
     onGameDeleted(): Subject<void> {
-        const gameDeletedSubject = new Subject<void>();
-
         this.webSocketService.onEvent<void>('game-deleted', () => {
-            gameDeletedSubject.next();
+            this.gameDeletedSubject.next();
         });
 
-        return gameDeletedSubject;
+        return this.gameDeletedSubject;
     }
 
     emitJoinGame(pin: string, playerName: string): Observable<JoinGameResult> {

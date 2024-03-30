@@ -13,6 +13,11 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class HostSocketService {
+    private readonly playerLeftSubject = new Subject<PlayerLeftEventData>();
+    private readonly playerJoinedSubject = new Subject<Player>();
+    private readonly confirmPlayerAnswerSubject = new Subject<void>();
+    private readonly playerUpdatedSubject = new Subject<HistogramData>();
+
     constructor(private webSocketService: WebSocketService) {}
 
     connect(): void {
@@ -28,43 +33,35 @@ export class HostSocketService {
     }
 
     onPlayerJoined(): Subject<Player> {
-        const playerJoinedSubject = new Subject<Player>();
-
         this.webSocketService.onEvent<Player>('player-joined', (player) => {
-            playerJoinedSubject.next(player);
+            this.playerJoinedSubject.next(player);
         });
 
-        return playerJoinedSubject;
+        return this.playerJoinedSubject;
     }
 
     onPlayerLeft(): Subject<PlayerLeftEventData> {
-        const playerLeftSubject = new Subject<PlayerLeftEventData>();
-
         this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
-            playerLeftSubject.next(data);
+            this.playerLeftSubject.next(data);
         });
 
-        return playerLeftSubject;
+        return this.playerLeftSubject;
     }
 
     onConfirmPlayerAnswer(): Subject<void> {
-        const confirmPlayerAnswerSubject = new Subject<void>();
-
         this.webSocketService.onEvent<void>('confirm-player-answer', () => {
-            confirmPlayerAnswerSubject.next();
+            this.confirmPlayerAnswerSubject.next();
         });
 
-        return confirmPlayerAnswerSubject;
+        return this.confirmPlayerAnswerSubject;
     }
 
     onPlayerUpdated(): Subject<HistogramData> {
-        const playerUpdatedSubject = new Subject<HistogramData>();
-
         this.webSocketService.onEvent<HistogramData>('player-updated', (data) => {
-            playerUpdatedSubject.next(data);
+            this.playerUpdatedSubject.next(data);
         });
 
-        return playerUpdatedSubject;
+        return this.playerUpdatedSubject;
     }
 
     emitCreateGame(quiz: Quiz): Observable<Game | undefined> {
