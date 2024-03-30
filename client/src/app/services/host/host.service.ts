@@ -78,6 +78,10 @@ export class HostService {
         return this.internalGame.quiz.questions[this.currentQuestionIndex];
     }
 
+    isConnected(): boolean {
+        return this.webSocketService.isSocketAlive();
+    }
+
     handleSockets(): void {
         if (!this.webSocketService.isSocketAlive()) {
             this.webSocketService.connect();
@@ -133,7 +137,6 @@ export class HostService {
     }
 
     cleanUp(): void {
-        this.emitDeleteGame();
         this.internalHistograms = [];
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
@@ -180,10 +183,6 @@ export class HostService {
                 }
             });
         });
-    }
-
-    private emitDeleteGame(): void {
-        this.webSocketService.emit<string>('delete-game', this.internalGame.pin);
     }
 
     private emitKick(playerName: string): void {

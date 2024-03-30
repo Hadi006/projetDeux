@@ -46,9 +46,9 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(pin: string, playerName: string): Promise<JoinGameResult> {
+    async addPlayer(id: string, pin: string, playerName: string): Promise<JoinGameResult> {
         const game = await this.getGame(pin);
-        const player: Player = new Player(playerName);
+        const player: Player = new Player(id, playerName);
         const error = this.validatePin(pin, game) || this.validatePlayerName(playerName, game);
         if (error) {
             return new JoinGameResult(error, player);
