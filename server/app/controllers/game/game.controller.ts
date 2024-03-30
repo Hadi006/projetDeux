@@ -126,16 +126,19 @@ export class GameController {
 
     private onNextQuestion(socket: Socket): void {
         socket.on('next-question', async (roomData: RoomData<NextQuestionEventData>) => {
-            const blankQuestion: Question = roomData.data.question;
-            blankQuestion.choices.forEach((choice) => {
-                choice.isCorrect = false;
-            });
-            const game = await this.gameService.getGame(roomData.pin);
-            game.players.forEach((player) => {
-                player.questions.push(blankQuestion);
-            });
-            game.histograms.push(roomData.data.histogram);
-            await this.gameService.updateGame(game);
+            const blankQuestion: Question | undefined = roomData.data.question;
+
+            if (blankQuestion) {
+                blankQuestion.choices.forEach((choice) => {
+                    choice.isCorrect = false;
+                });
+                const game = await this.gameService.getGame(roomData.pin);
+                game.players.forEach((player) => {
+                    player.questions.push(blankQuestion);
+                });
+                game.histograms.push(roomData.data.histogram);
+                await this.gameService.updateGame(game);
+            }
 
             this.sio.to(roomData.pin).emit('question-changed', { question: blankQuestion, countdown: roomData.data.countdown });
         });

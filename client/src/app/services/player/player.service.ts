@@ -229,7 +229,11 @@ export class PlayerService {
         });
     }
 
-    private setupNextQuestion(question: Question, countdown: number): void {
+    private setupNextQuestion(question: Question | undefined, countdown: number): void {
+        if (!question) {
+            return;
+        }
+
         this.player.questions.push(question);
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];

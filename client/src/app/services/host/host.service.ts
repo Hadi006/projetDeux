@@ -184,15 +184,10 @@ export class HostService {
     }
 
     private emitNextQuestion(): void {
-        const currentQuestion = this.getCurrentQuestion();
-        if (!currentQuestion) {
-            return;
-        }
-
         this.webSocketService.emit<RoomData<NextQuestionEventData>>('next-question', {
             pin: this.internalGame.pin,
             data: {
-                question: currentQuestion,
+                question: this.getCurrentQuestion(),
                 countdown: this.internalGame.quiz.duration,
                 histogram: this.internalHistograms[this.internalHistograms.length - 1],
             },
