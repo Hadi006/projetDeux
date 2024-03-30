@@ -19,7 +19,7 @@ export class WaitingRoomHostPageComponent implements OnInit {
     }
 
     ngOnInit() {
-        if (!this.hostService.isConnected() || this.hostService.game.locked) {
+        if (!this.hostService.isConnected() || !this.hostService.game || this.hostService.game.locked) {
             this.router.navigate(['/']);
         }
     }

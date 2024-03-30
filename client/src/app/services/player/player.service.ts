@@ -16,16 +16,17 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class PlayerService {
-    player: Player;
+    player: Player | null;
+
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
+
+    private timerId: number;
 
     private internalPin: string;
     private internalGameTitle: string;
     private internalPlayers: string[];
     private internalGameStarted: boolean;
-
-    private timerId: number;
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
@@ -44,13 +45,9 @@ export class PlayerService {
 
         this.startGameSubject = new Subject<void>();
         this.endGameSubject = new Subject<void>();
-        this.internalPlayers = [];
-        this.internalGameStarted = false;
 
         this.timerId = timeService.createTimerById();
-        this.internalAnswerConfirmed = false;
-        this.internalAnswer = [];
-        this.internalIsCorrect = false;
+        this.reset();
     }
 
     get pin(): string {
@@ -82,11 +79,26 @@ export class PlayerService {
     }
 
     getPlayerAnswers(): Answer[] {
+        if (!this.player) {
+            return [];
+        }
+
         return this.player.questions[this.player.questions.length - 1].choices;
     }
 
     getPlayerBooleanAnswers(): boolean[] {
         return this.getPlayerAnswers().map((answer) => answer.isCorrect);
+    }
+
+    reset() {
+        this.player = null;
+        this.internalPin = '';
+        this.internalGameTitle = '';
+        this.internalPlayers = [];
+        this.internalGameStarted = false;
+        this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
+        this.internalIsCorrect = false;
     }
 
     isConnected(): boolean {
@@ -152,9 +164,9 @@ export class PlayerService {
     }
 
     cleanUp(): void {
-        this.emitLeaveGame();
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
+        this.reset();
     }
 
     private verifyUsesSockets(): void {
@@ -169,15 +181,19 @@ export class PlayerService {
         }
     }
 
-    private emitLeaveGame(): void {
-        this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
-    }
-
     private emitUpdatePlayer(): void {
+        if (!this.player) {
+            return;
+        }
+
         this.webSocketService.emit<RoomData<Player>>('update-player', { pin: this.internalPin, data: this.player });
     }
 
     private emitConfirmPlayerAnswer(): void {
+        if (!this.player) {
+            return;
+        }
+
         this.webSocketService.emit<RoomData<Player>>('confirm-player-answer', { pin: this.internalPin, data: this.player });
     }
 
@@ -196,6 +212,10 @@ export class PlayerService {
 
     private onKick(): void {
         this.webSocketService.onEvent<string>('kicked', (playerName) => {
+            if (!this.player) {
+                return;
+            }
+
             if (playerName === this.player.name) {
                 this.router.navigate(['/']);
             }
@@ -226,6 +246,10 @@ export class PlayerService {
 
     private onNewScore(): void {
         this.webSocketService.onEvent<Player>('new-score', (player) => {
+            if (!this.player) {
+                return;
+            }
+
             if (player.name === this.player.name) {
                 if (player.score > this.player.score) {
                     this.internalIsCorrect = true;
@@ -257,6 +281,10 @@ export class PlayerService {
     }
 
     private setupNextQuestion(question: Question, countdown: number): void {
+        if (!this.player) {
+            return;
+        }
+
         this.player.questions.push(question);
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];

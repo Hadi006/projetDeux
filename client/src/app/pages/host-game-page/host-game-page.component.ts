@@ -25,16 +25,16 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         });
     }
 
+    get game() {
+        return this.hostService.game;
+    }
+
     get histogramData() {
         return this.hostService.histograms[this.hostService.histograms.length - 1];
     }
 
     stopCountDown() {
         this.isCountingDown = false;
-    }
-
-    getGame() {
-        return this.hostService.game;
     }
 
     getCurrentQuestion() {
@@ -58,7 +58,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     getPlayers() {
-        return this.hostService.game.players;
+        return this.hostService.game?.players || [];
     }
 
     getQuitters() {
