@@ -3,21 +3,19 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { Service } from 'typedi';
+import { Request } from 'express';
+import { QuizQuery } from '@common/quiz-query';
 
 @Service()
 export class QuizBankService {
     constructor(private database: DatabaseService) {}
 
-    async getQuizzes(): Promise<Quiz[]> {
-        return await this.database.get<Quiz>('quizzes');
+    async getQuizzes(req: Request): Promise<Quiz[]> {
+        return await this.database.get<Quiz>('quizzes', this.getQuizQuery(req));
     }
 
     async getQuiz(quizId: string): Promise<Quiz | undefined> {
         return (await this.database.get<Quiz>('quizzes', { id: quizId }))[0];
-    }
-
-    async getVisibleQuizzes(): Promise<Quiz[]> {
-        return await this.database.get<Quiz>('quizzes', { visible: true });
     }
 
     async exportQuiz(quizId: string): Promise<Quiz | undefined> {
@@ -55,5 +53,31 @@ export class QuizBankService {
 
     async deleteQuiz(quizId: string) {
         await this.database.delete('quizzes', { id: quizId });
+    }
+
+    private getQuizQuery(req: Request): QuizQuery {
+        const quizQuery: QuizQuery = {};
+
+        if (typeof req.query.id === 'string') {
+            quizQuery.id = req.query.id;
+        }
+
+        if (typeof req.query.title === 'string') {
+            quizQuery.title = req.query.title;
+        }
+
+        if (typeof req.query.visible === 'string') {
+            quizQuery.visible = req.query.visible === 'true';
+        }
+
+        if (typeof req.query.description === 'string') {
+            quizQuery.description = req.query.description;
+        }
+
+        if (typeof req.query.duration === 'string' && !isNaN(parseInt(req.query.duration, 10))) {
+            quizQuery.duration = parseInt(req.query.duration, 10);
+        }
+
+        return quizQuery;
     }
 }

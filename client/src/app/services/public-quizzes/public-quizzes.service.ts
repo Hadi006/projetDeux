@@ -24,7 +24,7 @@ export class PublicQuizzesService {
 
     fetchVisibleQuizzes(): Observable<void> {
         const randomQuizObservable: Observable<Quiz | undefined> = this.createRandomQuiz();
-        const visibleQuizzesObservable: Observable<HttpResponse<Quiz[]>> = this.http.get<Quiz[]>('quizzes/visible');
+        const visibleQuizzesObservable: Observable<HttpResponse<Quiz[]>> = this.http.get<Quiz[]>('quizzes?visible=true');
 
         return forkJoin([randomQuizObservable, visibleQuizzesObservable]).pipe(
             map(([randomQuiz, response]) => {
