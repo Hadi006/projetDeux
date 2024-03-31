@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
+import { Subject } from 'rxjs';
 
 describe('HostService', () => {
     let service: HostService;
@@ -14,7 +15,14 @@ describe('HostService', () => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
 
+        const eventSubject = new Subject<void>();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(async () => {
