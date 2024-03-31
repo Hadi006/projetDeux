@@ -4,6 +4,7 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { TEST_PLAYERS } from '@common/constant';
 import { Player } from '@common/player';
+import { Subject } from 'rxjs';
 
 import { EndgameResultPageComponent } from './endgame-result-page.component';
 
@@ -13,7 +14,14 @@ describe('EndgameResultPageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
+        const eventSubject = new Subject<void>();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(waitForAsync(() => {
