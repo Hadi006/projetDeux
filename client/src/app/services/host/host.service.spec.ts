@@ -53,4 +53,15 @@ describe('HostService', () => {
         eventSubject.next(new NavigationEnd(1, 'url', 'url'));
         expect(service.cleanUp).toHaveBeenCalled();
     });
+
+    it('should assign initial values', () => {
+        expect(service.questionEndedSubject).toBeTruthy();
+        expect(service.gameEndedSubject).toBeTruthy();
+        expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
+        expect(service.game).toBeNull();
+        expect(service.nAnswered).toBe(0);
+        expect(service.questionEnded).toBe(false);
+        expect(service.quitters).toEqual([]);
+        expect(service.histograms).toEqual([]);
+    });
 });
