@@ -78,6 +78,8 @@ describe('TestPageComponent', () => {
     });
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
+        hostServiceSpy.isConnected.and.returnValue(true);
+        component.ngOnInit();
         expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
         expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, 'Test');
         playerServiceSpy.joinGame('1', 'test').subscribe(() => {
