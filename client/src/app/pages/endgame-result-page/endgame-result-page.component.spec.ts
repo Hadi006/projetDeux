@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
-import { TEST_PLAYERS } from '@common/constant';
+import { TEST_GAME_DATA, TEST_PLAYERS } from '@common/constant';
 import { Player } from '@common/player';
 import { Subject } from 'rxjs';
 
@@ -22,6 +22,8 @@ describe('EndgameResultPageComponent', () => {
             },
             configurable: true,
         });
+        const state = { game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) };
+        spyOnProperty(history, 'state', 'get').and.returnValue(state);
     });
 
     beforeEach(waitForAsync(() => {
@@ -48,17 +50,12 @@ describe('EndgameResultPageComponent', () => {
         players[1].score = 100;
         players[1].name = 'b';
         players[2].score = 50;
+        history.state.game.players = players;
         component.ngOnInit();
         players.sort((a, b) => {
             return b.score - a.score || a.name.localeCompare(b.name);
         });
         expect(component.game.players).toEqual(players);
-    });
-
-    it('should do nothing if game is undefined', () => {
-        component.ngOnInit();
-        expect(component).toBeTruthy();
-        expect(component.game).toBeUndefined();
     });
 
     it('should navigate to home page', () => {
