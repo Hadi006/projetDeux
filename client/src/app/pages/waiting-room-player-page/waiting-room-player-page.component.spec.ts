@@ -17,7 +17,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
     let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(() => {
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['leaveGame', 'cleanUp']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['isConnected', 'cleanUp']);
         Object.defineProperty(playerServiceSpy, 'pin', { get: () => '1234', configurable: true });
         Object.defineProperty(playerServiceSpy, 'gameTitle', { get: () => 'Test Game', configurable: true });
         Object.defineProperty(playerServiceSpy, 'players', { get: () => [], configurable: true });
