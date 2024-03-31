@@ -87,18 +87,6 @@ export class PlayerService {
         return this.getPlayerAnswers().map((answer) => answer.isCorrect);
     }
 
-    reset() {
-        this.socketSubscription = new Subscription();
-        this.player = null;
-        this.internalPin = '';
-        this.internalGameTitle = '';
-        this.internalPlayers = [];
-        this.internalGameStarted = false;
-        this.internalAnswerConfirmed = false;
-        this.internalAnswer = [];
-        this.internalIsCorrect = false;
-    }
-
     isConnected(): boolean {
         return this.playerSocketService.isConnected();
     }
@@ -173,6 +161,18 @@ export class PlayerService {
         this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
+    }
+
+    private reset() {
+        this.socketSubscription = new Subscription();
+        this.player = null;
+        this.internalPin = '';
+        this.internalGameTitle = '';
+        this.internalPlayers = [];
+        this.internalGameStarted = false;
+        this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
+        this.internalIsCorrect = false;
     }
 
     private verifyUsesSockets(): void {

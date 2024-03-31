@@ -73,15 +73,6 @@ export class HostService {
         return this.internalGame?.quiz.questions[this.currentQuestionIndex];
     }
 
-    reset(): void {
-        this.socketSubscription = new Subscription();
-        this.internalGame = null;
-        this.internalNAnswered = 0;
-        this.internalQuestionEnded = false;
-        this.internalQuitters = [];
-        this.internalHistograms = [];
-    }
-
     isConnected(): boolean {
         return this.hostSocketService.isConnected();
     }
@@ -186,6 +177,15 @@ export class HostService {
         this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
+    }
+
+    private reset(): void {
+        this.socketSubscription = new Subscription();
+        this.internalGame = null;
+        this.internalNAnswered = 0;
+        this.internalQuestionEnded = false;
+        this.internalQuitters = [];
+        this.internalHistograms = [];
     }
 
     private verifyUsesSockets(): void {

@@ -37,7 +37,6 @@ describe('HostService', () => {
             ],
         });
         service = TestBed.inject(HostService);
-        spyOn(service, 'reset');
     });
 
     it('should be created', () => {
