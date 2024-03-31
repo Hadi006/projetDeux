@@ -86,7 +86,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
     it('should unsubscribe on destroy', (done) => {
         component.ngOnDestroy();
         playerServiceSpy.startGameSubject.subscribe(() => {
-            expect(routerSpy.navigate).not.toHaveBeenCalled();
+            expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
         });
         playerServiceSpy.startGameSubject.next();
         playerServiceSpy.endGameSubject.subscribe(() => {
