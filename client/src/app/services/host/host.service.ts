@@ -27,7 +27,7 @@ export class HostService {
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
     private gameStarted = false;
-    isPanicMode = false;
+    private isPanicMode = false;
 
     constructor(
         private webSocketService: WebSocketService,
@@ -72,20 +72,10 @@ export class HostService {
         this.pauseTimerForEveryone();
         return this.timeService.toggleTimerById(this.timerId);
     }
-    // startPanicMode(): void {
-    //     this.startPanicModeForEveryone();
-    //     return this.timeService.startPanicMode();
-    // }
     stopPanicMode(): void {
-        // this.stopPanicModeForEveryone();
         this.isPanicMode = false;
         return this.timeService.stopPanicMode();
     }
-    // toggleTimer(): void{
-    //     if(this.timeService.counterToggled){
-    //         this.
-    //     }
-    // }
 
     getCurrentQuestion(): Question | undefined {
         return this.internalGame.quiz.questions[this.currentQuestionIndex];
@@ -331,7 +321,4 @@ export class HostService {
     private startPanicModeForEveryone(): void {
         this.webSocketService.emit<string>('panic-mode', this.internalGame.pin);
     }
-    // private stopPanicModeForEveryone(): void {
-    //     this.webSocketService.emit<string>('panic-mode-off', this.internalGame.pin);
-    // }
 }
