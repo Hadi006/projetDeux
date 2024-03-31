@@ -49,6 +49,18 @@ describe('WaitingRoomHostPageComponent', () => {
         fixture.detectChanges();
     });
 
+    it('should navigate to home page when disconnected', () => {
+        hostServiceSpy.isConnected.and.returnValue(false);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should not navigate to home page when connected', () => {
+        hostServiceSpy.isConnected.and.returnValue(true);
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+        component.ngOnInit();
+        expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
