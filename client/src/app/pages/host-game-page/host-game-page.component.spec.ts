@@ -19,12 +19,12 @@ describe('HostGamePageComponent', () => {
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', [
+            'isConnected',
             'getCurrentQuestion',
             'getTime',
             'questionEnded',
             'nextQuestion',
             'getGame',
-            'leaveGame',
             'endGame',
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {

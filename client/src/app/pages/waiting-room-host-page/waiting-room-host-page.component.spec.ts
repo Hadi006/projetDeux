@@ -16,7 +16,7 @@ describe('WaitingRoomHostPageComponent', () => {
     let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick', 'leaveGame']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick']);
         Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
