@@ -70,6 +70,17 @@ describe('WaitingRoomPlayerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should navigate to home page when disconnected', () => {
+        playerServiceSpy.isConnected.and.returnValue(false);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should not navigate to home page when connected', () => {
+        playerServiceSpy.isConnected.and.returnValue(true);
+        component.ngOnInit();
+        expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
+    });
+
     it('should alert when game ends', () => {
         playerServiceSpy.endGameSubject.next();
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: "La partie n'existe plus" } });
