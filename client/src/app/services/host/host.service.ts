@@ -27,6 +27,7 @@ export class HostService {
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
     private gameStarted = false;
+    isPanicMode = false;
 
     constructor(
         private webSocketService: WebSocketService,
@@ -71,9 +72,14 @@ export class HostService {
         this.pauseTimerForEveryone();
         return this.timeService.toggleTimerById(this.timerId);
     }
-    startPanicMode(): void {
-        this.startPanicModeForEveryone();
-        return this.timeService.startPanicMode();
+    // startPanicMode(): void {
+    //     this.startPanicModeForEveryone();
+    //     return this.timeService.startPanicMode();
+    // }
+    stopPanicMode(): void {
+        // this.stopPanicModeForEveryone();
+        this.isPanicMode = false;
+        return this.timeService.stopPanicMode();
     }
     // toggleTimer(): void{
     //     if(this.timeService.counterToggled){
@@ -151,11 +157,27 @@ export class HostService {
         this.webSocketService.disconnect();
         this.timeService.stopTimerById(this.timerId);
     }
+    canActivatePanicMode(): boolean {
+        return (
+            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) || (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)
+        );
+    }
+    startPanicMode() {
+        if (this.canActivatePanicMode()) {
+            this.isPanicMode = true;
+            this.timeService.startPanicMode();
+            this.startPanicModeForEveryone();
+        }
+        return;
+    }
 
     private endQuestion(): void {
         this.emitEndQuestion();
         this.emitUpdateScores();
         this.emitAnswer();
+        if (this.isPanicMode) {
+            this.stopPanicMode();
+        }
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
     }
@@ -309,4 +331,7 @@ export class HostService {
     private startPanicModeForEveryone(): void {
         this.webSocketService.emit<string>('panic-mode', this.internalGame.pin);
     }
+    // private stopPanicModeForEveryone(): void {
+    //     this.webSocketService.emit<string>('panic-mode-off', this.internalGame.pin);
+    // }
 }

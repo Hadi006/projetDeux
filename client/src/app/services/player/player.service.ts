@@ -138,19 +138,12 @@ export class PlayerService {
         return this.timeService.getTimeById(this.timerId);
     }
 
-    pauseTimer(): void {
-        return this.timeService.toggleTimerById(this.timerId);
-    }
-    panicMode(): void {
-        return this.timeService.startPanicMode();
-    }
-
-    pauseTimerForPLayers(): void {
+    onpauseTimerForPLayers(): void {
         this.webSocketService.onEvent('timer-paused', () => {
             this.pauseTimer();
         });
     }
-    startPanicModeForPlayers(): void {
+    onstartPanicModeForPlayers(): void {
         this.webSocketService.onEvent('in-panic', () => {
             this.panicMode();
         });
@@ -203,6 +196,7 @@ export class PlayerService {
 
     private onEndQuestion(): void {
         this.webSocketService.onEvent<void>('end-question', () => {
+            this.timeService.stopPanicMode();
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
@@ -253,5 +247,11 @@ export class PlayerService {
         this.internalIsCorrect = false;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
+    }
+    private pauseTimer(): void {
+        return this.timeService.toggleTimerById(this.timerId);
+    }
+    private panicMode(): void {
+        return this.timeService.startPanicMode();
     }
 }

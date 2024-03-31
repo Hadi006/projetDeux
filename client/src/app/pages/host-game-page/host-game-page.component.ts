@@ -28,6 +28,7 @@ export class HostGamePageComponent implements OnDestroy {
         return this.hostService.histograms[this.hostService.histograms.length - 1];
     }
     stopCountDown() {
+        this.stopPanicMode();
         this.isCountingDown = false;
     }
 
@@ -42,11 +43,21 @@ export class HostGamePageComponent implements OnDestroy {
     getTime() {
         return this.hostService.getTime();
     }
+    // A mettre les constants dans common pour le temps.
+    canActivatePanicMode(): boolean {
+        return (
+            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) || (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)
+        );
+    }
     pauseTimer() {
         return this.hostService.pauseTimer();
     }
+
     startPanicMode() {
-        return this.hostService.startPanicMode();
+        this.hostService.startPanicMode();
+    }
+    stopPanicMode() {
+        this.hostService.stopPanicMode();
     }
     getQuestionEnded() {
         return this.hostService.questionEnded;

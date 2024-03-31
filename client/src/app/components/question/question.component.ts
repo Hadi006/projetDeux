@@ -30,9 +30,9 @@ export class QuestionComponent {
         return this.playerService.getTime();
     }
 
-    pauseTimer(): void {
-        return this.playerService.pauseTimer();
-    }
+    // pauseTimer(): void {
+    //     return this.playerService.pauseTimer();
+    // }
     getQuestionData(): Question | undefined {
         const player = this.getPlayer();
 

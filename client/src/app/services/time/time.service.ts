@@ -58,4 +58,7 @@ export class TimeService {
         });
         this.panicModeSound.play();
     }
+    stopPanicMode(): void {
+        this.panicModeSound?.stop();
+    }
 }
