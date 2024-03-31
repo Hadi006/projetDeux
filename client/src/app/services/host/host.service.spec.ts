@@ -3,7 +3,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
+import { Player } from '@common/player';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
+import { HistogramData } from '@common/histogram-data';
 
 describe('HostService', () => {
     let service: HostService;
@@ -16,7 +19,23 @@ describe('HostService', () => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
         timeServiceSpy.createTimerById.and.returnValue(1);
 
-        hostSocketServiceSpy = jasmine.createSpyObj('HostSocketService', ['disconnect']);
+        hostSocketServiceSpy = jasmine.createSpyObj('HostSocketService', [
+            'isConnected',
+            'connect',
+            'disconnect',
+            'onPlayerJoined',
+            'onPlayerLeft',
+            'onConfirmPlayerAnswer',
+            'onPlayerUpdated',
+        ]);
+        const playerJoinedSubject = new Subject<Player>();
+        hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
+        const playerLeftSubject = new Subject<PlayerLeftEventData>();
+        hostSocketServiceSpy.onPlayerLeft.and.returnValue(playerLeftSubject);
+        const confirmPlayerAnswerSubject = new Subject<void>();
+        hostSocketServiceSpy.onConfirmPlayerAnswer.and.returnValue(confirmPlayerAnswerSubject);
+        const playerUpdatedSubject = new Subject<HistogramData>();
+        hostSocketServiceSpy.onPlayerUpdated.and.returnValue(playerUpdatedSubject);
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -63,5 +82,11 @@ describe('HostService', () => {
         expect(service.questionEnded).toBe(false);
         expect(service.quitters).toEqual([]);
         expect(service.histograms).toEqual([]);
+    });
+
+    it('should connect the socket if it isnt connected', () => {
+        hostSocketServiceSpy.isConnected.and.returnValue(false);
+        service.handleSockets();
+        expect(hostSocketServiceSpy.connect).toHaveBeenCalled();
     });
 });
