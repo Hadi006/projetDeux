@@ -7,6 +7,7 @@ import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/
 import { HostService } from '@app/services/host/host.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
+import { Subject } from 'rxjs';
 
 describe('WaitingRoomHostPageComponent', () => {
     let component: WaitingRoomHostPageComponent;
@@ -18,7 +19,16 @@ describe('WaitingRoomHostPageComponent', () => {
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick']);
         Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+
+        const eventSubject = new Subject<void>();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
+
         websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
