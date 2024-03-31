@@ -94,6 +94,11 @@ describe('QuestionComponent', () => {
         expect(component.getPlayer()).toEqual(testPlayer);
     });
 
+    it('getPlayer should return undefined if there is no player', () => {
+        playerHandlerServiceSpy.player = null;
+        expect(component.getPlayer()).toBeUndefined();
+    });
+
     it('getQuestionData should return currentQuestion', () => {
         spyOn(component, 'getPlayer').and.returnValue(testPlayer);
         expect(component.getQuestionData()).toEqual(testQuestions[testPlayer.questions.length - 1]);
