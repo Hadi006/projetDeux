@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
 
@@ -15,7 +15,7 @@ describe('HostGamePageComponent', () => {
     let fixture: ComponentFixture<HostGamePageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
-    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', [
@@ -48,7 +48,15 @@ describe('HostGamePageComponent', () => {
         });
 
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
-        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
+
+        const eventSubject = new Subject<void>();
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(waitForAsync(() => {
@@ -57,7 +65,7 @@ describe('HostGamePageComponent', () => {
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
-                { provide: WebSocketService, useValue: websocketServiceSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         }).compileComponents();
     }));
@@ -70,6 +78,15 @@ describe('HostGamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should open a dialog if game abruptly ends', (done) => {
+        hostServiceSpy.gameEndedSubject.subscribe(() => {
+            expect(dialogSpy.open).toHaveBeenCalled();
+            expect(routerSpy.navigate).toHaveBeenCalled();
+            done();
+        });
+        hostServiceSpy.gameEndedSubject.next();
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
@@ -115,6 +132,16 @@ describe('HostGamePageComponent', () => {
     it('getPlayers should return the players from the hostService', () => {
         const players = TEST_GAME_DATA.players;
         expect(component.getPlayers()).toEqual(players);
+    });
+
+    it('getPlayers should return an empty array if there is no game', () => {
+        Object.defineProperty(hostServiceSpy, 'game', {
+            get: () => {
+                return undefined;
+            },
+            configurable: true,
+        });
+        expect(component.getPlayers()).toEqual([]);
     });
 
     it('getQuitters should return the quitters from the hostService', () => {
