@@ -26,7 +26,6 @@ export class HostService {
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
-    private gameStarted = false;
 
     constructor(
         private hostSocketService: HostSocketService,
@@ -88,7 +87,6 @@ export class HostService {
         this.internalQuestionEnded = false;
         this.internalQuitters = [];
         this.internalHistograms = [];
-        this.gameStarted = false;
     }
 
     isConnected(): boolean {
@@ -144,7 +142,6 @@ export class HostService {
         }
 
         this.hostSocketService.emitStartGame(this.internalGame.pin, countdown);
-        this.gameStarted = true;
         this.internalQuitters = [];
 
         this.timeService.stopTimerById(this.timerId);
@@ -234,7 +231,7 @@ export class HostService {
 
     private subscribeToPlayerLeft(): Subscription {
         return this.hostSocketService.onPlayerLeft().subscribe((data) => {
-            if (!this.internalGame || !this.gameStarted) {
+            if (!this.internalGame) {
                 return;
             }
 
