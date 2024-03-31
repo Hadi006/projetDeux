@@ -3,10 +3,11 @@ import { NavigationEnd, Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
-import { ReplaySubject, Subject } from 'rxjs';
+import { of, ReplaySubject, Subject } from 'rxjs';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { HistogramData } from '@common/histogram-data';
+import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
 
 describe('HostService', () => {
     let service: HostService;
@@ -14,6 +15,10 @@ describe('HostService', () => {
     let timeServiceSpy: jasmine.SpyObj<TimeService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let eventSubject: ReplaySubject<NavigationEnd>;
+    let playerJoinedSubject: Subject<Player>;
+    let playerLeftSubject: Subject<PlayerLeftEventData>;
+    let confirmPlayerAnswerSubject: Subject<void>;
+    let playerUpdatedSubject: Subject<HistogramData>;
 
     beforeEach(async () => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
@@ -27,15 +32,17 @@ describe('HostService', () => {
             'onPlayerLeft',
             'onConfirmPlayerAnswer',
             'onPlayerUpdated',
+            'emitCreateGame',
         ]);
-        const playerJoinedSubject = new Subject<Player>();
+        playerJoinedSubject = new Subject<Player>();
         hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
-        const playerLeftSubject = new Subject<PlayerLeftEventData>();
+        playerLeftSubject = new Subject<PlayerLeftEventData>();
         hostSocketServiceSpy.onPlayerLeft.and.returnValue(playerLeftSubject);
-        const confirmPlayerAnswerSubject = new Subject<void>();
+        confirmPlayerAnswerSubject = new Subject<void>();
         hostSocketServiceSpy.onConfirmPlayerAnswer.and.returnValue(confirmPlayerAnswerSubject);
-        const playerUpdatedSubject = new Subject<HistogramData>();
+        playerUpdatedSubject = new Subject<HistogramData>();
         hostSocketServiceSpy.onPlayerUpdated.and.returnValue(playerUpdatedSubject);
+        hostSocketServiceSpy.emitCreateGame.and.returnValue(of(TEST_GAME_DATA));
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -88,5 +95,13 @@ describe('HostService', () => {
         hostSocketServiceSpy.isConnected.and.returnValue(false);
         service.handleSockets();
         expect(hostSocketServiceSpy.connect).toHaveBeenCalled();
+    });
+
+    it('should add player when player joined', (done) => {
+        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
+            playerJoinedSubject.next(TEST_PLAYERS[0]);
+            expect(service.game?.players).toContain(TEST_PLAYERS[0]);
+            done();
+        });
     });
 });
