@@ -57,9 +57,4 @@ describe('WaitingRoomHostPageComponent', () => {
         component.startGame();
         expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
     });
-
-    it('should clean up', () => {
-        component.leaveGame();
-        expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
-    });
 });

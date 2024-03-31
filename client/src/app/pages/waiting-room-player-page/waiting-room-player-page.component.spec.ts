@@ -70,13 +70,6 @@ describe('WaitingRoomPlayerPageComponent', () => {
         expect(dialogSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: "La partie n'existe plus" } });
     });
 
-    it('should leave game', () => {
-        component.leaveGame();
-        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
-        expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
-    });
-
     it('should navigate to game page when start game is called', (done) => {
         playerServiceSpy.startGameSubject.subscribe(() => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['game-player']);

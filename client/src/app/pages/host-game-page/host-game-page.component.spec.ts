@@ -72,22 +72,13 @@ describe('HostGamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should alert and leave game when gameEndedSubject is triggered', (done) => {
-        hostServiceSpy.gameEndedSubject.subscribe(() => {
-            expect(dialogSpy.open).toHaveBeenCalled();
-            expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
-            done();
-        });
-        hostServiceSpy.gameEndedSubject.next();
-    });
-
     it('stopCountDown should set isCountingDown to false', () => {
         component.stopCountDown();
         expect(component.isCountingDown).toBeFalse();
     });
 
     it('getGame should return the game from the hostService', () => {
-        expect(component.getGame()).toEqual(TEST_GAME_DATA);
+        expect(component.game).toEqual(TEST_GAME_DATA);
     });
 
     it('getCurrentQuestion should return the current question from the hostService', () => {
@@ -136,16 +127,10 @@ describe('HostGamePageComponent', () => {
         expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
     });
 
-    it('should call leaveGame on the hostService when leaveGame is called', () => {
-        component.leaveGame();
-        expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
-    });
-
     it('should unsubscribe on destroy', () => {
         component.ngOnDestroy();
         hostServiceSpy.gameEndedSubject.subscribe(() => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
-            expect(hostServiceSpy.leaveGame).not.toHaveBeenCalled();
         });
         hostServiceSpy.gameEndedSubject.next();
     });

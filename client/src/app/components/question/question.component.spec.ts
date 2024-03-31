@@ -23,7 +23,6 @@ describe('QuestionComponent', () => {
             'handleKeyUp',
             'getPlayerBooleanAnswers',
             'getTime',
-            'leaveGame',
         ]);
         playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
