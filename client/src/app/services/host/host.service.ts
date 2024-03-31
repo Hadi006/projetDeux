@@ -13,8 +13,8 @@ import { HostSocketService } from '@app/services/host-socket/host-socket.service
     providedIn: 'root',
 })
 export class HostService {
-    readonly internalQuestionEndedSubject: Subject<void>;
-    readonly internalGameEndedSubject: Subject<void>;
+    readonly questionEndedSubject: Subject<void>;
+    readonly gameEndedSubject: Subject<void>;
 
     private socketSubscription: Subscription;
 
@@ -38,8 +38,8 @@ export class HostService {
             }
         });
 
-        this.internalQuestionEndedSubject = new Subject<void>();
-        this.internalGameEndedSubject = new Subject<void>();
+        this.questionEndedSubject = new Subject<void>();
+        this.gameEndedSubject = new Subject<void>();
 
         this.timerId = timeService.createTimerById();
         this.reset();
@@ -55,13 +55,6 @@ export class HostService {
 
     get questionEnded(): boolean {
         return this.internalQuestionEnded;
-    }
-    get questionEndedSubject(): Subject<void> {
-        return this.internalQuestionEndedSubject;
-    }
-
-    get gameEndedSubject(): Subject<void> {
-        return this.internalGameEndedSubject;
     }
 
     get quitters(): Player[] {
@@ -216,7 +209,7 @@ export class HostService {
         this.hostSocketService.emitEndQuestion(this.internalGame.pin);
         this.hostSocketService.emitUpdateScores(this.internalGame.pin, this.currentQuestionIndex).subscribe((game: Game) => {
             this.internalGame = game;
-            this.internalQuestionEndedSubject.next();
+            this.questionEndedSubject.next();
         });
         this.hostSocketService.emitAnswer(this.internalGame.pin, currentAnswer);
         this.internalQuestionEnded = true;
@@ -241,7 +234,7 @@ export class HostService {
             this.internalQuitters.push(player);
 
             if (this.internalGame.players.length === 0) {
-                this.internalGameEndedSubject.next();
+                this.gameEndedSubject.next();
             }
         });
     }
@@ -275,7 +268,7 @@ export class HostService {
         }
 
         if (!this.getCurrentQuestion()) {
-            this.internalGameEndedSubject.next();
+            this.gameEndedSubject.next();
             return;
         }
 
