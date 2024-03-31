@@ -5,7 +5,6 @@ import { AlertComponent } from '@app/components/alert/alert.component';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player/player.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { Subject } from 'rxjs';
 
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';
@@ -16,13 +15,13 @@ describe('WaitingRoomPlayerPageComponent', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
-    let webSocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['leaveGame', 'cleanUp']);
         Object.defineProperty(playerServiceSpy, 'pin', { get: () => '1234', configurable: true });
         Object.defineProperty(playerServiceSpy, 'gameTitle', { get: () => 'Test Game', configurable: true });
         Object.defineProperty(playerServiceSpy, 'players', { get: () => [], configurable: true });
+
         const startGameSubject = new Subject<void>();
         Object.defineProperty(playerServiceSpy, 'startGameSubject', {
             get: () => {
@@ -30,6 +29,7 @@ describe('WaitingRoomPlayerPageComponent', () => {
             },
             configurable: true,
         });
+
         const endGameSubject = new Subject<void>();
         Object.defineProperty(playerServiceSpy, 'endGameSubject', {
             get: () => {
@@ -38,9 +38,15 @@ describe('WaitingRoomPlayerPageComponent', () => {
             configurable: true,
         });
 
+        const eventSubject = new Subject<void>();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
-        webSocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -50,7 +56,6 @@ describe('WaitingRoomPlayerPageComponent', () => {
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: Router, useValue: routerSpy },
                 { provide: MatDialog, useValue: dialogSpy },
-                { provide: WebSocketService, useValue: webSocketServiceSpy },
             ],
         });
     }));
