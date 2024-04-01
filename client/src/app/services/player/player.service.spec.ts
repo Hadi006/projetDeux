@@ -318,4 +318,23 @@ describe('PlayerService', () => {
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();
     });
+
+    it('should set up next question', () => {
+        const time = 10;
+        service['setupNextQuestion'](TEST_QUESTIONS[0], time);
+        expect(service.player?.questions[0]).toEqual(JSON.parse(JSON.stringify(TEST_QUESTIONS[0])));
+        expect(service.answerConfirmed).toBeFalse();
+        expect(service.answer).toEqual([]);
+        expect(service.isCorrect).toBeFalse();
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalledWith(1);
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, time);
+    });
+
+    it('should not set up next question if the player is not in the game', () => {
+        service.player = null;
+        const time = 10;
+        service['setupNextQuestion'](TEST_QUESTIONS[0], time);
+        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+    });
 });
