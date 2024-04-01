@@ -42,7 +42,7 @@ describe('HostService', () => {
         hostSocketServiceSpy.onConfirmPlayerAnswer.and.returnValue(confirmPlayerAnswerSubject);
         playerUpdatedSubject = new Subject<HistogramData>();
         hostSocketServiceSpy.onPlayerUpdated.and.returnValue(playerUpdatedSubject);
-        hostSocketServiceSpy.emitCreateGame.and.returnValue(of(TEST_GAME_DATA));
+        hostSocketServiceSpy.emitCreateGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -100,23 +100,29 @@ describe('HostService', () => {
     it('should add player when player joined', (done) => {
         service.handleSockets();
         service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            hostSocketServiceSpy.onPlayerJoined().subscribe(() => {
-                expect(service.game?.players).toContain(TEST_PLAYERS[0]);
-                done();
-            });
-            playerJoinedSubject.next(TEST_PLAYERS[0]);
+            const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+            playerJoinedSubject.next(player);
+            expect(service.game?.players).toContain(player);
+            done();
         });
     });
 
     it('should remove player when player left', (done) => {
         service.handleSockets();
         service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            hostSocketServiceSpy.onPlayerLeft().subscribe(() => {
-                expect(service.game?.players).not.toContain(TEST_PLAYERS[0]);
-                expect(service.quitters).toContain(TEST_PLAYERS[0]);
-                done();
-            });
-            playerLeftSubject.next({ player: TEST_PLAYERS[0], players: [] });
+            const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+            playerLeftSubject.next({ player, players: [] });
+            expect(service.game?.players).not.toContain(player);
+            expect(service.quitters).toContain(player);
+            done();
+        });
+    });
+    it('should increment nAnswered when player answer is confirmed', (done) => {
+        service.handleSockets();
+        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
+            confirmPlayerAnswerSubject.next();
+            expect(service.nAnswered).toBe(1);
+            done();
         });
     });
 });
