@@ -154,6 +154,13 @@ describe('HostGamePageComponent', () => {
         expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
     });
 
+    it('should navigate to home if not connected or no current question', () => {
+        hostServiceSpy.isConnected.and.returnValue(true);
+        hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
+        component.ngOnInit();
+        expect(routerSpy.navigate).toHaveBeenCalled();
+    });
+
     it('should unsubscribe on destroy', () => {
         component.ngOnDestroy();
         hostServiceSpy.gameEndedSubject.subscribe(() => {
