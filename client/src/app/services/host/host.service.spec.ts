@@ -330,6 +330,11 @@ describe('HostService', () => {
     });
 
     it('should get current question', () => {
-        expect(service.getCurrentQuestion()).toEqual(TEST_QUIZZES[0].questions[0]);
+        expect(service.getCurrentQuestion()).toEqual(JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0])));
+    });
+
+    it('should check connection', () => {
+        hostSocketServiceSpy.isConnected.and.returnValue(true);
+        expect(service.isConnected()).toBe(true);
     });
 });
