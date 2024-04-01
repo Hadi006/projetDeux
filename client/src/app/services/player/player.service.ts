@@ -141,6 +141,7 @@ export class PlayerService {
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.getPlayerAnswers().length) {
             this.getPlayerAnswers()[key].isCorrect = !this.getPlayerAnswers()[key].isCorrect;
+            this.updatePlayer();
         }
     }
 
