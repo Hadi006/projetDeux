@@ -22,11 +22,31 @@ describe('HostSocketService', () => {
     });
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            providers: [{ provide: WebSocketService, useValue: webSocketServiceMock }],
+        });
         service = TestBed.inject(HostSocketService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should connect', () => {
+        const connectSpy = spyOn(webSocketServiceMock, 'connect');
+        service.connect();
+        expect(connectSpy).toHaveBeenCalled();
+    });
+
+    it('should disconnect', () => {
+        const disconnectSpy = spyOn(webSocketServiceMock, 'disconnect');
+        service.disconnect();
+        expect(disconnectSpy).toHaveBeenCalled();
+    });
+
+    it('should check if connected', () => {
+        const isConnectedSpy = spyOn(webSocketServiceMock, 'isSocketAlive');
+        service.isConnected();
+        expect(isConnectedSpy).toHaveBeenCalled();
     });
 });
