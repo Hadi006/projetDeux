@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
+import { TEST_PLAYERS } from '@common/constant';
 import { Socket } from 'socket.io-client';
 
 import { ChatSocketService } from './chat-socket.service';
@@ -55,6 +56,16 @@ describe('ChatSocketService', () => {
             done();
         });
         socketHelper.peerSideEmit('message-received', expectedMessage);
+    });
+
+    it('should listen for player left', (done) => {
+        service.connect();
+        const expectedData = { player: TEST_PLAYERS[0], players: TEST_PLAYERS };
+        service.onPlayerLeft().subscribe((data) => {
+            expect(data).toEqual(expectedData);
+            done();
+        });
+        socketHelper.peerSideEmit('player-left', expectedData);
     });
 
     it('should emit new message', () => {
