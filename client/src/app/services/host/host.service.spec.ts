@@ -122,6 +122,14 @@ describe('HostService', () => {
         expect(service.quitters).toContain(player);
     });
 
+    it('should not remove player when player left', () => {
+        service['reset']();
+        service.handleSockets();
+        const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        playerLeftSubject.next({ player, players: [player] });
+        expect(service.quitters).not.toContain(player);
+    });
+
     it('should increment nAnswered when player answer is confirmed', () => {
         service.handleSockets();
         confirmPlayerAnswerSubject.next();
