@@ -1,5 +1,6 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { HostService } from '@app/services/host/host.service';
 import { Subscription } from 'rxjs';
@@ -9,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './host-game-page.component.html',
     styleUrls: ['./host-game-page.component.scss'],
 })
-export class HostGamePageComponent implements OnDestroy {
+export class HostGamePageComponent implements OnInit, OnDestroy {
     isCountingDown = true;
 
     private gameEndedSubscription: Subscription;
@@ -17,11 +18,16 @@ export class HostGamePageComponent implements OnDestroy {
     constructor(
         private hostService: HostService,
         private dialog: MatDialog,
+        private router: Router,
     ) {
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: 'Tous les joueurs on quittés' } });
-            this.hostService.leaveGame();
+            this.router.navigate(['/']);
         });
+    }
+
+    get game() {
+        return this.hostService.game;
     }
 
     get histogramData() {
@@ -30,10 +36,6 @@ export class HostGamePageComponent implements OnDestroy {
 
     stopCountDown() {
         this.isCountingDown = false;
-    }
-
-    getGame() {
-        return this.hostService.game;
     }
 
     getCurrentQuestion() {
@@ -57,15 +59,17 @@ export class HostGamePageComponent implements OnDestroy {
     }
 
     getPlayers() {
-        return this.hostService.game.players;
+        return this.hostService.game?.players || [];
     }
 
     getQuitters() {
         return this.hostService.quitters;
     }
 
-    leaveGame() {
-        this.hostService.leaveGame();
+    ngOnInit() {
+        if (!this.hostService.isConnected()) {
+            this.router.navigate(['/']);
+        }
     }
 
     ngOnDestroy() {

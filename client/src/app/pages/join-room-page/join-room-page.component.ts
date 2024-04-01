@@ -15,11 +15,10 @@ export class JoinRoomPageComponent {
     constructor(
         private playerService: PlayerService,
         private router: Router,
-    ) {
-        this.playerService.handleSockets();
-    }
+    ) {}
 
     joinGame() {
+        this.playerService.handleSockets();
         this.playerService.joinGame(this.gamePin, { playerName: this.playerName, isHost: false }).subscribe((error: string) => {
             this.error = error;
             if (error) {

@@ -1,38 +1,35 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TEST_GAME_DATA, TEST_PLAYERS } from '@common/constant';
 import { Player } from '@common/player';
-import { of } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { EndgameResultPageComponent } from './endgame-result-page.component';
 
 describe('EndgameResultPageComponent', () => {
     let component: EndgameResultPageComponent;
     let fixture: ComponentFixture<EndgameResultPageComponent>;
-    let routeSpy: jasmine.SpyObj<ActivatedRoute>;
     let routerSpy: jasmine.SpyObj<Router>;
-    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
-        const queryParamsMap = of({});
-        routeSpy = jasmine.createSpyObj('ActivatedRoute', [], {
-            queryParams: queryParamsMap,
-        });
+        const eventSubject = new Subject<void>();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
+        const state = { game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) };
+        spyOnProperty(history, 'state', 'get').and.returnValue(state);
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [EndgameResultPageComponent, ChatboxComponent, HistogramComponent],
-            providers: [
-                { provide: ActivatedRoute, useValue: routeSpy },
-                { provide: Router, useValue: routerSpy },
-                { provide: WebSocketService, useValue: websocketServiceSpy },
-            ],
+            providers: [{ provide: Router, useValue: routerSpy }],
         }).compileComponents();
     }));
 
@@ -53,19 +50,12 @@ describe('EndgameResultPageComponent', () => {
         players[1].score = 100;
         players[1].name = 'b';
         players[2].score = 50;
-        const testGame = { ...TEST_GAME_DATA, players };
-        Object.defineProperty(routeSpy, 'queryParams', { value: of({ game: JSON.stringify(testGame) }) });
+        history.state.game.players = players;
         component.ngOnInit();
         players.sort((a, b) => {
             return b.score - a.score || a.name.localeCompare(b.name);
         });
         expect(component.game.players).toEqual(players);
-    });
-
-    it('should do nothing if game is undefined', () => {
-        component.ngOnInit();
-        expect(component).toBeTruthy();
-        expect(component.game).toBeUndefined();
     });
 
     it('should navigate to home page', () => {
@@ -79,7 +69,6 @@ describe('EndgameResultPageComponent', () => {
     });
 
     it('should increment histogram index', () => {
-        Object.defineProperty(routeSpy, 'queryParams', { value: of({ game: JSON.stringify(TEST_GAME_DATA) }) });
         component.ngOnInit();
         component.nextHistogram();
         expect(component.currentHistogramIndex).toBe(1);

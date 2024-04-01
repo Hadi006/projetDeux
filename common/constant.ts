@@ -148,12 +148,14 @@ export const TEST_QUIZZES: Quiz[] = [
 
 export const TEST_PLAYERS: Player[] = [
     {
+        id: '1',
         name: 'Player 1',
         score: 0,
         questions: TEST_QUESTIONS,
         fastestResponseCount: 0,
     },
     {
+        id: '2',
         name: 'Player 2',
         score: 0,
         questions: TEST_QUESTIONS,

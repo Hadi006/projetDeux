@@ -23,12 +23,12 @@ describe('TestPageComponent', () => {
     beforeEach(() => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
 
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['handleSockets', 'joinGame', 'cleanUp', 'getTime']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['isConnected', 'handleSockets', 'joinGame', 'cleanUp', 'getTime']);
         playerServiceSpy.joinGame.and.returnValue(of(''));
 
         const questionEndedSubject = new Subject<void>();
         const gameEndedSubject = new Subject<Game>();
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['startGame', 'cleanUp', 'nextQuestion']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'startGame', 'cleanUp', 'nextQuestion']);
         Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
         Object.defineProperty(hostServiceSpy, 'game', { get: () => testGame, configurable: true });
@@ -78,6 +78,8 @@ describe('TestPageComponent', () => {
     });
 
     it('ngOnInit should handle sockets, create player and start game', (done) => {
+        hostServiceSpy.isConnected.and.returnValue(true);
+        component.ngOnInit();
         expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
         expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, 'Test');
         playerServiceSpy.joinGame('1', 'test').subscribe(() => {

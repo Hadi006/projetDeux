@@ -21,6 +21,11 @@ export class WaitingRoomHostPageComponent implements OnInit {
     }
 
     ngOnInit() {
+        if (!this.hostService.isConnected() || !this.hostService.game || this.hostService.game.locked) {
+            this.router.navigate(['/']);
+            return;
+        }
+
         if (this.hostService.game.quiz.id === '-1') {
             this.playerService.handleSockets();
             this.playerService.joinGame(this.hostService.game.pin, { playerName: 'Organisateur', isHost: true }).subscribe((error) => {
@@ -42,15 +47,15 @@ export class WaitingRoomHostPageComponent implements OnInit {
     }
 
     startGame() {
+        if (!this.hostService.game) {
+            return;
+        }
+
         if (this.hostService.game.quiz.id === '-1') {
             this.router.navigate(['host-player']);
         } else {
             this.router.navigate(['game-host']);
         }
         this.hostService.startGame(START_GAME_COUNTDOWN);
-    }
-
-    leaveGame() {
-        this.hostService.leaveGame();
     }
 }

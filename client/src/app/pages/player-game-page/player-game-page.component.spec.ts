@@ -17,7 +17,7 @@ describe('PlayerGamePageComponent', () => {
     let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['gameTitle', 'leaveGame']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['isConnected', 'gameTitle', 'leaveGame']);
         Object.defineProperty(playerServiceSpy, 'players', {
             get: () => {
                 return [];
@@ -68,11 +68,6 @@ describe('PlayerGamePageComponent', () => {
         expect(component.isCountingDown).toBeFalse();
     });
 
-    it('leaveGame should call leaveGame method from PlayerService', () => {
-        component.leaveGame();
-        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
-    });
-
     it('get players should return players from PlayerService', () => {
         const player1 = { id: 1, name: 'Player 1' };
         const player2 = { id: 2, name: 'Player 2' };
@@ -89,11 +84,6 @@ describe('PlayerGamePageComponent', () => {
             configurable: true,
         });
         expect(component.gameTitle()).toEqual('test');
-    });
-
-    it('leaveGame should call the leaveGame method from the playerService', () => {
-        component.leaveGame();
-        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
     });
 
     it('ngOnDestroy should unsubscribe from the endGameSubscription', () => {
