@@ -257,7 +257,6 @@ export class PlayerService {
     private subscribeToOnGameEnded(): Subscription {
         return this.playerSocketService.onGameEnded().subscribe((game) => {
             this.router.navigate(['/endgame'], { state: { game } });
-            this.cleanUp();
         });
     }
 
