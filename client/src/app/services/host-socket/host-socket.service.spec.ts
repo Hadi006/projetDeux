@@ -4,7 +4,7 @@ import { HostSocketService } from './host-socket.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
-import { TEST_PLAYERS } from '@common/constant';
+import { TEST_HISTOGRAM_DATA, TEST_PLAYERS } from '@common/constant';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -77,5 +77,15 @@ describe('HostSocketService', () => {
             done();
         });
         socketHelper.peerSideEmit('confirm-player-answer');
+    });
+
+    it('should listen for player updated', (done) => {
+        service.connect();
+        const expectedData = TEST_HISTOGRAM_DATA[0];
+        service.onPlayerUpdated().subscribe((data) => {
+            expect(data).toEqual(expectedData);
+            done();
+        });
+        socketHelper.peerSideEmit('player-updated', expectedData);
     });
 });
