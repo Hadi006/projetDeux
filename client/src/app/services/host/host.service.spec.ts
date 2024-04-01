@@ -117,11 +117,23 @@ describe('HostService', () => {
             done();
         });
     });
+
     it('should increment nAnswered when player answer is confirmed', (done) => {
         service.handleSockets();
         service.createGame(TEST_QUIZZES[0]).subscribe(() => {
             confirmPlayerAnswerSubject.next();
             expect(service.nAnswered).toBe(1);
+            done();
+        });
+    });
+
+    it('should update histograms when player is updated', (done) => {
+        service.handleSockets();
+        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
+            const histogram = JSON.parse(JSON.stringify(TEST_GAME_DATA.histograms[0]));
+            service.histograms.push(histogram);
+            playerUpdatedSubject.next(histogram);
+            expect(service.histograms).toContain(histogram);
             done();
         });
     });
