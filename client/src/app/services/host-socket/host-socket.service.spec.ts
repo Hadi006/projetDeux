@@ -53,10 +53,21 @@ describe('HostSocketService', () => {
 
     it('should listen for player joined', (done) => {
         service.connect();
+        const expectedPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
         service.onPlayerJoined().subscribe((player) => {
-            expect(player).toEqual(TEST_PLAYERS[0]);
+            expect(player).toEqual(expectedPlayer);
             done();
         });
-        socketHelper.peerSideEmit('player-joined', TEST_PLAYERS[0]);
+        socketHelper.peerSideEmit('player-joined', expectedPlayer);
+    });
+
+    it('should listen for player left', (done) => {
+        service.connect();
+        const expectedData = { players: TEST_PLAYERS, player: TEST_PLAYERS[0] };
+        service.onPlayerLeft().subscribe((data) => {
+            expect(data).toEqual(expectedData);
+            done();
+        });
+        socketHelper.peerSideEmit('player-left', expectedData);
     });
 });
