@@ -233,4 +233,22 @@ describe('HostService', () => {
         expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
     });
+
+    it('should end game', () => {
+        hostSocketServiceSpy.emitEndGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
+        spyOn(service, 'cleanUp');
+        service.endGame();
+        expect(hostSocketServiceSpy.emitEndGame).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) } });
+        expect(service.cleanUp).toHaveBeenCalled();
+    });
+
+    it('should not end game', () => {
+        service['reset']();
+        spyOn(service, 'cleanUp');
+        service.endGame();
+        expect(hostSocketServiceSpy.emitEndGame).not.toHaveBeenCalled();
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+        expect(service.cleanUp).not.toHaveBeenCalled();
+    });
 });
