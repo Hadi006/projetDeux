@@ -322,4 +322,14 @@ describe('HostService', () => {
         expect(hostSocketServiceSpy.emitAnswer).not.toHaveBeenCalled();
         expect(service.questionEnded).toBe(false);
     });
+
+    it('getTimer should return time', () => {
+        const time = 10;
+        timeServiceSpy.getTimeById.and.returnValue(time);
+        expect(service.getTime()).toBe(time);
+    });
+
+    it('should get current question', () => {
+        expect(service.getCurrentQuestion()).toEqual(TEST_QUIZZES[0].questions[0]);
+    });
 });
