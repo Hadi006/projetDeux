@@ -3,6 +3,8 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { Question } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { Service } from 'typedi';
+import { Request } from 'express';
+import { QuestionQuery } from '@common/question-query';
 
 @Service()
 export class QuestionBankService {
@@ -27,11 +29,29 @@ export class QuestionBankService {
     async deleteQuestion(questionText: string): Promise<boolean> {
         return await this.database.delete('questions', { text: questionText });
     }
-    async getQuestions(): Promise<Question[]> {
-        return await this.database.get<Question>('questions');
+    async getQuestions(req: Request): Promise<Question[]> {
+        return await this.database.get<Question>('questions', this.getQuestionQuery(req));
     }
 
     private async getQuestion(text: string): Promise<Question> {
         return (await this.database.get<Question>('questions', { text }))[0];
+    }
+
+    private getQuestionQuery(req: Request): QuestionQuery {
+        const questionQuery: QuestionQuery = {};
+
+        if (typeof req.query.text === 'string') {
+            questionQuery.text = req.query.text;
+        }
+
+        if (typeof req.query.type === 'string' && (req.query.type === 'QCM' || req.query.type === 'QRL')) {
+            questionQuery.type = req.query.type;
+        }
+
+        if (typeof req.query.points === 'string') {
+            questionQuery.points = parseInt(req.query.points, 10);
+        }
+
+        return questionQuery;
     }
 }

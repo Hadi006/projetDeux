@@ -65,7 +65,7 @@ export class PublicQuizzesService {
     }
 
     createRandomQuestions(): Observable<Question[]> {
-        return this.http.get<Question[]>('questions').pipe(
+        return this.http.get<Question[]>('questions?type=QCM').pipe(
             map((response: HttpResponse<Question[]>) => {
                 if (!response.body || response.status !== HttpStatusCode.Ok) {
                     return [];
@@ -88,7 +88,7 @@ export class PublicQuizzesService {
     }
 
     private createRandomQuiz(): Observable<Quiz | undefined> {
-        return this.http.get<Question[]>('questions').pipe(
+        return this.http.get<Question[]>('questions?type=QCM').pipe(
             map((response: HttpResponse<Question[]>) => {
                 if (!response.body || response.status !== HttpStatusCode.Ok) {
                     return;

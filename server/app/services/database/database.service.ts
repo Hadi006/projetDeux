@@ -31,6 +31,7 @@ export class DatabaseService {
     }
 
     async get<T>(collection: string, query: object = {}, projection: object = {}): Promise<T[]> {
+        console.log(query);
         return (this.db
             ?.collection(collection)
             ?.find(query)
