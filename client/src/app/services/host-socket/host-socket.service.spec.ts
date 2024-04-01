@@ -4,7 +4,7 @@ import { HostSocketService } from './host-socket.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
-import { TEST_HISTOGRAM_DATA, TEST_PLAYERS } from '@common/constant';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -87,5 +87,30 @@ describe('HostSocketService', () => {
             done();
         });
         socketHelper.peerSideEmit('player-updated', expectedData);
+    });
+
+    it('should emit create game', (done) => {
+        service.connect();
+        const quiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(expectedGame);
+        });
+        service.emitCreateGame(quiz).subscribe((game) => {
+            expect(game).toEqual(expectedGame);
+            done();
+        });
+    });
+
+    it('should emit undefined', (done) => {
+        service.connect();
+        const quiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(undefined);
+        });
+        service.emitCreateGame(quiz).subscribe((game) => {
+            expect(game).toBeUndefined();
+            done();
+        });
     });
 });
