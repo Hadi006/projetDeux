@@ -133,19 +133,20 @@ export class HostService {
     }
 
     nextQuestion(): void {
-        const currentQuestion = this.getCurrentQuestion();
-        if (!this.internalGame || !currentQuestion) {
+        if (!this.internalGame) {
             return;
         }
+
+        const currentQuestion = this.getCurrentQuestion();
 
         this.internalQuestionEnded = false;
 
         const newHistogram: HistogramData = {
-            labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
+            labels: currentQuestion?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
             datasets: [
                 {
-                    label: currentQuestion.text,
-                    data: currentQuestion.choices.map(() => 0),
+                    label: currentQuestion?.text || '',
+                    data: currentQuestion?.choices.map(() => 0) || [],
                 },
             ],
         };
