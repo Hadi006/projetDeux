@@ -190,4 +190,9 @@ describe('HostService', () => {
             done();
         });
     });
+
+    it('should not kick player', () => {
+        service.kick('Player 1');
+        expect(hostSocketServiceSpy.emitKick).not.toHaveBeenCalled();
+    });
 });
