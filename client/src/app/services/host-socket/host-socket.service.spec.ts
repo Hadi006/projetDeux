@@ -16,7 +16,7 @@ describe('HostSocketService', () => {
     let webSocketServiceMock: WebSocketServiceMock;
     let socketHelper: SocketTestHelper;
 
-    beforeEach(async () => {
+    beforeEach(() => {
         socketHelper = new SocketTestHelper();
         webSocketServiceMock = new WebSocketServiceMock();
         webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
