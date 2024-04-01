@@ -4,6 +4,7 @@ import { HostSocketService } from './host-socket.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
+import { TEST_PLAYERS } from '@common/constant';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -48,5 +49,14 @@ describe('HostSocketService', () => {
         const isConnectedSpy = spyOn(webSocketServiceMock, 'isSocketAlive');
         service.isConnected();
         expect(isConnectedSpy).toHaveBeenCalled();
+    });
+
+    it('should listen for player joined', (done) => {
+        service.connect();
+        service.onPlayerJoined().subscribe((player) => {
+            expect(player).toEqual(TEST_PLAYERS[0]);
+            done();
+        });
+        socketHelper.peerSideEmit('player-joined', TEST_PLAYERS[0]);
     });
 });
