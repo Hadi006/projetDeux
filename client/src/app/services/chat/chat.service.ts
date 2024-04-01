@@ -4,6 +4,7 @@ import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { NavigationEnd, Router } from '@angular/router';
 import { ChatSocketService } from '@app/services/chat-socket/chat-socket.service';
 import { Subscription } from 'rxjs';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -39,6 +40,7 @@ export class ChatService {
         }
 
         this.socketSubscription.add(this.subscribeToMessageReceived());
+        this.socketSubscription.add(this.subscribeToPlayerLeft());
     }
 
     sendMessage(newMessage: string) {
@@ -87,6 +89,16 @@ export class ChatService {
     private subscribeToMessageReceived(): Subscription {
         return this.chatSocketService.onMessageReceived().subscribe((message: ChatMessage) => {
             this.internalMessages.push(message);
+        });
+    }
+
+    private subscribeToPlayerLeft(): Subscription {
+        return this.chatSocketService.onPlayerLeft().subscribe((data: PlayerLeftEventData) => {
+            this.internalMessages.push({
+                text: `${data.player.name} a quitté.`,
+                timestamp: new Date(),
+                author: 'Système',
+            });
         });
     }
 }
