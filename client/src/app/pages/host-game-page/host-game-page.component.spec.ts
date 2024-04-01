@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
 
@@ -15,16 +15,16 @@ describe('HostGamePageComponent', () => {
     let fixture: ComponentFixture<HostGamePageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
-    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', [
+            'isConnected',
             'getCurrentQuestion',
             'getTime',
             'questionEnded',
             'nextQuestion',
             'getGame',
-            'leaveGame',
             'endGame',
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {
@@ -48,7 +48,15 @@ describe('HostGamePageComponent', () => {
         });
 
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
-        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
+
+        const eventSubject = new Subject<void>();
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
     });
 
     beforeEach(waitForAsync(() => {
@@ -57,7 +65,7 @@ describe('HostGamePageComponent', () => {
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
-                { provide: WebSocketService, useValue: websocketServiceSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         }).compileComponents();
     }));
@@ -72,10 +80,10 @@ describe('HostGamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should alert and leave game when gameEndedSubject is triggered', (done) => {
+    it('should open a dialog if game abruptly ends', (done) => {
         hostServiceSpy.gameEndedSubject.subscribe(() => {
             expect(dialogSpy.open).toHaveBeenCalled();
-            expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
+            expect(routerSpy.navigate).toHaveBeenCalled();
             done();
         });
         hostServiceSpy.gameEndedSubject.next();
@@ -87,7 +95,7 @@ describe('HostGamePageComponent', () => {
     });
 
     it('getGame should return the game from the hostService', () => {
-        expect(component.getGame()).toEqual(TEST_GAME_DATA);
+        expect(component.game).toEqual(TEST_GAME_DATA);
     });
 
     it('getCurrentQuestion should return the current question from the hostService', () => {
@@ -126,6 +134,16 @@ describe('HostGamePageComponent', () => {
         expect(component.getPlayers()).toEqual(players);
     });
 
+    it('getPlayers should return an empty array if there is no game', () => {
+        Object.defineProperty(hostServiceSpy, 'game', {
+            get: () => {
+                return undefined;
+            },
+            configurable: true,
+        });
+        expect(component.getPlayers()).toEqual([]);
+    });
+
     it('getQuitters should return the quitters from the hostService', () => {
         Object.defineProperty(hostServiceSpy, 'quitters', {
             get: () => {
@@ -136,16 +154,10 @@ describe('HostGamePageComponent', () => {
         expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
     });
 
-    it('should call leaveGame on the hostService when leaveGame is called', () => {
-        component.leaveGame();
-        expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
-    });
-
     it('should unsubscribe on destroy', () => {
         component.ngOnDestroy();
         hostServiceSpy.gameEndedSubject.subscribe(() => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
-            expect(hostServiceSpy.leaveGame).not.toHaveBeenCalled();
         });
         hostServiceSpy.gameEndedSubject.next();
     });

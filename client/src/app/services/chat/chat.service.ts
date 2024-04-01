@@ -35,7 +35,7 @@ export class ChatService {
             text: newMessage,
             timestamp: new Date(),
             author: this.participantName,
-            roomId: this.playerService.pin || this.hostService.game.pin,
+            roomId: this.hostService.game?.pin || this.playerService.pin,
         };
 
         this.webSocketService.emit('new-message', newChatMessage);

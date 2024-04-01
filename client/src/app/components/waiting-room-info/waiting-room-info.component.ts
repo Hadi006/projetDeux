@@ -10,7 +10,6 @@ export class WaitingRoomInfoComponent implements OnInit {
     @Input() title: string;
     @Input() pin: string;
     @Input() nPlayers: number;
-    @Input() leaveGame: () => void;
 
     constructor(private chatService: ChatService) {}
 
