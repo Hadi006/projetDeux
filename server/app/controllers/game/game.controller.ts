@@ -212,8 +212,11 @@ export class GameController {
                     return;
                 }
 
+
                 if (game.hostId === socket.id) {
-                    await this.gameService.deleteGame(room);
+                    if (!game.ended) {
+                        await this.gameService.deleteGame(room);
+                    }
                     this.sio.to(room).emit('game-deleted');
                     return;
                 }
