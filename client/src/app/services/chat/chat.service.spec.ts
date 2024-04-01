@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { ChatSocketService } from '@app/services/chat-socket/chat-socket.service';
 import { ChatMessage } from '@common/chat-message';
+import { TEST_PLAYERS } from '@common/constant';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ChatService } from './chat.service';
 
@@ -11,6 +13,7 @@ describe('ChatService', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let eventSubject: ReplaySubject<NavigationEnd>;
     const messageReceivedSubject: Subject<ChatMessage> = new Subject();
+    const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
 
     beforeEach(() => {
         chatSocketService = jasmine.createSpyObj('ChatSocketService', [
@@ -18,9 +21,11 @@ describe('ChatService', () => {
             'disconnect',
             'isConnected',
             'onMessageReceived',
+            'onPlayerLeft',
             'emitNewMessage',
         ]);
         chatSocketService.onMessageReceived.and.returnValue(messageReceivedSubject);
+        chatSocketService.onPlayerLeft.and.returnValue(playerLeftSubject);
 
         eventSubject = new ReplaySubject();
         routerSpy = {} as jasmine.SpyObj<Router>;
@@ -73,6 +78,20 @@ describe('ChatService', () => {
         };
         messageReceivedSubject.next(expectedMessage);
         expect(service.messages).toContain(expectedMessage);
+    });
+
+    it('should add system message when player leaves', () => {
+        service.handleSockets();
+        const expectedData: PlayerLeftEventData = {
+            player: TEST_PLAYERS[0],
+            players: TEST_PLAYERS,
+        };
+        playerLeftSubject.next(expectedData);
+        expect(service.messages).toContain({
+            text: `${TEST_PLAYERS[0].name} a quitté.`,
+            timestamp: jasmine.any(Date),
+            author: 'Système',
+        });
     });
 
     it('should emit new message', () => {
