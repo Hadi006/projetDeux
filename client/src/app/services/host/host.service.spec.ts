@@ -3,7 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
-import { of, ReplaySubject, Subject } from 'rxjs';
+import { firstValueFrom, of, ReplaySubject, Subject } from 'rxjs';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { HistogramData } from '@common/histogram-data';
@@ -35,6 +35,7 @@ describe('HostService', () => {
             'emitCreateGame',
             'emitToggleLock',
             'emitKick',
+            'emitStartGame',
         ]);
         playerJoinedSubject = new Subject<Player>();
         hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
@@ -65,6 +66,7 @@ describe('HostService', () => {
             ],
         });
         service = TestBed.inject(HostService);
+        await firstValueFrom(service.createGame(TEST_QUIZZES[0]));
     });
 
     it('should be created', () => {
@@ -83,6 +85,7 @@ describe('HostService', () => {
     });
 
     it('should assign initial values', () => {
+        service['reset']();
         expect(service.questionEndedSubject).toBeTruthy();
         expect(service.gameEndedSubject).toBeTruthy();
         expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
@@ -99,48 +102,37 @@ describe('HostService', () => {
         expect(hostSocketServiceSpy.connect).toHaveBeenCalled();
     });
 
-    it('should add player when player joined', (done) => {
+    it('should add player when player joined', () => {
         service.handleSockets();
-        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
-            playerJoinedSubject.next(player);
-            expect(service.game?.players).toContain(player);
-            done();
-        });
+        const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        playerJoinedSubject.next(player);
+        expect(service.game?.players).toContain(player);
     });
 
-    it('should remove player when player left', (done) => {
+    it('should remove player when player left', () => {
         service.handleSockets();
-        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
-            playerLeftSubject.next({ player, players: [] });
-            expect(service.game?.players).not.toContain(player);
-            expect(service.quitters).toContain(player);
-            done();
-        });
+        const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        playerLeftSubject.next({ player, players: [] });
+        expect(service.game?.players).not.toContain(player);
+        expect(service.quitters).toContain(player);
     });
 
-    it('should increment nAnswered when player answer is confirmed', (done) => {
+    it('should increment nAnswered when player answer is confirmed', () => {
         service.handleSockets();
-        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            confirmPlayerAnswerSubject.next();
-            expect(service.nAnswered).toBe(1);
-            done();
-        });
+        confirmPlayerAnswerSubject.next();
+        expect(service.nAnswered).toBe(1);
     });
 
-    it('should update histograms when player is updated', (done) => {
+    it('should update histograms when player is updated', () => {
         service.handleSockets();
-        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            const histogram = JSON.parse(JSON.stringify(TEST_GAME_DATA.histograms[0]));
-            service.histograms.push(histogram);
-            playerUpdatedSubject.next(histogram);
-            expect(service.histograms).toContain(histogram);
-            done();
-        });
+        const histogram = JSON.parse(JSON.stringify(TEST_GAME_DATA.histograms[0]));
+        service.histograms.push(histogram);
+        playerUpdatedSubject.next(histogram);
+        expect(service.histograms).toContain(histogram);
     });
 
     it('should create game', (done) => {
+        service['reset']();
         service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
             expect(result).toBe(true);
             expect(service.game).toEqual(JSON.parse(JSON.stringify(TEST_GAME_DATA)));
@@ -149,6 +141,7 @@ describe('HostService', () => {
     });
 
     it('should not create game', (done) => {
+        service['reset']();
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(undefined));
         service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
             expect(result).toBe(false);
@@ -157,42 +150,56 @@ describe('HostService', () => {
         });
     });
 
-    it('should lock game', (done) => {
-        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            service.toggleLock();
-            expect(service.game?.locked).toBe(true);
+    it('should lock game', () => {
+        service.toggleLock();
+        expect(service.game?.locked).toBe(true);
 
-            if (!service.game) {
-                fail();
-                return;
-            }
+        if (!service.game) {
+            fail();
+            return;
+        }
 
-            expect(hostSocketServiceSpy.emitToggleLock).toHaveBeenCalledWith(service.game.pin, service.game.locked);
-            done();
-        });
+        expect(hostSocketServiceSpy.emitToggleLock).toHaveBeenCalledWith(service.game.pin, service.game.locked);
     });
 
     it('should not lock game', () => {
+        service['reset']();
         service.toggleLock();
         expect(hostSocketServiceSpy.emitToggleLock).not.toHaveBeenCalled();
     });
 
-    it('should kick player', (done) => {
-        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
-            service.kick('Player 1');
+    it('should kick player', () => {
+        service.kick('Player 1');
 
-            if (!service.game) {
-                fail();
-                return;
-            }
+        if (!service.game) {
+            fail();
+            return;
+        }
 
-            expect(hostSocketServiceSpy.emitKick).toHaveBeenCalledWith(service.game.pin, 'Player 1');
-            done();
-        });
+        expect(hostSocketServiceSpy.emitKick).toHaveBeenCalledWith(service.game.pin, 'Player 1');
     });
 
     it('should not kick player', () => {
+        service['reset']();
         service.kick('Player 1');
         expect(hostSocketServiceSpy.emitKick).not.toHaveBeenCalled();
+    });
+
+    it('should start game', () => {
+        const countdown = 10;
+        service.startGame(countdown);
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitStartGame).toHaveBeenCalledWith(service.game.pin, countdown);
+    });
+
+    it('should not start game', () => {
+        service['reset']();
+        service.startGame(1);
+        expect(hostSocketServiceSpy.emitStartGame).not.toHaveBeenCalled();
     });
 });
