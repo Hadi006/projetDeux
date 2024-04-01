@@ -302,4 +302,24 @@ describe('HostService', () => {
         });
         service['setupNextQuestion']();
     });
+
+    it('should end question', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
+        hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
+        service['endQuestion']();
+        expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();
+        expect(service.game).toEqual(JSON.parse(JSON.stringify(TEST_GAME_DATA)));
+        expect(hostSocketServiceSpy.emitAnswer).toHaveBeenCalled();
+        expect(service.questionEnded).toBe(true);
+    });
+
+    it('should not end question', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+        service['endQuestion']();
+        expect(hostSocketServiceSpy.emitEndQuestion).not.toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitUpdateScores).not.toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitAnswer).not.toHaveBeenCalled();
+        expect(service.questionEnded).toBe(false);
+    });
 });
