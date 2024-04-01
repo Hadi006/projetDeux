@@ -36,6 +36,11 @@ describe('HostService', () => {
             'emitToggleLock',
             'emitKick',
             'emitStartGame',
+            'emitNextQuestion',
+            'emitEndGame',
+            'emitEndQuestion',
+            'emitUpdateScores',
+            'emitAnswer',
         ]);
         playerJoinedSubject = new Subject<Player>();
         hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
@@ -201,5 +206,31 @@ describe('HostService', () => {
         service['reset']();
         service.startGame(1);
         expect(hostSocketServiceSpy.emitStartGame).not.toHaveBeenCalled();
+    });
+
+    it('should emit next question', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
+        const histogramLength = service.histograms.length;
+        service.nextQuestion();
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalled();
+        expect(service.histograms.length).toBe(histogramLength + 1);
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+    });
+
+    it('should not emit next question', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+        const histogramLength = service.histograms.length;
+        service.nextQuestion();
+        expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
+        expect(service.histograms.length).toBe(histogramLength);
+        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
     });
 });
