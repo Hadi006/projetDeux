@@ -278,4 +278,28 @@ describe('HostService', () => {
         expect(service.quitters).toEqual([]);
         expect(service.histograms).toEqual([]);
     });
+
+    it('should set up next question', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
+        service['setupNextQuestion']();
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+    });
+
+    it('should not set up next question if there is no game', () => {
+        service['reset']();
+        service['setupNextQuestion']();
+        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+    });
+
+    it('should not set up next question if there is no current question', (done) => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+        service.gameEndedSubject.subscribe(() => {
+            expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
+            expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+            done();
+        });
+        service['setupNextQuestion']();
+    });
 });
