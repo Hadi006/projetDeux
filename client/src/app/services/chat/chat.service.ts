@@ -9,8 +9,9 @@ import { NavigationEnd, Router } from '@angular/router';
     providedIn: 'root',
 })
 export class ChatService {
-    private internalPin: string;
-    private internalParticipantName: string;
+    pin: string;
+    participantName: string;
+
     private internalMessages: ChatMessage[];
 
     constructor(
@@ -28,14 +29,6 @@ export class ChatService {
 
     get messages(): ChatMessage[] {
         return this.internalMessages;
-    }
-
-    set pin(pin: string) {
-        this.internalPin = pin;
-    }
-
-    set participantName(name: string) {
-        this.internalParticipantName = name;
     }
 
     handleSockets() {
@@ -56,10 +49,10 @@ export class ChatService {
         const newChatMessage: ChatMessage = {
             text: newMessage,
             timestamp: new Date(),
-            author: this.internalParticipantName,
+            author: this.participantName,
         };
 
-        this.webSocketService.emit<RoomData<ChatMessage>>('new-message', { pin: this.internalPin, data: newChatMessage });
+        this.webSocketService.emit<RoomData<ChatMessage>>('new-message', { pin: this.pin, data: newChatMessage });
     }
 
     cleanUp() {
@@ -68,8 +61,8 @@ export class ChatService {
     }
 
     private reset() {
-        this.internalPin = '';
-        this.internalParticipantName = '';
+        this.pin = '';
+        this.participantName = '';
         this.internalMessages = [];
     }
 

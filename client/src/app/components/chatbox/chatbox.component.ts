@@ -15,8 +15,13 @@ export class ChatboxComponent implements OnInit {
     constructor(private chatService: ChatService) {}
 
     ngOnInit() {
-        this.chatService.pin = this.pin;
-        this.chatService.participantName = this.name;
+        if (!this.chatService.pin) {
+            this.chatService.pin = this.pin;
+        }
+
+        if (!this.chatService.participantName) {
+            this.chatService.participantName = this.name;
+        }
     }
 
     getMessages() {

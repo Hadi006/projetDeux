@@ -25,14 +25,6 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    get pin() {
-        return this.playerService.pin;
-    }
-
-    get player() {
-        return this.playerService.player;
-    }
-
     get players() {
         return this.playerService.players;
     }
