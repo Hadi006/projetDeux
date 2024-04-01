@@ -74,4 +74,28 @@ describe('ChatService', () => {
         messageReceivedSubject.next(expectedMessage);
         expect(service.messages).toContain(expectedMessage);
     });
+
+    it('should emit new message', () => {
+        const newMessage = 'test';
+        service.sendMessage(newMessage);
+        expect(chatSocketService.emitNewMessage).toHaveBeenCalledWith(service.pin, {
+            text: newMessage,
+            timestamp: jasmine.any(Date),
+            author: service.participantName,
+        });
+    });
+
+    it('should not emit new message if message is invalid', () => {
+        const newMessage = '';
+        service.sendMessage(newMessage);
+        expect(chatSocketService.emitNewMessage).not.toHaveBeenCalled();
+    });
+
+    it('should clean up', () => {
+        service.cleanUp();
+        expect(chatSocketService.disconnect).toHaveBeenCalled();
+        expect(service.pin).toBe('');
+        expect(service.participantName).toBe('');
+        expect(service.messages).toEqual([]);
+    });
 });
