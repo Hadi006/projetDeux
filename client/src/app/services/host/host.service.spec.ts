@@ -98,10 +98,25 @@ describe('HostService', () => {
     });
 
     it('should add player when player joined', (done) => {
+        service.handleSockets();
         service.createGame(TEST_QUIZZES[0]).subscribe(() => {
+            hostSocketServiceSpy.onPlayerJoined().subscribe(() => {
+                expect(service.game?.players).toContain(TEST_PLAYERS[0]);
+                done();
+            });
             playerJoinedSubject.next(TEST_PLAYERS[0]);
-            expect(service.game?.players).toContain(TEST_PLAYERS[0]);
-            done();
+        });
+    });
+
+    it('should remove player when player left', (done) => {
+        service.handleSockets();
+        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
+            hostSocketServiceSpy.onPlayerLeft().subscribe(() => {
+                expect(service.game?.players).not.toContain(TEST_PLAYERS[0]);
+                expect(service.quitters).toContain(TEST_PLAYERS[0]);
+                done();
+            });
+            playerLeftSubject.next({ player: TEST_PLAYERS[0], players: [] });
         });
     });
 });
