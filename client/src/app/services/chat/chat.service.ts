@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ChatMessage } from '@common/chat-message';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
-import { RoomData } from '@common/room-data';
 import { NavigationEnd, Router } from '@angular/router';
+import { ChatSocketService } from '@app/services/chat-socket/chat-socket.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -12,10 +12,12 @@ export class ChatService {
     pin: string;
     participantName: string;
 
+    private socketSubscription: Subscription;
+
     private internalMessages: ChatMessage[];
 
     constructor(
-        private webSocketService: WebSocketService,
+        private chatSocketService: ChatSocketService,
         private router: Router,
     ) {
         this.router.events.subscribe((event) => {
@@ -32,13 +34,11 @@ export class ChatService {
     }
 
     handleSockets() {
-        if (!this.webSocketService.isSocketAlive()) {
-            this.webSocketService.connect();
+        if (!this.chatSocketService.isConnected()) {
+            this.chatSocketService.connect();
         }
 
-        this.webSocketService.onEvent<ChatMessage>('message-received', (message) => {
-            this.internalMessages.push(message);
-        });
+        this.socketSubscription.add(this.subscribeToMessageReceived());
     }
 
     sendMessage(newMessage: string) {
@@ -52,15 +52,17 @@ export class ChatService {
             author: this.participantName,
         };
 
-        this.webSocketService.emit<RoomData<ChatMessage>>('new-message', { pin: this.pin, data: newChatMessage });
+        this.chatSocketService.emitNewMessage(this.pin, newChatMessage);
     }
 
     cleanUp() {
-        this.webSocketService.disconnect();
+        this.chatSocketService.disconnect();
+        this.socketSubscription.unsubscribe();
         this.reset();
     }
 
     private reset() {
+        this.socketSubscription = new Subscription();
         this.pin = '';
         this.participantName = '';
         this.internalMessages = [];
@@ -80,5 +82,11 @@ export class ChatService {
 
     private validateMessage(message: string): boolean {
         return message.trim() !== '' && message.trim().length <= MAX_MESSAGE_LENGTH;
+    }
+
+    private subscribeToMessageReceived(): Subscription {
+        return this.chatSocketService.onMessageReceived().subscribe((message: ChatMessage) => {
+            this.internalMessages.push(message);
+        });
     }
 }
