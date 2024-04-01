@@ -34,6 +34,7 @@ describe('HostService', () => {
             'onPlayerUpdated',
             'emitCreateGame',
             'emitToggleLock',
+            'emitKick',
         ]);
         playerJoinedSubject = new Subject<Player>();
         hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
@@ -166,7 +167,7 @@ describe('HostService', () => {
                 return;
             }
 
-            expect(hostSocketServiceSpy.emitToggleLock).toHaveBeenCalledWith(service.game?.pin, service.game?.locked);
+            expect(hostSocketServiceSpy.emitToggleLock).toHaveBeenCalledWith(service.game.pin, service.game.locked);
             done();
         });
     });
@@ -174,5 +175,19 @@ describe('HostService', () => {
     it('should not lock game', () => {
         service.toggleLock();
         expect(hostSocketServiceSpy.emitToggleLock).not.toHaveBeenCalled();
+    });
+
+    it('should kick player', (done) => {
+        service.createGame(TEST_QUIZZES[0]).subscribe(() => {
+            service.kick('Player 1');
+
+            if (!service.game) {
+                fail();
+                return;
+            }
+
+            expect(hostSocketServiceSpy.emitKick).toHaveBeenCalledWith(service.game.pin, 'Player 1');
+            done();
+        });
     });
 });
