@@ -1,19 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ChatService } from '@app/services/chat/chat.service';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'app-waiting-room-info',
     templateUrl: './waiting-room-info.component.html',
     styleUrls: ['./waiting-room-info.component.scss'],
 })
-export class WaitingRoomInfoComponent implements OnInit {
+export class WaitingRoomInfoComponent {
     @Input() title: string;
     @Input() pin: string;
     @Input() nPlayers: number;
-
-    constructor(private chatService: ChatService) {}
-
-    ngOnInit() {
-        this.chatService.init();
-    }
 }

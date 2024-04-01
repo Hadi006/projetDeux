@@ -37,6 +37,6 @@
         </div>
         <button routerLink="/home">Quitter</button>
     </div>
-    <app-chatbox> </app-chatbox>
+    <app-chatbox [pin]="game.pin" [name]="'Organisateur'"> </app-chatbox>
     <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
 </body>

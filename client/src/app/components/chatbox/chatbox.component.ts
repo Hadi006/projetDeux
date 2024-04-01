@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ChatService } from '@app/services/chat/chat.service';
 
 @Component({
@@ -6,14 +6,17 @@ import { ChatService } from '@app/services/chat/chat.service';
     templateUrl: './chatbox.component.html',
     styleUrls: ['./chatbox.component.scss'],
 })
-export class ChatboxComponent {
+export class ChatboxComponent implements OnInit {
+    @Input() pin: string;
+    @Input() name: string;
     showChat = false;
     newMessage = '';
 
     constructor(private chatService: ChatService) {}
 
-    getParticipantName() {
-        return this.chatService.participantName;
+    ngOnInit() {
+        this.chatService.pin = this.pin;
+        this.chatService.participantName = this.name;
     }
 
     getMessages() {
@@ -28,6 +31,7 @@ export class ChatboxComponent {
         this.chatService.sendMessage(this.newMessage);
         this.newMessage = '';
     }
+
     keyEnter(event: KeyboardEvent) {
         if (event.key === 'Enter') {
             this.sendMessage();

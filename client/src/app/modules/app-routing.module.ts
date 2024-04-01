@@ -28,7 +28,8 @@ const routes: Routes = [
     { path: 'waiting-room-player', component: WaitingRoomPlayerPageComponent, data: { usesSockets: true } },
     { path: 'game-host', component: HostGamePageComponent, data: { usesSockets: true } },
     { path: 'game-player', component: PlayerGamePageComponent, data: { usesSockets: true } },
-    { path: 'endgame', component: EndgameResultPageComponent },
+    { path: 'end-game-host', component: EndgameResultPageComponent, data: { usesSockets: true } },
+    { path: 'end-game-player', component: EndgameResultPageComponent, data: { usesSockets: true } },
     { path: 'test', component: TestPageComponent, data: { usesSockets: true } },
     { path: '**', redirectTo: '/home' },
 ];

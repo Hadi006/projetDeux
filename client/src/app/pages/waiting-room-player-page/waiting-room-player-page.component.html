@@ -1,7 +1,9 @@
-<app-waiting-room-info [title]="gameTitle" [pin]="pin" [nPlayers]="players.length"></app-waiting-room-info>
+<div *ngIf="player">
+    <app-waiting-room-info [title]="gameTitle" [pin]="pin" [nPlayers]="players.length"></app-waiting-room-info>
 
-<p>Joueurs:</p>
-<div *ngFor="let playerName of players">
-    {{ playerName }}
+    <p>Joueurs:</p>
+    <div *ngFor="let playerName of players">
+        {{ playerName }}
+    </div>
+    <app-chatbox [pin]="pin" [name]="player.name"></app-chatbox>
 </div>
-<app-chatbox></app-chatbox>
