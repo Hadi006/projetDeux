@@ -4,7 +4,7 @@ import { HostSocketService } from './host-socket.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { Socket } from 'socket.io-client';
-import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
+import { TEST_ANSWERS, TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
 
 class WebSocketServiceMock extends WebSocketService {
     override connect() {
@@ -121,5 +121,76 @@ describe('HostSocketService', () => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit');
         service.emitToggleLock(pin, locked);
         expect(emitSpy).toHaveBeenCalledWith('toggle-lock', { pin, data: locked });
+    });
+
+    it('should emit kick player', () => {
+        service.connect();
+        const pin = '1';
+        const playerName = 'Player 1';
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitKick(pin, playerName);
+        expect(emitSpy).toHaveBeenCalledWith('kick', { pin, data: playerName });
+    });
+
+    it('should emit start game', () => {
+        service.connect();
+        const pin = '1';
+        const countdown = 10;
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitStartGame(pin, countdown);
+        expect(emitSpy).toHaveBeenCalledWith('start-game', { pin, data: countdown });
+    });
+
+    it('should emit next question', () => {
+        service.connect();
+        const pin = '1';
+        const data = { question: TEST_QUIZZES[0].questions[0], countdown: 10, histogram: TEST_HISTOGRAM_DATA[0] };
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitNextQuestion(pin, data);
+        expect(emitSpy).toHaveBeenCalledWith('next-question', { pin, data });
+    });
+
+    it('should emit end game', (done) => {
+        service.connect();
+        const pin = '1';
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(expectedGame);
+        });
+        service.emitEndGame(pin).subscribe((game) => {
+            expect(game).toEqual(expectedGame);
+            done();
+        });
+    });
+
+    it('should emit end question', () => {
+        service.connect();
+        const pin = '1';
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitEndQuestion(pin);
+        expect(emitSpy).toHaveBeenCalledWith('end-question', pin);
+    });
+
+    it('should emit update scores', (done) => {
+        service.connect();
+        const pin = '1';
+        const currentQuestionIndex = 1;
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(expectedGame);
+        });
+        service.emitUpdateScores(pin, currentQuestionIndex).subscribe((game) => {
+            expect(game).toEqual(expectedGame);
+            done();
+        });
+    });
+
+    it('should emit answer', () => {
+        service.connect();
+        const pin = '1';
+        const currentAnswer = JSON.parse(JSON.stringify(TEST_ANSWERS));
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitAnswer(pin, currentAnswer);
+        expect(emitSpy).toHaveBeenCalledWith('answer', { pin, data: currentAnswer });
     });
 });
