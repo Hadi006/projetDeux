@@ -144,6 +144,13 @@ describe('HostService', () => {
         expect(service.nAnswered).toBe(0);
     });
 
+    it('should not increment nAnswered', () => {
+        service['reset']();
+        service.handleSockets();
+        confirmPlayerAnswerSubject.next();
+        expect(service.nAnswered).toBe(0);
+    });
+
     it('should update histograms when player is updated', () => {
         service.handleSockets();
         const histogram = JSON.parse(JSON.stringify(TEST_GAME_DATA.histograms[0]));
