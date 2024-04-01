@@ -128,6 +128,14 @@ describe('HostService', () => {
         expect(service.nAnswered).toBe(1);
     });
 
+    it('should reset nAnswered when everyone has answered', () => {
+        service.handleSockets();
+        confirmPlayerAnswerSubject.next();
+        confirmPlayerAnswerSubject.next();
+        expect(timeServiceSpy.setTimeById).toHaveBeenCalled();
+        expect(service.nAnswered).toBe(0);
+    });
+
     it('should update histograms when player is updated', () => {
         service.handleSockets();
         const histogram = JSON.parse(JSON.stringify(TEST_GAME_DATA.histograms[0]));
