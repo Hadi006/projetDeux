@@ -27,9 +27,20 @@ describe('WebSocketService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('should check if the socket is alive', () => {
+        socketSpy.connected = true;
+        expect(service.isSocketAlive()).toBeTrue();
+    });
+
     it('should disconnect the socket', () => {
         service.disconnect();
         expect(socketSpy.disconnect).toHaveBeenCalled();
+    });
+
+    it('should not disconnect the socket if it is not connected', () => {
+        service['socket'] = undefined;
+        service.disconnect();
+        expect(socketSpy.disconnect).not.toHaveBeenCalled();
     });
 
     it('should call socket.on with an event', () => {
@@ -49,5 +60,11 @@ describe('WebSocketService', () => {
         };
         service.emit(event, data, callback);
         expect(socketSpy.emit).toHaveBeenCalledWith(event, data, callback);
+    });
+
+    it('should not call socket.emit if the socket is not connected', () => {
+        service['socket'] = undefined;
+        service.emit('event');
+        expect(socketSpy.emit).not.toHaveBeenCalled();
     });
 });
