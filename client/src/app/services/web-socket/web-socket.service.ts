@@ -39,12 +39,4 @@ export class WebSocketService {
 
         this.socket.emit(event, data, callback);
     }
-
-    removeListeners() {
-        if (!this.socket) {
-            return;
-        }
-
-        this.socket.removeAllListeners();
-    }
 }
