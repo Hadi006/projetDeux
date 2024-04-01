@@ -238,6 +238,7 @@ describe('PlayerService', () => {
         gameEndedSubject.subscribe((g) => {
             expect(g).toEqual(game);
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game } });
+            expect(service.gameEnded).toBeTrue();
             done();
         });
         gameEndedSubject.next(game);
