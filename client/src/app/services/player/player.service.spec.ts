@@ -127,6 +127,11 @@ describe('PlayerService', () => {
         expect(service.getPlayerBooleanAnswers()).toEqual(service.getPlayerAnswers().map((answer) => answer.isCorrect));
     });
 
+    it('should check if the player is connected', () => {
+        playerSocketServiceSpy.isConnected.and.returnValue(true);
+        expect(service.isConnected()).toBeTrue();
+    });
+
     it('should add a player to the list when a player joins', (done) => {
         const expectedPlayer = 'player';
         service.handleSockets();
@@ -200,7 +205,16 @@ describe('PlayerService', () => {
             expect(p).toEqual(player);
             done();
         });
+        player.score++;
         newScoreSubject.next(player);
+    });
+
+    it('should not update the score if the player is not in the game', () => {
+        service.player = null;
+        service.handleSockets();
+        player.score++;
+        newScoreSubject.next(player);
+        expect(service.player).toBeNull();
     });
 
     it('should do nothing if the player is not in the game', () => {
