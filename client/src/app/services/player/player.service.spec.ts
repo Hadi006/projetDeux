@@ -201,9 +201,10 @@ describe('PlayerService', () => {
 
     it('should update the score when the host sends a new score', (done) => {
         service.handleSockets();
-        newScoreSubject.subscribe((p) => {
+        const newScoreSubscription = newScoreSubject.subscribe((p) => {
             expect(p).toEqual(player);
             done();
+            newScoreSubscription.unsubscribe();
         });
         player.score++;
         newScoreSubject.next(player);
