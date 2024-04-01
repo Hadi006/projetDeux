@@ -6,10 +6,10 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class WebSocketService {
-    private socket: Socket;
+    private socket: Socket | undefined;
 
-    isSocketAlive() {
-        return this.socket && this.socket.connected;
+    isSocketAlive(): boolean {
+        return !!this.socket && this.socket.connected;
     }
 
     connect() {
@@ -17,14 +17,26 @@ export class WebSocketService {
     }
 
     disconnect() {
+        if (!this.socket) {
+            return;
+        }
+
         this.socket.disconnect();
     }
 
     onEvent<T>(event: string, action: (data: T) => void) {
+        if (!this.socket) {
+            return;
+        }
+
         this.socket.on(event, action);
     }
 
     emit<T>(event: string, data?: T, callback?: (data: unknown) => void) {
+        if (!this.socket) {
+            return;
+        }
+
         this.socket.emit(event, data, callback);
     }
 }

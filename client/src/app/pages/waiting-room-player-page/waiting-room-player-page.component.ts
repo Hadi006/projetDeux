@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './waiting-room-player-page.component.html',
     styleUrls: ['./waiting-room-player-page.component.scss'],
 })
-export class WaitingRoomPlayerPageComponent implements OnDestroy {
+export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
     private startGameSubscription: Subscription;
     private endGameSubscription: Subscription;
 
@@ -20,7 +20,7 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
         private dialog: MatDialog,
     ) {
         this.startGameSubscription = this.playerService.startGameSubject.subscribe(() => {
-            router.navigate(['game-player']);
+            this.router.navigate(['game-player']);
         });
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });
@@ -39,10 +39,10 @@ export class WaitingRoomPlayerPageComponent implements OnDestroy {
         return this.playerService.players;
     }
 
-    leaveGame() {
-        this.playerService.leaveGame();
-        this.playerService.cleanUp();
-        this.router.navigate(['/']);
+    ngOnInit() {
+        if (!this.playerService.isConnected() || this.playerService.gameStarted) {
+            this.router.navigate(['/']);
+        }
     }
 
     ngOnDestroy() {

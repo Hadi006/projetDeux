@@ -23,7 +23,6 @@ describe('QuestionComponent', () => {
             'handleKeyUp',
             'getPlayerBooleanAnswers',
             'getTime',
-            'leaveGame',
         ]);
         playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
@@ -93,6 +92,11 @@ describe('QuestionComponent', () => {
     it('getPlayer should return the player', () => {
         playerHandlerServiceSpy.player = { ...testPlayer };
         expect(component.getPlayer()).toEqual(testPlayer);
+    });
+
+    it('getPlayer should return undefined if there is no player', () => {
+        playerHandlerServiceSpy.player = null;
+        expect(component.getPlayer()).toBeUndefined();
     });
 
     it('getQuestionData should return currentQuestion', () => {

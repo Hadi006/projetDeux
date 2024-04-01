@@ -24,12 +24,12 @@ const routes: Routes = [
     { path: 'home/admin/quizzes', component: AdminPageComponent, canActivate: [authGuard] },
     { path: 'home/admin/quizzes/quiz', component: CreateQuizPageComponent, canActivate: [authGuard] },
     { path: 'game', component: GameChoicePageComponent },
-    { path: 'waiting-room-host', component: WaitingRoomHostPageComponent },
-    { path: 'waiting-room-player', component: WaitingRoomPlayerPageComponent },
-    { path: 'game-host', component: HostGamePageComponent },
-    { path: 'game-player', component: PlayerGamePageComponent },
+    { path: 'waiting-room-host', component: WaitingRoomHostPageComponent, data: { usesSockets: true } },
+    { path: 'waiting-room-player', component: WaitingRoomPlayerPageComponent, data: { usesSockets: true } },
+    { path: 'game-host', component: HostGamePageComponent, data: { usesSockets: true } },
+    { path: 'game-player', component: PlayerGamePageComponent, data: { usesSockets: true } },
     { path: 'endgame', component: EndgameResultPageComponent },
-    { path: 'test', component: TestPageComponent },
+    { path: 'test', component: TestPageComponent, data: { usesSockets: true } },
     { path: '**', redirectTo: '/home' },
 ];
 

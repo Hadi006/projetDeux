@@ -26,6 +26,10 @@ export class QuestionComponent {
     }
 
     getPlayer(): Player | undefined {
+        if (!this.playerService.player) {
+            return;
+        }
+
         return this.playerService.player;
     }
 

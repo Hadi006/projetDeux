@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
@@ -8,7 +8,7 @@ import { START_GAME_COUNTDOWN } from '@common/constant';
     templateUrl: './waiting-room-host-page.component.html',
     styleUrls: ['./waiting-room-host-page.component.scss'],
 })
-export class WaitingRoomHostPageComponent {
+export class WaitingRoomHostPageComponent implements OnInit {
     constructor(
         private hostService: HostService,
         private router: Router,
@@ -16,6 +16,12 @@ export class WaitingRoomHostPageComponent {
 
     get game() {
         return this.hostService.game;
+    }
+
+    ngOnInit() {
+        if (!this.hostService.isConnected() || !this.hostService.game || this.hostService.game.locked) {
+            this.router.navigate(['/']);
+        }
     }
 
     toggleLock() {
@@ -29,9 +35,5 @@ export class WaitingRoomHostPageComponent {
     startGame() {
         this.router.navigate(['game-host']);
         this.hostService.startGame(START_GAME_COUNTDOWN);
-    }
-
-    leaveGame() {
-        this.hostService.leaveGame();
     }
 }

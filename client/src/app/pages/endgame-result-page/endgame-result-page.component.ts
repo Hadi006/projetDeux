@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Game } from '@common/game';
 
 @Component({
@@ -10,20 +10,12 @@ import { Game } from '@common/game';
 export class EndgameResultPageComponent implements OnInit {
     game: Game;
     currentHistogramIndex = 0;
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-    ) {}
+    constructor(private router: Router) {}
 
     ngOnInit() {
-        this.route.queryParams.subscribe((data) => {
-            if (!data.game) {
-                return;
-            }
-            this.game = JSON.parse(data.game) as Game;
-            this.game.players.sort((a, b) => {
-                return b.score - a.score || a.name.localeCompare(b.name);
-            });
+        this.game = history.state.game;
+        this.game.players.sort((a, b) => {
+            return b.score - a.score || a.name.localeCompare(b.name);
         });
     }
 
