@@ -113,4 +113,13 @@ describe('HostSocketService', () => {
             done();
         });
     });
+
+    it('should emit toggle lock', () => {
+        service.connect();
+        const pin = '1';
+        const locked = true;
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitToggleLock(pin, locked);
+        expect(emitSpy).toHaveBeenCalledWith('toggle-lock', { pin, data: locked });
+    });
 });
