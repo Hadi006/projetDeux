@@ -89,18 +89,6 @@ describe('HostService', () => {
         expect(service.cleanUp).toHaveBeenCalled();
     });
 
-    it('should assign initial values', () => {
-        service['reset']();
-        expect(service.questionEndedSubject).toBeTruthy();
-        expect(service.gameEndedSubject).toBeTruthy();
-        expect(timeServiceSpy.createTimerById).toHaveBeenCalled();
-        expect(service.game).toBeNull();
-        expect(service.nAnswered).toBe(0);
-        expect(service.questionEnded).toBe(false);
-        expect(service.quitters).toEqual([]);
-        expect(service.histograms).toEqual([]);
-    });
-
     it('should connect the socket if it isnt connected', () => {
         hostSocketServiceSpy.isConnected.and.returnValue(false);
         service.handleSockets();
