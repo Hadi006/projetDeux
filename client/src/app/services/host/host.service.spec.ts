@@ -232,7 +232,9 @@ describe('HostService', () => {
     });
 
     it('should emit next question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
+        const question = JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0]));
+        question.choices[1].isCorrect = true;
+        spyOn(service, 'getCurrentQuestion').and.returnValue(question);
         const histogramLength = service.histograms.length;
         service.nextQuestion();
 
