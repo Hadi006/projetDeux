@@ -141,11 +141,11 @@ export class HostService {
         this.internalQuestionEnded = false;
 
         const newHistogram: HistogramData = {
-            labels: this.getCurrentQuestion()?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
+            labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
             datasets: [
                 {
-                    label: this.getCurrentQuestion()?.text || '',
-                    data: this.getCurrentQuestion()?.choices.map(() => 0) || [],
+                    label: currentQuestion.text,
+                    data: currentQuestion.choices.map(() => 0),
                 },
             ],
         };
