@@ -70,4 +70,12 @@ describe('HostSocketService', () => {
         });
         socketHelper.peerSideEmit('player-left', expectedData);
     });
+
+    it('should listen for confirm player answer', (done) => {
+        service.connect();
+        service.onConfirmPlayerAnswer().subscribe(() => {
+            done();
+        });
+        socketHelper.peerSideEmit('confirm-player-answer');
+    });
 });
