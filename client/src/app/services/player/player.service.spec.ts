@@ -109,6 +109,24 @@ describe('PlayerService', () => {
         expect(playerSocketServiceSpy.connect).toHaveBeenCalled();
     });
 
+    it('should get the player answers', () => {
+        if (!service.player) {
+            fail();
+            return;
+        }
+
+        expect(service.getPlayerAnswers()).toEqual(service.player.questions[service.player.questions.length - 1].choices);
+    });
+
+    it('should not get the player answers if the player is not in the game', () => {
+        service.player = null;
+        expect(service.getPlayerAnswers()).toEqual([]);
+    });
+
+    it('should get the player boolean answers', () => {
+        expect(service.getPlayerBooleanAnswers()).toEqual(service.getPlayerAnswers().map((answer) => answer.isCorrect));
+    });
+
     it('should add a player to the list when a player joins', (done) => {
         const expectedPlayer = 'player';
         service.handleSockets();
