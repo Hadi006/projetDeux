@@ -1,6 +1,6 @@
 interface Answer {
     text: string;
-    isCorrect: boolean;
+    isCorrect?: boolean;
 }
 
 interface Question {

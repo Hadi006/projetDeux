@@ -1,8 +1,8 @@
+import { QuestionValidator } from '@app/classes/question-validator/question-validator';
 import { MAX_DURATION, MIN_DURATION } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { randomUUID } from 'crypto';
-import { QuestionValidator } from '@app/classes/question-validator/question-validator';
 
 export class QuizValidator {
     private tasks: (() => Promise<void>)[];
@@ -108,11 +108,16 @@ export class QuizValidator {
             }
 
             for (const question of this.quiz.questions) {
-                const result = new QuestionValidator(question).validate();
-                if (result.error) {
-                    this.compilationError += result.error;
+                if (question.type === 'QRL') {
+                    this.newQuiz.questions.push(question);
+                    this.newQuiz.duration = 60;
                 } else {
-                    this.newQuiz.questions.push(result.data);
+                    const result = new QuestionValidator(question).validate();
+                    if (result.error) {
+                        this.compilationError += result.error;
+                    } else {
+                        this.newQuiz.questions.push(result.data);
+                    }
                 }
             }
         });
