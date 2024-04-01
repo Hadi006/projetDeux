@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { ChatSocketService } from '@app/services/chat-socket/chat-socket.service';
-import { ReplaySubject } from 'rxjs';
+import { ChatMessage } from '@common/chat-message';
+import { ReplaySubject, Subject } from 'rxjs';
 import { ChatService } from './chat.service';
 
 describe('ChatService', () => {
@@ -9,6 +10,7 @@ describe('ChatService', () => {
     let chatSocketService: jasmine.SpyObj<ChatSocketService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let eventSubject: ReplaySubject<NavigationEnd>;
+    const messageReceivedSubject: Subject<ChatMessage> = new Subject();
 
     beforeEach(() => {
         chatSocketService = jasmine.createSpyObj('ChatSocketService', [
@@ -18,6 +20,7 @@ describe('ChatService', () => {
             'onMessageReceived',
             'emitNewMessage',
         ]);
+        chatSocketService.onMessageReceived.and.returnValue(messageReceivedSubject);
 
         eventSubject = new ReplaySubject();
         routerSpy = {} as jasmine.SpyObj<Router>;
@@ -53,5 +56,22 @@ describe('ChatService', () => {
         spyOn(service, 'cleanUp');
         eventSubject.next(new NavigationEnd(1, 'url', 'url'));
         expect(service.cleanUp).toHaveBeenCalled();
+    });
+
+    it('should connect the socket if it isnt connected', () => {
+        chatSocketService.isConnected.and.returnValue(false);
+        service.handleSockets();
+        expect(chatSocketService.connect).toHaveBeenCalled();
+    });
+
+    it('should add message to messages when message is received', () => {
+        service.handleSockets();
+        const expectedMessage: ChatMessage = {
+            text: 'test',
+            timestamp: new Date(),
+            author: 'author',
+        };
+        messageReceivedSubject.next(expectedMessage);
+        expect(service.messages).toContain(expectedMessage);
     });
 });
