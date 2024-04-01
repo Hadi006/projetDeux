@@ -12,7 +12,7 @@ export class ChatboxComponent {
 
     constructor(private chatService: ChatService) {}
 
-    get participantName() {
+    getParticipantName() {
         return this.chatService.participantName;
     }
 
