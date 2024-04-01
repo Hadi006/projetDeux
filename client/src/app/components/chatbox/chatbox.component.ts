@@ -10,10 +10,14 @@ export class ChatboxComponent {
     showChat = false;
     newMessage = '';
 
-    constructor(public chatService: ChatService) {}
+    constructor(private chatService: ChatService) {}
 
     get participantName() {
         return this.chatService.participantName;
+    }
+
+    getMessages() {
+        return this.chatService.messages;
     }
 
     toggleChat() {
