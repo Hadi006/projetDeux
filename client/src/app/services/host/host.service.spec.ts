@@ -251,4 +251,15 @@ describe('HostService', () => {
         expect(routerSpy.navigate).not.toHaveBeenCalled();
         expect(service.cleanUp).not.toHaveBeenCalled();
     });
+
+    it('should clean up', () => {
+        service.cleanUp();
+        expect(hostSocketServiceSpy.disconnect).toHaveBeenCalled();
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(service.game).toBeNull();
+        expect(service.nAnswered).toBe(0);
+        expect(service.questionEnded).toBe(false);
+        expect(service.quitters).toEqual([]);
+        expect(service.histograms).toEqual([]);
+    });
 });
