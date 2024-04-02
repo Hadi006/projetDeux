@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 })
 export class WebSocketService {
     private socket: Socket | undefined;
+    private events: string[] = [];
 
     isSocketAlive(): boolean {
         return !!this.socket && this.socket.connected;
@@ -21,14 +22,16 @@ export class WebSocketService {
             return;
         }
 
+        this.events = [];
         this.socket.disconnect();
     }
 
     onEvent<T>(event: string, action: (data: T) => void) {
-        if (!this.socket) {
+        if (!this.socket || this.events.includes(event)) {
             return;
         }
 
+        this.events.push(event);
         this.socket.on(event, action);
     }
 

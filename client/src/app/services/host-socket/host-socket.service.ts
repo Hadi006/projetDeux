@@ -17,6 +17,7 @@ export class HostSocketService {
     private readonly playerJoinedSubject = new Subject<Player>();
     private readonly confirmPlayerAnswerSubject = new Subject<void>();
     private readonly playerUpdatedSubject = new Subject<HistogramData>();
+    private readonly newHostSubject = new Subject<Game>();
 
     constructor(private webSocketService: WebSocketService) {}
 
@@ -62,6 +63,14 @@ export class HostSocketService {
         });
 
         return this.playerUpdatedSubject;
+    }
+
+    onNewHost(): Subject<Game> {
+        this.webSocketService.onEvent<Game>('new-host', (game) => {
+            this.newHostSubject.next(game);
+        });
+
+        return this.newHostSubject;
     }
 
     emitCreateGame(quiz: Quiz): Observable<Game | undefined> {

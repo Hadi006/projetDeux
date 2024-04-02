@@ -24,8 +24,10 @@ export class PlayerService {
 
     private internalPin: string;
     private internalGameTitle: string;
+    private internalGameId: string;
     private internalPlayers: string[];
     private internalGameStarted: boolean;
+    private internalGameEnded: boolean;
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
@@ -60,8 +62,16 @@ export class PlayerService {
         return this.internalGameTitle;
     }
 
+    get gameId(): string {
+        return this.internalGameId;
+    }
+
     get gameStarted(): boolean {
         return this.internalGameStarted;
+    }
+
+    get gameEnded(): boolean {
+        return this.internalGameEnded;
     }
 
     get answerConfirmed(): boolean {
@@ -97,6 +107,9 @@ export class PlayerService {
             this.playerSocketService.connect();
         }
 
+        this.socketSubscription.unsubscribe();
+        this.socketSubscription = new Subscription();
+
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToOnKick());
@@ -116,6 +129,7 @@ export class PlayerService {
                     this.player = result.player;
                     this.internalPlayers = result.otherPlayers;
                     this.internalGameTitle = result.gameTitle;
+                    this.internalGameId = result.gameId;
                     this.internalPin = pin;
                 }
 
@@ -170,6 +184,7 @@ export class PlayerService {
         this.player = null;
         this.internalPin = '';
         this.internalGameTitle = '';
+        this.internalGameId = '';
         this.internalPlayers = [];
         this.internalGameStarted = false;
         this.internalAnswerConfirmed = false;
@@ -260,6 +275,7 @@ export class PlayerService {
         return this.playerSocketService.onGameEnded().subscribe((game) => {
             this.router.navigate(['/endgame'], { state: { game } });
             this.cleanUp();
+            this.internalGameEnded = true;
         });
     }
 

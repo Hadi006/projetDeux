@@ -1,7 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { START_GAME_COUNTDOWN } from '@common/constant';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -9,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './host-player-page.component.html',
     styleUrls: ['./host-player-page.component.scss'],
 })
-export class HostPlayerPageComponent implements OnDestroy {
+export class HostPlayerPageComponent implements OnInit, OnDestroy {
     private questionEndedSubscription: Subscription;
     private gameEndedSubscription: Subscription;
 
@@ -24,6 +25,16 @@ export class HostPlayerPageComponent implements OnDestroy {
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
             this.hostService.endGame();
         });
+    }
+
+    ngOnInit() {
+        if (!this.hostService.isConnected() || this.playerService.gameEnded) {
+            this.router.navigate(['/']);
+            return;
+        }
+
+        this.hostService.handleSockets();
+        this.hostService.startGame(START_GAME_COUNTDOWN);
     }
 
     leaveGame() {

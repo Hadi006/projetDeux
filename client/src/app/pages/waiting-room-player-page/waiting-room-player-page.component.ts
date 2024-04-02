@@ -20,7 +20,11 @@ export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
         private dialog: MatDialog,
     ) {
         this.startGameSubscription = this.playerService.startGameSubject.subscribe(() => {
-            this.router.navigate(['game-player']);
+            if (this.playerService.gameId === '-1') {
+                this.router.navigate(['host-player']);
+            } else {
+                this.router.navigate(['game-player']);
+            }
         });
         this.endGameSubscription = this.playerService.endGameSubject.subscribe(() => {
             this.dialog.open(AlertComponent, { data: { message: "La partie n'existe plus" } });

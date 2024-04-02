@@ -120,12 +120,20 @@ export class GameController {
 
     private onStartGame(socket: Socket): void {
         socket.on('start-game', (roomData: RoomData<number>) => {
+            if (!this.isHost(socket, roomData.pin)) {
+                return;
+            }
+
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
 
     private onNextQuestion(socket: Socket): void {
         socket.on('next-question', async (roomData: RoomData<NextQuestionEventData>) => {
+            if (!(await this.isHost(socket, roomData.pin))) {
+                return;
+            }
+
             const blankQuestion: Question | undefined = roomData.data.question;
 
             if (blankQuestion) {
@@ -154,6 +162,10 @@ export class GameController {
 
     private onUpdateScores(socket: Socket): void {
         socket.on('update-scores', async (roomData: RoomData<number>, callback) => {
+            if (!(await this.isHost(socket, roomData.pin))) {
+                return;
+            }
+
             const pin = roomData.pin;
 
             await this.gameService.updateScores(pin, roomData.data);
@@ -177,19 +189,31 @@ export class GameController {
     }
 
     private onEndQuestion(socket: Socket): void {
-        socket.on('end-question', (pin: string) => {
+        socket.on('end-question', async (pin: string) => {
+            if (!(await this.isHost(socket, pin))) {
+                return;
+            }
+
             this.sio.to(pin).emit('end-question');
         });
     }
 
     private onAnswer(socket: Socket): void {
-        socket.on('answer', (roomData: RoomData<Answer[]>) => {
+        socket.on('answer', async (roomData: RoomData<Answer[]>) => {
+            if (!(await this.isHost(socket, roomData.pin))) {
+                return;
+            }
+
             this.sio.to(roomData.pin).emit('answer', roomData.data);
         });
     }
 
     private onEndGame(socket: Socket): void {
         socket.on('end-game', async (pin: string, callback) => {
+            if (!(await this.isHost(socket, pin))) {
+                return;
+            }
+
             const game = await this.gameService.getGame(pin);
             this.sio.to(pin).emit('game-ended', game);
             callback(game);
@@ -205,17 +229,31 @@ export class GameController {
                 }
 
                 if (game.hostId === socket.id) {
-                    await this.gameService.deleteGame(room);
-                    this.sio.to(room).emit('game-deleted');
-                    return;
+                    if (game.quiz.id !== '-1') {
+                        await this.gameService.deleteGame(room);
+                        this.sio.to(room).emit('game-deleted');
+                        return;
+                    } else if (game.players.length >= 1) {
+                        game.hostId = game.players[0].id;
+                    }
                 }
 
                 const player = game.players.find((p) => p.id === socket.id);
-
                 game.players = game.players.filter((p) => p.id !== socket.id);
+
+                if (game.players.length <= 0) {
+                    return;
+                }
+
+                game.hostId = game.players[0].id;
                 await this.gameService.updateGame(game);
                 this.sio.to(room).emit('player-left', { players: game.players, player });
+                this.sio.to(game.hostId).emit('new-host', game);
             });
         });
+    }
+
+    private async isHost(socket: Socket, pin: string): Promise<boolean> {
+        return (await this.gameService.getGame(pin))?.hostId === socket.id;
     }
 }

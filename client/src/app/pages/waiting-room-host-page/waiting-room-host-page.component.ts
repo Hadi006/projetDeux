@@ -55,7 +55,7 @@ export class WaitingRoomHostPageComponent implements OnInit {
             this.router.navigate(['host-player']);
         } else {
             this.router.navigate(['game-host']);
+            this.hostService.startGame(START_GAME_COUNTDOWN);
         }
-        this.hostService.startGame(START_GAME_COUNTDOWN);
     }
 }

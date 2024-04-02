@@ -82,10 +82,14 @@ export class HostService {
             this.hostSocketService.connect();
         }
 
+        this.socketSubscription.unsubscribe();
+        this.socketSubscription = new Subscription();
+
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToConfirmPlayerAnswer());
         this.socketSubscription.add(this.subscribeToPlayerUpdated());
+        this.socketSubscription.add(this.subscribeToNewHost());
     }
 
     createGame(quiz: Quiz): Observable<boolean> {
@@ -256,6 +260,12 @@ export class HostService {
     private subscribeToPlayerUpdated(): Subscription {
         return this.hostSocketService.onPlayerUpdated().subscribe((histogramData: HistogramData) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
+        });
+    }
+
+    private subscribeToNewHost(): Subscription {
+        return this.hostSocketService.onNewHost().subscribe((game: Game) => {
+            this.internalGame = game;
         });
     }
 
