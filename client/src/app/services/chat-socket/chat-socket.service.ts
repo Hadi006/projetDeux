@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { ChatMessage } from '@common/chat-message';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { RoomData } from '@common/room-data';
 import { Subject } from 'rxjs';
 
@@ -9,6 +10,7 @@ import { Subject } from 'rxjs';
 })
 export class ChatSocketService {
     private readonly messageReceivedSubject = new Subject<ChatMessage>();
+    private readonly playerLeftSubject = new Subject<PlayerLeftEventData>();
 
     constructor(private webSocketService: WebSocketService) {}
 
@@ -30,6 +32,14 @@ export class ChatSocketService {
         });
 
         return this.messageReceivedSubject;
+    }
+
+    onPlayerLeft(): Subject<PlayerLeftEventData> {
+        this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
+            this.playerLeftSubject.next(data);
+        });
+
+        return this.playerLeftSubject;
     }
 
     emitNewMessage(pin: string, message: ChatMessage): void {
