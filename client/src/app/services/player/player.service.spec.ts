@@ -235,11 +235,10 @@ describe('PlayerService', () => {
     it('should end the game when the host ends it', (done) => {
         service.handleSockets();
         const game = JSON.parse(JSON.stringify(TEST_GAME_DATA));
-        spyOn(service, 'cleanUp');
         gameEndedSubject.subscribe((g) => {
             expect(g).toEqual(game);
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game } });
-            expect(service.cleanUp).toHaveBeenCalled();
+            expect(service.gameEnded).toBeTrue();
             done();
         });
         gameEndedSubject.next(game);

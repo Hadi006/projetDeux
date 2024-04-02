@@ -25,6 +25,7 @@ export class PlayerService {
     private internalGameTitle: string;
     private internalPlayers: string[];
     private internalGameStarted: boolean;
+    private internalGameEnded: boolean;
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
@@ -61,6 +62,10 @@ export class PlayerService {
 
     get gameStarted(): boolean {
         return this.internalGameStarted;
+    }
+
+    get gameEnded(): boolean {
+        return this.internalGameEnded;
     }
 
     get answerConfirmed(): boolean {
@@ -257,7 +262,7 @@ export class PlayerService {
     private subscribeToOnGameEnded(): Subscription {
         return this.playerSocketService.onGameEnded().subscribe((game) => {
             this.router.navigate(['/endgame'], { state: { game } });
-            this.cleanUp();
+            this.internalGameEnded = true;
         });
     }
 

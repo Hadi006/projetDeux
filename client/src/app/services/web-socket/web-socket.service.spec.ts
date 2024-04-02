@@ -52,6 +52,14 @@ describe('WebSocketService', () => {
         expect(socketSpy.on).toHaveBeenCalledWith(event, action);
     });
 
+    it('should not call socket.on if the socket is not connected', () => {
+        service['socket'] = undefined;
+        service.onEvent('event', () => {
+            return;
+        });
+        expect(socketSpy.on).not.toHaveBeenCalled();
+    });
+
     it('should call socket.emit with an event', () => {
         const event = 'event';
         const data = 'data';
