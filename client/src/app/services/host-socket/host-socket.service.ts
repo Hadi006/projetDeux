@@ -85,6 +85,14 @@ export class HostSocketService {
         });
     }
 
+    emitRequestGame(pin: string): Observable<Game> {
+        return new Observable<Game>((subscriber) => {
+            this.webSocketService.emit<string>('request-game', pin, (game: unknown) => {
+                subscriber.next(game as Game);
+            });
+        });
+    }
+
     emitToggleLock(pin: string, locked: boolean): void {
         this.webSocketService.emit<RoomData<boolean>>('toggle-lock', { pin, data: locked });
     }

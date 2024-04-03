@@ -34,7 +34,9 @@ export class HostPlayerPageComponent implements OnInit, OnDestroy {
         }
 
         this.hostService.handleSockets();
-        this.hostService.startGame(START_GAME_COUNTDOWN);
+        this.hostService.requestGame(this.playerService.pin).subscribe(() => {
+            this.hostService.startGame(START_GAME_COUNTDOWN);
+        });
     }
 
     leaveGame() {

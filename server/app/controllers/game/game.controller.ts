@@ -21,6 +21,7 @@ export class GameController {
     handleSockets(): void {
         this.sio.on('connection', (socket: Socket) => {
             this.onCreateGame(socket);
+            this.onRequestGame(socket);
             this.onToggleLock(socket);
             this.onJoinGame(socket);
             this.onPlayerLeave(socket);
@@ -51,6 +52,13 @@ export class GameController {
             if (game) {
                 socket.join(game.pin);
             }
+            callback(game);
+        });
+    }
+
+    private onRequestGame(socket: Socket): void {
+        socket.on('request-game', async (pin: string, callback) => {
+            const game = await this.gameService.getGame(pin);
             callback(game);
         });
     }

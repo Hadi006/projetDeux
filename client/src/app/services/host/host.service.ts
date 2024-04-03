@@ -94,15 +94,23 @@ export class HostService {
 
     createGame(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
-            this.hostSocketService.emitCreateGame(quiz).subscribe((game: unknown) => {
+            this.hostSocketService.emitCreateGame(quiz).subscribe((game: Game | undefined) => {
                 if (game) {
-                    this.internalGame = game as Game;
-                    this.currentQuestionIndex = 0;
+                    this.internalGame = game;
                     subscriber.next(true);
                 } else {
                     subscriber.next(false);
                 }
                 subscriber.complete();
+            });
+        });
+    }
+
+    requestGame(pin: string): Observable<void> {
+        return new Observable<void>((subscriber) => {
+            this.hostSocketService.emitRequestGame(pin).subscribe((game: Game) => {
+                this.internalGame = game;
+                subscriber.next();
             });
         });
     }
@@ -189,6 +197,7 @@ export class HostService {
         this.internalGame = null;
         this.internalNAnswered = 0;
         this.internalQuestionEnded = false;
+        this.currentQuestionIndex = 0;
         this.internalQuitters = [];
         this.internalHistograms = [];
     }
