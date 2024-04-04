@@ -197,6 +197,9 @@ export class PlayerService {
     private onEndQuestion(): void {
         this.webSocketService.onEvent<void>('end-question', () => {
             this.timeService.stopPanicMode();
+            this.timeService.stopTimerById(this.timerId);
+            this.timerId = this.timeService.createTimerById();
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY);
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
@@ -252,6 +255,10 @@ export class PlayerService {
         return this.timeService.toggleTimerById(this.timerId);
     }
     private panicMode(): void {
+        const startTimerValue: number = this.getTime();
+        this.timeService.stopTimerById(this.timerId);
+        this.timerId = this.timeService.createTimerById(4);
+        this.timeService.startTimerById(this.timerId, startTimerValue);
         return this.timeService.startPanicMode();
     }
 }

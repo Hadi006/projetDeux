@@ -74,6 +74,8 @@ export class HostService {
     }
     stopPanicMode(): void {
         this.isPanicMode = false;
+        // this.timerId = this.timeService.createTimerById();
+        console.log('khalsaa');
         return this.timeService.stopPanicMode();
     }
 
@@ -134,6 +136,7 @@ export class HostService {
         this.internalHistograms.push(newHistogram);
         this.emitNextQuestion();
         this.timeService.stopTimerById(this.timerId);
+        this.timerId = this.timeService.createTimerById();
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
@@ -149,14 +152,19 @@ export class HostService {
     }
     canActivatePanicMode(): boolean {
         return (
-            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) || (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)
+            ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) ||
+            (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)) && (!this.isPanicMode)
         );
     }
     startPanicMode() {
         if (this.canActivatePanicMode()) {
             this.isPanicMode = true;
+            const startTimerValue: number = this.getTime();
+            this.timeService.stopTimerById(this.timerId);
             this.timeService.startPanicMode();
             this.startPanicModeForEveryone();
+            this.timerId = this.timeService.createTimerById(4);
+            this.timeService.startTimerById(this.timerId, startTimerValue, this.endQuestion.bind(this));
         }
         return;
     }
@@ -168,6 +176,7 @@ export class HostService {
         if (this.isPanicMode) {
             this.stopPanicMode();
         }
+        this.timeService.stopTimerById(this.timerId);
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
     }

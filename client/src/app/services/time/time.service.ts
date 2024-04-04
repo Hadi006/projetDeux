@@ -11,8 +11,8 @@ export class TimeService {
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
 
-    createTimerById(): number {
-        const timer = new Timer();
+    createTimerById(decrement: number = 1): number {
+        const timer = new Timer(decrement);
         this.nextId++;
         this.timers.set(this.nextId, timer);
         return this.nextId;
