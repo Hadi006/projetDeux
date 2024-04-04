@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
@@ -7,7 +8,6 @@ import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -26,6 +26,10 @@ export class HostService {
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
+
+    private playerActivities: { [playerId: string]: number } = {};
+    private histogramUpdateInterval: number = 5000;
+    private trackingEnabled: boolean = false;
 
     constructor(
         private hostSocketService: HostSocketService,
@@ -118,6 +122,48 @@ export class HostService {
         }
 
         this.hostSocketService.emitKick(this.internalGame.pin, playerName);
+    }
+
+    startTrackingPlayerActivities(): void {
+        this.trackingEnabled = true;
+        setInterval(this.updateHistogramData.bind(this), this.histogramUpdateInterval);
+    }
+
+    stopTrackingPlayerActivities(): void {
+        this.trackingEnabled = false;
+    }
+
+    // Method to update histogram data based on player activities
+    updateHistogramData(): void {
+        if (!this.trackingEnabled) return;
+        const now = Date.now();
+        const activityThreshold = now - 5000; // Threshold for considering activities within the last 5 seconds
+
+        const activePlayers = Object.keys(this.playerActivities).filter((playerId) => this.playerActivities[playerId] >= activityThreshold).length;
+
+        const totalPlayers = this.internalGame?.players.length ?? 0;
+
+        const inactivePlayers = totalPlayers - activePlayers;
+
+        const histogramData: HistogramData = {
+            labels: ['Active Players', 'Inactive Players'],
+            datasets: [
+                {
+                    label: 'Player Activity',
+                    data: [activePlayers, inactivePlayers],
+                },
+            ],
+        };
+
+        this.internalHistograms.push(histogramData);
+    }
+
+    handleQuestionChange(question: Question): void {
+        if (question.type === 'QRL') {
+            this.startTrackingPlayerActivities(); // Start tracking when QRL question is active
+        } else {
+            this.stopTrackingPlayerActivities(); // Stop tracking when QRL question is not active
+        }
     }
 
     startGame(countdown: number): void {

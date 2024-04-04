@@ -13,7 +13,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 })
 export class PlayerService {
     player: Player | null;
-
+    qrlAnswer: string;
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
 
@@ -89,7 +89,7 @@ export class PlayerService {
     }
 
     getPlayerBooleanAnswers(): boolean[] {
-        return this.getPlayerAnswers().map((answer) => answer.isCorrect);
+        return this.getPlayerAnswers().map((answer) => answer.isCorrect ?? false);
     }
 
     isConnected(): boolean {

@@ -52,6 +52,9 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
 
     nextQuestion() {
         this.hostService.nextQuestion();
+        if (!this.hostService.getCurrentQuestion()) {
+            this.hostService.stopTrackingPlayerActivities();
+        }
     }
 
     showEndGameResult() {
@@ -69,6 +72,8 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (!this.hostService.isConnected() || !this.hostService.getCurrentQuestion()) {
             this.router.navigate(['/']);
+        } else {
+            this.hostService.startTrackingPlayerActivities();
         }
     }
 

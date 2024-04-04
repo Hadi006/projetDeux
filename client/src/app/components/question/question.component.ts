@@ -49,7 +49,7 @@ export class QuestionComponent {
 
     handleTextareaInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
-        this.playerService.qrlAnswer = target.value; // Update the qrlAnswer property in the PlayerService
+        this.playerService.qrlAnswer = target.value;
     }
 
     private canEditAnswer(): boolean {

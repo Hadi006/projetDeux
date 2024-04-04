@@ -23,7 +23,15 @@ Temps restant: {{ playerService.getTime() }}
         </div>
 
         <div *ngIf="questionData.type === 'QRL'" class="question-container">
-            <textarea [disabled]="this.playerService.answerConfirmed" class="answer-textarea" placeholder="Tapez votre réponse ici..."></textarea>
+            <textarea
+                [disabled]="playerService.answerConfirmed"
+                class="answer-textarea"
+                placeholder="Tapez votre réponse ici..."
+                maxlength="200"
+                (input)="handleTextareaInput($event)"
+                >{{ playerService.qrlAnswer }}</textarea
+            >
+            <div class="char-limit">{{ 200 - playerService.qrlAnswer.length }} caractères restants</div>
         </div>
 
         <div class="score-display">Score: {{ player.score }}</div>
