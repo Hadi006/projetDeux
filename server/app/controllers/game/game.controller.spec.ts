@@ -48,9 +48,6 @@ describe('GameController', () => {
 
     it('should emit message-received event to room when new message is received', (done) => {
         const expectedMessage = JSON.parse(JSON.stringify({ text: 'Hello', timestamp: new Date(), author: 'John Doe' }));
-        const toSpy = spy(service['sio'], 'to');
-
-        gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testQuiz, () => {
             clientSocket.on('message-received', (message) => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
