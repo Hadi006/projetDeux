@@ -1,45 +1,51 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { TRANSITION_DELAY } from '@common/constant';
-import { Game } from '@common/game';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
-import { QuestionChangedEventData } from '@common/question-changed-event-data';
 import { Answer, Question } from '@common/quiz';
-import { RoomData } from '@common/room-data';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
-    player: Player;
-    qrlAnswer: string = '';
+    player: Player | null;
+
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
+
+    private socketSubscription: Subscription;
+
+    private timerId: number;
 
     private internalPin: string;
     private internalGameTitle: string;
     private internalPlayers: string[];
-
-    private timerId: number;
+    private internalGameStarted: boolean;
+    private internalGameEnded: boolean;
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
 
     constructor(
-        private webSocketService: WebSocketService,
+        private playerSocketService: PlayerSocketService,
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.timerId = timeService.createTimerById();
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.verifyUsesSockets();
+            }
+        });
+
         this.startGameSubject = new Subject<void>();
         this.endGameSubject = new Subject<void>();
-        this.internalPlayers = [];
-        this.internalAnswerConfirmed = false;
-        this.internalIsCorrect = false;
+
+        this.timerId = timeService.createTimerById();
+        this.reset();
     }
 
     get pin(): string {
@@ -52,6 +58,14 @@ export class PlayerService {
 
     get gameTitle(): string {
         return this.internalGameTitle;
+    }
+
+    get gameStarted(): boolean {
+        return this.internalGameStarted;
+    }
+
+    get gameEnded(): boolean {
+        return this.internalGameEnded;
     }
 
     get answerConfirmed(): boolean {
@@ -67,55 +81,60 @@ export class PlayerService {
     }
 
     getPlayerAnswers(): Answer[] {
+        if (!this.player) {
+            return [];
+        }
+
         return this.player.questions[this.player.questions.length - 1].choices;
     }
 
     getPlayerBooleanAnswers(): boolean[] {
-        return this.getPlayerAnswers().map((answer) => answer.isCorrect ?? false);
+        return this.getPlayerAnswers().map((answer) => answer.isCorrect);
+    }
+
+    isConnected(): boolean {
+        return this.playerSocketService.isConnected();
     }
 
     handleSockets(): void {
-        if (!this.webSocketService.isSocketAlive()) {
-            this.webSocketService.connect();
+        if (!this.playerSocketService.isConnected()) {
+            this.playerSocketService.connect();
         }
 
-        this.onPlayerJoined();
-        this.onPlayerLeft();
-        this.onKick();
-        this.onStartGame();
-        this.onEndQuestion();
-        this.onNextQuestion();
-        this.onNewScore();
-        this.onAnswer();
-        this.onGameEnded();
-        this.onGameDeleted();
+        this.socketSubscription.add(this.subscribeToPlayerJoined());
+        this.socketSubscription.add(this.subscribeToPlayerLeft());
+        this.socketSubscription.add(this.subscribeToOnKick());
+        this.socketSubscription.add(this.subscribeToOnStartGame());
+        this.socketSubscription.add(this.subscribeToOnEndQuestion());
+        this.socketSubscription.add(this.subscribeToQuestionChanged());
+        this.socketSubscription.add(this.subscribeToOnNewScore());
+        this.socketSubscription.add(this.subscribeToOnAnswer());
+        this.socketSubscription.add(this.subscribeToOnGameEnded());
+        this.socketSubscription.add(this.subscribeToOnGameDeleted());
     }
 
     joinGame(pin: string, playerName: string): Observable<string> {
         return new Observable<string>((observer) => {
-            this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
-                const responseData = response as JoinGameResult;
-                if (!responseData.error) {
-                    this.player = responseData.player;
-                    this.internalPlayers = responseData.otherPlayers;
-                    this.internalGameTitle = responseData.gameTitle;
+            this.playerSocketService.emitJoinGame(pin, playerName).subscribe((data: JoinGameResult) => {
+                if (!data.error) {
+                    this.player = data.player;
+                    this.internalPlayers = data.otherPlayers;
+                    this.internalGameTitle = data.gameTitle;
                     this.internalPin = pin;
                 }
 
-                observer.next(responseData.error);
+                observer.next(data.error);
                 observer.complete();
             });
         });
     }
 
-    leaveGame(): void {
-        this.emitLeaveGame();
-        this.cleanUp();
-        this.router.navigate(['/']);
-    }
-
     updatePlayer(): void {
-        this.emitUpdatePlayer();
+        if (!this.player) {
+            return;
+        }
+
+        this.playerSocketService.emitUpdatePlayer(this.internalPin, this.player);
     }
 
     handleKeyUp(event: KeyboardEvent): void {
@@ -130,7 +149,11 @@ export class PlayerService {
     }
 
     confirmPlayerAnswer(): void {
-        this.emitConfirmPlayerAnswer();
+        if (!this.player) {
+            return;
+        }
+
+        this.playerSocketService.emitConfirmPlayerAnswer(this.internalPin, this.player);
         this.internalAnswerConfirmed = true;
     }
 
@@ -139,66 +162,88 @@ export class PlayerService {
     }
 
     cleanUp(): void {
-        this.webSocketService.disconnect();
+        this.playerSocketService.disconnect();
+        this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
+        this.reset();
     }
 
-    private emitLeaveGame(): void {
-        this.webSocketService.emit<RoomData<string>>('player-leave', { pin: this.internalPin, data: this.player.name });
+    private reset() {
+        this.socketSubscription = new Subscription();
+        this.player = null;
+        this.internalPin = '';
+        this.internalGameTitle = '';
+        this.internalPlayers = [];
+        this.internalGameStarted = false;
+        this.internalAnswerConfirmed = false;
+        this.internalAnswer = [];
+        this.internalIsCorrect = false;
     }
 
-    private emitUpdatePlayer(): void {
-        this.webSocketService.emit<RoomData<Player>>('update-player', { pin: this.internalPin, data: this.player });
+    private verifyUsesSockets(): void {
+        let currentRoute = this.router.routerState.snapshot.root;
+
+        while (currentRoute.firstChild) {
+            currentRoute = currentRoute.firstChild;
+        }
+
+        if (!currentRoute.data.usesSockets) {
+            this.cleanUp();
+        }
     }
 
-    private emitConfirmPlayerAnswer(): void {
-        this.webSocketService.emit<RoomData<Player>>('confirm-player-answer', { pin: this.internalPin, data: this.player });
-    }
-
-    private onPlayerJoined(): void {
-        this.webSocketService.onEvent<Player>('player-joined', (player) => {
-            this.internalPlayers.push(player.name);
+    private subscribeToPlayerJoined(): Subscription {
+        return this.playerSocketService.onPlayerJoined().subscribe((playerName) => {
+            this.internalPlayers.push(playerName);
         });
     }
 
-    private onPlayerLeft(): void {
-        this.webSocketService.onEvent<{ players: Player[]; player: Player }>('player-left', (data) => {
-            const { players } = data;
+    private subscribeToPlayerLeft(): Subscription {
+        return this.playerSocketService.onPlayerLeft().subscribe((players) => {
             this.internalPlayers = players.map((player) => player.name);
         });
     }
 
-    private onKick(): void {
-        this.webSocketService.onEvent<string>('kicked', (playerName) => {
+    private subscribeToOnKick(): Subscription {
+        return this.playerSocketService.onKick().subscribe((playerName) => {
+            if (!this.player) {
+                return;
+            }
+
             if (playerName === this.player.name) {
                 this.router.navigate(['/']);
             }
         });
     }
 
-    private onStartGame(): void {
-        this.webSocketService.onEvent<number>('start-game', (countdown) => {
+    private subscribeToOnStartGame(): Subscription {
+        return this.playerSocketService.onStartGame().subscribe((countdown) => {
             this.startGameSubject.next();
+            this.internalGameStarted = true;
             this.timeService.startTimerById(this.timerId, countdown);
         });
     }
 
-    private onEndQuestion(): void {
-        this.webSocketService.onEvent<void>('end-question', () => {
+    private subscribeToOnEndQuestion(): Subscription {
+        return this.playerSocketService.onEndQuestion().subscribe(() => {
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
     }
 
-    private onNextQuestion(): void {
-        this.webSocketService.onEvent<QuestionChangedEventData>('question-changed', ({ question, countdown }) => {
+    private subscribeToQuestionChanged(): Subscription {
+        return this.playerSocketService.onQuestionChanged().subscribe(({ question, countdown }) => {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this, question, countdown));
         });
     }
 
-    private onNewScore(): void {
-        this.webSocketService.onEvent<Player>('new-score', (player) => {
+    private subscribeToOnNewScore(): Subscription {
+        return this.playerSocketService.onNewScore().subscribe((player) => {
+            if (!this.player) {
+                return;
+            }
+
             if (player.name === this.player.name) {
                 if (player.score > this.player.score) {
                     this.internalIsCorrect = true;
@@ -208,27 +253,31 @@ export class PlayerService {
         });
     }
 
-    private onAnswer(): void {
-        this.webSocketService.onEvent<Answer[]>('answer', (answer) => {
+    private subscribeToOnAnswer(): Subscription {
+        return this.playerSocketService.onAnswer().subscribe((answer) => {
             this.internalAnswer = answer;
         });
     }
 
-    private onGameEnded(): void {
-        this.webSocketService.onEvent<Game>('game-ended', (game) => {
-            this.router.navigate(['/endgame'], { queryParams: { game: JSON.stringify(game) } });
-            this.cleanUp();
+    private subscribeToOnGameEnded(): Subscription {
+        return this.playerSocketService.onGameEnded().subscribe((game) => {
+            this.router.navigate(['/endgame'], { state: { game } });
+            this.internalGameEnded = true;
         });
     }
 
-    private onGameDeleted(): void {
-        this.webSocketService.onEvent<Game>('game-deleted', () => {
-            this.leaveGame();
+    private subscribeToOnGameDeleted(): Subscription {
+        return this.playerSocketService.onGameDeleted().subscribe(() => {
             this.endGameSubject.next();
+            this.router.navigate(['/']);
         });
     }
 
     private setupNextQuestion(question: Question, countdown: number): void {
+        if (!this.player) {
+            return;
+        }
+
         this.player.questions.push(question);
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];

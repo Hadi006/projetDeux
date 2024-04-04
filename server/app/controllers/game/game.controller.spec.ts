@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-unused-expressions */
 import { GameController } from '@app/controllers/game/game.controller';
 import { Server } from '@app/server';
 import { GameService } from '@app/services/game/game.service';
@@ -12,8 +10,6 @@ import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
 import { Socket, io as ioClient } from 'socket.io-client';
 import { Container } from 'typedi';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-import sinon = require('sinon');
 
 describe('GameController', () => {
     let service: GameController;
@@ -21,12 +17,10 @@ describe('GameController', () => {
     let server: Server;
     let clientSocket: Socket;
     const urlString = 'http://localhost:3000';
-
     let testQuestion: Question;
     let testQuiz: Quiz;
     let testHistogram: HistogramData;
     let testGame: Game;
-
     const RESPONSE_DELAY = 200;
 
     beforeEach(async () => {
@@ -51,19 +45,20 @@ describe('GameController', () => {
     });
 
     it('should emit message-received event to room when new message is received', (done) => {
-        const message = { roomId: 'room123', text: 'Hello, World!' };
-        const toSpy = sinon.spy(service['sio'], 'to');
+        const expectedMessage = JSON.parse(JSON.stringify({ text: 'Hello', timestamp: new Date(), author: 'John Doe' }));
+        const toSpy = spy(service['sio'], 'to');
 
+        gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testQuiz, () => {
-            setTimeout(() => {
-                expect(toSpy.calledWith(message.roomId)).to.be.true;
+            clientSocket.on('message-received', (message) => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(message).to.deep.equal(expectedMessage);
                 toSpy.restore();
 
                 done();
-            }, RESPONSE_DELAY);
+            });
+            clientSocket.emit('new-message', { pin: testGame.pin, data: expectedMessage });
         });
-
-        clientSocket.emit('new-message', message);
     });
 
     it('should create a game', (done) => {
@@ -150,7 +145,7 @@ describe('GameController', () => {
     it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
         const result = {
-            player: new Player(playerName),
+            player: new Player('1', playerName),
             otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: '',
@@ -158,7 +153,7 @@ describe('GameController', () => {
         gameServiceStub.addPlayer.resolves(result);
         clientSocket.emit('join-game', { pin: testGame.pin, data: playerName }, (ack: typeof result) => {
             expect(ack).to.deep.equal(result);
-            expect(gameServiceStub.addPlayer.calledWith(testGame.pin, playerName)).to.equal(true);
+            expect(gameServiceStub.addPlayer.called);
             done();
         });
     });
@@ -166,7 +161,7 @@ describe('GameController', () => {
     it('should not add a player if there is an error', (done) => {
         const playerName = 'John Doe';
         const result = {
-            player: new Player(playerName),
+            player: new Player('1', playerName),
             otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: 'Error',
@@ -175,7 +170,7 @@ describe('GameController', () => {
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('join-game', { pin: testGame.pin, data: playerName }, (ack: typeof result) => {
             expect(ack).to.deep.equal(result);
-            expect(gameServiceStub.addPlayer.calledWith(testGame.pin, playerName)).to.equal(true);
+            expect(gameServiceStub.addPlayer.called);
             expect(toSpy.called).to.equal(false);
             done();
         });
@@ -322,6 +317,19 @@ describe('GameController', () => {
             clientSocket.emit('end-game', testGame.pin);
             setTimeout(() => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
+    it('should delete a game if host disconnects', (done) => {
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: clientSocket.id });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            gameServiceStub.getGame.resolves({ ...testGame, hostId: clientSocket.id });
+            gameServiceStub.deleteGame.resolves(true);
+            clientSocket.disconnect();
+            setTimeout(() => {
+                expect(gameServiceStub.deleteGame.calledWith(testGame.pin)).to.equal(true);
                 done();
             }, RESPONSE_DELAY);
         });

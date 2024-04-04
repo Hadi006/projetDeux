@@ -1,48 +1,47 @@
 import { TestBed } from '@angular/core/testing';
-import { SocketTestHelper } from '@app/test/socket-test-helper';
+import { NavigationEnd, Router } from '@angular/router';
+import { ChatSocketService } from '@app/services/chat-socket/chat-socket.service';
 import { ChatMessage } from '@common/chat-message';
-import { MAX_MESSAGE_LENGTH, TEST_GAME_DATA } from '@common/constant';
-import { Game } from '@common/game';
-import { Socket } from 'socket.io-client';
-import { HostService } from '@app/services/host/host.service';
-import { PlayerService } from '@app/services/player/player.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
+import { TEST_PLAYERS } from '@common/constant';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
+import { ReplaySubject, Subject } from 'rxjs';
 import { ChatService } from './chat.service';
-
-class WebSocketServiceMock extends WebSocketService {
-    override connect() {
-        return;
-    }
-}
 
 describe('ChatService', () => {
     let service: ChatService;
-    let webSocketServiceMock: WebSocketServiceMock;
-    let socketHelper: SocketTestHelper;
-    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
-    let hostServiceSpy: jasmine.SpyObj<HostService>;
+    let chatSocketService: jasmine.SpyObj<ChatSocketService>;
+    let routerSpy: jasmine.SpyObj<Router>;
+    let eventSubject: ReplaySubject<NavigationEnd>;
+    const messageReceivedSubject: Subject<ChatMessage> = new Subject();
+    const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
 
     beforeEach(() => {
-        socketHelper = new SocketTestHelper();
-        webSocketServiceMock = new WebSocketServiceMock();
-        webSocketServiceMock['socket'] = socketHelper as unknown as Socket;
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['']);
-        Object.defineProperty(playerServiceSpy, 'pin', { get: () => '12345', configurable: true });
-        Object.defineProperty(playerServiceSpy, 'player', {
+        chatSocketService = jasmine.createSpyObj('ChatSocketService', [
+            'connect',
+            'disconnect',
+            'isConnected',
+            'onMessageReceived',
+            'onPlayerLeft',
+            'emitNewMessage',
+        ]);
+        chatSocketService.onMessageReceived.and.returnValue(messageReceivedSubject);
+        chatSocketService.onPlayerLeft.and.returnValue(playerLeftSubject);
+
+        eventSubject = new ReplaySubject();
+        routerSpy = {} as jasmine.SpyObj<Router>;
+        Object.defineProperty(routerSpy, 'events', {
             get: () => {
-                return { name: 'TestPlayer' };
+                return eventSubject;
             },
             configurable: true,
         });
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['']);
-        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+    });
 
+    beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                ChatService,
-                { provide: WebSocketService, useValue: webSocketServiceMock },
-                { provide: PlayerService, useValue: playerServiceSpy },
-                { provide: HostService, useValue: hostServiceSpy },
+                { provide: ChatSocketService, useValue: chatSocketService },
+                { provide: Router, useValue: routerSpy },
             ],
         });
 
@@ -53,81 +52,69 @@ describe('ChatService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should send a message as Player', () => {
-        const message = 'Test message';
-        const expectedMessage: ChatMessage = {
-            text: message,
-            timestamp: jasmine.any(Date) as unknown as Date,
-            author: 'TestPlayer',
-            roomId: '12345',
-        };
-        const emitSpy = spyOn(webSocketServiceMock, 'emit');
-        spyOnProperty(hostServiceSpy, 'game', 'get').and.returnValue(undefined as unknown as Game);
-        service.init();
-
-        service.sendMessage(message);
-
-        expect(emitSpy).toHaveBeenCalledWith('new-message', expectedMessage);
-    });
-
-    it('should send a message as a host', () => {
-        const message = 'Test message';
-        const expectedMessage: ChatMessage = {
-            text: message,
-            timestamp: jasmine.any(Date) as unknown as Date,
-            author: 'TestPlayer',
-            roomId: TEST_GAME_DATA.pin,
-        };
-        const emitSpy = spyOn(webSocketServiceMock, 'emit');
-        spyOnProperty(playerServiceSpy, 'pin', 'get').and.returnValue(undefined as unknown as string);
-        service.init();
-        service.sendMessage(message);
-        expect(emitSpy).toHaveBeenCalledWith('new-message', expectedMessage);
-    });
-
-    it('should add message to internalMessages when message-received event is received', () => {
-        const message: ChatMessage = {
-            text: 'Test message',
-            timestamp: new Date(),
-            author: 'TestPlayer',
-            roomId: '12345',
-        };
-        service.init();
-        socketHelper.on('message-received', (receivedMessage: ChatMessage) => {
-            expect(receivedMessage).toEqual(message);
-            expect(service['internalMessages']).toContain(receivedMessage);
-            return {};
+    it("should verify if the route uses sockets and clean up if it doesn't", () => {
+        Object.defineProperty(routerSpy, 'routerState', {
+            get: () => ({
+                snapshot: { root: { firstChild: { data: { usesSockets: false } } } },
+            }),
         });
-        socketHelper.peerSideEmit('message-received', message);
+        spyOn(service, 'cleanUp');
+        eventSubject.next(new NavigationEnd(1, 'url', 'url'));
+        expect(service.cleanUp).toHaveBeenCalled();
     });
 
-    it('should return false for an empty message', () => {
-        const message = '';
-        expect(service['validateMessage'](message)).toBeFalse();
+    it('should connect the socket if it isnt connected', () => {
+        chatSocketService.isConnected.and.returnValue(false);
+        service.handleSockets();
+        expect(chatSocketService.connect).toHaveBeenCalled();
     });
 
-    it('should return the internal messages array', () => {
-        const mockMessages = [{ text: 'Message 1', timestamp: new Date(), author: 'Player 1', roomId: '12345' }];
-        service['internalMessages'] = mockMessages;
-        expect(service.messages).toEqual(mockMessages);
+    it('should add message to messages when message is received', () => {
+        service.handleSockets();
+        const expectedMessage: ChatMessage = {
+            text: 'test',
+            timestamp: new Date(),
+            author: 'author',
+        };
+        messageReceivedSubject.next(expectedMessage);
+        expect(service.messages).toContain(expectedMessage);
     });
 
-    it('should return true for a non-empty message', () => {
-        const message = 'Test message';
-        expect(service['validateMessage'](message)).toBeTrue();
+    it('should add system message when player leaves', () => {
+        service.handleSockets();
+        const expectedData: PlayerLeftEventData = {
+            player: TEST_PLAYERS[0],
+            players: TEST_PLAYERS,
+        };
+        playerLeftSubject.next(expectedData);
+        expect(service.messages).toContain({
+            text: `${TEST_PLAYERS[0].name} a quitté.`,
+            timestamp: jasmine.any(Date),
+            author: 'Système',
+        });
     });
 
-    it('should validate message correctly', () => {
-        const chatService = TestBed.inject(ChatService);
-
-        expect(chatService['validateMessage']('')).toBe(false);
-        expect(chatService['validateMessage']('   ')).toBe(false);
-        expect(chatService['validateMessage']('valid message')).toBe(true);
-        expect(chatService['validateMessage']('a'.repeat(MAX_MESSAGE_LENGTH + 1))).toBe(false);
+    it('should emit new message', () => {
+        const newMessage = 'test';
+        service.sendMessage(newMessage);
+        expect(chatSocketService.emitNewMessage).toHaveBeenCalledWith(service.pin, {
+            text: newMessage,
+            timestamp: jasmine.any(Date),
+            author: service.participantName,
+        });
     });
 
-    it('should do nothing when sendMessage is called with an empty string', () => {
-        service.sendMessage('');
-        expect(service.messages.length).toBe(0);
+    it('should not emit new message if message is invalid', () => {
+        const newMessage = '';
+        service.sendMessage(newMessage);
+        expect(chatSocketService.emitNewMessage).not.toHaveBeenCalled();
+    });
+
+    it('should clean up', () => {
+        service.cleanUp();
+        expect(chatSocketService.disconnect).toHaveBeenCalled();
+        expect(service.pin).toBe('');
+        expect(service.participantName).toBe('');
+        expect(service.messages).toEqual([]);
     });
 });

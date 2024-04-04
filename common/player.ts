@@ -1,6 +1,7 @@
 import { Question } from '@common/quiz';
 
 interface Player {
+    id: string;
     name: string;
     score: number;
     questions: Question[];
@@ -8,7 +9,8 @@ interface Player {
 }
 
 class Player implements Player {
-    constructor(name: string) {
+    constructor(id: string, name: string) {
+        this.id = id;
         this.name = name;
         this.score = 0;
         this.questions = [];

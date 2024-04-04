@@ -1,3 +1,4 @@
+import { DatabaseService } from '@app/services/database/database.service';
 import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
@@ -5,7 +6,6 @@ import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
-import { DatabaseService } from '@app/services/database/database.service';
 
 @Service()
 export class GameService {
@@ -46,9 +46,9 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(pin: string, playerName: string): Promise<JoinGameResult> {
+    async addPlayer(id: string, pin: string, playerName: string): Promise<JoinGameResult> {
         const game = await this.getGame(pin);
-        const player: Player = new Player(playerName);
+        const player: Player = new Player(id, playerName);
         const error = this.validatePin(pin, game) || this.validatePlayerName(playerName, game);
         if (error) {
             return new JoinGameResult(error, player);
@@ -143,7 +143,7 @@ export class GameService {
         if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
             return 'Ce nom est déjà utilisé';
         }
-        if (lowerCasePlayerName === 'organisateur') {
+        if (lowerCasePlayerName.trim() === 'organisateur') {
             return 'Pseudo interdit';
         }
         if (lowerCasePlayerName.trim() === '') {

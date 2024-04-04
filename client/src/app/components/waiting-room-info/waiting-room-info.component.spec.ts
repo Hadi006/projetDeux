@@ -9,7 +9,7 @@ describe('WaitingRoomInfoComponent', () => {
     let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
     beforeEach(() => {
-        chatServiceSpy = jasmine.createSpyObj('ChatService', ['init']);
+        chatServiceSpy = jasmine.createSpyObj('ChatService', ['handleSockets']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -27,6 +27,5 @@ describe('WaitingRoomInfoComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-        expect(chatServiceSpy.init).toHaveBeenCalled();
     });
 });

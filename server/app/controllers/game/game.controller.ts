@@ -6,6 +6,7 @@ import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Server as HTTPServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
+import { ChatMessage } from '@common/chat-message';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -34,14 +35,13 @@ export class GameController {
             this.onAnswer(socket);
             this.chatMessages(socket);
             this.onEndGame(socket);
-            this.onDisconnect(socket);
+            this.onDisconnecting(socket);
         });
     }
 
     private chatMessages(socket: Socket): void {
-        socket.on('new-message', async (message) => {
-            const roomPin = message.roomId;
-            this.sio.to(roomPin).emit('message-received', message);
+        socket.on('new-message', async (data: RoomData<ChatMessage>) => {
+            this.sio.to(data.pin).emit('message-received', data.data);
         });
     }
     private onCreateGame(socket: Socket): void {
@@ -66,7 +66,7 @@ export class GameController {
         socket.on('join-game', async (roomData: RoomData<string>, callback) => {
             const pin = roomData.pin;
 
-            const result: JoinGameResult = await this.gameService.addPlayer(pin, roomData.data);
+            const result: JoinGameResult = await this.gameService.addPlayer(socket.id, pin, roomData.data);
 
             if (!result.error) {
                 socket.join(pin);
@@ -192,9 +192,26 @@ export class GameController {
         });
     }
 
-    private onDisconnect(socket: Socket): void {
-        socket.on('disconnect', () => {
-            return;
+    private onDisconnecting(socket: Socket): void {
+        socket.on('disconnecting', async () => {
+            socket.rooms.forEach(async (room) => {
+                const game = await this.gameService.getGame(room);
+                if (!game) {
+                    return;
+                }
+
+                if (game.hostId === socket.id) {
+                    await this.gameService.deleteGame(room);
+                    this.sio.to(room).emit('game-deleted');
+                    return;
+                }
+
+                const player = game.players.find((p) => p.id === socket.id);
+
+                game.players = game.players.filter((p) => p.id !== socket.id);
+                await this.gameService.updateGame(game);
+                this.sio.to(room).emit('player-left', { players: game.players, player });
+            });
         });
     }
 }

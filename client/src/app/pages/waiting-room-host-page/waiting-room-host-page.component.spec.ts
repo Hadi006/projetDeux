@@ -7,6 +7,7 @@ import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/
 import { HostService } from '@app/services/host/host.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
+import { Subject } from 'rxjs';
 
 describe('WaitingRoomHostPageComponent', () => {
     let component: WaitingRoomHostPageComponent;
@@ -16,10 +17,19 @@ describe('WaitingRoomHostPageComponent', () => {
     let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick', 'leaveGame']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick']);
         Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+
+        const eventSubject = new Subject<void>();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
+
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent', 'isSocketAlive', 'connect']);
     });
 
     beforeEach(waitForAsync(() => {
@@ -39,6 +49,18 @@ describe('WaitingRoomHostPageComponent', () => {
         fixture.detectChanges();
     });
 
+    it('should navigate to home page when disconnected', () => {
+        hostServiceSpy.isConnected.and.returnValue(false);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should not navigate to home page when connected', () => {
+        hostServiceSpy.isConnected.and.returnValue(true);
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+        component.ngOnInit();
+        expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -56,10 +78,5 @@ describe('WaitingRoomHostPageComponent', () => {
     it('should start game', () => {
         component.startGame();
         expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
-    });
-
-    it('should clean up', () => {
-        component.leaveGame();
-        expect(hostServiceSpy.leaveGame).toHaveBeenCalled();
     });
 });

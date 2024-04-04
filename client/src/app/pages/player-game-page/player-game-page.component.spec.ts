@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { QuestionComponent } from '@app/components/question/question.component';
@@ -14,10 +15,11 @@ describe('PlayerGamePageComponent', () => {
     let fixture: ComponentFixture<PlayerGamePageComponent>;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
+    let routerSpy: jasmine.SpyObj<Router>;
     let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
 
     beforeEach(() => {
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['gameTitle', 'leaveGame']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['isConnected', 'gameTitle', 'leaveGame']);
         Object.defineProperty(playerServiceSpy, 'players', {
             get: () => {
                 return [];
@@ -32,6 +34,14 @@ describe('PlayerGamePageComponent', () => {
             configurable: true,
         });
         dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+        const eventSubject = new Subject<void>();
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        Object.defineProperty(routerSpy, 'events', {
+            get: () => {
+                return eventSubject;
+            },
+            configurable: true,
+        });
         websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
     });
 
@@ -41,6 +51,7 @@ describe('PlayerGamePageComponent', () => {
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
+                { provide: Router, useValue: routerSpy },
                 { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
@@ -68,11 +79,6 @@ describe('PlayerGamePageComponent', () => {
         expect(component.isCountingDown).toBeFalse();
     });
 
-    it('leaveGame should call leaveGame method from PlayerService', () => {
-        component.leaveGame();
-        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
-    });
-
     it('get players should return players from PlayerService', () => {
         const player1 = { id: 1, name: 'Player 1' };
         const player2 = { id: 2, name: 'Player 2' };
@@ -91,9 +97,16 @@ describe('PlayerGamePageComponent', () => {
         expect(component.gameTitle()).toEqual('test');
     });
 
-    it('leaveGame should call the leaveGame method from the playerService', () => {
-        component.leaveGame();
-        expect(playerServiceSpy.leaveGame).toHaveBeenCalled();
+    it('ngOnInit should redirect to home if not connected or game has ended', () => {
+        playerServiceSpy.isConnected.and.returnValue(true);
+        Object.defineProperty(playerServiceSpy, 'gameEnded', {
+            get: () => {
+                return true;
+            },
+            configurable: true,
+        });
+        component.ngOnInit();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('ngOnDestroy should unsubscribe from the endGameSubscription', () => {
