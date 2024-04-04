@@ -81,12 +81,12 @@ export class AdminQuizzesService {
     sortGamesByName() {
         if (!this.games || this.games.length === 0) return;
 
-        const isAcending = this.games.every((game: Game, index: number) => {
+        const isAscending = this.games.every((game: Game, index: number) => {
             return index === 0 || game.name >= this.games[index - 1].name;
         });
 
         this.games.sort((game1: Game, game2: Game) => {
-            return !isAcending ? game1.name.localeCompare(game2.name) : game2.name.localeCompare(game1.name);
+            return !isAscending ? game1.name.localeCompare(game2.name) : game2.name.localeCompare(game1.name);
         });
 
         this.games$.next(this.games);
@@ -95,12 +95,12 @@ export class AdminQuizzesService {
     sortGamesByDate() {
         if (!this.games || this.games.length === 0) return;
 
-        const isAcending = this.games.every((game: Game, index: number) => {
+        const isAscending = this.games.every((game: Game, index: number) => {
             return index === 0 || game.date >= this.games[index - 1].date;
         });
 
         this.games.sort((game1: Game, game2: Game) => {
-            return !isAcending
+            return !isAscending
                 ? new Date(game1.date).getTime() - new Date(game2.date).getTime()
                 : new Date(game2.date).getTime() - new Date(game1.date).getTime();
         });
