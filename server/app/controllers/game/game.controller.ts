@@ -212,7 +212,6 @@ export class GameController {
                     return;
                 }
 
-
                 if (game.hostId === socket.id) {
                     if (!game.ended) {
                         await this.gameService.deleteGame(room);

@@ -8,9 +8,9 @@ import { AlertComponent } from '@app/components/alert/alert.component';
 import { PromptComponent } from '@app/components/prompt/prompt.component';
 import { QuestionBankComponent } from '@app/components/question-bank/question-bank.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
+import { ActionType } from '@common/action';
 import { of } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
-import { ActionType } from '@common/action';
 
 describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
@@ -23,12 +23,17 @@ describe('AdminPageComponent', () => {
     beforeEach(async () => {
         adminService = jasmine.createSpyObj('AdminService', [
             'fetchQuizzes',
+            'fetchGames',
             'uploadQuiz',
             'changeQuizVisibility',
             'downloadQuiz',
             'deleteQuiz',
             'setSelectedQuiz',
             'submitQuiz',
+            'deleteAllGames',
+            'deleteGame',
+            'sortGamesByName',
+            'sortGamesByDate',
         ]);
         router = jasmine.createSpyObj('Router', ['navigate']);
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -52,8 +57,9 @@ describe('AdminPageComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should fetch quizzes on initialization', () => {
+    it('should fetch quizzes and games on initialization', () => {
         expect(adminService.fetchQuizzes).toHaveBeenCalled();
+        expect(adminService.fetchGames).toHaveBeenCalled();
     });
 
     it('should upload quiz file and show alert on success', () => {
@@ -160,5 +166,25 @@ describe('AdminPageComponent', () => {
         expect(adminService.changeQuizVisibility).not.toHaveBeenCalled();
         expect(adminService.deleteQuiz).not.toHaveBeenCalled();
         expect(adminService.downloadQuiz).not.toHaveBeenCalled();
+    });
+
+    it('should delete all games', () => {
+        component.deleteAllGames();
+        expect(adminService.deleteAllGames).toHaveBeenCalled();
+    });
+
+    it('should delete game', () => {
+        component.deleteGame(0);
+        expect(adminService.deleteGame).toHaveBeenCalledWith(0);
+    });
+
+    it('should sort games by name', () => {
+        component.sortByName();
+        expect(adminService.sortGamesByName).toHaveBeenCalled();
+    });
+
+    it('should sort by date', () => {
+        component.sortByDate();
+        expect(adminService.sortGamesByDate).toHaveBeenCalled();
     });
 });

@@ -43,7 +43,6 @@ export class AdminQuizzesService {
             if (!response.body || response.status !== HttpStatusCode.Ok) {
                 return;
             }
-            console.log(response.body);
             this.games = response.body;
             this.games$.next(this.games);
         });
@@ -101,7 +100,9 @@ export class AdminQuizzesService {
         });
 
         this.games.sort((game1: Game, game2: Game) => {
-            return !isAcending ? new Date(game1.date).getTime() - new Date(game2.date).getTime() : new Date(game2.date).getTime() - new Date(game1.date).getTime();
+            return !isAcending
+                ? new Date(game1.date).getTime() - new Date(game2.date).getTime()
+                : new Date(game2.date).getTime() - new Date(game1.date).getTime();
         });
 
         this.games$.next(this.games);
