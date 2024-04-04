@@ -6,6 +6,7 @@ import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Server as HTTPServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
+import { ChatMessage } from '@common/chat-message';
 
 export class GameController {
     private sio: SocketIOServer;
@@ -39,9 +40,8 @@ export class GameController {
     }
 
     private chatMessages(socket: Socket): void {
-        socket.on('new-message', async (message) => {
-            const roomPin = message.roomId;
-            this.sio.to(roomPin).emit('message-received', message);
+        socket.on('new-message', async (data: RoomData<ChatMessage>) => {
+            this.sio.to(data.pin).emit('message-received', data.data);
         });
     }
     private onCreateGame(socket: Socket): void {

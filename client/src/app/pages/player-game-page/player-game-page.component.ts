@@ -38,7 +38,7 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        if (!this.playerService.isConnected()) {
+        if (!this.playerService.isConnected() || this.playerService.gameEnded) {
             this.router.navigate(['/']);
         }
     }

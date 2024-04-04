@@ -47,15 +47,19 @@ describe('GameController', () => {
     });
 
     it('should emit message-received event to room when new message is received', (done) => {
-        const message = { roomId: 'room123', text: 'Hello, World!' };
+        const expectedMessage = JSON.parse(JSON.stringify({ text: 'Hello', timestamp: new Date(), author: 'John Doe' }));
+        const toSpy = spy(service['sio'], 'to');
+
+        gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testQuiz, () => {
-            setTimeout(() => {
-                expect(toSpy.calledWith(message.roomId)).to.equal(true);
+            clientSocket.on('message-received', (message) => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(message).to.deep.equal(expectedMessage);
                 toSpy.restore();
                 done();
-            }, RESPONSE_DELAY);
+            });
+            clientSocket.emit('new-message', { pin: testGame.pin, data: expectedMessage });
         });
-        clientSocket.emit('new-message', message);
     });
 
     it('should create a game', (done) => {

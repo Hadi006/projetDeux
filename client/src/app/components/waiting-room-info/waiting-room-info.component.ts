@@ -14,6 +14,6 @@ export class WaitingRoomInfoComponent implements OnInit {
     constructor(private chatService: ChatService) {}
 
     ngOnInit() {
-        this.chatService.init();
+        this.chatService.handleSockets();
     }
 }
