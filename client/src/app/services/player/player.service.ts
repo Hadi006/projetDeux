@@ -16,6 +16,7 @@ import { Observable, Subject } from 'rxjs';
 })
 export class PlayerService {
     player: Player;
+    qrlAnswer: string = '';
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
 

@@ -43,6 +43,11 @@ export class QuestionComponent {
         return this.playerService.getPlayerBooleanAnswers();
     }
 
+    handleTextareaInput(event: Event) {
+        const target = event.target as HTMLTextAreaElement;
+        this.playerService.qrlAnswer = target.value; // Update the qrlAnswer property in the PlayerService
+    }
+
     private canEditAnswer(): boolean {
         if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerService.answerConfirmed) {
             return true;

@@ -5,19 +5,33 @@ Temps restant: {{ playerService.getTime() }}
         <p class="question-value">Valeur de la question: {{ questionData.points }} points</p>
 
         <div *ngIf="questionData.type === 'QCM'" class="question-container" (keyup)="handleKeyUp($event)">
-            <div class="choice-container"
-                *ngFor="let choice of playerService.player.questions[playerService.player.questions.length - 1].choices; let i = index">
+            <div
+                class="choice-container"
+                *ngFor="let choice of playerService.player.questions[playerService.player.questions.length - 1].choices; let i = index"
+            >
                 <label class="choice-label">
-                    <input [disabled]="this.playerService.answerConfirmed" type="checkbox" class="choice-input"
-                        [(ngModel)]="choice.isCorrect" (ngModelChange)="playerService.updatePlayer()" />
+                    <input
+                        [disabled]="this.playerService.answerConfirmed"
+                        type="checkbox"
+                        class="choice-input"
+                        [(ngModel)]="choice.isCorrect"
+                        (ngModelChange)="playerService.updatePlayer()"
+                    />
                     {{ i + 1 }}) {{ choice.text }}
                 </label>
             </div>
         </div>
 
         <div *ngIf="questionData.type === 'QRL'" class="question-container">
-            <textarea [disabled]="this.playerService.answerConfirmed" class="answer-textarea"
-                placeholder="Tapez votre réponse ici..."></textarea>
+            <textarea
+                [disabled]="playerService.answerConfirmed"
+                class="answer-textarea"
+                placeholder="Tapez votre réponse ici..."
+                (input)="handleTextareaInput($event)"
+                maxlength="200"
+                >{{ playerService.qrlAnswer }}</textarea
+            >
+            <div class="char-limit">{{ 200 - playerService.qrlAnswer.length }} caractères restants</div>
         </div>
 
         <div class="score-display">Score: {{ player.score }}</div>
@@ -33,8 +47,7 @@ Temps restant: {{ playerService.getTime() }}
         </div>
 
         <div class="button-container">
-            <button class="button-confirm" [disabled]="this.playerService.answerConfirmed"
-                (click)="playerService.confirmPlayerAnswer()">
+            <button class="button-confirm" [disabled]="this.playerService.answerConfirmed" (click)="playerService.confirmPlayerAnswer()">
                 Confirmer
             </button>
         </div>
