@@ -4,6 +4,7 @@ import { GameService } from '@app/services/game/game.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
+import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
@@ -143,8 +144,9 @@ describe('GameController', () => {
 
     it('should add a player to the lobby', (done) => {
         const playerName = 'John Doe';
-        const result = {
+        const result: JoinGameResult = {
             player: new Player('1', playerName),
+            gameId: testGame.quiz.id,
             otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: '',
@@ -159,8 +161,9 @@ describe('GameController', () => {
 
     it('should not add a player if there is an error', (done) => {
         const playerName = 'John Doe';
-        const result = {
+        const result: JoinGameResult = {
             player: new Player('1', playerName),
+            gameId: testGame.quiz.id,
             otherPlayers: [playerName],
             gameTitle: testGame.quiz.title,
             error: 'Error',
