@@ -26,11 +26,7 @@ export class HostService {
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
-
-    private playerActivities: { [playerId: string]: number } = {};
-    private histogramUpdateInterval: number = 5000;
-    private trackingEnabled: boolean = false;
-
+    private playerActivityLog: { [playerId: string]: number } = {};
     constructor(
         private hostSocketService: HostSocketService,
         private timeService: TimeService,
@@ -41,7 +37,6 @@ export class HostService {
                 this.verifyUsesSockets();
             }
         });
-
         this.questionEndedSubject = new Subject<void>();
         this.gameEndedSubject = new Subject<void>();
 
@@ -67,6 +62,30 @@ export class HostService {
 
     get histograms(): HistogramData[] {
         return this.internalHistograms;
+    }
+
+    updatePlayerActivity(playerId: string): void {
+        this.playerActivityLog[playerId] = Date.now();
+    }
+    // Method to calculate activity metrics
+    calculateActivityMetrics(): { activePlayers: number; inactivePlayers: number } {
+        const currentTime = Date.now();
+        const threshold = currentTime - 5000; // 5 seconds threshold
+
+        let activePlayers = 0;
+        let inactivePlayers = 0;
+
+        for (const playerId in this.playerActivityLog) {
+            if (Object.prototype.hasOwnProperty.call(this.playerActivityLog, playerId)) {
+                if (this.playerActivityLog[playerId] > threshold) {
+                    activePlayers++;
+                } else {
+                    inactivePlayers++;
+                }
+            }
+        }
+
+        return { activePlayers, inactivePlayers };
     }
 
     getTime(): number {
@@ -122,48 +141,6 @@ export class HostService {
         }
 
         this.hostSocketService.emitKick(this.internalGame.pin, playerName);
-    }
-
-    startTrackingPlayerActivities(): void {
-        this.trackingEnabled = true;
-        setInterval(this.updateHistogramData.bind(this), this.histogramUpdateInterval);
-    }
-
-    stopTrackingPlayerActivities(): void {
-        this.trackingEnabled = false;
-    }
-
-    // Method to update histogram data based on player activities
-    updateHistogramData(): void {
-        if (!this.trackingEnabled) return;
-        const now = Date.now();
-        const activityThreshold = now - 5000; // Threshold for considering activities within the last 5 seconds
-
-        const activePlayers = Object.keys(this.playerActivities).filter((playerId) => this.playerActivities[playerId] >= activityThreshold).length;
-
-        const totalPlayers = this.internalGame?.players.length ?? 0;
-
-        const inactivePlayers = totalPlayers - activePlayers;
-
-        const histogramData: HistogramData = {
-            labels: ['Active Players', 'Inactive Players'],
-            datasets: [
-                {
-                    label: 'Player Activity',
-                    data: [activePlayers, inactivePlayers],
-                },
-            ],
-        };
-
-        this.internalHistograms.push(histogramData);
-    }
-
-    handleQuestionChange(question: Question): void {
-        if (question.type === 'QRL') {
-            this.startTrackingPlayerActivities(); // Start tracking when QRL question is active
-        } else {
-            this.stopTrackingPlayerActivities(); // Stop tracking when QRL question is not active
-        }
     }
 
     startGame(countdown: number): void {

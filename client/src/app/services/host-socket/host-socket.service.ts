@@ -17,7 +17,6 @@ export class HostSocketService {
     private readonly playerJoinedSubject = new Subject<Player>();
     private readonly confirmPlayerAnswerSubject = new Subject<void>();
     private readonly playerUpdatedSubject = new Subject<HistogramData>();
-
     constructor(private webSocketService: WebSocketService) {}
 
     connect(): void {
