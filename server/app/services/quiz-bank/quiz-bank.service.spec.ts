@@ -3,6 +3,7 @@ import { QuizBankService } from '@app/services/quiz-bank/quiz-bank.service';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance } from 'sinon';
+import { Request } from 'express';
 
 describe('QuizBankService', () => {
     const MOCK_ANSWERS: Answer[] = [
@@ -37,7 +38,7 @@ describe('QuizBankService', () => {
     it('should return all quizzes', async () => {
         const quizzes = new Array(3).fill(MOCK_QUIZ);
         databaseServiceStub.get.resolves(quizzes);
-        const result = await quizBankService.getQuizzes();
+        const result = await quizBankService.getQuizzes({} as Request);
         expect(databaseServiceStub.get.calledWith('quizzes')).to.equal(true);
         expect(result).to.deep.equal(quizzes);
     });
@@ -46,14 +47,6 @@ describe('QuizBankService', () => {
         databaseServiceStub.get.resolves([MOCK_QUIZ]);
         const result = await quizBankService.getQuiz('1');
         expect(result).to.deep.equal(MOCK_QUIZ);
-    });
-
-    it('should return all visible quizzes', async () => {
-        const quizzes = new Array(3).fill(MOCK_QUIZ);
-        databaseServiceStub.get.resolves(quizzes);
-        const result = await quizBankService.getVisibleQuizzes();
-        expect(databaseServiceStub.get.calledWith('quizzes', { visible: true })).to.equal(true);
-        expect(result).to.deep.equal(quizzes);
     });
 
     it('should return a quiz', async () => {

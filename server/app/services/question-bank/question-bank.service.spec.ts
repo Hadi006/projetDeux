@@ -3,6 +3,7 @@ import { QuestionBankService } from '@app/services/question-bank/question-bank.s
 import { Question } from '@common/quiz';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { Request } from 'express';
 
 describe('QuestionBankService', () => {
     const MOCK_QUESTION: Question = {
@@ -26,7 +27,7 @@ describe('QuestionBankService', () => {
     it('should return all questions', async () => {
         const questions = new Array(3).fill(MOCK_QUESTION);
         databaseServiceStub.get.resolves(questions);
-        const result = await questionBankService.getQuestions();
+        const result = await questionBankService.getQuestions({} as Request);
         expect(result).to.deep.equal(questions);
     });
 
