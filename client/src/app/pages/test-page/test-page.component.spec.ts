@@ -81,8 +81,8 @@ describe('TestPageComponent', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         component.ngOnInit();
         expect(playerServiceSpy.handleSockets).toHaveBeenCalled();
-        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, { playerName: 'Test', isHost: true });
-        playerServiceSpy.joinGame('1', { playerName: 'test', isHost: true }).subscribe(() => {
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith(testGame.pin, { playerName: 'Organisateur', isHost: true });
+        playerServiceSpy.joinGame('1', { playerName: 'Organisateur', isHost: true }).subscribe(() => {
             expect(hostServiceSpy.startGame).toHaveBeenCalledWith(0);
             done();
         });
