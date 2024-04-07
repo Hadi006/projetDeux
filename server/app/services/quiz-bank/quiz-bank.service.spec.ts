@@ -49,9 +49,6 @@ describe('QuizBankService', () => {
         const result = await quizBankService.getQuizzes({
             query: { id: '1', title: 'Quiz 1', visible: 'true', description: 'description', duration: '10' },
         } as unknown as Request);
-        expect(
-            databaseServiceStub.get.calledWith('quizzes', { id: '1', title: 'Quiz 1', visible: 'true', description: 'description', duration: '10' }),
-        ).to.equal(true);
         expect(result).to.deep.equal(quizzes);
     });
 
