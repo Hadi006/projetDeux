@@ -1,4 +1,4 @@
-Temps restant: {{ playerService.getTime() }}
+Temps restant: {{ getTime() }}
 <div *ngIf="playerService.player && getQuestionData() as questionData">
     <div *ngIf="getPlayer() as player" class="player-container">
         <h2>{{ questionData.text }}</h2>
@@ -28,10 +28,12 @@ Temps restant: {{ playerService.getTime() }}
                 class="answer-textarea"
                 placeholder="Tapez votre réponse ici..."
                 maxlength="200"
-                (input)="handleTextareaInput($event)"
-                >{{ playerService.qrlAnswer }}</textarea
-            >
-            <div class="char-limit">{{ 200 - playerService.qrlAnswer.length }} caractères restants</div>
+                [(ngModel)]="player.questions[player.questions.length - 1].qrlAnswer"
+                (ngModelChange)="setLastModificationDate()"
+                >
+            </textarea>
+            <div>{{ player.isActive }}</div>
+            <div class="char-limit">{{ getLength() }} caractères restants</div>
         </div>
 
         <div class="score-display">Score: {{ player.score }}</div>

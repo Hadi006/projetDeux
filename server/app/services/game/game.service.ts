@@ -66,6 +66,24 @@ export class GameService {
             return { ...NEW_HISTOGRAM_DATA };
         }
 
+        const currentQuestion = player.questions[player.questions.length - 1];
+        if (currentQuestion.type === 'QRL') {
+            console.log(currentQuestion);
+            const isActive = player.isActive;
+            game.players.forEach((p, index) => {
+                if (p.name === player.name) {
+                    game.players[index] = player;
+                }
+            });
+
+            const currentHistogram = game.histograms[game.histograms.length - 1];
+            currentHistogram.datasets[0].data[0] += isActive ? 1 : -1;
+            currentHistogram.datasets[0].data[1] += isActive ? -1 : 1;
+
+            await this.updateGame(game);
+
+            return currentHistogram;
+        }
         const selectionChanges: number[] = [];
         let previousSelections: boolean[] = [];
         let currentSelections: boolean[] = [];
