@@ -1,3 +1,4 @@
+import { DatabaseService } from '@app/services/database/database.service';
 import { GameService } from '@app/services/game/game.service';
 import { GAME_ID_MAX, GOOD_ANSWER_BONUS, INVALID_INDEX, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
@@ -6,7 +7,6 @@ import { Question, Quiz } from '@common/quiz';
 import { fail } from 'assert';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, stub } from 'sinon';
-import { DatabaseService } from '@app/services/database/database.service';
 
 describe('GameService', () => {
     let testPlayer: Player;
@@ -87,6 +87,13 @@ describe('GameService', () => {
         const result = await gameService.deleteGame(testGame.pin);
         expect(result).to.equal(false);
         expect(databaseServiceStub.delete.calledWith('games', { pin: testGame.pin })).to.equal(true);
+    });
+
+    it('should delete ended games', async () => {
+        databaseServiceStub.delete.resolves(true);
+        const result = await gameService.deleteEndedGames();
+        expect(result).to.equal(true);
+        expect(databaseServiceStub.delete.calledWith('games', { ended: true })).to.equal(true);
     });
 
     it('should check game availability', async () => {

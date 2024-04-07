@@ -1,17 +1,21 @@
 import { HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { BLANK_QUIZ, INVALID_INDEX } from '@common/constant';
+import { Game } from '@common/game';
 import { Question, Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { BehaviorSubject, Observable, catchError, map, of, switchMap } from 'rxjs';
-import { CommunicationService } from '@app/services/communication/communication.service';
+
 @Injectable({
     providedIn: 'root',
 })
 export class AdminQuizzesService {
     selectedQuestion: Question;
     readonly quizzes$: BehaviorSubject<Quiz[]>;
+    readonly games$: BehaviorSubject<Game[]>;
     private quizzes: Quiz[];
+    private games: Game[];
 
     private selectedQuizIndex: number;
 
@@ -19,6 +23,8 @@ export class AdminQuizzesService {
         this.selectedQuizIndex = INVALID_INDEX;
         this.quizzes = [];
         this.quizzes$ = new BehaviorSubject<Quiz[]>(this.quizzes);
+        this.games = [];
+        this.games$ = new BehaviorSubject<Game[]>(this.games);
         this.selectedQuestion = new Question();
     }
 
@@ -29,6 +35,16 @@ export class AdminQuizzesService {
             }
             this.quizzes = response.body;
             this.quizzes$.next(this.quizzes);
+        });
+    }
+
+    fetchGames() {
+        this.http.get<Game[]>('games').subscribe((response: HttpResponse<Game[]>) => {
+            if (!response.body || response.status !== HttpStatusCode.Ok) {
+                return;
+            }
+            this.games = response.body;
+            this.games$.next(this.games);
         });
     }
 
@@ -45,6 +61,51 @@ export class AdminQuizzesService {
         }
 
         return BLANK_QUIZ;
+    }
+
+    deleteAllGames() {
+        this.games = [];
+        this.games$.next(this.games);
+        this.http.delete<void>('games').subscribe();
+    }
+
+    deleteGame(gameIndex: number) {
+        const game: Game | undefined = this.games[gameIndex];
+        if (!game) return;
+
+        this.games = this.games.filter((currentGame: Game) => currentGame.pin !== game.pin);
+        this.games$.next(this.games);
+        this.http.delete<string>(`games/${game.pin}`).subscribe();
+    }
+
+    sortGamesByName() {
+        if (!this.games || this.games.length === 0) return;
+
+        const isAscending = this.games.every((game: Game, index: number) => {
+            return index === 0 || game.name >= this.games[index - 1].name;
+        });
+
+        this.games.sort((game1: Game, game2: Game) => {
+            return !isAscending ? game1.name.localeCompare(game2.name) : game2.name.localeCompare(game1.name);
+        });
+
+        this.games$.next(this.games);
+    }
+
+    sortGamesByDate() {
+        if (!this.games || this.games.length === 0) return;
+
+        const isAscending = this.games.every((game: Game, index: number) => {
+            return index === 0 || game.date >= this.games[index - 1].date;
+        });
+
+        this.games.sort((game1: Game, game2: Game) => {
+            return !isAscending
+                ? new Date(game1.date).getTime() - new Date(game2.date).getTime()
+                : new Date(game2.date).getTime() - new Date(game1.date).getTime();
+        });
+
+        this.games$.next(this.games);
     }
 
     uploadQuiz(quizFile: File): Observable<ValidationResult<Quiz>> {

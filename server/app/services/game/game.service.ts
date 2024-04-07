@@ -31,6 +31,10 @@ export class GameService {
         return await this.database.update('games', { pin: game.pin }, [{ $set: game }]);
     }
 
+    async deleteEndedGames(): Promise<boolean> {
+        return await this.database.delete('games', { ended: true });
+    }
+
     async deleteGame(pin: string): Promise<boolean> {
         return await this.database.delete('games', { pin });
     }

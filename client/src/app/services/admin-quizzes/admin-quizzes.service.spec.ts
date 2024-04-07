@@ -1,16 +1,17 @@
 import { HttpResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TEST_QUIZZES } from '@common/constant';
+import { CommunicationService } from '@app/services/communication/communication.service';
+import { TEST_GAME_DATA, TEST_QUIZZES } from '@common/constant';
+import { Game } from '@common/game';
 import { Quiz } from '@common/quiz';
 import { of } from 'rxjs';
-import { CommunicationService } from '@app/services/communication/communication.service';
 import { AdminQuizzesService } from './admin-quizzes.service';
 
 describe('AdminQuizzesService', () => {
     let testQuizzes: Quiz[];
     let testQuiz: Quiz;
-
+    let testGames: Game[];
     let service: AdminQuizzesService;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
     let baseUrl: string;
@@ -18,6 +19,7 @@ describe('AdminQuizzesService', () => {
     beforeEach(() => {
         testQuizzes = JSON.parse(JSON.stringify(TEST_QUIZZES));
         testQuiz = JSON.parse(JSON.stringify(TEST_QUIZZES[1]));
+        testGames = JSON.parse(JSON.stringify([TEST_GAME_DATA, { ...TEST_GAME_DATA, name: 'Test Quiz 2', date: new Date() }]));
 
         baseUrl = 'http://localhost:3000';
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['post', 'get', 'patch', 'download', 'delete'], {
@@ -35,6 +37,7 @@ describe('AdminQuizzesService', () => {
         });
         service = TestBed.inject(AdminQuizzesService);
         service['quizzes'] = [testQuizzes[0]];
+        service['games'] = testGames;
     });
 
     it('should be created', () => {
@@ -54,6 +57,22 @@ describe('AdminQuizzesService', () => {
         service.fetchQuizzes();
         service.quizzes$.subscribe((quizzes) => {
             expect(quizzes).toEqual([]);
+        });
+    });
+
+    it('fetchGames() should make GET request and update games', () => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: testGames })));
+        service.fetchGames();
+        service.games$.subscribe((games) => {
+            expect(games).toEqual(testGames);
+        });
+    });
+
+    it('fetchGames() should handle error if HTTP request fails', () => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 500, statusText: 'Server Error' })));
+        service.fetchGames();
+        service.games$.subscribe((games) => {
+            expect(games).toEqual([]);
         });
     });
 
@@ -287,5 +306,44 @@ describe('AdminQuizzesService', () => {
         service.submitQuestion({ ...testQuizzes[0].questions[0] }).subscribe((result) => {
             expect(result).toBe('');
         });
+    });
+
+    it('should delete all games', () => {
+        communicationServiceSpy.delete.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK' })));
+        service.deleteAllGames();
+        expect(communicationServiceSpy.delete).toHaveBeenCalled();
+    });
+
+    it('should delete game by index', () => {
+        communicationServiceSpy.delete.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK' })));
+        service.deleteGame(0);
+        expect(communicationServiceSpy.delete).toHaveBeenCalled();
+        service['games'] = [];
+        service.deleteGame(0);
+        expect(communicationServiceSpy.delete).not.toHaveBeenCalledTimes(2);
+    });
+
+    it('should sort games by name', () => {
+        service['games'] = [];
+        service.sortGamesByName();
+        expect(service['games']).toEqual([]);
+        service['games'] = testGames;
+        service.sortGamesByName();
+        expect([testGames, testGames.reverse()]).toContain(service['games']);
+        service['games'] = testGames.reverse();
+        service.sortGamesByName();
+        expect(service['games']).toEqual(testGames);
+    });
+
+    it('should sort games by date', () => {
+        service['games'] = [];
+        service.sortGamesByDate();
+        expect(service['games']).toEqual([]);
+        service['games'] = testGames;
+        service.sortGamesByDate();
+        expect([testGames, testGames.reverse()]).toContain(service['games']);
+        service['games'] = testGames.reverse();
+        service.sortGamesByDate();
+        expect(service['games']).toEqual(testGames);
     });
 });

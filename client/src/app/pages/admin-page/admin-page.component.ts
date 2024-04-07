@@ -5,6 +5,7 @@ import { PromptComponent } from '@app/components/prompt/prompt.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
 import { INVALID_INDEX } from '@common/constant';
+import { Game } from '@common/game';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { Observable } from 'rxjs';
@@ -17,6 +18,7 @@ import { AlertComponent } from 'src/app/components/alert/alert.component';
 })
 export class AdminPageComponent implements OnInit {
     quizzes: Observable<Quiz[]>;
+    games: Observable<Game[]>;
 
     constructor(
         private adminService: AdminQuizzesService,
@@ -26,7 +28,9 @@ export class AdminPageComponent implements OnInit {
 
     ngOnInit() {
         this.quizzes = this.adminService.quizzes$;
+        this.games = this.adminService.games$;
         this.adminService.fetchQuizzes();
+        this.adminService.fetchGames();
     }
 
     importQuiz(event: Event) {
@@ -77,6 +81,22 @@ export class AdminPageComponent implements OnInit {
             default:
                 break;
         }
+    }
+
+    deleteAllGames() {
+        this.adminService.deleteAllGames();
+    }
+
+    deleteGame(index: number) {
+        this.adminService.deleteGame(index);
+    }
+
+    sortByName() {
+        this.adminService.sortGamesByName();
+    }
+
+    sortByDate() {
+        this.adminService.sortGamesByDate();
     }
 
     private promptForNewTitle(): MatDialogRef<PromptComponent> {
