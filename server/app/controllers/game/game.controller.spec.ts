@@ -147,7 +147,7 @@ describe('GameController', () => {
     it('should not broadcast a start game if not the host', (done) => {
         const countdown = 5;
         gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
-        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.getGame.resolves(undefined);
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
             clientSocket.emit('start-game', { pin: testGame.pin, data: countdown });
