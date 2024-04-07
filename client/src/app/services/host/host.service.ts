@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
@@ -7,7 +8,6 @@ import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -26,6 +26,7 @@ export class HostService {
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
+    private isPanicMode = false;
 
     constructor(
         private hostSocketService: HostSocketService,
@@ -67,6 +68,15 @@ export class HostService {
 
     getTime(): number {
         return this.timeService.getTimeById(this.timerId);
+    }
+    pauseTimer(): void {
+        this.pauseTimerForEveryone();
+        return this.timeService.toggleTimerById(this.timerId);
+    }
+    stopPanicMode(): void {
+        this.isPanicMode = false;
+        // this.timerId = this.timeService.createTimerById();
+        return this.timeService.stopPanicMode();
     }
 
     getCurrentQuestion(): Question | undefined {
@@ -158,6 +168,8 @@ export class HostService {
         });
 
         this.timeService.stopTimerById(this.timerId);
+        this.timerId = this.timeService.createTimerById();
+
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
@@ -176,6 +188,25 @@ export class HostService {
         this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
+    }
+    canActivatePanicMode(): boolean {
+        return (
+            ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) ||
+                (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)) &&
+            !this.isPanicMode
+        );
+    }
+    startPanicMode() {
+        if (this.canActivatePanicMode()) {
+            this.isPanicMode = true;
+            const startTimerValue: number = this.getTime();
+            this.timeService.stopTimerById(this.timerId);
+            this.timeService.startPanicMode();
+            this.startPanicModeForEveryone();
+            this.timerId = this.timeService.createTimerById(4);
+            this.timeService.startTimerById(this.timerId, startTimerValue, this.endQuestion.bind(this));
+        }
+        return;
     }
 
     private reset(): void {
@@ -211,6 +242,10 @@ export class HostService {
             this.questionEndedSubject.next();
         });
         this.hostSocketService.emitAnswer(this.internalGame.pin, currentAnswer);
+        if (this.isPanicMode) {
+            this.stopPanicMode();
+        }
+        this.timeService.stopTimerById(this.timerId);
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
     }
@@ -273,5 +308,25 @@ export class HostService {
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
+    }
+
+    // private pauseTimerForEveryone(): void {
+    //     this.hostSocketService.emit<string>('pause-timer', this.internalGame.pin);
+    // }
+
+    // private startPanicModeForEveryone(): void {
+    //     this.webSocketService.emit<string>('panic-mode', this.internalGame.pin);
+    // }
+    private pauseTimerForEveryone(): void {
+        if (!this.internalGame) {
+            return;
+        }
+        this.hostSocketService.emitPauseTimer(this.internalGame.pin);
+    }
+    private startPanicModeForEveryone(): void {
+        if (!this.internalGame) {
+            return;
+        }
+        this.hostSocketService.emitPanicMode(this.internalGame.pin);
     }
 }

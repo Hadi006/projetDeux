@@ -21,6 +21,13 @@
                     <mat-icon class="timer-icon">timer</mat-icon>
                     <p class="timer-text">{{ getTime() }}</p>
                 </mat-card-content>
+                <div class="timer-container">
+                    <button class="button-timer" (click)="pauseTimer()" >
+                        Toggle
+                    </button>
+                    <button class="button-panic" (click)="startPanicMode()">Panic Mode</button>
+                    <!-- <button (click)="stopPanicMode()" > test</button> -->
+                </div>
             </mat-card>
             <div class="players-container">
                 <section class="playerCardContainer">

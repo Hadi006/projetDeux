@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Answer, Question } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -111,6 +111,8 @@ export class PlayerService {
         this.socketSubscription.add(this.subscribeToOnAnswer());
         this.socketSubscription.add(this.subscribeToOnGameEnded());
         this.socketSubscription.add(this.subscribeToOnGameDeleted());
+        this.socketSubscription.add(this.subscribeToPauseTimer());
+        this.socketSubscription.add(this.subscribeToPanicMode());
     }
 
     joinGame(pin: string, playerName: string): Observable<string> {
@@ -226,6 +228,10 @@ export class PlayerService {
 
     private subscribeToOnEndQuestion(): Subscription {
         return this.playerSocketService.onEndQuestion().subscribe(() => {
+            this.timeService.stopPanicMode();
+            this.timeService.stopTimerById(this.timerId);
+            this.timerId = this.timeService.createTimerById();
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY);
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
@@ -272,6 +278,16 @@ export class PlayerService {
             this.router.navigate(['/']);
         });
     }
+    private subscribeToPauseTimer(): Subscription {
+        return this.playerSocketService.onPauseTimerForPlayers().subscribe(() => {
+            this.pauseTimer();
+        });
+    }
+    private subscribeToPanicMode(): Subscription {
+        return this.playerSocketService.onStartPanicMode().subscribe(() => {
+            this.panicMode();
+        });
+    }
 
     private setupNextQuestion(question: Question, countdown: number): void {
         if (!this.player) {
@@ -284,5 +300,15 @@ export class PlayerService {
         this.internalIsCorrect = false;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
+    }
+    private pauseTimer(): void {
+        return this.timeService.toggleTimerById(this.timerId);
+    }
+    private panicMode(): void {
+        const startTimerValue: number = this.getTime();
+        this.timeService.stopTimerById(this.timerId);
+        this.timerId = this.timeService.createTimerById(4);
+        this.timeService.startTimerById(this.timerId, startTimerValue);
+        return this.timeService.startPanicMode();
     }
 }

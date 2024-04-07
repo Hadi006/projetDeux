@@ -45,6 +45,21 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     getTime() {
         return this.hostService.getTime();
     }
+    canActivatePanicMode(): boolean {
+        return (
+            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) || (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)
+        );
+    }
+    pauseTimer() {
+        return this.hostService.pauseTimer();
+    }
+
+    startPanicMode() {
+        this.hostService.startPanicMode();
+    }
+    stopPanicMode() {
+        this.hostService.stopPanicMode();
+    }
 
     getQuestionEnded() {
         return this.hostService.questionEnded;

@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Timer } from '@app/classes/timer';
+import { Howl } from 'howler';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimeService {
+    counterToggled: boolean = false;
+    panicModeSound: Howl;
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
 
-    createTimerById(): number {
-        const timer = new Timer();
+    createTimerById(decrement: number = 1): number {
+        const timer = new Timer(decrement);
         this.nextId++;
         this.timers.set(this.nextId, timer);
         return this.nextId;
@@ -33,12 +36,29 @@ export class TimeService {
             timer.time = time;
         }
     }
+    toggleTimerById(timerId: number) {
+        if (this.counterToggled) {
+            return this.resumeTimerById(timerId);
+        }
+        return this.pauseTimerById(timerId);
+    }
 
     pauseTimerById(timerId: number) {
+        this.counterToggled = true;
         this.timers.get(timerId)?.pause();
     }
 
     resumeTimerById(timerId: number) {
+        this.counterToggled = false;
         this.timers.get(timerId)?.resume();
+    }
+    startPanicMode(): void {
+        this.panicModeSound = new Howl({
+            src: ['./assets/sound.mp3'],
+        });
+        this.panicModeSound.play();
+    }
+    stopPanicMode(): void {
+        this.panicModeSound?.stop();
     }
 }

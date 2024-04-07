@@ -4,12 +4,14 @@ export class Timer {
     time: number;
     private interval: number | undefined;
     private tickRate: number;
+    private decrementValue: number;
     private callback: () => void;
 
-    constructor(tickRate: number = TIMER_TICK_RATE) {
+    constructor(decrementValue: number = 1, tickRate: number = TIMER_TICK_RATE) {
         this.time = 0;
         this.interval = undefined;
         this.tickRate = tickRate;
+        this.decrementValue = decrementValue;
     }
 
     start(
@@ -48,8 +50,8 @@ export class Timer {
         }
 
         this.interval = window.setInterval(() => {
-            if (this.time > 0) {
-                this.time--;
+            if (this.time - this.decrementValue >= 0) {
+                this.time -= this.decrementValue;
             } else {
                 this.stop();
                 this.callback();

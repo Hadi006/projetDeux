@@ -23,6 +23,8 @@ export class PlayerSocketService {
     private readonly answerSubject = new Subject<Answer[]>();
     private readonly gameEndedSubject = new Subject<Game>();
     private readonly gameDeletedSubject = new Subject<void>();
+    private readonly pauseTimerSubject = new Subject<void>();
+    private readonly startPanicModeSubject = new Subject<void>();
 
     constructor(private webSocketService: WebSocketService) {}
 
@@ -116,6 +118,18 @@ export class PlayerSocketService {
         });
 
         return this.gameDeletedSubject;
+    }
+    onPauseTimerForPlayers(): Subject<void> {
+        this.webSocketService.onEvent('timer-paused', () => {
+            this.pauseTimerSubject.next();
+        });
+        return this.pauseTimerSubject;
+    }
+    onStartPanicMode(): Subject<void> {
+        this.webSocketService.onEvent('in-panic', () => {
+            this.startPanicModeSubject.next();
+        });
+        return this.startPanicModeSubject;
     }
 
     emitJoinGame(pin: string, playerName: string): Observable<JoinGameResult> {
