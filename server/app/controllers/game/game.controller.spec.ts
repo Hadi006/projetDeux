@@ -42,7 +42,7 @@ describe('GameController', () => {
             testGame.hostId = socket.id;
         });
         clientSocket = ioClient(urlString);
-        // stub(console, 'log');
+        stub(console, 'log');
     });
 
     afterEach(() => {
@@ -81,6 +81,15 @@ describe('GameController', () => {
         clientSocket.emit('create-game', testQuiz, (ack: Game | null) => {
             expect(ack).to.equal(null);
             expect(gameServiceStub.createGame.called).to.equal(true);
+            done();
+        });
+    });
+
+    it('should get a game', (done) => {
+        gameServiceStub.getGame.resolves(testGame);
+        clientSocket.emit('request-game', testGame.pin, (ack: Game | null) => {
+            expect(ack).to.deep.equal(testGame);
+            expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
             done();
         });
     });
