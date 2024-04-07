@@ -236,6 +236,9 @@ export class GameController {
                     return;
                 }
 
+                const player = game.players.find((p) => p.id === socket.id);
+                game.players = game.players.filter((p) => p.id !== socket.id);
+
                 if (game.hostId === socket.id) {
                     if (game.quiz.id !== '-1') {
                         await this.gameService.deleteGame(room);
@@ -246,14 +249,6 @@ export class GameController {
                     }
                 }
 
-                const player = game.players.find((p) => p.id === socket.id);
-                game.players = game.players.filter((p) => p.id !== socket.id);
-
-                if (game.players.length <= 0) {
-                    return;
-                }
-
-                game.hostId = game.players[0].id;
                 await this.gameService.updateGame(game);
                 this.sio.to(room).emit('player-left', { players: game.players, player });
                 this.sio.to(game.hostId).emit('new-host', game);
