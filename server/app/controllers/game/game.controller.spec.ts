@@ -256,6 +256,23 @@ describe('GameController', () => {
         });
     });
 
+    it('should broadcast undefined question-changed if no question', (done) => {
+        const histogram = testHistogram;
+        const countdown = 5;
+        gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('question-changed', (response) => {
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response).to.deep.equal({ countdown });
+                done();
+            });
+            clientSocket.emit('next-question', { pin: testGame.pin, data: { countdown, histogram } });
+        });
+    });
+
     it('should not broadcast a question-changed if not the host', (done) => {
         const question = testQuestion;
         const histogram = testHistogram;
