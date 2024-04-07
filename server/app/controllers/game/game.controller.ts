@@ -122,14 +122,16 @@ export class GameController {
     }
 
     private onMute(socket: Socket): void {
-        socket.on('mute', async (roomData: RoomData<string>) => {
+        socket.on('mute', async (roomData: RoomData<Player>) => {
             const pin = roomData.pin;
-            const playerName = roomData.data;
+            const player = roomData.data;
 
             const game = await this.gameService.getGame(pin);
-            const player = game.players.find((p) => p.name === playerName);
-            this.sio.sockets.sockets.get(player.id)?.emit('muted', {
-                text: 'Vous avez été muté',
+            game.players.find((p) => p.id === player.id).muted = player.muted;
+            await this.gameService.updateGame(game);
+
+            this.sio.sockets.sockets.get(player.id)?.emit('player-muted', {
+                text: player.muted ? 'Vous avez été muté' : 'Vous avez été démuté',
                 timestamp: new Date(),
                 author: 'Système',
             });

@@ -84,8 +84,8 @@ export class HostSocketService {
         this.webSocketService.emit<RoomData<string>>('kick', { pin, data: playerName });
     }
 
-    emitMute(pin: string, playerName: string): void {
-        this.webSocketService.emit<RoomData<string>>('mute', { pin, data: playerName });
+    emitMute(pin: string, player: Player): void {
+        this.webSocketService.emit<RoomData<Player>>('mute', { pin, data: player });
     }
 
     emitStartGame(pin: string, countdown: number): void {

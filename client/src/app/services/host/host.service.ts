@@ -124,8 +124,14 @@ export class HostService {
         if (!this.internalGame) {
             return;
         }
+        const player = this.internalGame.players.find((p) => p.name === playerName);
+        if (!player) {
+            return;
+        }
 
-        this.hostSocketService.emitMute(this.internalGame.pin, playerName);
+        player.muted = !player.muted;
+
+        this.hostSocketService.emitMute(this.internalGame.pin, player);
     }
 
     startGame(countdown: number): void {

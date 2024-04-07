@@ -49,7 +49,7 @@ export class ChatService {
         if (!this.validateMessage(newMessage)) {
             return;
         }
-
+        console.log(this.muted);
         if (this.muted) {
             return;
         }
@@ -74,6 +74,7 @@ export class ChatService {
         this.pin = '';
         this.participantName = '';
         this.internalMessages = [];
+        this.muted = false;
     }
 
     private verifyUsesSockets() {
@@ -101,7 +102,7 @@ export class ChatService {
     private subscribeToPlayerMuted(): Subscription {
         return this.chatSocketService.onPlayerMuted().subscribe((message: ChatMessage) => {
             this.internalMessages.push(message);
-            this.muted = message.text === 'Vous avez été muté.';
+            this.muted = message.text === 'Vous avez été muté';
         })
     }
 
