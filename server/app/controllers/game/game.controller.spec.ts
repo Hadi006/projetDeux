@@ -9,14 +9,15 @@ import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
-import { Socket, io as ioClient } from 'socket.io-client';
+import { Socket as socketClient, io as ioClient } from 'socket.io-client';
+import { Socket as socketServer } from 'socket.io';
 import { Container } from 'typedi';
 
 describe('GameController', () => {
     let service: GameController;
     let gameServiceStub: SinonStubbedInstance<GameService>;
     let server: Server;
-    let clientSocket: Socket;
+    let clientSocket: socketClient;
     const urlString = 'http://localhost:3000';
     let testQuestion: Question;
     let testQuiz: Quiz;
@@ -35,6 +36,10 @@ describe('GameController', () => {
         server = Container.get(Server);
         server.init();
         service = server['gameController'];
+        service['sio'].on('connection', (socket: socketServer) => {
+            clientSocket.id = socket.id;
+            testGame.hostId = socket.id;
+        });
         clientSocket = ioClient(urlString);
         stub(console, 'log');
     });
@@ -117,6 +122,7 @@ describe('GameController', () => {
     it('should broadcast a start game if in the game', (done) => {
         const countdown = 5;
         gameServiceStub.createGame.resolves(testGame);
+        gameServiceStub.getGame.resolves(testGame);
         const toSpy = spy(service['sio'], 'to');
         clientSocket.emit('create-game', testGame.quiz, () => {
             clientSocket.on('start-game', (response) => {
@@ -287,6 +293,7 @@ describe('GameController', () => {
     });
 
     it('should end question', (done) => {
+        gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
             const toSpy = spy(service['sio'], 'to');
@@ -301,6 +308,7 @@ describe('GameController', () => {
     it('should answer', (done) => {
         const playerName = 'John Doe';
         const answer = { playerName, choices: [true, false, false, false] };
+        gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
             const toSpy = spy(service['sio'], 'to');
@@ -313,6 +321,7 @@ describe('GameController', () => {
     });
 
     it('should end game', (done) => {
+        gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
             const toSpy = spy(service['sio'], 'to');

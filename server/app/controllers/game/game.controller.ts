@@ -127,8 +127,8 @@ export class GameController {
     }
 
     private onStartGame(socket: Socket): void {
-        socket.on('start-game', (roomData: RoomData<number>) => {
-            if (!this.isHost(socket, roomData.pin)) {
+        socket.on('start-game', async (roomData: RoomData<number>) => {
+            if (!(await this.isHost(socket, roomData.pin))) {
                 return;
             }
 
