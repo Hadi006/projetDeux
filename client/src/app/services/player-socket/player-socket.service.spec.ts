@@ -94,6 +94,7 @@ describe('PlayerSocketService', () => {
     it('should listen for end question', (done) => {
         service.connect();
         service.onEndQuestion().subscribe(() => {
+            expect(true).toBeTrue();
             done();
         });
         socketHelper.peerSideEmit('end-question');

@@ -74,6 +74,7 @@ describe('HostSocketService', () => {
     it('should listen for confirm player answer', (done) => {
         service.connect();
         service.onConfirmPlayerAnswer().subscribe(() => {
+            expect(true).toBeTrue();
             done();
         });
         socketHelper.peerSideEmit('confirm-player-answer');
