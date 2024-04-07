@@ -31,6 +31,13 @@ describe('QuestionBankService', () => {
         expect(result).to.deep.equal(questions);
     });
 
+    it('should return questions with query', async () => {
+        const questions = new Array(3).fill(MOCK_QUESTION);
+        databaseServiceStub.get.resolves(questions);
+        const result = await questionBankService.getQuestions({ query: { text: 'Question 1', type: 'QCM', points: '10' } } as unknown as Request);
+        expect(result).to.deep.equal(questions);
+    });
+
     it('should validate a question', () => {
         const result = questionBankService.validateQuestion(MOCK_QUESTION);
         expect(result).to.deep.equal({ data: MOCK_QUESTION, error: '' });
