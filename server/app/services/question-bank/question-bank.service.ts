@@ -40,15 +40,15 @@ export class QuestionBankService {
     private getQuestionQuery(req: Request): QuestionQuery {
         const questionQuery: QuestionQuery = {};
 
-        if (typeof req.query.text === 'string') {
+        if (typeof req.query?.text === 'string') {
             questionQuery.text = req.query.text;
         }
 
-        if (typeof req.query.type === 'string' && (req.query.type === 'QCM' || req.query.type === 'QRL')) {
+        if (typeof req.query?.type === 'string' && (req.query.type === 'QCM' || req.query.type === 'QRL')) {
             questionQuery.type = req.query.type;
         }
 
-        if (typeof req.query.points === 'string') {
+        if (typeof req.query?.points === 'string') {
             questionQuery.points = parseInt(req.query.points, 10);
         }
 
