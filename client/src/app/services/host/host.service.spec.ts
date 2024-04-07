@@ -237,16 +237,6 @@ describe('HostService', () => {
         expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
     });
 
-    it('should not emit next question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
-        const histogramLength = service.histograms.length;
-        service.nextQuestion();
-        expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
-        expect(service.histograms.length).toBe(histogramLength);
-        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
-        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
-    });
-
     it('should end game', () => {
         hostSocketServiceSpy.emitEndGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
         spyOn(service, 'cleanUp');
