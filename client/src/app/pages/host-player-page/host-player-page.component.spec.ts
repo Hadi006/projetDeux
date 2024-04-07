@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { Subject } from 'rxjs';
 
 import { HostPlayerPageComponent } from './host-player-page.component';
 
@@ -14,7 +15,7 @@ describe('HostPlayerPageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['cleanUp']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['cleanUp', 'getTime']);
         hostServiceSpy = jasmine.createSpyObj('HostService', [
             'cleanUp',
             'isConnected',
@@ -24,6 +25,10 @@ describe('HostPlayerPageComponent', () => {
             'nextQuestion',
             'endGame',
         ]);
+        const questionEndedSubject = new Subject<void>();
+        Object.defineProperty(hostServiceSpy, 'questionEndedSubject', { get: () => questionEndedSubject });
+        const gameEndedSubject = new Subject<void>();
+        Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     });
 
@@ -46,5 +51,12 @@ describe('HostPlayerPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should call nextQuestion and endGame when questionEndedSubject and gameEndedSubject emit', () => {
+        hostServiceSpy.questionEndedSubject.next();
+        expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
+        hostServiceSpy.gameEndedSubject.next();
+        expect(hostServiceSpy.endGame).toHaveBeenCalled();
     });
 });
