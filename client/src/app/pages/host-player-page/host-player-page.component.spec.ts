@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 import { HostPlayerPageComponent } from './host-player-page.component';
 
@@ -58,5 +58,17 @@ describe('HostPlayerPageComponent', () => {
         expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
         hostServiceSpy.gameEndedSubject.next();
         expect(hostServiceSpy.endGame).toHaveBeenCalled();
+    });
+
+    it('should handleSockets and requestGame when ngOnInit is called', (done) => {
+        Object.defineProperty(playerServiceSpy, 'gameEnded', { get: () => false });
+        hostServiceSpy.isConnected.and.returnValue(true);
+        hostServiceSpy.requestGame.and.returnValue(of(undefined));
+        component.ngOnInit();
+        expect(hostServiceSpy.handleSockets).toHaveBeenCalled();
+        hostServiceSpy.requestGame('').subscribe(() => {
+            expect(hostServiceSpy.startGame).toHaveBeenCalled();
+            done();
+        });
     });
 });
