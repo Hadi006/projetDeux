@@ -73,9 +73,7 @@ describe('PublicQuizzesService', () => {
     });
 
     it('checkQuizAvailability() should return false if quiz is not available', (done) => {
-        communicationServiceSpy.get.and.returnValue(
-            of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...testQuizzes[0], visible: false } })),
-        );
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK' })));
         service.checkQuizAvailability(testQuizzes[0].id).subscribe((isAvailable) => {
             expect(isAvailable).toBeFalse();
             done();
