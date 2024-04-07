@@ -43,6 +43,18 @@ describe('QuizBankService', () => {
         expect(result).to.deep.equal(quizzes);
     });
 
+    it('should return quizzes with query', async () => {
+        const quizzes = new Array(3).fill(MOCK_QUIZ);
+        databaseServiceStub.get.resolves(quizzes);
+        const result = await quizBankService.getQuizzes({
+            query: { id: '1', title: 'Quiz 1', visible: 'true', description: 'description', duration: '10' },
+        } as unknown as Request);
+        expect(
+            databaseServiceStub.get.calledWith('quizzes', { id: '1', title: 'Quiz 1', visible: 'true', description: 'description', duration: '10' }),
+        ).to.equal(true);
+        expect(result).to.deep.equal(quizzes);
+    });
+
     it('should return a quiz', async () => {
         databaseServiceStub.get.resolves([MOCK_QUIZ]);
         const result = await quizBankService.getQuiz('1');
