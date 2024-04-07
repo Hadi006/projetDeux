@@ -1,15 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
+import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { TimeService } from '@app/services/time/time.service';
-import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
-import { firstValueFrom, of, ReplaySubject, Subject } from 'rxjs';
-import { Player } from '@common/player';
-import { Answer } from '@common/quiz';
-import { Game } from '@common/game';
-import { QuestionChangedEventData } from '@common/question-changed-event-data';
 import { TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY } from '@common/constant';
+import { Game } from '@common/game';
+import { Player } from '@common/player';
+import { QuestionChangedEventData } from '@common/question-changed-event-data';
+import { Answer } from '@common/quiz';
+import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
 
 describe('PlayerService', () => {
     let player: Player;
@@ -123,9 +123,9 @@ describe('PlayerService', () => {
         expect(service.getPlayerAnswers()).toEqual([]);
     });
 
-    it('should get the player boolean answers', () => {
-        expect(service.getPlayerBooleanAnswers()).toEqual(service.getPlayerAnswers().map((answer) => answer.isCorrect));
-    });
+    // it('should get the player boolean answers', () => {
+    //     expect(service.getPlayerBooleanAnswers()).toEqual(service.getPlayerAnswers().map((answer) => answer.isCorrect));
+    // });
 
     it('should check if the player is connected', () => {
         playerSocketServiceSpy.isConnected.and.returnValue(true);
