@@ -58,23 +58,23 @@ export class QuizBankService {
     private getQuizQuery(req: Request): QuizQuery {
         const quizQuery: QuizQuery = {};
 
-        if (typeof req.query.id === 'string') {
+        if (typeof req.query?.id === 'string') {
             quizQuery.id = req.query.id;
         }
 
-        if (typeof req.query.title === 'string') {
+        if (typeof req.query?.title === 'string') {
             quizQuery.title = req.query.title;
         }
 
-        if (typeof req.query.visible === 'string') {
+        if (typeof req.query?.visible === 'string') {
             quizQuery.visible = req.query.visible === 'true';
         }
 
-        if (typeof req.query.description === 'string') {
+        if (typeof req.query?.description === 'string') {
             quizQuery.description = req.query.description;
         }
 
-        if (typeof req.query.duration === 'string' && !isNaN(parseInt(req.query.duration, 10))) {
+        if (typeof req.query?.duration === 'string' && !isNaN(parseInt(req.query.duration, 10))) {
             quizQuery.duration = parseInt(req.query.duration, 10);
         }
 
