@@ -314,6 +314,7 @@ describe('PlayerService', () => {
         expect(service.gameTitle).toEqual('');
         expect(service.players).toEqual([]);
         expect(service.gameStarted).toBeFalse();
+        expect(service.gameEnded).toBeFalse();
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();

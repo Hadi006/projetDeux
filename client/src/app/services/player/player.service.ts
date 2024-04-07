@@ -175,6 +175,7 @@ export class PlayerService {
         this.internalGameTitle = '';
         this.internalPlayers = [];
         this.internalGameStarted = false;
+        this.internalGameEnded = false;
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
