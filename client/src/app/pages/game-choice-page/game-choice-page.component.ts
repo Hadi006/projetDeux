@@ -73,6 +73,7 @@ export class GameChoicePageComponent implements OnInit {
         if (this.chosenQuiz.id === RANDOM_QUIZ_ID) {
             return this.publicQuizzesService.createRandomQuestions().pipe(
                 concatMap((questions: Question[]) => {
+                    console.log(questions);
                     return this.createGame(questions);
                 }),
             );

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DescriptionPanelComponent } from '@app/components/description-panel/description-panel.component';
 import { HostService } from '@app/services/host/host.service';
 import { PublicQuizzesService } from '@app/services/public-quizzes/public-quizzes.service';
-import { TEST_QUIZZES } from '@common/constant';
+import { RANDOM_QUIZ_ID, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { Subject, of } from 'rxjs';
 import { GameChoicePageComponent } from './game-choice-page.component';
@@ -24,6 +24,7 @@ describe('GameChoicePageComponent', () => {
             'fetchVisibleQuizzes',
             'checkQuizAvailability',
             'alertNoQuizAvailable',
+            'createRandomQuestions',
         ]);
         publicQuizzesServiceSpy.fetchVisibleQuizzes.and.returnValue(of(undefined));
         Object.defineProperty(publicQuizzesServiceSpy, 'quizzes', {
@@ -163,6 +164,18 @@ describe('GameChoicePageComponent', () => {
         component.testGame();
         publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
             expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Erreur lors de la création du jeu');
+            done();
+        });
+    });
+
+    it('should create game with random questions', (done) => {
+        publicQuizzesServiceSpy.createRandomQuestions.and.returnValue(of(TEST_QUESTIONS));
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.chooseQuiz({ ...testQuiz, id: RANDOM_QUIZ_ID });
+        hostServiceSpy.createGame.and.returnValue(of(true));
+        component.startGame();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(hostServiceSpy.createGame).toHaveBeenCalled();
             done();
         });
     });
