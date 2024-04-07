@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ChatMessage } from '@common/chat-message';
-import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { NavigationEnd, Router } from '@angular/router';
 import { ChatSocketService } from '@app/services/chat-socket/chat-socket.service';
-import { Subscription } from 'rxjs';
+import { ChatMessage } from '@common/chat-message';
+import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
+import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -12,6 +12,7 @@ import { PlayerLeftEventData } from '@common/player-left-event-data';
 export class ChatService {
     pin: string;
     participantName: string;
+    muted = false;
 
     private socketSubscription: Subscription;
 
@@ -40,11 +41,16 @@ export class ChatService {
         }
 
         this.socketSubscription.add(this.subscribeToMessageReceived());
+        this.socketSubscription.add(this.subscribeToPlayerMuted());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
     }
 
     sendMessage(newMessage: string) {
         if (!this.validateMessage(newMessage)) {
+            return;
+        }
+
+        if (this.muted) {
             return;
         }
 
@@ -90,6 +96,13 @@ export class ChatService {
         return this.chatSocketService.onMessageReceived().subscribe((message: ChatMessage) => {
             this.internalMessages.push(message);
         });
+    }
+
+    private subscribeToPlayerMuted(): Subscription {
+        return this.chatSocketService.onPlayerMuted().subscribe((message: ChatMessage) => {
+            this.internalMessages.push(message);
+            this.muted = message.text === 'Vous avez été muté.';
+        })
     }
 
     private subscribeToPlayerLeft(): Subscription {

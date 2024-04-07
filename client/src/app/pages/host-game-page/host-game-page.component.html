@@ -27,6 +27,7 @@
                     <div *ngFor="let player of getPlayers()">
                         <h1>{{ player.name }}</h1>
                         <h1>{{ player.score }}</h1>
+                        <button (click)="mutePlayer(player.name)">Mute</button>
                     </div>
                     <div *ngFor="let quitter of getQuitters()">
                         <h1 class="quitter">{{ quitter.name }}</h1>

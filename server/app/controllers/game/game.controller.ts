@@ -26,6 +26,7 @@ export class GameController {
             this.onPlayerLeave(socket);
             this.onDeleteGame(socket);
             this.onKick(socket);
+            this.onMute(socket);
             this.onStartGame(socket);
             this.onNextQuestion(socket);
             this.onUpdatePlayer(socket);
@@ -117,6 +118,21 @@ export class GameController {
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('kicked', playerName);
             this.sio.to(pin).emit('player-left', { players: game.players, player });
+        });
+    }
+
+    private onMute(socket: Socket): void {
+        socket.on('mute', async (roomData: RoomData<string>) => {
+            const pin = roomData.pin;
+            const playerName = roomData.data;
+
+            const game = await this.gameService.getGame(pin);
+            const player = game.players.find((p) => p.name === playerName);
+            this.sio.sockets.sockets.get(player.id)?.emit('muted', {
+                text: 'Vous avez été muté',
+                timestamp: new Date(),
+                author: 'Système',
+            });
         });
     }
 

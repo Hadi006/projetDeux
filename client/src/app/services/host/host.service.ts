@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
@@ -7,7 +8,6 @@ import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -118,6 +118,14 @@ export class HostService {
         }
 
         this.hostSocketService.emitKick(this.internalGame.pin, playerName);
+    }
+
+    mute(playerName: string): void {
+        if (!this.internalGame) {
+            return;
+        }
+
+        this.hostSocketService.emitMute(this.internalGame.pin, playerName);
     }
 
     startGame(countdown: number): void {

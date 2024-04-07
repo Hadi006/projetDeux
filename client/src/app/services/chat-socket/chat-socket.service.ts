@@ -34,6 +34,14 @@ export class ChatSocketService {
         return this.messageReceivedSubject;
     }
 
+    onPlayerMuted(): Subject<ChatMessage> {
+        this.webSocketService.onEvent<ChatMessage>('player-muted', (message) => {
+            this.messageReceivedSubject.next(message);
+        });
+
+        return this.messageReceivedSubject;
+    }
+
     onPlayerLeft(): Subject<PlayerLeftEventData> {
         this.webSocketService.onEvent<PlayerLeftEventData>('player-left', (data) => {
             this.playerLeftSubject.next(data);
