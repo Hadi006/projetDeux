@@ -240,13 +240,13 @@ export class GameController {
                 game.players = game.players.filter((p) => p.id !== socket.id);
 
                 if (game.hostId === socket.id) {
-                    if (game.quiz.id !== '-1') {
+                    if (game.quiz.id === '-1' && game.players.length >= 1) {
+                        game.hostId = game.players[0].id;
+                        this.sio.to(game.hostId).emit('new-host', game);
+                    } else {
                         await this.gameService.deleteGame(room);
                         this.sio.to(room).emit('game-deleted');
                         return;
-                    } else if (game.players.length >= 1) {
-                        game.hostId = game.players[0].id;
-                        this.sio.to(game.hostId).emit('new-host', game);
                     }
                 }
 
