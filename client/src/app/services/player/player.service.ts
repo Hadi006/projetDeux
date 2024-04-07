@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
 import { TRANSITION_DELAY } from '@common/constant';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Answer, Question } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -155,6 +155,7 @@ export class PlayerService {
 
         this.playerSocketService.emitConfirmPlayerAnswer(this.internalPin, this.player);
         this.internalAnswerConfirmed = true;
+        this.player.hasConfirmedAnswer = true;
     }
 
     getTime(): number {
@@ -279,6 +280,8 @@ export class PlayerService {
         }
 
         this.player.questions.push(question);
+        this.player.hasInteracted = false;
+        this.player.hasConfirmedAnswer = false;
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;

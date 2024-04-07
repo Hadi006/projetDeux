@@ -16,7 +16,7 @@ export class HostSocketService {
     private readonly playerLeftSubject = new Subject<PlayerLeftEventData>();
     private readonly playerJoinedSubject = new Subject<Player>();
     private readonly confirmPlayerAnswerSubject = new Subject<void>();
-    private readonly playerUpdatedSubject = new Subject<HistogramData>();
+    private readonly playerUpdatedSubject = new Subject<{ player: Player; histogramData: HistogramData }>();
 
     constructor(private webSocketService: WebSocketService) {}
 
@@ -56,8 +56,8 @@ export class HostSocketService {
         return this.confirmPlayerAnswerSubject;
     }
 
-    onPlayerUpdated(): Subject<HistogramData> {
-        this.webSocketService.onEvent<HistogramData>('player-updated', (data) => {
+    onPlayerUpdated(): Subject<{ player: Player; histogramData: HistogramData }> {
+        this.webSocketService.onEvent<{ player: Player; histogramData: HistogramData }>('player-updated', (data) => {
             this.playerUpdatedSubject.next(data);
         });
 

@@ -47,6 +47,18 @@ export class QuestionComponent {
         return this.playerService.getPlayerBooleanAnswers();
     }
 
+    updatePlayer(): void {
+        const player = this.getPlayer();
+        if (!player) {
+            return;
+        }
+        player.questions[player.questions.length - 1].lastModification = new Date();
+        player.hasInteracted = true;
+        if (player.questions[player.questions.length - 1].type === 'QCM') {
+            this.playerService.updatePlayer();
+        }
+    }
+
     private canEditAnswer(): boolean {
         if (this.getQuestionData() && this.getQuestionData()?.type === 'QCM' && !this.playerService.answerConfirmed) {
             return true;

@@ -266,8 +266,13 @@ export class HostService {
     }
 
     private subscribeToPlayerUpdated(): Subscription {
-        return this.hostSocketService.onPlayerUpdated().subscribe((histogramData: HistogramData) => {
+        return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
+            this.internalGame?.players.forEach((p) => {
+                if (p.name === player.name) {
+                    p = player;
+                }
+            });
         });
     }
 

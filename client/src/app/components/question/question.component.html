@@ -15,7 +15,7 @@ Temps restant: {{ playerService.getTime() }}
                         type="checkbox"
                         class="choice-input"
                         [(ngModel)]="choice.isCorrect"
-                        (ngModelChange)="playerService.updatePlayer()"
+                        (ngModelChange)="updatePlayer()"
                     />
                     {{ i + 1 }}) {{ choice.text }}
                 </label>
