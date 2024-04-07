@@ -8,6 +8,7 @@ import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { HistogramData } from '@common/histogram-data';
 import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
+import { Game } from '@common/game';
 
 describe('HostService', () => {
     let service: HostService;
@@ -19,6 +20,7 @@ describe('HostService', () => {
     const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
     const confirmPlayerAnswerSubject: Subject<void> = new Subject();
     const playerUpdatedSubject: Subject<HistogramData> = new Subject();
+    const newHostSubject: Subject<Game> = new Subject();
 
     beforeEach(async () => {
         timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
@@ -32,6 +34,7 @@ describe('HostService', () => {
             'onPlayerLeft',
             'onConfirmPlayerAnswer',
             'onPlayerUpdated',
+            'onNewHost',
             'emitCreateGame',
             'emitToggleLock',
             'emitKick',
@@ -46,6 +49,7 @@ describe('HostService', () => {
         hostSocketServiceSpy.onPlayerLeft.and.returnValue(playerLeftSubject);
         hostSocketServiceSpy.onConfirmPlayerAnswer.and.returnValue(confirmPlayerAnswerSubject);
         hostSocketServiceSpy.onPlayerUpdated.and.returnValue(playerUpdatedSubject);
+        hostSocketServiceSpy.onNewHost.and.returnValue(newHostSubject);
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
 
         eventSubject = new ReplaySubject();
