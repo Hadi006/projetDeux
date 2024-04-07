@@ -179,4 +179,16 @@ describe('GameChoicePageComponent', () => {
             done();
         });
     });
+
+    it('should not create game with random questions if there are no questions', (done) => {
+        publicQuizzesServiceSpy.createRandomQuestions.and.returnValue(of([]));
+        publicQuizzesServiceSpy.checkQuizAvailability.and.returnValue(of(true));
+        component.chooseQuiz({ ...testQuiz, id: RANDOM_QUIZ_ID });
+        hostServiceSpy.createGame.and.returnValue(of(true));
+        component.startGame();
+        publicQuizzesServiceSpy.checkQuizAvailability().subscribe(() => {
+            expect(publicQuizzesServiceSpy.alertNoQuizAvailable).toHaveBeenCalledWith('Erreur lors de la création du jeu');
+            done();
+        });
+    });
 });
