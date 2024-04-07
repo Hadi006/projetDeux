@@ -7,6 +7,8 @@ interface Player {
     questions: Question[];
     fastestResponseCount: number;
     muted: boolean;
+    hasInteracted: boolean;
+    hasConfirmedAnswer: boolean;
 }
 
 class Player implements Player {
@@ -17,6 +19,8 @@ class Player implements Player {
         this.questions = [];
         this.fastestResponseCount = 0;
         this.muted = false;
+        this.hasInteracted = false;
+        this.hasConfirmedAnswer = false;
     }
 }
 

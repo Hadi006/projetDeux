@@ -148,6 +148,8 @@ export const TEST_PLAYERS: Player[] = [
         questions: TEST_QUESTIONS,
         fastestResponseCount: 0,
         muted: false,
+        hasConfirmedAnswer: false,
+        hasInteracted: false,
     },
     {
         id: '2',
@@ -156,6 +158,8 @@ export const TEST_PLAYERS: Player[] = [
         questions: TEST_QUESTIONS,
         fastestResponseCount: 0,
         muted: false,
+        hasConfirmedAnswer: false,
+        hasInteracted: false,
     },
 ];
 
