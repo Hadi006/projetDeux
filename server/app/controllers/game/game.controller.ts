@@ -246,12 +246,12 @@ export class GameController {
                         return;
                     } else if (game.players.length >= 1) {
                         game.hostId = game.players[0].id;
+                        this.sio.to(game.hostId).emit('new-host', game);
                     }
                 }
 
                 await this.gameService.updateGame(game);
                 this.sio.to(room).emit('player-left', { players: game.players, player });
-                this.sio.to(game.hostId).emit('new-host', game);
             });
         });
     }
