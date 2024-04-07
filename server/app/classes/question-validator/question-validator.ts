@@ -17,6 +17,7 @@ export class QuestionValidator {
             type: '',
             points: 0,
             choices: [],
+            qrlAnswer: '',
         };
     }
 

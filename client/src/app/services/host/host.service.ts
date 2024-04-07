@@ -26,7 +26,7 @@ export class HostService {
     private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
-    private playerActivityLog: { [playerId: string]: number } = {};
+
     constructor(
         private hostSocketService: HostSocketService,
         private timeService: TimeService,
@@ -62,30 +62,6 @@ export class HostService {
 
     get histograms(): HistogramData[] {
         return this.internalHistograms;
-    }
-
-    updatePlayerActivity(playerId: string): void {
-        this.playerActivityLog[playerId] = Date.now();
-    }
-    // Method to calculate activity metrics
-    calculateActivityMetrics(): { activePlayers: number; inactivePlayers: number } {
-        const currentTime = Date.now();
-        const threshold = currentTime - 5000; // 5 seconds threshold
-
-        let activePlayers = 0;
-        let inactivePlayers = 0;
-
-        for (const playerId in this.playerActivityLog) {
-            if (Object.prototype.hasOwnProperty.call(this.playerActivityLog, playerId)) {
-                if (this.playerActivityLog[playerId] > threshold) {
-                    activePlayers++;
-                } else {
-                    inactivePlayers++;
-                }
-            }
-        }
-
-        return { activePlayers, inactivePlayers };
     }
 
     getTime(): number {
@@ -163,15 +139,29 @@ export class HostService {
 
         this.internalQuestionEnded = false;
 
-        const newHistogram: HistogramData = {
-            labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
-            datasets: [
-                {
-                    label: currentQuestion.text,
-                    data: currentQuestion.choices.map(() => 0),
-                },
-            ],
-        };
+        // check if its qrl, if so, create qrl histogram
+        let newHistogram: HistogramData;
+        if (currentQuestion.type === 'QCM') {
+            newHistogram = {
+                labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: currentQuestion.choices.map(() => 0),
+                    },
+                ],
+            };
+        } else {
+            newHistogram = {
+                labels: ['Joueurs actifs', 'Joueurs inactifs'],
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: [0, this.internalGame.players.length],
+                    },
+                ],
+            };
+        }
         this.internalHistograms.push(newHistogram);
 
         this.hostSocketService.emitNextQuestion(this.internalGame.pin, {
