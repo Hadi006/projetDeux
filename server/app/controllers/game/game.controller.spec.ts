@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { GameController } from '@app/controllers/game/game.controller';
 import { Server } from '@app/server';
 import { GameService } from '@app/services/game/game.service';
@@ -41,7 +42,7 @@ describe('GameController', () => {
             testGame.hostId = socket.id;
         });
         clientSocket = ioClient(urlString);
-        stub(console, 'log');
+        // stub(console, 'log');
     });
 
     afterEach(() => {
@@ -131,6 +132,20 @@ describe('GameController', () => {
                 done();
             });
             clientSocket.emit('start-game', { pin: testGame.pin, data: countdown });
+        });
+    });
+
+    it('should not broadcast a start game if not the host', (done) => {
+        const countdown = 5;
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.emit('start-game', { pin: testGame.pin, data: countdown });
+            setTimeout(() => {
+                expect(toSpy.called).to.equal(false);
+                done();
+            }, RESPONSE_DELAY);
         });
     });
 
@@ -232,6 +247,22 @@ describe('GameController', () => {
         });
     });
 
+    it('should not broadcast a question-changed if not the host', (done) => {
+        const question = testQuestion;
+        const histogram = testHistogram;
+        const countdown = 5;
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        const toSpy = spy(service['sio'], 'to');
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.emit('next-question', { pin: testGame.pin, data: { question, countdown, histogram } });
+            setTimeout(() => {
+                expect(toSpy.called).to.equal(false);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
     it('should update player and tell the host', (done) => {
         gameServiceStub.updatePlayer.resolves(TEST_HISTOGRAM_DATA[0]);
         gameServiceStub.getGame.resolves(testGame);
@@ -256,10 +287,10 @@ describe('GameController', () => {
 
     it('should update scores', (done) => {
         const questionIndex = 0;
+        gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
             gameServiceStub.updateScores.resolves();
-            gameServiceStub.getGame.resolves(testGame);
             let count = 0;
             clientSocket.on('new-score', (response) => {
                 if (response.name === testGame.players[0].name) {
@@ -275,6 +306,24 @@ describe('GameController', () => {
                 }
             });
             clientSocket.emit('update-scores', { pin: testGame.pin, data: questionIndex });
+        });
+    });
+
+    it('should not update scores if not the host', (done) => {
+        const questionIndex = 0;
+        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            gameServiceStub.updateScores.resolves();
+            let count = 0;
+            clientSocket.on('new-score', () => {
+                count++;
+            });
+            clientSocket.emit('update-scores', { pin: testGame.pin, data: questionIndex });
+            setTimeout(() => {
+                expect(count).to.equal(0);
+                done();
+            }, RESPONSE_DELAY);
         });
     });
 
@@ -305,6 +354,19 @@ describe('GameController', () => {
         });
     });
 
+    it('should not end question if not the host', (done) => {
+        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            const toSpy = spy(service['sio'], 'to');
+            clientSocket.emit('end-question', testGame.pin);
+            setTimeout(() => {
+                expect(toSpy.called).to.equal(false);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
     it('should answer', (done) => {
         const playerName = 'John Doe';
         const answer = { playerName, choices: [true, false, false, false] };
@@ -315,6 +377,21 @@ describe('GameController', () => {
             clientSocket.emit('answer', { pin: testGame.pin, data: answer });
             setTimeout(() => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
+    it('should not answer if not the host', (done) => {
+        const playerName = 'John Doe';
+        const answer = { playerName, choices: [true, false, false, false] };
+        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            const toSpy = spy(service['sio'], 'to');
+            clientSocket.emit('answer', { pin: testGame.pin, data: answer });
+            setTimeout(() => {
+                expect(toSpy.called).to.equal(false);
                 done();
             }, RESPONSE_DELAY);
         });
@@ -333,6 +410,19 @@ describe('GameController', () => {
         });
     });
 
+    it('should not end game if not the host', (done) => {
+        gameServiceStub.getGame.resolves({ ...testGame, hostId: '123' });
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            const toSpy = spy(service['sio'], 'to');
+            clientSocket.emit('end-game', testGame.pin);
+            setTimeout(() => {
+                expect(toSpy.called).to.equal(false);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
     it('should delete a game if host disconnects', (done) => {
         gameServiceStub.createGame.resolves({ ...testGame, hostId: clientSocket.id });
         clientSocket.emit('create-game', testGame.quiz, () => {
@@ -341,6 +431,33 @@ describe('GameController', () => {
             clientSocket.disconnect();
             setTimeout(() => {
                 expect(gameServiceStub.deleteGame.calledWith(testGame.pin)).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
+    it('should not delete game if host disconnects and there are still players', (done) => {
+        testGame.quiz.id = '-1';
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: clientSocket.id });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            gameServiceStub.getGame.resolves({ ...testGame, hostId: clientSocket.id, players: [TEST_PLAYERS[0]] });
+            gameServiceStub.deleteGame.resolves(true);
+            clientSocket.disconnect();
+            setTimeout(() => {
+                expect(gameServiceStub.deleteGame.called).to.equal(false);
+                done();
+            }, RESPONSE_DELAY);
+        });
+    });
+
+    it('should do nothing if there are no players', (done) => {
+        gameServiceStub.createGame.resolves({ ...testGame, hostId: '123' });
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            gameServiceStub.getGame.resolves({ ...testGame, hostId: '123', players: [] });
+            gameServiceStub.deleteGame.resolves(true);
+            clientSocket.disconnect();
+            setTimeout(() => {
+                expect(gameServiceStub.deleteGame.called).to.equal(false);
                 done();
             }, RESPONSE_DELAY);
         });
