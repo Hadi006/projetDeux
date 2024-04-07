@@ -71,4 +71,11 @@ describe('HostPlayerPageComponent', () => {
             done();
         });
     });
+
+    it('should clean up and navigate to home when leaveGame is called', () => {
+        component.leaveGame();
+        expect(hostServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(playerServiceSpy.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
 });
