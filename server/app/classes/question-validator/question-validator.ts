@@ -87,10 +87,6 @@ export class QuestionValidator {
                 if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
                     this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
                 }
-            } else if (this.question.type === 'QRL') {
-                if (this.question.choices.length === 0) {
-                    this.compilationError += 'Question QRL : doit avoir au moins une réponse !\n';
-                }
             }
         });
         return this;
