@@ -181,4 +181,47 @@ describe('QuestionBankComponent', () => {
         component.openQuestionForm(0);
         expect(matDialogSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: ERROR_MSG } });
     });
+
+    it('should filter questions by selected type', () => {
+        component.selectedType = 'QRL';
+        component.questions = of<Question[]>([
+            {
+                text: 'Question 1',
+                type: 'QRL',
+                points: 10,
+                choices: [],
+                qrlAnswer: 'Answer 1',
+            },
+            {
+                text: 'Question 2',
+                type: 'QRL',
+                points: 5,
+                choices: [],
+                qrlAnswer: 'Answer 2',
+            },
+            {
+                text: 'Question 3',
+                type: 'QCM', // Different type
+                points: 8,
+                choices: [],
+                qrlAnswer: 'Answer 3',
+            },
+            {
+                text: 'Question 4',
+                type: 'QRL',
+                points: 3,
+                choices: [],
+                qrlAnswer: 'Answer 4',
+            },
+        ]);
+
+        component.filterQuestions();
+
+        component.filteredQuestions.subscribe((filteredQuestions) => {
+            expect(filteredQuestions.length).toBe(3); // Only QRL questions should be filtered
+            expect(filteredQuestions[0].type).toBe('QRL');
+            expect(filteredQuestions[1].type).toBe('QRL');
+            expect(filteredQuestions[2].type).toBe('QRL');
+        });
+    });
 });

@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
+import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
-import { HostSocketService } from '@app/services/host-socket/host-socket.service';
-import { firstValueFrom, of, ReplaySubject, Subject } from 'rxjs';
+import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
+import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
-import { HistogramData } from '@common/histogram-data';
-import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
+import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
 
 describe('HostService', () => {
     let service: HostService;
@@ -21,7 +21,7 @@ describe('HostService', () => {
     const playerJoinedSubject: Subject<Player> = new Subject();
     const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
     const confirmPlayerAnswerSubject: Subject<void> = new Subject();
-    const playerUpdatedSubject: Subject<HistogramData> = new Subject();
+    const playerUpdatedSubject: Subject<PlayerUpdatedEventData> = new Subject();
     const newHostSubject: Subject<Game> = new Subject();
 
     beforeEach(async () => {
@@ -267,6 +267,46 @@ describe('HostService', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
         service.nextQuestion();
         expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalled();
+    });
+
+    it('should emit next question with histogram for non-QCM question', () => {
+        const question = JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0]));
+        question.type = 'QRL'; // Simulate a non-QCM question
+        spyOn(service, 'getCurrentQuestion').and.returnValue(question);
+        const histogramLength = service.histograms.length;
+
+        service.nextQuestion();
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalled();
+        const expectedHistogram = {
+            labels: ['Joueurs actifs', 'Joueurs inactifs'],
+            datasets: [
+                {
+                    label: question.text,
+                    data: [0, service.game.players.length],
+                },
+            ],
+        };
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalledWith(service.game.pin, {
+            question,
+            countdown: service.game.quiz.duration,
+            histogram: expectedHistogram,
+        });
+
+        expect(service.histograms.length).toBe(histogramLength + 1);
+
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
     });
 
     it('should end game', () => {

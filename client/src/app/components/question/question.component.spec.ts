@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, waitForAsync } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
 import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Player } from '@common/player';
@@ -23,6 +23,7 @@ describe('QuestionComponent', () => {
             'handleKeyUp',
             'getPlayerBooleanAnswers',
             'getTime',
+            'updatePlayer',
         ]);
         playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
@@ -112,4 +113,103 @@ describe('QuestionComponent', () => {
     it('getIsChecked should return the players answer', () => {
         expect(component.getIsChecked()).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
+    it('should set lastModificationDate to current date', () => {
+        const before = new Date().getTime();
+        component.setLastModificationDate();
+        const after = new Date().getTime();
+
+        expect(component.lastModificationDate).toBeGreaterThanOrEqual(before);
+        expect(component.lastModificationDate).toBeLessThanOrEqual(after);
+    });
+
+    it('should return the remaining length', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: false,
+            questions: [
+                {
+                    text: 'Sample question',
+                    type: 'QRL',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+        };
+        const length = component.getLength();
+        expect(length).toBe(200 - 'test'.length);
+    });
+
+    it('should return 200 if qrlAnswer is empty string', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: false,
+            questions: [
+                {
+                    text: 'Sample question',
+                    type: 'QRL',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: '',
+                },
+            ],
+        };
+        const length = component.getLength();
+        expect(length).toBe(200);
+    });
+
+    it('should return 0 if qrlAnswer length is 200', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: false,
+            questions: [
+                {
+                    text: 'Sample question',
+                    type: 'QRL',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'a'.repeat(200),
+                },
+            ],
+        };
+        const length = component.getLength();
+        expect(length).toBe(0);
+    });
+
+    it('should update player isActive status and call updatePlayer if status changed', fakeAsync(() => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QRL',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+            isActive: false,
+        };
+        component.lastModificationDate = new Date(new Date().getTime() - 3000);
+
+        // Act
+        component.getTime();
+
+        // Assert
+        if (playerHandlerServiceSpy.player) {
+            expect(playerHandlerServiceSpy.player.isActive).toBe(true);
+        }
+    }));
 });
