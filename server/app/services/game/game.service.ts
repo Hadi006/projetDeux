@@ -122,12 +122,12 @@ export class GameService {
             return;
         }
 
-        const isInTestMode = game.players.length === 1 && game.players[0].name === 'Organisateur';
-        if (question.type === 'QRL' && !isInTestMode) {
-            game.players[0].score += question.points;
-            await this.updateGame(game);
-            return;
-        }
+        // const isInTestMode = game.players.length === 1 && game.players[0].name === 'Organisateur';
+        // if (question.type === 'QRL' && !isInTestMode) {
+        //     game.players[0].score += question.points;
+        //     await this.updateGame(game);
+        //     return;
+        // }
 
         const { firstCorrectPlayer, isUnique } = this.findFirstCorrectAndUniquePlayer(game.players, questionIndex, question);
 
