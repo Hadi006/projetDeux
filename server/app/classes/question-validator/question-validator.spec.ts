@@ -211,6 +211,20 @@ describe('QuestionValidator', () => {
         expect(compiledQuestion.error).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
     });
 
+    it("should check if the question has choices and fail if they aren't valid", () => {
+        questionValidator = new QuestionValidator({
+            ...mockQuestion,
+            choices: [MOCK_ANSWERS[0], { text: 'This is another test answer' }],
+        });
+        questionValidator.checkChoices();
+        const compiledQuestion = questionValidator.compile();
+        expect(compiledQuestion.data).to.deep.equal({
+            ...EMPTY_QUESTION,
+            choices: [MOCK_ANSWERS[0], { text: 'This is another test answer', isCorrect: false }],
+        });
+        expect(compiledQuestion.error).to.equal('Reponse : type manquant !\nQuestion : doit avoir au moins une bonne et une mauvaise réponse !\n');
+    });
+
     it('should check QRL questions', () => {
         const qrlQuestion: Question = {
             text: 'This is a test question',
