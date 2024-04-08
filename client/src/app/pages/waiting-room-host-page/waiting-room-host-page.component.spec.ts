@@ -98,4 +98,16 @@ describe('WaitingRoomHostPageComponent', () => {
         component.startGame();
         expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
     });
+
+    it('should not start game if game is undefined', () => {
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => undefined });
+        component.startGame();
+        expect(hostServiceSpy.startGame).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to host player page if quiz id is -1', () => {
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => ({ ...TEST_GAME_DATA, quiz: { id: RANDOM_QUIZ_ID } }) });
+        component.startGame();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['host-player']);
+    });
 });
