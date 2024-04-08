@@ -90,6 +90,16 @@ describe('HostSocketService', () => {
         socketHelper.peerSideEmit('player-updated', expectedData);
     });
 
+    it('should listen for new host', (done) => {
+        service.connect();
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        service.onNewHost().subscribe((game) => {
+            expect(game).toEqual(expectedGame);
+            done();
+        });
+        socketHelper.peerSideEmit('new-host', expectedGame);
+    });
+
     it('should emit create game', (done) => {
         service.connect();
         const quiz = JSON.parse(JSON.stringify(TEST_QUIZZES[0]));
