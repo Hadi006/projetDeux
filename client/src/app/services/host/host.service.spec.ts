@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
@@ -258,6 +259,12 @@ describe('HostService', () => {
         expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
         expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+    });
+
+    it('should emit undefined question', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+        service.nextQuestion();
+        expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalled();
     });
 
     it('should end game', () => {
