@@ -35,12 +35,12 @@ export class QuestionComponent {
     }
 
     getTime(): number {
-        const question = this.playerService.player?.questions[this.playerService.player.questions.length - 1] || undefined;
-        if (question && question.type === 'QRL') {
-            if (!this.playerService.player) {
-                return 0;
-            }
+        if (!this.playerService.player) {
+            return 0;
+        }
 
+        const question = this.playerService.player.questions[this.playerService.player.questions.length - 1];
+        if (question && question.type === 'QRL') {
             const wasActive = this.playerService.player.isActive;
             const isActive = new Date().getTime() - new Date(question.lastModification || '').getTime() < POLL_RATE;
             if (wasActive !== isActive) {
