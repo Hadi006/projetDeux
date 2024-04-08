@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
+import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { PlayerService } from '@app/services/player/player.service';
 import { Subscription } from 'rxjs';
 
@@ -35,6 +36,19 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
 
     gameTitle() {
         return this.playerService.gameTitle;
+    }
+
+    openConfirmationDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '250px',
+            data: 'Êtes-vous sûr de voiloir quitter cette partie?',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/home']);
+            }
+        });
     }
 
     ngOnInit() {

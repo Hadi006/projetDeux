@@ -6,7 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, of } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
 
@@ -174,5 +174,20 @@ describe('HostGamePageComponent', () => {
         component['histogramSubscription'] = { unsubscribe: unsubscribeSpy } as unknown as Subscription;
         component.ngOnDestroy();
         expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should open a confirmation dialog and navigate to home if confirmed', () => {
+        const dialogRef = { afterClosed: () => of(true) };
+        (dialogSpy.open as jasmine.Spy).and.returnValue(dialogRef);
+        component.openConfirmationDialog();
+        expect(dialogSpy.open).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should open a confirmation dialog and not navigate to home if not confirmed', () => {
+        const dialogRef = { afterClosed: () => of(false) };
+        (dialogSpy.open as jasmine.Spy).and.returnValue(dialogRef);
+        component.openConfirmationDialog();
+        expect(dialogSpy.open).toHaveBeenCalled();
     });
 });
