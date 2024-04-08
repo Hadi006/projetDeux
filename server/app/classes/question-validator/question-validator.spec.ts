@@ -27,6 +27,7 @@ describe('QuestionValidator', () => {
 
     beforeEach(() => {
         mockQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
+        mockQuestion.choices[1].isCorrect = true;
         questionValidator = new QuestionValidator(mockQuestion);
     });
 
@@ -162,9 +163,7 @@ describe('QuestionValidator', () => {
 
     it('should check if the question has choices and fail if there are not enough choices', () => {
         questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'multiple-choice',
-            points: 10,
+            ...mockQuestion,
             choices: [MOCK_ANSWERS[0]],
         });
         questionValidator.checkChoices();
@@ -189,9 +188,7 @@ describe('QuestionValidator', () => {
 
     it('should check if the question has choices and fail if there are not enough correct choices', () => {
         questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'QCM',
-            points: 10,
+            ...mockQuestion,
             choices: [MOCK_ANSWERS[1], MOCK_ANSWERS[1]],
         });
         questionValidator.checkChoices();
@@ -207,7 +204,10 @@ describe('QuestionValidator', () => {
         });
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
+        expect(compiledQuestion.data).to.deep.equal({
+            ...EMPTY_QUESTION,
+            choices: [MOCK_ANSWERS[0], MOCK_ANSWERS[0]],
+        });
         expect(compiledQuestion.error).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
     });
 });
