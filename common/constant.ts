@@ -96,6 +96,8 @@ export const RANDOM_QUIZ_ID = '-1';
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 
+export const QRL_DURATION = 60;
+
 /* Tests */
 export const TEST_ANSWERS: Answer[] = [
     {

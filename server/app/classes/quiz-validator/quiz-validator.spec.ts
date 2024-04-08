@@ -1,4 +1,5 @@
 import { QuizValidator } from '@app/classes/quiz-validator/quiz-validator';
+import { QRL_DURATION } from '@common/constant';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 
@@ -221,6 +222,15 @@ describe('QuizValidator', () => {
         const compiledQuiz = await quizValidator.compile();
         expect(compiledQuiz.error).to.equal('Question : doit être un objet !\n');
         expect(compiledQuiz.data.questions).to.deep.equal(EMPTY_QUIZ.questions);
+    });
+
+    it('should check QRL questions', async () => {
+        quizValidator = new QuizValidator({ ...MOCK_QUIZ, questions: [{ ...MOCK_QUESTIONS[0], type: 'QRL' }] }, getDataStub);
+        quizValidator.checkQuestions();
+        const compiledQuiz = await quizValidator.compile();
+        expect(compiledQuiz.error).to.equal('');
+        expect(compiledQuiz.data.questions).to.deep.equal([{ ...MOCK_QUESTIONS[0], type: 'QRL' }]);
+        expect(compiledQuiz.data.duration).to.equal(QRL_DURATION);
     });
 
     it('should check visibility and fail', async () => {
