@@ -202,6 +202,7 @@ describe('QuestionComponent', () => {
                     points: 10,
                     choices: [],
                     qrlAnswer: 'test',
+                    lastModification: new Date(),
                 },
             ],
             isActive: false,
