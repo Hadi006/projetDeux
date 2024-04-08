@@ -30,6 +30,7 @@ export class PlayerService {
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
+    private internalQrlCorrect: number = -1;
 
     constructor(
         private playerSocketService: PlayerSocketService,
@@ -85,16 +86,16 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
+    get qrlCorrect(): number {
+        return this.internalQrlCorrect;
+    }
+
     getPlayerAnswers(): Answer[] {
         if (!this.player) {
             return [];
         }
 
         return this.player.questions[this.player.questions.length - 1].choices;
-    }
-
-    getPlayerBooleanAnswers(): boolean[] {
-        return this.getPlayerAnswers().map((answer) => answer.isCorrect ?? false);
     }
 
     isConnected(): boolean {
@@ -199,6 +200,7 @@ export class PlayerService {
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
+        this.internalQrlCorrect = -1;
     }
 
     private verifyUsesSockets(): void {
@@ -266,8 +268,10 @@ export class PlayerService {
             }
 
             if (player.name === this.player.name) {
-                if (player.score > this.player.score) {
+                if (player.score > this.player.score && player.questions[player.questions.length - 1].type === 'QCM') {
                     this.internalIsCorrect = true;
+                } else if (player.questions[player.questions.length - 1].type === 'QRL' && player.score > this.player.score) {
+                    this.internalQrlCorrect = (player.score - this.player.score) / player.questions[player.questions.length - 1].points;
                 }
                 this.player = player;
             }
@@ -306,6 +310,7 @@ export class PlayerService {
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
+        this.internalQrlCorrect = -1;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
     }

@@ -32,6 +32,7 @@ export class GameController {
             this.onStartGame(socket);
             this.onNextQuestion(socket);
             this.onUpdatePlayer(socket);
+            this.onUpdatePlayers(socket);
             this.onUpdateScores(socket);
             this.onEndQuestion(socket);
             this.onConfirmPlayerAnswer(socket);
@@ -161,6 +162,7 @@ export class GameController {
 
             const game = await this.gameService.getGame(roomData.pin);
             game.nPlayers = game.players.length;
+            await this.gameService.updateGame(game);
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
@@ -194,6 +196,25 @@ export class GameController {
             const histogramData = await this.gameService.updatePlayer(roomData.pin, roomData.data);
             const hostId = (await this.gameService.getGame(roomData.pin))?.hostId;
             this.sio.sockets.sockets.get(hostId)?.emit('player-updated', { player: roomData.data, histogramData });
+        });
+    }
+
+    private onUpdatePlayers(socket: Socket): void {
+        socket.on('update-players', async (roomData: RoomData<Player[]>) => {
+            console.log(roomData)
+            const game = await this.gameService.getGame(roomData.pin);
+            if (!game) {
+                return;
+            }
+            game.players = roomData.data;
+            // game.histograms.pop();
+            // game.histograms.push({
+
+            // })
+            await this.gameService.updateGame(game);
+            game.players.forEach((player) => {
+                this.sio.to(roomData.pin).emit('new-score', player);
+            });
         });
     }
 

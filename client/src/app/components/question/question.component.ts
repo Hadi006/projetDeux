@@ -62,10 +62,6 @@ export class QuestionComponent {
         return player.questions[player.questions.length - 1];
     }
 
-    getIsChecked(): boolean[] {
-        return this.playerService.getPlayerBooleanAnswers();
-    }
-
     updatePlayer(): void {
         const player = this.getPlayer();
         if (!player) {
@@ -76,6 +72,10 @@ export class QuestionComponent {
         if (player.questions[player.questions.length - 1].type === 'QCM') {
             this.playerService.updatePlayer();
         }
+    }
+
+    isWaitingForEvaluation(): boolean {
+        return this.getQuestionData()?.type === 'QRL' && this.playerService.getTime() === 0 && this.playerService.qrlCorrect === -1;
     }
 
     private canEditAnswer(): boolean {

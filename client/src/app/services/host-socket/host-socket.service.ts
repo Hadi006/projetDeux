@@ -136,4 +136,8 @@ export class HostSocketService {
     emitAnswer(pin: string, currentAnswer: Answer[]): void {
         this.webSocketService.emit<RoomData<Answer[]>>('answer', { pin, data: currentAnswer });
     }
+
+    emitUpdatePlayers(pin: string, players: Player[]): void {
+        this.webSocketService.emit<RoomData<Player[]>>('update-players', { pin, data: players })
+    }
 }

@@ -23,7 +23,7 @@ export class HostService {
     private internalGame: Game | null;
     private internalNAnswered: number;
     private internalQuestionEnded: boolean;
-    private currentQuestionIndex: number;
+    public currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
 
@@ -199,6 +199,14 @@ export class HostService {
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
+    updatePlayers(): void {
+        console.log(this.internalGame)
+        if (!this.internalGame) {
+            return;
+        }
+        this.hostSocketService.emitUpdatePlayers(this.internalGame.pin, this.internalGame.players);
+    }
+
     endGame(): void {
         if (!this.internalGame) {
             return;
@@ -245,6 +253,13 @@ export class HostService {
         }
 
         this.hostSocketService.emitEndQuestion(this.internalGame.pin);
+        const isTestMode = this.internalGame?.players.length === 1 && this.internalGame.players[0].name === 'Organisateur';
+        if (this.getCurrentQuestion()?.type === 'QRL' && !isTestMode) {
+            this.internalQuestionEnded = true;
+            this.currentQuestionIndex++;
+            this.questionEndedSubject.next();
+            return;
+        }
         this.hostSocketService.emitUpdateScores(this.internalGame.pin, this.currentQuestionIndex).subscribe((game: Game) => {
             this.internalGame = game;
             this.questionEndedSubject.next();
@@ -252,6 +267,7 @@ export class HostService {
         this.hostSocketService.emitAnswer(this.internalGame.pin, currentAnswer);
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
+
     }
 
     private subscribeToPlayerJoined(): Subscription {
@@ -293,7 +309,6 @@ export class HostService {
 
     private subscribeToPlayerUpdated(): Subscription {
         return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
-            console.log(histogramData);
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
             const playerIndex = this.internalGame?.players.findIndex((p) => p.name === player.name);
             if (playerIndex === undefined || playerIndex === -1 || !this.internalGame) {
