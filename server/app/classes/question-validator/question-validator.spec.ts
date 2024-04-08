@@ -161,7 +161,7 @@ describe('QuestionValidator', () => {
         });
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.error).to.equal('Question : choix manquants !\n');
+        expect(compiledQuestion.error).to.equal('Question : doit avoir entre 2 et 4 choix !\n');
     });
 
     it('should check if the question has choices and fail if there are too many choices', () => {
