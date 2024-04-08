@@ -38,6 +38,37 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         return this.hostService.histograms[this.hostService.histograms.length - 1];
     }
 
+    get players() {
+        const players = this.game?.players || [];
+        const quitters = this.hostService.quitters;
+        const playersWithQuitters = [...players, ...quitters];
+        switch (this.sort) {
+            case 'name':
+                return playersWithQuitters.sort((a, b) => {
+                    return this.order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+                });
+            case 'score':
+                return playersWithQuitters.sort((a, b) => {
+                    if (a.score === b.score) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return this.order === 'asc' ? a.score - b.score : b.score - a.score;
+                });
+            case 'color':
+                return playersWithQuitters.sort((a, b) => {
+                    const colorOrder = ['red', 'yellow', 'green', 'black'];
+                    if (this.getColor(a) === this.getColor(b)) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return this.order === 'asc'
+                        ? colorOrder.indexOf(this.getColor(a)) - colorOrder.indexOf(this.getColor(b))
+                        : colorOrder.indexOf(this.getColor(b)) - colorOrder.indexOf(this.getColor(a));
+                });
+            default:
+                return playersWithQuitters;
+        }
+    }
+
     stopCountDown() {
         this.isCountingDown = false;
     }
@@ -60,38 +91,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
 
     showEndGameResult() {
         this.hostService.endGame();
-    }
-
-    get players() {
-        const players = this.game?.players || [];
-        const quitters = this.hostService.quitters;
-        const playersWithQuitters = [...players, ...quitters];
-        switch (this.sort) {
-            case 'name':
-                return playersWithQuitters.sort((a, b) => {
-                    return this.order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-                });
-            case 'score':
-                return playersWithQuitters.sort((a, b) => {
-                    if (a.score === b.score) {
-                        return a.name.localeCompare(b.name);
-                    }
-                    return this.order === 'asc' ? a.score - b.score : b.score - a.score;
-                });
-            case 'color':
-                const colorOrder = ['red', 'yellow', 'green', 'black'];
-                return playersWithQuitters.sort((a, b) => {
-                    if (this.getColor(a) === this.getColor(b)) {
-                        return a.name.localeCompare(b.name);
-                    }
-                    return this.order === 'asc'
-                        ? colorOrder.indexOf(this.getColor(a)) - colorOrder.indexOf(this.getColor(b))
-                        : colorOrder.indexOf(this.getColor(b)) - colorOrder.indexOf(this.getColor(a));
-                });
-            default:
-                return playersWithQuitters;
-        }
-
     }
 
     sortBy(sort: string) {
