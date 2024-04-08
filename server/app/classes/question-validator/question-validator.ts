@@ -78,7 +78,7 @@ export class QuestionValidator {
                 return;
             }
 
-            if (this.newQuestion.type === 'QCM') {
+            if (this.question.type === 'QCM') {
                 if (this.question.choices.length < MIN_CHOICES || this.question.choices.length > MAX_CHOICES) {
                     this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
                     return;
@@ -87,7 +87,7 @@ export class QuestionValidator {
                 if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
                     this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
                 }
-            } else if (this.newQuestion.type === 'QRL') {
+            } else if (this.question.type === 'QRL') {
                 if (this.question.choices.length === 0) {
                     this.compilationError += 'Question QRL : doit avoir au moins une réponse !\n';
                 }
