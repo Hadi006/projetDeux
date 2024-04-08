@@ -8,6 +8,7 @@ import { EndgameResultPageComponent } from '@app/pages/endgame-result-page/endga
 import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { HostGamePageComponent } from '@app/pages/host-game-page/host-game-page.component';
+import { HostPlayerPageComponent } from '@app/pages/host-player-page/host-player-page.component';
 import { JoinRoomPageComponent } from '@app/pages/join-room-page/join-room-page.component';
 import { PlayerGamePageComponent } from '@app/pages/player-game-page/player-game-page.component';
 import { TestPageComponent } from '@app/pages/test-page/test-page.component';
@@ -28,7 +29,8 @@ const routes: Routes = [
     { path: 'waiting-room-player', component: WaitingRoomPlayerPageComponent, data: { usesSockets: true } },
     { path: 'game-host', component: HostGamePageComponent, data: { usesSockets: true } },
     { path: 'game-player', component: PlayerGamePageComponent, data: { usesSockets: true } },
-    { path: 'endgame', component: EndgameResultPageComponent, data: { usesSockets: true } },
+    { path: 'host-player', component: HostPlayerPageComponent, data: { usesSockets: true } },
+    { path: 'endgame', component: EndgameResultPageComponent },
     { path: 'test', component: TestPageComponent, data: { usesSockets: true } },
     { path: '**', redirectTo: '/home' },
 ];

@@ -2,19 +2,20 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { START_GAME_COUNTDOWN } from '@common/constant';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-gameplay-player-page',
-    templateUrl: './test-page.component.html',
-    styleUrls: ['./test-page.component.scss'],
+    selector: 'app-host-player-page',
+    templateUrl: './host-player-page.component.html',
+    styleUrls: ['./host-player-page.component.scss'],
 })
-export class TestPageComponent implements OnInit, OnDestroy {
+export class HostPlayerPageComponent implements OnInit, OnDestroy {
     private questionEndedSubscription: Subscription;
     private gameEndedSubscription: Subscription;
 
     constructor(
-        public playerService: PlayerService,
+        private playerService: PlayerService,
         private hostService: HostService,
         private router: Router,
     ) {
@@ -22,25 +23,29 @@ export class TestPageComponent implements OnInit, OnDestroy {
             this.hostService.nextQuestion();
         });
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
-            this.router.navigate(['/home/create-game']);
+            this.hostService.endGame();
         });
     }
 
-    ngOnInit(): void {
-        if (!this.hostService.isConnected() || !this.hostService.game) {
+    ngOnInit() {
+        if (!this.hostService.isConnected() || this.playerService.gameEnded) {
             this.router.navigate(['/']);
             return;
         }
 
-        this.playerService.handleSockets();
-        this.playerService.joinGame(this.hostService.game.pin, { playerName: 'Organisateur', isHost: true }).subscribe(() => {
-            this.hostService.startGame(0);
+        this.hostService.handleSockets();
+        this.hostService.requestGame(this.playerService.pin).subscribe(() => {
+            this.hostService.startGame(START_GAME_COUNTDOWN);
         });
     }
 
-    ngOnDestroy(): void {
+    leaveGame() {
         this.hostService.cleanUp();
         this.playerService.cleanUp();
+        this.router.navigate(['/']);
+    }
+
+    ngOnDestroy() {
         this.questionEndedSubscription.unsubscribe();
         this.gameEndedSubscription.unsubscribe();
     }

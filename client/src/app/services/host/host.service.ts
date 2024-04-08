@@ -82,23 +82,35 @@ export class HostService {
             this.hostSocketService.connect();
         }
 
+        this.socketSubscription.unsubscribe();
+        this.socketSubscription = new Subscription();
+
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToConfirmPlayerAnswer());
         this.socketSubscription.add(this.subscribeToPlayerUpdated());
+        this.socketSubscription.add(this.subscribeToNewHost());
     }
 
     createGame(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
-            this.hostSocketService.emitCreateGame(quiz).subscribe((game: unknown) => {
+            this.hostSocketService.emitCreateGame(quiz).subscribe((game: Game | undefined) => {
                 if (game) {
-                    this.internalGame = game as Game;
-                    this.currentQuestionIndex = 0;
+                    this.internalGame = game;
                     subscriber.next(true);
                 } else {
                     subscriber.next(false);
                 }
                 subscriber.complete();
+            });
+        });
+    }
+
+    requestGame(pin: string): Observable<void> {
+        return new Observable<void>((subscriber) => {
+            this.hostSocketService.emitRequestGame(pin).subscribe((game: Game) => {
+                this.internalGame = game;
+                subscriber.next();
             });
         });
     }
@@ -133,19 +145,20 @@ export class HostService {
     }
 
     nextQuestion(): void {
-        const currentQuestion = this.getCurrentQuestion();
-        if (!this.internalGame || !currentQuestion) {
+        if (!this.internalGame) {
             return;
         }
+
+        const currentQuestion = this.getCurrentQuestion();
 
         this.internalQuestionEnded = false;
 
         const newHistogram: HistogramData = {
-            labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
+            labels: currentQuestion?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
             datasets: [
                 {
-                    label: currentQuestion.text,
-                    data: currentQuestion.choices.map(() => 0),
+                    label: currentQuestion?.text || '',
+                    data: currentQuestion?.choices.map(() => 0) || [],
                 },
             ],
         };
@@ -183,6 +196,7 @@ export class HostService {
         this.internalGame = null;
         this.internalNAnswered = 0;
         this.internalQuestionEnded = false;
+        this.currentQuestionIndex = 0;
         this.internalQuitters = [];
         this.internalHistograms = [];
     }
@@ -254,6 +268,12 @@ export class HostService {
     private subscribeToPlayerUpdated(): Subscription {
         return this.hostSocketService.onPlayerUpdated().subscribe((histogramData: HistogramData) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
+        });
+    }
+
+    private subscribeToNewHost(): Subscription {
+        return this.hostSocketService.onNewHost().subscribe((game: Game) => {
+            this.internalGame = game;
         });
     }
 

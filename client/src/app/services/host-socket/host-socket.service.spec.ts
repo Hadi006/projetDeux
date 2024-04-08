@@ -74,6 +74,7 @@ describe('HostSocketService', () => {
     it('should listen for confirm player answer', (done) => {
         service.connect();
         service.onConfirmPlayerAnswer().subscribe(() => {
+            expect(true).toBeTrue();
             done();
         });
         socketHelper.peerSideEmit('confirm-player-answer');
@@ -87,6 +88,16 @@ describe('HostSocketService', () => {
             done();
         });
         socketHelper.peerSideEmit('player-updated', expectedData);
+    });
+
+    it('should listen for new host', (done) => {
+        service.connect();
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        service.onNewHost().subscribe((game) => {
+            expect(game).toEqual(expectedGame);
+            done();
+        });
+        socketHelper.peerSideEmit('new-host', expectedGame);
     });
 
     it('should emit create game', (done) => {
@@ -110,6 +121,19 @@ describe('HostSocketService', () => {
         });
         service.emitCreateGame(quiz).subscribe((game) => {
             expect(game).toBeUndefined();
+            done();
+        });
+    });
+
+    it('should emit request game', (done) => {
+        service.connect();
+        const pin = '1';
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(expectedGame);
+        });
+        service.emitRequestGame(pin).subscribe((game) => {
+            expect(game).toEqual(expectedGame);
             done();
         });
     });

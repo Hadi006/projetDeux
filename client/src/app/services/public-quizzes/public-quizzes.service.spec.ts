@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { TEST_QUIZZES } from '@common/constant';
+import { N_RANDOM_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { of } from 'rxjs';
 import { CommunicationService } from '@app/services/communication/communication.service';
@@ -73,9 +73,7 @@ describe('PublicQuizzesService', () => {
     });
 
     it('checkQuizAvailability() should return false if quiz is not available', (done) => {
-        communicationServiceSpy.get.and.returnValue(
-            of(new HttpResponse({ status: 200, statusText: 'OK', body: { ...testQuizzes[0], visible: false } })),
-        );
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK' })));
         service.checkQuizAvailability(testQuizzes[0].id).subscribe((isAvailable) => {
             expect(isAvailable).toBeFalse();
             done();
@@ -96,6 +94,32 @@ describe('PublicQuizzesService', () => {
                 title: 'Erreur',
                 message: 'test',
             },
+        });
+    });
+
+    it('should create random questions', (done) => {
+        communicationServiceSpy.get.and.returnValue(
+            of(new HttpResponse({ status: 200, statusText: 'OK', body: new Array(N_RANDOM_QUESTIONS).fill(testQuizzes[0].questions) })),
+        );
+        service.createRandomQuestions().subscribe((questions) => {
+            expect(questions.length).toBeGreaterThan(0);
+            done();
+        });
+    });
+
+    it('should return empty array if response is not ok', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 400, statusText: 'OK', body: [] })));
+        service.createRandomQuestions().subscribe((questions) => {
+            expect(questions).toEqual([]);
+            done();
+        });
+    });
+
+    it('should return empty array if there are not enough questions', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
+        service.createRandomQuestions().subscribe((questions) => {
+            expect(questions).toEqual([]);
+            done();
         });
     });
 });

@@ -63,7 +63,9 @@ describe('PlayerService', () => {
         playerSocketServiceSpy.onGameEnded.and.returnValue(gameEndedSubject);
         playerSocketServiceSpy.onGameDeleted.and.returnValue(gameDeletedSubject);
         player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
-        playerSocketServiceSpy.emitJoinGame.and.returnValue(of({ player, gameTitle: 'title', otherPlayers: [], error: '' }));
+        playerSocketServiceSpy.emitJoinGame.and.returnValue(
+            of({ player, gameTitle: 'title', gameId: TEST_GAME_DATA.quiz.id, otherPlayers: [], error: '' }),
+        );
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -85,7 +87,7 @@ describe('PlayerService', () => {
             ],
         });
         service = TestBed.inject(PlayerService);
-        await firstValueFrom(service.joinGame('pin', 'player'));
+        await firstValueFrom(service.joinGame('pin', { playerName: 'player', isHost: false }));
     });
 
     it('should be created', () => {
@@ -234,10 +236,12 @@ describe('PlayerService', () => {
 
     it('should end the game when the host ends it', (done) => {
         service.handleSockets();
+        spyOn(service, 'cleanUp');
         const game = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         gameEndedSubject.subscribe((g) => {
             expect(g).toEqual(game);
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game } });
+            expect(service.cleanUp).toHaveBeenCalled();
             expect(service.gameEnded).toBeTrue();
             done();
         });
@@ -252,11 +256,12 @@ describe('PlayerService', () => {
     });
 
     it('should join the game if there is no error', (done) => {
-        service.joinGame('pin', 'player').subscribe((result) => {
+        service.joinGame('pin', { playerName: 'player', isHost: false }).subscribe((result) => {
             expect(result).toEqual('');
             expect(service.player).toEqual(JSON.parse(JSON.stringify(TEST_PLAYERS[0])));
             expect(service.players).toEqual([]);
             expect(service.gameTitle).toEqual('title');
+            expect(service.gameId).toEqual(TEST_GAME_DATA.quiz.id);
             expect(service.pin).toEqual('pin');
             done();
         });

@@ -44,7 +44,7 @@ class Quiz implements Quiz {
         this.visible = false;
         this.description = '';
         this.duration = 0;
-        this.questions = [new Question()];
+        this.questions = [];
     }
 }
 

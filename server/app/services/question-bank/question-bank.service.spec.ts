@@ -3,6 +3,7 @@ import { QuestionBankService } from '@app/services/question-bank/question-bank.s
 import { Question } from '@common/quiz';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { Request } from 'express';
 
 describe('QuestionBankService', () => {
     const MOCK_QUESTION: Question = {
@@ -26,7 +27,21 @@ describe('QuestionBankService', () => {
     it('should return all questions', async () => {
         const questions = new Array(3).fill(MOCK_QUESTION);
         databaseServiceStub.get.resolves(questions);
-        const result = await questionBankService.getQuestions();
+        const result = await questionBankService.getQuestions({} as Request);
+        expect(result).to.deep.equal(questions);
+    });
+
+    it('should return questions with query', async () => {
+        const questions = new Array(3).fill(MOCK_QUESTION);
+        databaseServiceStub.get.resolves(questions);
+        const result = await questionBankService.getQuestions({ query: { text: 'Question 1', type: 'QCM', points: '10' } } as unknown as Request);
+        expect(result).to.deep.equal(questions);
+    });
+
+    it('should return QRL questions', async () => {
+        const questions = new Array(3).fill(MOCK_QUESTION);
+        databaseServiceStub.get.resolves(questions);
+        const result = await questionBankService.getQuestions({ query: { type: 'QRL' } } as unknown as Request);
         expect(result).to.deep.equal(questions);
     });
 
