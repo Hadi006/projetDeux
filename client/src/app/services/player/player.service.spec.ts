@@ -242,6 +242,7 @@ describe('PlayerService', () => {
             expect(g).toEqual(game);
             expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game } });
             expect(service.cleanUp).toHaveBeenCalled();
+            expect(service.gameEnded).toBeTrue();
             done();
         });
         gameEndedSubject.next(game);
@@ -260,6 +261,7 @@ describe('PlayerService', () => {
             expect(service.player).toEqual(JSON.parse(JSON.stringify(TEST_PLAYERS[0])));
             expect(service.players).toEqual([]);
             expect(service.gameTitle).toEqual('title');
+            expect(service.gameId).toEqual(TEST_GAME_DATA.quiz.id);
             expect(service.pin).toEqual('pin');
             done();
         });
