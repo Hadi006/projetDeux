@@ -187,6 +187,7 @@ export class PlayerService {
         this.internalGameId = '';
         this.internalPlayers = [];
         this.internalGameStarted = false;
+        this.internalGameEnded = false;
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
