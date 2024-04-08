@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, waitForAsync } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
+import { MAX_QRL_LENGTH, TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';
@@ -113,14 +113,6 @@ describe('QuestionComponent', () => {
     it('getIsChecked should return the players answer', () => {
         expect(component.getIsChecked()).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
-    it('should set lastModificationDate to current date', () => {
-        const before = new Date().getTime();
-        component.setLastModificationDate();
-        const after = new Date().getTime();
-
-        expect(component.lastModificationDate).toBeGreaterThanOrEqual(before);
-        expect(component.lastModificationDate).toBeLessThanOrEqual(after);
-    });
 
     it('should return the remaining length', () => {
         playerHandlerServiceSpy.player = {
@@ -138,9 +130,13 @@ describe('QuestionComponent', () => {
                     qrlAnswer: 'test',
                 },
             ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
         };
         const length = component.getLength();
-        expect(length).toBe(200 - 'test'.length);
+        expect(length).toBe(MAX_QRL_LENGTH - 'test'.length);
     });
 
     it('should return 200 if qrlAnswer is empty string', () => {
@@ -159,9 +155,13 @@ describe('QuestionComponent', () => {
                     qrlAnswer: '',
                 },
             ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
         };
         const length = component.getLength();
-        expect(length).toBe(200);
+        expect(length).toBe(MAX_QRL_LENGTH);
     });
 
     it('should return 0 if qrlAnswer length is 200', () => {
@@ -177,9 +177,13 @@ describe('QuestionComponent', () => {
                     type: 'QRL',
                     points: 10,
                     choices: [],
-                    qrlAnswer: 'a'.repeat(200),
+                    qrlAnswer: 'a'.repeat(MAX_QRL_LENGTH),
                 },
             ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
         };
         const length = component.getLength();
         expect(length).toBe(0);
@@ -201,13 +205,14 @@ describe('QuestionComponent', () => {
                 },
             ],
             isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
         };
-        component.lastModificationDate = new Date(new Date().getTime() - 3000);
 
-        // Act
         component.getTime();
 
-        // Assert
         if (playerHandlerServiceSpy.player) {
             expect(playerHandlerServiceSpy.player.isActive).toBe(true);
         }
