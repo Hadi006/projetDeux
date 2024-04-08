@@ -210,4 +210,19 @@ describe('QuestionValidator', () => {
         });
         expect(compiledQuestion.error).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
     });
+
+    it('should check QRL questions', () => {
+        const qrlQuestion: Question = {
+            text: 'This is a test question',
+            type: 'QRL',
+            points: 10,
+            choices: [],
+            qrlAnswer: 'This is a test answer',
+        };
+        questionValidator = new QuestionValidator(qrlQuestion);
+        questionValidator.checkChoices();
+        const compiledQuestion = questionValidator.compile();
+        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
+        expect(compiledQuestion.error).to.equal('');
+    });
 });
