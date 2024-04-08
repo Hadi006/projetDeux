@@ -149,4 +149,53 @@ describe('HostGamePageComponent', () => {
         });
         hostServiceSpy.gameEndedSubject.next();
     });
+    it('canActivatePanicMode should return true if current question type is QCM and time is >= 5', () => {
+        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(component, 'getTime').and.returnValue(5);
+
+        expect(component.canActivatePanicMode()).toBeTrue();
+    });
+
+    it('canActivatePanicMode should return true if current question type is QRL and time is >= 20', () => {
+        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[1]);
+        spyOn(component, 'getTime').and.returnValue(20);
+
+        expect(component.canActivatePanicMode()).toBeTrue();
+    });
+
+    it('canActivatePanicMode should return false if current question type is not QCM or QRL', () => {
+        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(component, 'getTime').and.returnValue(3);
+
+        expect(component.canActivatePanicMode()).toBeFalse();
+    });
+
+    it('canActivatePanicMode should return false if time is less than 5 for QCM', () => {
+        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(component, 'getTime').and.returnValue(4);
+
+        expect(component.canActivatePanicMode()).toBeFalse();
+    });
+
+    it('canActivatePanicMode should return false if time is less than 20 for QRL', () => {
+        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[1]);
+        spyOn(component, 'getTime').and.returnValue(19);
+
+        expect(component.canActivatePanicMode()).toBeFalse();
+    });
+
+    it('pauseTimer should call pauseTimer on hostService', () => {
+        component.pauseTimer();
+        expect(hostServiceSpy.pauseTimer).toHaveBeenCalled();
+    });
+
+    it('startPanicMode should call startPanicMode on hostService', () => {
+        component.startPanicMode();
+        expect(hostServiceSpy.startPanicMode).toHaveBeenCalled();
+    });
+
+    it('stopPanicMode should call stopPanicMode on hostService', () => {
+        component.stopPanicMode();
+        expect(hostServiceSpy.stopPanicMode).toHaveBeenCalled();
+    });
 });
