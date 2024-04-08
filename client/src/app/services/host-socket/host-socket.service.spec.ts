@@ -82,9 +82,9 @@ describe('HostSocketService', () => {
 
     it('should listen for player updated', (done) => {
         service.connect();
-        const expectedData = TEST_HISTOGRAM_DATA[0];
+        const expectedData = { player: TEST_PLAYERS[0], histogramData: TEST_HISTOGRAM_DATA[0] };
         service.onPlayerUpdated().subscribe((data) => {
-            expect(data.histogramData).toEqual(expectedData);
+            expect(data).toEqual(expectedData);
             done();
         });
         socketHelper.peerSideEmit('player-updated', expectedData);
