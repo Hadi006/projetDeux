@@ -14,6 +14,7 @@ describe('ChatService', () => {
     let eventSubject: ReplaySubject<NavigationEnd>;
     const messageReceivedSubject: Subject<ChatMessage> = new Subject();
     const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
+    const playerMutedSubject: Subject<ChatMessage> = new Subject();
 
     beforeEach(() => {
         chatSocketService = jasmine.createSpyObj('ChatSocketService', [
@@ -22,10 +23,12 @@ describe('ChatService', () => {
             'isConnected',
             'onMessageReceived',
             'onPlayerLeft',
+            'onPlayerMuted',
             'emitNewMessage',
         ]);
         chatSocketService.onMessageReceived.and.returnValue(messageReceivedSubject);
         chatSocketService.onPlayerLeft.and.returnValue(playerLeftSubject);
+        chatSocketService.onPlayerMuted.and.returnValue(playerMutedSubject);
 
         eventSubject = new ReplaySubject();
         routerSpy = {} as jasmine.SpyObj<Router>;
