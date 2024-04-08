@@ -84,7 +84,7 @@ describe('HostSocketService', () => {
         service.connect();
         const expectedData = TEST_HISTOGRAM_DATA[0];
         service.onPlayerUpdated().subscribe((data) => {
-            expect(data).toEqual(expectedData);
+            expect(data.histogramData).toEqual(expectedData);
             done();
         });
         socketHelper.peerSideEmit('player-updated', expectedData);
