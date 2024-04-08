@@ -73,7 +73,7 @@ export class GameService {
         }
 
         const currentQuestion = player.questions[player.questions.length - 1];
-        if (currentQuestion.type === 'QRL') {
+        if (currentQuestion?.type === 'QRL') {
             game.players.forEach((p, index) => {
                 if (p.name === player.name) {
                     game.players[index] = player;

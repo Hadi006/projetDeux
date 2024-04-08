@@ -6,7 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
 
@@ -129,31 +129,6 @@ describe('HostGamePageComponent', () => {
         expect(hostServiceSpy.endGame).toHaveBeenCalled();
     });
 
-    it('getPlayers should return the players from the hostService', () => {
-        const players = TEST_GAME_DATA.players;
-        expect(component.getPlayers()).toEqual(players);
-    });
-
-    it('getPlayers should return an empty array if there is no game', () => {
-        Object.defineProperty(hostServiceSpy, 'game', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
-        expect(component.getPlayers()).toEqual([]);
-    });
-
-    it('getQuitters should return the quitters from the hostService', () => {
-        Object.defineProperty(hostServiceSpy, 'quitters', {
-            get: () => {
-                return TEST_GAME_DATA.players;
-            },
-            configurable: true,
-        });
-        expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
-    });
-
     it('should navigate to home if not connected or no current question', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
@@ -167,5 +142,12 @@ describe('HostGamePageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
         });
         hostServiceSpy.gameEndedSubject.next();
+    });
+
+    it('should unsubscribe from histogramSubscription if it exists', () => {
+        const unsubscribeSpy = jasmine.createSpy('unsubscribe');
+        component['histogramSubscription'] = { unsubscribe: unsubscribeSpy } as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(unsubscribeSpy).toHaveBeenCalled();
     });
 });

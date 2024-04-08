@@ -93,8 +93,14 @@ export const RANDOM_QUIZ_DURATION = 20;
 
 export const RANDOM_QUIZ_ID = '-1';
 
+export const POLL_RATE = 5000;
+
+export const MAX_QRL_LENGTH = 200;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
+
+export const QRL_DURATION = 60;
 
 /* Tests */
 export const TEST_ANSWERS: Answer[] = [

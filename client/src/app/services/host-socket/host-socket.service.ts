@@ -8,6 +8,7 @@ import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Answer, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
+import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +17,7 @@ export class HostSocketService {
     private readonly playerLeftSubject = new Subject<PlayerLeftEventData>();
     private readonly playerJoinedSubject = new Subject<Player>();
     private readonly confirmPlayerAnswerSubject = new Subject<void>();
-    private readonly playerUpdatedSubject = new Subject<{ player: Player; histogramData: HistogramData }>();
+    private readonly playerUpdatedSubject = new Subject<PlayerUpdatedEventData>();
     private readonly newHostSubject = new Subject<Game>();
 
     constructor(private webSocketService: WebSocketService) {}

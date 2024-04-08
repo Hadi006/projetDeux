@@ -146,7 +146,7 @@ export class GameController {
             game.players.find((p) => p.id === player.id).muted = player.muted;
             await this.gameService.updateGame(game);
 
-            this.sio.sockets.sockets.get(player.id)?.emit('player-muted', {
+            this.sio.to(player.id).emit('player-muted', {
                 text: player.muted ? 'Vous avez été muté' : 'Vous avez été démuté',
                 timestamp: new Date(),
                 author: 'Système',

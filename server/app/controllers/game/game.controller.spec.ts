@@ -137,6 +137,38 @@ describe('GameController', () => {
         });
     });
 
+    it('should unmute a player', (done) => {
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('player-muted', (response) => {
+                expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
+                expect(gameServiceStub.updateGame.calledWith(testGame)).to.equal(true);
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response.text).to.equal('Vous avez été démuté');
+                expect(response.author).to.equal('Système');
+                done();
+            });
+            clientSocket.emit('mute', { pin: testGame.pin, data: TEST_PLAYERS[0] });
+        });
+    });
+
+    it('should mute a player', (done) => {
+        gameServiceStub.getGame.resolves(testGame);
+        gameServiceStub.updateGame.resolves();
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.on('player-muted', (response) => {
+                expect(gameServiceStub.getGame.calledWith(testGame.pin)).to.equal(true);
+                expect(gameServiceStub.updateGame.calledWith(testGame)).to.equal(true);
+                expect(toSpy.calledWith(testGame.pin)).to.equal(true);
+                expect(response.text).to.equal('Vous avez été muté');
+                expect(response.author).to.equal('Système');
+                done();
+            });
+            clientSocket.emit('mute', { pin: testGame.pin, data: { ...TEST_PLAYERS[0], muted: true } });
+        });
+    });
+
     it('should broadcast a start game if in the game', (done) => {
         const countdown = 5;
         gameServiceStub.createGame.resolves(testGame);

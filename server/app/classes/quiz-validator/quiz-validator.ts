@@ -1,5 +1,5 @@
 import { QuestionValidator } from '@app/classes/question-validator/question-validator';
-import { MAX_DURATION, MIN_DURATION } from '@common/constant';
+import { MAX_DURATION, MIN_DURATION, QRL_DURATION } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { randomUUID } from 'crypto';
@@ -110,7 +110,7 @@ export class QuizValidator {
             for (const question of this.quiz.questions) {
                 if (question.type === 'QRL') {
                     this.newQuiz.questions.push(question);
-                    this.newQuiz.duration = 60;
+                    this.newQuiz.duration = QRL_DURATION;
                 } else {
                     const result = new QuestionValidator(question).validate();
                     if (result.error) {

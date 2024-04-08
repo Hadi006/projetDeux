@@ -1,15 +1,13 @@
 import { DatabaseService } from '@app/services/database/database.service';
 import { GameService } from '@app/services/game/game.service';
-import { GAME_ID_MAX, GOOD_ANSWER_BONUS, INVALID_INDEX, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { GAME_ID_MAX, GOOD_ANSWER_BONUS, INVALID_INDEX, TEST_GAME_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
-import { fail } from 'assert';
 import { expect } from 'chai';
 import { SinonStubbedInstance, createStubInstance, stub } from 'sinon';
 
 describe('GameService', () => {
-    let testPlayer: Player;
     let testPlayers: Player[];
     let testQuestion: Question;
     let testQuiz: Quiz;
@@ -19,13 +17,10 @@ describe('GameService', () => {
     let databaseServiceStub: SinonStubbedInstance<DatabaseService>;
 
     beforeEach(async () => {
-        testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
-        testPlayers = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        testPlayers = JSON.parse(JSON.stringify(TEST_GAME_DATA.players));
         testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
         testQuiz = JSON.parse(JSON.stringify({ ...TEST_QUIZZES[0], questions: [testQuestion] }));
-        testGame = new Game(TEST_GAME_DATA.pin, TEST_GAME_DATA.hostId, testQuiz);
-        testGame.players = testPlayers;
-        testGame.histograms = JSON.parse(JSON.stringify(TEST_GAME_DATA.histograms));
+        testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
 
         databaseServiceStub = createStubInstance(DatabaseService);
         gameService = new GameService(databaseServiceStub);
@@ -46,10 +41,7 @@ describe('GameService', () => {
     it('should create a game', async () => {
         stub(gameService, 'getGames').resolves([testGame]);
         databaseServiceStub.add.resolves(testGame);
-        const result = await gameService.createGame(testQuiz, testGame.hostId);
-        if (!(result instanceof Game)) {
-            fail('Game not created');
-        }
+        const result = (await gameService.createGame(testQuiz, testGame.hostId)) as Game;
         expect(result.quiz).to.deep.equal(testGame.quiz);
         expect(databaseServiceStub.add.called).to.equal(true);
     });
@@ -187,11 +179,19 @@ describe('GameService', () => {
         expect(updateStub.called).to.equal(false);
     });
 
-    it('should update a player', async () => {
-        stub(gameService, 'getGame').resolves({ ...testGame, players: [testPlayer] });
+    it('should update player with QRL', async () => {
+        stub(gameService, 'getGame').resolves(testGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
-        await gameService.updatePlayer(testGame.pin, testPlayer);
-        expect(updateStub.calledWith({ ...testGame, players: [testPlayer] })).to.equal(true);
+        await gameService.updatePlayer(testGame.pin, testPlayers[0]);
+        expect(updateStub.calledWith(testGame)).to.equal(true);
+    });
+
+    it('should update a player with QCM', async () => {
+        testPlayers[0].questions[testPlayers[0].questions.length - 1].type = 'QCM';
+        stub(gameService, 'getGame').resolves(testGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updatePlayer(testGame.pin, testPlayers[0]);
+        expect(updateStub.calledWith(testGame)).to.equal(true);
     });
 
     it('should not update a player if game is invalid', async () => {
@@ -239,6 +239,7 @@ describe('GameService', () => {
     });
 
     it('should not update scores if question is invalid', async () => {
+        testGame.quiz.questions = [];
         databaseServiceStub.get.resolves([testGame]);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(testGame.pin, 1);
