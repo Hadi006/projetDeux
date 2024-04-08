@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
+import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
-import { HostSocketService } from '@app/services/host-socket/host-socket.service';
-import { firstValueFrom, of, ReplaySubject, Subject } from 'rxjs';
-import { Player } from '@common/player';
-import { PlayerLeftEventData } from '@common/player-left-event-data';
-import { HistogramData } from '@common/histogram-data';
 import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
+import { HistogramData } from '@common/histogram-data';
+import { Player } from '@common/player';
+import { PlayerLeftEventData } from '@common/player-left-event-data';
+import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
 
 describe('HostService', () => {
     let service: HostService;
@@ -324,10 +324,12 @@ describe('HostService', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
         hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(JSON.parse(JSON.stringify(testGame))));
         service['endQuestion']();
+        service.togglePanic();
         expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
         expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();
         expect(service.game).toEqual(JSON.parse(JSON.stringify(testGame)));
         expect(hostSocketServiceSpy.emitAnswer).toHaveBeenCalled();
+        expect(timeServiceSpy.stopPanicMode).toHaveBeenCalled();
         expect(service.questionEnded).toBe(true);
     });
 
@@ -353,5 +355,32 @@ describe('HostService', () => {
     it('should check connection', () => {
         hostSocketServiceSpy.isConnected.and.returnValue(true);
         expect(service.isConnected()).toBe(true);
+    });
+    describe('pauseTimerForEveryone', () => {
+        it('should emit pauseTimer with game pin if internalGame exists', () => {
+            service.pauseTimer();
+            expect(hostSocketServiceSpy.emitPauseTimer).toHaveBeenCalledWith(testGame.pin);
+        });
+
+        it('should not emit pauseTimer if internalGame is null', () => {
+            service['reset']();
+            service.pauseTimer();
+            expect(hostSocketServiceSpy.emitPauseTimer).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('startPanicModeForEveryone', () => {
+        it('should emit startPanicMode with game pin if internalGame exists', () => {
+            spyOn(service, 'canActivatePanicMode').and.returnValue(true);
+            service.startPanicMode();
+            expect(hostSocketServiceSpy.emitPanicMode).toHaveBeenCalledWith(testGame.pin);
+        });
+
+        it('should not emit startPanicMode if internalGame is null', () => {
+            spyOn(service, 'canActivatePanicMode').and.returnValue(true);
+            service['reset']();
+            service.startPanicMode();
+            expect(hostSocketServiceSpy.emitPanicMode).not.toHaveBeenCalled();
+        });
     });
 });

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Timer } from '@app/classes/timer';
 import { TimeService } from '@app/services/time/time.service';
+import { Howl } from 'howler';
 
 describe('TimeService', () => {
     let service: TimeService;
@@ -201,5 +202,42 @@ describe('TimeService', () => {
         service.resumeTimerById(timerId + 1);
 
         expect(mockTimer.resume).not.toHaveBeenCalled();
+    });
+
+    it('should pause timer if counterToggled is false', () => {
+        spyOn(service, 'pauseTimerById');
+        service.toggleTimerById(TIMER_ID);
+        expect(service.pauseTimerById).toHaveBeenCalledWith(TIMER_ID);
+    });
+
+    it('should resume timer if counterToggled is true', () => {
+        spyOn(service, 'resumeTimerById');
+        service.counterToggled = true;
+        service.toggleTimerById(TIMER_ID);
+        expect(service.resumeTimerById).toHaveBeenCalledWith(TIMER_ID);
+    });
+
+    it('should return undefined if timerId is invalid', () => {
+        const invalidTimerId = -1;
+        const result = service.toggleTimerById(invalidTimerId);
+        expect(result).toBeUndefined();
+    });
+    it('should start panic mode and play sound', () => {
+        spyOn(Howl.prototype, 'play').and.callThrough();
+        service.startPanicMode();
+        expect(service.panicModeSound).toBeDefined();
+        expect(Howl.prototype.play).toHaveBeenCalled();
+    });
+
+    it('should stop panic mode and stop sound if sound is playing', () => {
+        service.stopPanicMode();
+        expect(service.panicModeSound).toBeDefined();
+        expect(service.panicModeSound.playing()).toBe(false);
+    });
+
+    it('should not stop panic mode if sound is not playing', () => {
+        service.stopPanicMode();
+        expect(service.panicModeSound).toBeDefined();
+        expect(service.panicModeSound.playing()).toBe(false);
     });
 });

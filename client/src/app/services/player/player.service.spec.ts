@@ -343,4 +343,5 @@ describe('PlayerService', () => {
         expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
     });
+    
 });

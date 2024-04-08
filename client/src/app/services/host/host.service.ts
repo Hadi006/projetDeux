@@ -19,7 +19,6 @@ export class HostService {
     private socketSubscription: Subscription;
 
     private timerId: number;
-
     private internalGame: Game | null;
     private internalNAnswered: number;
     private internalQuestionEnded: boolean;
@@ -65,7 +64,14 @@ export class HostService {
     get histograms(): HistogramData[] {
         return this.internalHistograms;
     }
-
+    get isPanic(): boolean {
+        return this.isPanicMode;
+    }
+    togglePanic(): void {
+        if (!this.isPanicMode) {
+            this.isPanicMode = true;
+        }
+    }
     getTime(): number {
         return this.timeService.getTimeById(this.timerId);
     }
@@ -329,14 +335,6 @@ export class HostService {
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
     }
-
-    // private pauseTimerForEveryone(): void {
-    //     this.hostSocketService.emit<string>('pause-timer', this.internalGame.pin);
-    // }
-
-    // private startPanicModeForEveryone(): void {
-    //     this.webSocketService.emit<string>('panic-mode', this.internalGame.pin);
-    // }
     private pauseTimerForEveryone(): void {
         if (!this.internalGame) {
             return;
