@@ -218,4 +218,40 @@ describe('QuestionComponent', () => {
             expect(playerHandlerServiceSpy.player.isActive).toBe(true);
         }
     }));
+
+    it('updatePlayer should update player and call playerService.updatePlayer if question type is QCM', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QCM',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                    lastModification: new Date(),
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        component.updatePlayer();
+
+        if (playerHandlerServiceSpy.player) {
+            expect(playerHandlerServiceSpy.player.hasInteracted).toBe(true);
+        }
+    });
+
+    it('should do nothing if player is null', () => {
+        playerHandlerServiceSpy.player = null;
+        component.updatePlayer();
+        expect(playerHandlerServiceSpy.updatePlayer).not.toHaveBeenCalled();
+    });
 });
