@@ -5,6 +5,7 @@ import { AlertComponent } from '@app/components/alert/alert.component';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
 import { PlayerService } from '@app/services/player/player.service';
+import { RANDOM_QUIZ_ID } from '@common/constant';
 import { Subject } from 'rxjs';
 
 import { WaitingRoomPlayerPageComponent } from './waiting-room-player-page.component';
@@ -89,6 +90,15 @@ describe('WaitingRoomPlayerPageComponent', () => {
     it('should navigate to game page when start game is called', (done) => {
         playerServiceSpy.startGameSubject.subscribe(() => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['game-player']);
+            done();
+        });
+        playerServiceSpy.startGameSubject.next();
+    });
+
+    it('should navigate to host player page when start game is called and game id is -1', (done) => {
+        Object.defineProperty(playerServiceSpy, 'gameId', { get: () => RANDOM_QUIZ_ID });
+        playerServiceSpy.startGameSubject.subscribe(() => {
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['host-player']);
             done();
         });
         playerServiceSpy.startGameSubject.next();
