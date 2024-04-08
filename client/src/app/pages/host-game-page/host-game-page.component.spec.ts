@@ -129,31 +129,6 @@ describe('HostGamePageComponent', () => {
         expect(hostServiceSpy.endGame).toHaveBeenCalled();
     });
 
-    it('getPlayers should return the players from the hostService', () => {
-        const players = TEST_GAME_DATA.players;
-        expect(component.getPlayers()).toEqual(players);
-    });
-
-    it('getPlayers should return an empty array if there is no game', () => {
-        Object.defineProperty(hostServiceSpy, 'game', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
-        expect(component.getPlayers()).toEqual([]);
-    });
-
-    it('getQuitters should return the quitters from the hostService', () => {
-        Object.defineProperty(hostServiceSpy, 'quitters', {
-            get: () => {
-                return TEST_GAME_DATA.players;
-            },
-            configurable: true,
-        });
-        expect(component.getQuitters()).toEqual(TEST_GAME_DATA.players);
-    });
-
     it('should navigate to home if not connected or no current question', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
