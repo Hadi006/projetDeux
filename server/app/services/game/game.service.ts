@@ -6,6 +6,7 @@ import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
+import { JoinGameEventData } from '@common/join-game-event-data';
 
 @Service()
 export class GameService {
@@ -31,6 +32,10 @@ export class GameService {
         return await this.database.update('games', { pin: game.pin }, [{ $set: game }]);
     }
 
+    async deleteEndedGames(): Promise<boolean> {
+        return await this.database.delete('games', { ended: true });
+    }
+
     async deleteGame(pin: string): Promise<boolean> {
         return await this.database.delete('games', { pin });
     }
@@ -46,10 +51,11 @@ export class GameService {
         return '';
     }
 
-    async addPlayer(id: string, pin: string, playerName: string): Promise<JoinGameResult> {
+    async addPlayer(id: string, pin: string, joinGameData: JoinGameEventData): Promise<JoinGameResult> {
         const game = await this.getGame(pin);
-        const player: Player = new Player(id, playerName);
-        const error = this.validatePin(pin, game) || this.validatePlayerName(playerName, game);
+        const name: string = joinGameData.playerName;
+        const player: Player = new Player(id, name);
+        const error = this.validatePin(pin, game) || this.validatePlayerName(name, game, joinGameData.isHost);
         if (error) {
             return new JoinGameResult(error, player);
         }
@@ -138,12 +144,12 @@ export class GameService {
         return '';
     }
 
-    private validatePlayerName(playerName: string, game: Game) {
+    private validatePlayerName(playerName: string, game: Game, isHost: boolean) {
         const lowerCasePlayerName = playerName.toLocaleLowerCase();
         if (game.players.some((p) => p.name.toLocaleLowerCase() === lowerCasePlayerName)) {
             return 'Ce nom est déjà utilisé';
         }
-        if (lowerCasePlayerName.trim() === 'organisateur') {
+        if (lowerCasePlayerName.trim() === 'organisateur' && !isHost) {
             return 'Pseudo interdit';
         }
         if (lowerCasePlayerName.trim() === '') {

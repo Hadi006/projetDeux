@@ -87,6 +87,12 @@ export const TRANSITION_DELAY = 3;
 
 export const ANSWER_TIME_BUFFER = 1000;
 
+export const N_RANDOM_QUESTIONS = 5;
+
+export const RANDOM_QUIZ_DURATION = 20;
+
+export const RANDOM_QUIZ_ID = '-1';
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 
@@ -185,5 +191,10 @@ export const TEST_GAME_DATA: Game = {
     locked: false,
     bannedNames: [],
     histograms: TEST_HISTOGRAM_DATA,
+    name: TEST_QUIZZES[0].title,
+    date: new Date(),
+    nPlayers: TEST_PLAYERS.length,
+    bestScore: 0,
+    ended: false,
 };
 

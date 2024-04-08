@@ -1,4 +1,4 @@
-<div *ngIf="selectedQuiz" class="game-description">
+<div *ngIf="selectedQuiz && selectedQuiz.id !== '-1'" class="game-description">
     <h3>Description</h3>
     <p>{{ selectedQuiz.description }}</p>
     <h3>Durée</h3>

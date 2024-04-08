@@ -7,6 +7,7 @@ import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Answer, Question } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
+import { JoinGameEventData } from '@common/join-game-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -23,6 +24,7 @@ export class PlayerService {
 
     private internalPin: string;
     private internalGameTitle: string;
+    private internalGameId: string;
     private internalPlayers: string[];
     private internalGameStarted: boolean;
     private internalGameEnded: boolean;
@@ -58,6 +60,10 @@ export class PlayerService {
 
     get gameTitle(): string {
         return this.internalGameTitle;
+    }
+
+    get gameId(): string {
+        return this.internalGameId;
     }
 
     get gameStarted(): boolean {
@@ -101,6 +107,9 @@ export class PlayerService {
             this.playerSocketService.connect();
         }
 
+        this.socketSubscription.unsubscribe();
+        this.socketSubscription = new Subscription();
+
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToOnKick());
@@ -115,17 +124,18 @@ export class PlayerService {
         this.socketSubscription.add(this.subscribeToPanicMode());
     }
 
-    joinGame(pin: string, playerName: string): Observable<string> {
+    joinGame(pin: string, data: JoinGameEventData): Observable<string> {
         return new Observable<string>((observer) => {
-            this.playerSocketService.emitJoinGame(pin, playerName).subscribe((data: JoinGameResult) => {
-                if (!data.error) {
-                    this.player = data.player;
-                    this.internalPlayers = data.otherPlayers;
-                    this.internalGameTitle = data.gameTitle;
+            this.playerSocketService.emitJoinGame(pin, data).subscribe((result: JoinGameResult) => {
+                if (!result.error) {
+                    this.player = result.player;
+                    this.internalPlayers = result.otherPlayers;
+                    this.internalGameTitle = result.gameTitle;
+                    this.internalGameId = result.gameId;
                     this.internalPin = pin;
                 }
 
-                observer.next(data.error);
+                observer.next(result.error);
                 observer.complete();
             });
         });
@@ -147,6 +157,7 @@ export class PlayerService {
         const key = parseInt(event.key, 10) - 1;
         if (key >= 0 && key < this.getPlayerAnswers().length) {
             this.getPlayerAnswers()[key].isCorrect = !this.getPlayerAnswers()[key].isCorrect;
+            this.updatePlayer();
         }
     }
 
@@ -175,8 +186,10 @@ export class PlayerService {
         this.player = null;
         this.internalPin = '';
         this.internalGameTitle = '';
+        this.internalGameId = '';
         this.internalPlayers = [];
         this.internalGameStarted = false;
+        this.internalGameEnded = false;
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
@@ -268,6 +281,7 @@ export class PlayerService {
     private subscribeToOnGameEnded(): Subscription {
         return this.playerSocketService.onGameEnded().subscribe((game) => {
             this.router.navigate(['/endgame'], { state: { game } });
+            this.cleanUp();
             this.internalGameEnded = true;
         });
     }
@@ -289,8 +303,8 @@ export class PlayerService {
         });
     }
 
-    private setupNextQuestion(question: Question, countdown: number): void {
-        if (!this.player) {
+    private setupNextQuestion(question: Question | undefined, countdown: number): void {
+        if (!this.player || !question) {
             return;
         }
 

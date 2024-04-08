@@ -17,12 +17,7 @@ export class QuizBankController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response) => {
-            const quizzes: Quiz[] | null = await this.quizBankService.getQuizzes();
-            res.status(quizzes ? httpStatus.OK : httpStatus.NOT_FOUND).json(quizzes);
-        });
-
-        this.router.get('/visible', async (req: Request, res: Response) => {
-            const quizzes: Quiz[] | null = await this.quizBankService.getVisibleQuizzes();
+            const quizzes: Quiz[] | null = await this.quizBankService.getQuizzes(req);
             res.status(quizzes ? httpStatus.OK : httpStatus.NOT_FOUND).json(quizzes);
         });
 

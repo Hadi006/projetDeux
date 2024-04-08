@@ -94,6 +94,7 @@ describe('PlayerSocketService', () => {
     it('should listen for end question', (done) => {
         service.connect();
         service.onEndQuestion().subscribe(() => {
+            expect(true).toBeTrue();
             done();
         });
         socketHelper.peerSideEmit('end-question');
@@ -152,11 +153,11 @@ describe('PlayerSocketService', () => {
         service.connect();
         const expectedPin = '1234';
         const expectedPlayerName = 'player1';
-        const result = { player: JSON.parse(JSON.stringify(TEST_PLAYERS[0])), gameTitle: 'Test Game', otherPlayers: [], error: '' };
+        const result = { player: JSON.parse(JSON.stringify(TEST_PLAYERS[0])), gameTitle: 'Test Game', gameId: '1', otherPlayers: [], error: '' };
         spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
             callback(result);
         });
-        service.emitJoinGame(expectedPin, expectedPlayerName).subscribe((response) => {
+        service.emitJoinGame(expectedPin, { playerName: expectedPlayerName, isHost: false }).subscribe((response) => {
             expect(response).toEqual(result);
             done();
         });

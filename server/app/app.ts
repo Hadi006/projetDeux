@@ -7,6 +7,7 @@ import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { AuthController } from './controllers/auth/auth.controller';
+import { GameBankController } from './controllers/game-bank/game-bank.controller';
 import { QuestionBankController } from './controllers/question-bank/question-bank.controller';
 import { QuizBankController } from './controllers/quiz-bank/quiz-bank.controller';
 
@@ -16,10 +17,12 @@ export class Application {
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
+    // eslint-disable-next-line max-params
     constructor(
         private readonly authController: AuthController,
         private readonly quizBankController: QuizBankController,
         private readonly questionBankController: QuestionBankController,
+        private readonly gameBankController: GameBankController,
     ) {
         this.app = express();
 
@@ -44,6 +47,7 @@ export class Application {
         this.app.use('/api/auth', this.authController.router);
         this.app.use('/api/quizzes', this.quizBankController.router);
         this.app.use('/api/questions', this.questionBankController.router);
+        this.app.use('/api/games', this.gameBankController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });

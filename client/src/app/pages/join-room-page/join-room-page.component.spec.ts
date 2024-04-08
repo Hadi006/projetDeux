@@ -43,8 +43,8 @@ describe('JoinRoomPageComponent', () => {
         component.playerName = 'test';
         playerServiceSpy.joinGame.and.returnValue(of(''));
         component.joinGame();
-        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith('12345', 'test');
-        playerServiceSpy.joinGame('', '').subscribe(() => {
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith('12345', { playerName: 'test', isHost: false });
+        playerServiceSpy.joinGame('', { playerName: '', isHost: false }).subscribe(() => {
             expect(routerSpy.navigate).toHaveBeenCalledWith(['waiting-room-player']);
             done();
         });
@@ -55,8 +55,8 @@ describe('JoinRoomPageComponent', () => {
         component.playerName = 'test';
         playerServiceSpy.joinGame.and.returnValue(of('error'));
         component.joinGame();
-        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith('12345', 'test');
-        playerServiceSpy.joinGame('', '').subscribe(() => {
+        expect(playerServiceSpy.joinGame).toHaveBeenCalledWith('12345', { playerName: 'test', isHost: false });
+        playerServiceSpy.joinGame('', { playerName: '', isHost: false }).subscribe(() => {
             expect(routerSpy.navigate).not.toHaveBeenCalled();
             done();
         });

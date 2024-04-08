@@ -1,7 +1,7 @@
 <div class="container">
     <h1>Choisissez un jeu</h1>
     <div class="games-list">
-        <button *ngFor="let quiz of publicQuizzesService.quizzes" (click)="chooseQuiz(quiz)" class="game-button">
+        <button *ngFor="let quiz of getQuizzes()" (click)="chooseQuiz(quiz)" class="game-button">
             {{ quiz.title }}
         </button>
     </div>
@@ -10,6 +10,6 @@
 </div>
 <div class="button-navigation">
     <button routerLink="/home">Retour</button>
-    <button class="testGame" (click)="testGame()">Tester le quiz</button>
+    <button *ngIf="chosenQuiz?.id !== '-1'" class="testGame" (click)="testGame()">Tester le quiz</button>
     <button class="startGame" (click)="startGame()">Commencer une partie</button>
 </div>

@@ -17,6 +17,7 @@ export class HostSocketService {
     private readonly playerJoinedSubject = new Subject<Player>();
     private readonly confirmPlayerAnswerSubject = new Subject<void>();
     private readonly playerUpdatedSubject = new Subject<HistogramData>();
+    private readonly newHostSubject = new Subject<Game>();
 
     constructor(private webSocketService: WebSocketService) {}
 
@@ -64,6 +65,14 @@ export class HostSocketService {
         return this.playerUpdatedSubject;
     }
 
+    onNewHost(): Subject<Game> {
+        this.webSocketService.onEvent<Game>('new-host', (game) => {
+            this.newHostSubject.next(game);
+        });
+
+        return this.newHostSubject;
+    }
+
     emitCreateGame(quiz: Quiz): Observable<Game | undefined> {
         return new Observable<Game | undefined>((subscriber) => {
             this.webSocketService.emit<Quiz>('create-game', quiz, (game: unknown) => {
@@ -72,6 +81,14 @@ export class HostSocketService {
                 } else {
                     subscriber.next(undefined);
                 }
+            });
+        });
+    }
+
+    emitRequestGame(pin: string): Observable<Game> {
+        return new Observable<Game>((subscriber) => {
+            this.webSocketService.emit<string>('request-game', pin, (game: unknown) => {
+                subscriber.next(game as Game);
             });
         });
     }

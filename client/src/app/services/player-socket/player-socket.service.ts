@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { Game } from '@common/game';
+import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
@@ -132,9 +133,9 @@ export class PlayerSocketService {
         return this.startPanicModeSubject;
     }
 
-    emitJoinGame(pin: string, playerName: string): Observable<JoinGameResult> {
+    emitJoinGame(pin: string, data: JoinGameEventData): Observable<JoinGameResult> {
         return new Observable<JoinGameResult>((observer) => {
-            this.webSocketService.emit<RoomData<string>>('join-game', { pin, data: playerName }, (response: unknown) => {
+            this.webSocketService.emit<RoomData<JoinGameEventData>>('join-game', { pin, data }, (response: unknown) => {
                 observer.next(response as JoinGameResult);
                 observer.complete();
             });

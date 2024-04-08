@@ -1,6 +1,6 @@
 import { Question } from '@common/quiz';
 
 export interface QuestionChangedEventData {
-    question: Question;
+    question?: Question;
     countdown: number;
 }
