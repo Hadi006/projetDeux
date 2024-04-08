@@ -9,7 +9,6 @@ import { Question } from '@common/quiz';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent {
-    lastModificationDate = new Date();
     constructor(public playerService: PlayerService) {}
 
     @HostListener('window:keyup', ['$event'])
@@ -35,21 +34,18 @@ export class QuestionComponent {
     }
 
     getTime(): number {
-        if (this.playerService.player?.questions[this.playerService.player.questions.length - 1]?.type === 'QRL') {
-            const wasActive = this.playerService.player.isActive;
-            const isActive = new Date().getTime() - this.lastModificationDate.getTime() < 5000;
+        const question = this.playerService.player?.questions[this.playerService.player.questions.length - 1] || undefined;
+        if (question && question.type === 'QRL') {
+            const wasActive = this.playerService.player!.isActive;
+            const isActive = new Date().getTime() - new Date(question.lastModification || '').getTime() < 5000;
             if (wasActive !== isActive) {
-                this.playerService.player.isActive = isActive;
+                this.playerService.player!.isActive = isActive;
                 this.playerService.updatePlayer();
             }
 
         }
 
         return this.playerService.getTime();
-    }
-
-    setLastModificationDate(): void {
-        this.lastModificationDate = new Date();
     }
 
     getLength(): number {

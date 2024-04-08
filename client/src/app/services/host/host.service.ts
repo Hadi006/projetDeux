@@ -158,15 +158,13 @@ export class HostService {
     }
 
     nextQuestion(): void {
-        if (!this.internalGame) {
+        const currentQuestion = this.getCurrentQuestion();
+        if (!this.internalGame || !currentQuestion) {
             return;
         }
 
-        const currentQuestion = this.getCurrentQuestion();
-
         this.internalQuestionEnded = false;
 
-        // check if its qrl, if so, create qrl histogram
         let newHistogram: HistogramData;
         if (currentQuestion.type === 'QCM') {
             newHistogram = {

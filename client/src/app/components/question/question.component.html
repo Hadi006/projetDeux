@@ -29,7 +29,7 @@ Temps restant: {{ getTime() }}
                 placeholder="Tapez votre réponse ici..."
                 maxlength="200"
                 [(ngModel)]="player.questions[player.questions.length - 1].qrlAnswer"
-                (ngModelChange)="setLastModificationDate()"
+                (ngModelChange)="updatePlayer()"
                 >
             </textarea>
             <div>{{ player.isActive }}</div>
