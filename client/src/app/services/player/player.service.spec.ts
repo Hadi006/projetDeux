@@ -145,6 +145,10 @@ describe('PlayerService', () => {
             ],
             fastestResponseCount: 0,
             isActive: true,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
         };
         const result = service.getPlayerAnswers();
         expect(result).not.toEqual([]);
@@ -386,6 +390,10 @@ describe('PlayerService', () => {
                 { text: 'Question 1', type: 'QCM', points: 10, choices: [], qrlAnswer: '' },
                 { text: 'Question 2', type: 'QRL', points: 5, choices: [], qrlAnswer: '' },
             ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
         };
 
         service.updateModificationDate();
@@ -397,8 +405,9 @@ describe('PlayerService', () => {
         }
     });
     it('should return an empty brackets if the player is not defined in setupNextQuestion', () => {
+        const time = 10;
         service.player = null;
-        const result = service['setupNextQuestion'](TEST_QUESTIONS[0], 10);
+        const result = service['setupNextQuestion'](TEST_QUESTIONS[0], time);
         expect(result).toEqual(undefined);
     });
 });
