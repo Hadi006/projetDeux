@@ -106,4 +106,20 @@ describe('PublicQuizzesService', () => {
             done();
         });
     });
+
+    it('should return empty array if response is not ok', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 400, statusText: 'OK', body: [] })));
+        service.createRandomQuestions().subscribe((questions) => {
+            expect(questions).toEqual([]);
+            done();
+        });
+    });
+
+    it('should return empty array if there are not enough questions', (done) => {
+        communicationServiceSpy.get.and.returnValue(of(new HttpResponse({ status: 200, statusText: 'OK', body: [] })));
+        service.createRandomQuestions().subscribe((questions) => {
+            expect(questions).toEqual([]);
+            done();
+        });
+    });
 });
