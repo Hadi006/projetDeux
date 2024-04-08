@@ -293,6 +293,7 @@ export class HostService {
 
     private subscribeToPlayerUpdated(): Subscription {
         return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
+            console.log(histogramData);
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
             const playerIndex = this.internalGame?.players.findIndex((p) => p.name === player.name);
             if (playerIndex === undefined || playerIndex === -1 || !this.internalGame) {

@@ -2,11 +2,11 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
+import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
-import { JoinGameEventData } from '@common/join-game-event-data';
 
 @Service()
 export class GameService {
@@ -74,23 +74,16 @@ export class GameService {
 
         const currentQuestion = player.questions[player.questions.length - 1];
         if (currentQuestion.type === 'QRL') {
-            const isActive = player.isActive;
-            let wasActive;
             game.players.forEach((p, index) => {
                 if (p.name === player.name) {
-                    wasActive = p.isActive;
                     game.players[index] = player;
                 }
             });
 
             const currentHistogram = game.histograms[game.histograms.length - 1];
-            if (wasActive && !isActive) {
-                currentHistogram.datasets[0].data[0]--;
-                currentHistogram.datasets[0].data[1]++;
-            } else if (!wasActive && isActive) {
-                currentHistogram.datasets[0].data[0]++;
-                currentHistogram.datasets[0].data[1]--;
-            }
+            currentHistogram.datasets[0].data[0] = game.players.filter((p) => p.isActive).length;
+            currentHistogram.datasets[0].data[1] = game.players.filter((p) => !p.isActive).length;
+
             await this.updateGame(game);
 
             return currentHistogram;

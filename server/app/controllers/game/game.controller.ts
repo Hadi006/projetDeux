@@ -220,8 +220,8 @@ export class GameController {
             const player = roomData.data;
 
             player.questions[player.questions.length - 1].lastModification = new Date();
-            const histogram = await this.gameService.updatePlayer(pin, player);
-            this.sio.to(pin).emit('player-updated', { player, histogram });
+            const histogramData = await this.gameService.updatePlayer(pin, player);
+            this.sio.to(pin).emit('player-updated', { player, histogramData });
             this.sio.to(pin).emit('confirm-player-answer');
         });
     }
