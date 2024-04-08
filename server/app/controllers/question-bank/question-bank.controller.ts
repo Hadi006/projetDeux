@@ -16,7 +16,7 @@ export class QuestionBankController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response) => {
-            const questions: Question[] = await this.questionBankService.getQuestions();
+            const questions: Question[] = await this.questionBankService.getQuestions(req);
             res.status(questions.length === 0 ? httpStatus.NOT_FOUND : httpStatus.OK).json(questions);
         });
 

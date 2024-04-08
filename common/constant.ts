@@ -87,6 +87,12 @@ export const TRANSITION_DELAY = 3;
 
 export const ANSWER_TIME_BUFFER = 1000;
 
+export const N_RANDOM_QUESTIONS = 5;
+
+export const RANDOM_QUIZ_DURATION = 20;
+
+export const RANDOM_QUIZ_ID = '-1';
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 
