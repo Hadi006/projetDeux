@@ -5,7 +5,7 @@ import { ChatMessage } from '@common/chat-message';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Subscription } from 'rxjs';
-import { PlayerService } from '../player/player.service';
+import { PlayerService } from '@app/services/player/player.service';
 
 @Injectable({
     providedIn: 'root',
@@ -105,8 +105,7 @@ export class ChatService {
             if (this.playerService.player) {
                 this.playerService.player.muted = message.text === 'Vous avez été muté';
             }
-
-        })
+        });
     }
 
     private subscribeToPlayerLeft(): Subscription {
