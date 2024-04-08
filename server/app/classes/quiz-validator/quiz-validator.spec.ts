@@ -19,6 +19,7 @@ describe('QuizValidator', () => {
             type: 'QCM',
             points: 10,
             choices: MOCK_ANSWERS,
+            qrlAnswer: '',
         },
     ];
     const MOCK_QUIZ: Quiz = {

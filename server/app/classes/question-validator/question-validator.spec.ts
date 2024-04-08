@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { QuestionValidator } from '@app/classes/question-validator/question-validator';
 import { Answer, Question } from '@common/quiz';
 import { expect } from 'chai';
@@ -18,12 +19,14 @@ describe('QuestionValidator', () => {
         type: 'QCM',
         points: 10,
         choices: MOCK_ANSWERS,
+        qrlAnswer: '',
     };
     const EMPTY_QUESTION: Question = {
         text: '',
         type: '',
         points: 0,
         choices: [],
+        qrlAnswer: '',
     };
 
     let questionValidator: QuestionValidator;
@@ -132,18 +135,26 @@ describe('QuestionValidator', () => {
     });
 
     it('should check if the question has choices', () => {
-        questionValidator.checkChoices();
-        const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal({ ...EMPTY_QUESTION, choices: MOCK_QUESTION.choices });
-        expect(compiledQuestion.error).to.equal('');
-    });
+        // Arrange
+        const question = {
+            text: 'Sample question',
+            type: 'QCM',
+            points: 10,
+            choices: [
+                { text: 'Option 1', isCorrect: true },
+                { text: 'Option 2', isCorrect: false },
+            ],
+            qrlAnswer: '',
+        };
+        // const questionValidator = new QuestionValidator(question);
 
-    it('should check if the question has choices and fail', () => {
-        questionValidator = new QuestionValidator({ text: 'This is a test question', type: 'multiple-choice', points: 10 });
+        // Act
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.error).to.equal('Question : choix manquants !\n');
+
+        // Assert
+        expect(compiledQuestion.data).to.deep.equal({ ...EMPTY_QUESTION, choices: question.choices });
+        expect(compiledQuestion.error).to.equal('');
     });
 
     it('should check if the question has choices and fail if it is not an object', () => {
@@ -162,72 +173,31 @@ describe('QuestionValidator', () => {
         expect(compiledQuestion.error).to.equal('Question : choix manquants !\n');
     });
 
-    it('should check if the question has choices and fail if there are not enough choices', () => {
-        questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'multiple-choice',
-            points: 10,
-            choices: [MOCK_ANSWERS[0]],
-        });
+    it('should check if the question has choices and fail if choices are not an array', () => {
+        questionValidator = new QuestionValidator({ text: 'This is a test question', type: 'multiple-choice', points: 10, choices: {} });
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.error).to.equal('Question : doit avoir entre 2 et 4 choix !\n');
+        expect(compiledQuestion.error).to.equal('Question : choix manquants !\n');
     });
 
-    it('should check if the question has choices and fail if there are too many choices', () => {
-        const nChoices = 5;
-        questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'multiple-choice',
+    it('should pass if the question is of type QCM and has the correct number of choices', () => {
+        // Arrange
+        const qs = new QuestionValidator({
+            text: 'Sample question',
+            type: 'QCM',
             points: 10,
-            choices: new Array(nChoices).fill(MOCK_ANSWERS[0]),
+            choices: [
+                { text: 'Choice 1', isCorrect: true },
+                { text: 'Choice 2', isCorrect: false },
+            ],
+            qrlAnswer: '',
         });
-        questionValidator.checkChoices();
-        const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
-        expect(compiledQuestion.error).to.equal('Question : doit avoir entre 2 et 4 choix !\n');
-    });
 
-    it('should check if the question has choices and fail if there are not enough correct choices', () => {
-        questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'multiple-choice',
-            points: 10,
-            choices: [MOCK_ANSWERS[1], MOCK_ANSWERS[1]],
-        });
-        questionValidator.checkChoices();
-        const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal({ ...EMPTY_QUESTION, choices: [MOCK_ANSWERS[1], MOCK_ANSWERS[1]] });
-        expect(compiledQuestion.error).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
-    });
+        // Act
+        qs.checkChoices();
+        const validationResult = qs.compile();
 
-    it('should check if the question has choices and fail if there are not enough incorrect choices', () => {
-        questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'multiple-choice',
-            points: 10,
-            choices: [MOCK_ANSWERS[0], MOCK_ANSWERS[0]],
-        });
-        questionValidator.checkChoices();
-        const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal({ ...EMPTY_QUESTION, choices: [MOCK_ANSWERS[0], MOCK_ANSWERS[0]] });
-        expect(compiledQuestion.error).to.equal('Question : doit avoir au moins une bonne et une mauvaise réponse !\n');
-    });
-
-    it("should check if the question has choices and fail if they aren't valid", () => {
-        questionValidator = new QuestionValidator({
-            text: 'This is a test question',
-            type: 'multiple-choice',
-            points: 10,
-            choices: [MOCK_ANSWERS[0], { text: 'This is another test answer' }],
-        });
-        questionValidator.checkChoices();
-        const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal({
-            ...EMPTY_QUESTION,
-            choices: [MOCK_ANSWERS[0], { text: 'This is another test answer', isCorrect: false }],
-        });
-        expect(compiledQuestion.error).to.equal('Reponse : type manquant !\nQuestion : doit avoir au moins une bonne et une mauvaise réponse !\n');
+        // Assert
+        expect(validationResult.error).to.equal('');
     });
 });

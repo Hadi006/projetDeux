@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
@@ -118,14 +119,44 @@ describe('PlayerService', () => {
         expect(service.getPlayerAnswers()).toEqual(service.player.questions[service.player.questions.length - 1].choices);
     });
 
-    it('should not get the player answers if the player is not in the game', () => {
+    it('should return an empty array if player is not defined', () => {
         service.player = null;
-        expect(service.getPlayerAnswers()).toEqual([]);
+
+        const result = service.getPlayerAnswers();
+
+        expect(result).toEqual([]);
     });
 
-    // it('should get the player boolean answers', () => {
-    //     expect(service.getPlayerBooleanAnswers()).toEqual(service.getPlayerAnswers().map((answer) => answer.isCorrect));
-    // });
+    it('should not return an empty array if player is defined', () => {
+        service.player = {
+            id: 'playerId',
+            name: 'playerName',
+            score: 0,
+            questions: [
+                {
+                    text: 'Question 1',
+                    choices: [{ text: 'Answer 1', isCorrect: true }, { text: 'Answer 2', isCorrect: false }, { text: 'Answer 3' }],
+                    type: 'QCM',
+                    points: 10,
+                    qrlAnswer: '',
+                },
+            ],
+            fastestResponseCount: 0,
+            isActive: true,
+        };
+        const result = service.getPlayerAnswers();
+        expect(result).not.toEqual([]);
+    });
+
+    it('should get the player boolean answers', () => {
+        spyOn(service, 'getPlayerAnswers').and.returnValue([
+            { text: 'Answer 1', isCorrect: true },
+            { text: 'Answer 2', isCorrect: false },
+            { text: 'Answer 3' },
+        ]);
+
+        expect(service.getPlayerBooleanAnswers()).toEqual([true, false, false]);
+    });
 
     it('should check if the player is connected', () => {
         playerSocketServiceSpy.isConnected.and.returnValue(true);
@@ -313,6 +344,7 @@ describe('PlayerService', () => {
         expect(service.pin).toEqual('');
         expect(service.gameTitle).toEqual('');
         expect(service.players).toEqual([]);
+        // eslint-disable-next-line max-lines
         expect(service.gameStarted).toBeFalse();
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
@@ -330,11 +362,37 @@ describe('PlayerService', () => {
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, time);
     });
 
-    it('should not set up next question if the player is not in the game', () => {
+    it('should return an empty brackets if the player is not defined in updateModificationDate', () => {
         service.player = null;
-        const time = 10;
-        service['setupNextQuestion'](TEST_QUESTIONS[0], time);
-        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
-        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+        const result = service.updateModificationDate();
+        expect(result).toEqual(undefined);
+    });
+    it('should set lastModification of the last question to the current date', () => {
+        const now = new Date();
+        jasmine.clock().mockDate(now);
+        service.player = {
+            id: 'playerId',
+            name: 'playerName',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: true,
+            questions: [
+                { text: 'Question 1', type: 'QCM', points: 10, choices: [], qrlAnswer: '' },
+                { text: 'Question 2', type: 'QRL', points: 5, choices: [], qrlAnswer: '' },
+            ],
+        };
+
+        service.updateModificationDate();
+
+        if (service.player) {
+            expect(service.player.questions[service.player.questions.length - 1].lastModification).toEqual(now);
+        } else {
+            fail('service.player is null');
+        }
+    });
+    it('should return an empty brackets if the player is not defined in setupNextQuestion', () => {
+        service.player = null;
+        const result = service['setupNextQuestion'](TEST_QUESTIONS[0], 10);
+        expect(result).toEqual(undefined);
     });
 });

@@ -28,6 +28,7 @@ export class PlayerService {
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
+    service: {};
 
     constructor(
         private playerSocketService: PlayerSocketService,

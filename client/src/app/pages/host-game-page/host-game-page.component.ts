@@ -65,7 +65,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     getQuitters() {
         return this.hostService.quitters;
     }
-
     ngOnInit() {
         if (!this.hostService.isConnected() || !this.hostService.getCurrentQuestion()) {
             this.router.navigate(['/']);

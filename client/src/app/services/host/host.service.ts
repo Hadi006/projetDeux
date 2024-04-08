@@ -173,7 +173,6 @@ export class HostService {
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
-
     endGame(): void {
         if (!this.internalGame) {
             return;
