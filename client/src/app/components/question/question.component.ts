@@ -1,5 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { PlayerService } from '@app/services/player/player.service';
+import { POLL_RATE, MAX_QRL_LENGTH } from '@common/constant';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 
@@ -36,20 +37,23 @@ export class QuestionComponent {
     getTime(): number {
         const question = this.playerService.player?.questions[this.playerService.player.questions.length - 1] || undefined;
         if (question && question.type === 'QRL') {
-            const wasActive = this.playerService.player!.isActive;
-            const isActive = new Date().getTime() - new Date(question.lastModification || '').getTime() < 5000;
-            if (wasActive !== isActive) {
-                this.playerService.player!.isActive = isActive;
-                this.playerService.updatePlayer();
+            if (!this.playerService.player) {
+                return 0;
             }
 
+            const wasActive = this.playerService.player.isActive;
+            const isActive = new Date().getTime() - new Date(question.lastModification || '').getTime() < POLL_RATE;
+            if (wasActive !== isActive) {
+                this.playerService.player.isActive = isActive;
+                this.playerService.updatePlayer();
+            }
         }
 
         return this.playerService.getTime();
     }
 
     getLength(): number {
-        return 200 - (this.playerService.player?.questions[this.playerService.player.questions.length - 1]?.qrlAnswer?.length || 0);
+        return MAX_QRL_LENGTH - (this.playerService.player?.questions[this.playerService.player.questions.length - 1]?.qrlAnswer?.length || 0);
     }
 
     getQuestionData(): Question | undefined {
