@@ -136,9 +136,6 @@ export class GameController {
             }
 
             const game = await this.gameService.getGame(roomData.pin);
-            if (!game) {
-                return;
-            }
             game.nPlayers = game.players.length;
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
