@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { PlayerService } from '@app/services/player/player.service';
-import { POLL_RATE, MAX_QRL_LENGTH } from '@common/constant';
+import { MAX_QRL_LENGTH, POLL_RATE } from '@common/constant';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 
@@ -36,7 +36,7 @@ export class QuestionComponent {
 
     getTime(): number {
         const question = this.playerService.player?.questions[this.playerService.player.questions.length - 1] || undefined;
-        if (question && question.type === 'QRL') {
+        if (question && question.type === 'QRL' && this.playerService.getTime() > 0) {
             if (!this.playerService.player) {
                 return 0;
             }
