@@ -33,7 +33,7 @@ describe('WaitingRoomHostPageComponent', () => {
             configurable: true,
         });
 
-        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent', 'isSocketAlive', 'connect']);
     });
 
     beforeEach(waitForAsync(() => {

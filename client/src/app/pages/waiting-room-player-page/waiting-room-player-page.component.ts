@@ -35,6 +35,10 @@ export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
         return this.playerService.pin;
     }
 
+    get player() {
+        return this.playerService.player;
+    }
+
     get gameTitle() {
         return this.playerService.gameTitle;
     }

@@ -1,4 +1,5 @@
 import { GameService } from '@app/services/game/game.service';
+import { ChatMessage } from '@common/chat-message';
 import { JoinGameResult } from '@common/join-game-result';
 import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
@@ -41,9 +42,8 @@ export class GameController {
     }
 
     private chatMessages(socket: Socket): void {
-        socket.on('new-message', async (message) => {
-            const roomPin = message.roomId;
-            this.sio.to(roomPin).emit('message-received', message);
+        socket.on('new-message', async (data: RoomData<ChatMessage>) => {
+            this.sio.to(data.pin).emit('message-received', data.data);
         });
     }
     private onCreateGame(socket: Socket): void {
@@ -106,7 +106,10 @@ export class GameController {
 
     private onDeleteGame(socket: Socket): void {
         socket.on('delete-game', async (pin: string) => {
-            await this.gameService.deleteGame(pin);
+            const game = await this.gameService.getGame(pin);
+            if (game && !game.ended) {
+                await this.gameService.deleteGame(pin);
+            }
             this.sio.to(pin).emit('game-deleted');
         });
     }
@@ -132,6 +135,11 @@ export class GameController {
                 return;
             }
 
+            const game = await this.gameService.getGame(roomData.pin);
+            if (!game) {
+                return;
+            }
+            game.nPlayers = game.players.length;
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
@@ -223,6 +231,9 @@ export class GameController {
             }
 
             const game = await this.gameService.getGame(pin);
+            game.ended = true;
+            game.bestScore = Math.max(...game.players.map((p) => p.score));
+            await this.gameService.updateGame(game);
             this.sio.to(pin).emit('game-ended', game);
             callback(game);
         });
@@ -244,7 +255,10 @@ export class GameController {
                         game.hostId = game.players[0].id;
                         this.sio.to(game.hostId).emit('new-host', game);
                     } else {
-                        await this.gameService.deleteGame(room);
+                        if (!game.ended) {
+                            await this.gameService.deleteGame(room);
+                        }
+
                         this.sio.to(room).emit('game-deleted');
                         return;
                     }

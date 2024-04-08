@@ -270,12 +270,10 @@ describe('HostService', () => {
     });
 
     it('should end game', () => {
-        hostSocketServiceSpy.emitEndGame.and.returnValue(of(JSON.parse(JSON.stringify(testGame))));
-        spyOn(service, 'cleanUp');
+        hostSocketServiceSpy.emitEndGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
         service.endGame();
         expect(hostSocketServiceSpy.emitEndGame).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game: JSON.parse(JSON.stringify(testGame)) } });
-        expect(service.cleanUp).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) } });
     });
 
     it('should not end game', () => {

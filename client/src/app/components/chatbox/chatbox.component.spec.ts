@@ -10,6 +10,7 @@ describe('ChatboxComponent', () => {
 
     beforeEach(() => {
         chatServiceSpy = jasmine.createSpyObj('ChatService', ['sendMessage']);
+        Object.defineProperty(chatServiceSpy, 'messages', { get: () => ['test message'], configurable: true });
 
         const messagesSubject = new Subject<void>();
 
@@ -33,6 +34,10 @@ describe('ChatboxComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should get messages from chat service', () => {
+        expect(component.getMessages()).toEqual(chatServiceSpy.messages);
+    });
+
     it('should toggle showChat when toggleChat is called', () => {
         component.showChat = false;
         component.toggleChat();
@@ -47,7 +52,7 @@ describe('ChatboxComponent', () => {
     });
 
     it('should return participant name from chat service', () => {
-        expect(component.participantName).toBe(chatServiceSpy.participantName);
+        expect(component.name).toBe(chatServiceSpy.participantName);
     });
 
     it('should reset newMessage to an empty string after sendMessage is called', () => {

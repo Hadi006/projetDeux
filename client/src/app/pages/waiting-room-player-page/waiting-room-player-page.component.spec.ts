@@ -69,6 +69,9 @@ describe('WaitingRoomPlayerPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+        expect(component.pin).toBeTruthy();
+        expect(component.gameTitle).toBeTruthy();
+        expect(component.players).toBeTruthy();
     });
 
     it('should navigate to home page when disconnected', () => {
