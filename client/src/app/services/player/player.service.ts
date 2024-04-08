@@ -14,7 +14,6 @@ import { Observable, Subject, Subscription } from 'rxjs';
 })
 export class PlayerService {
     player: Player | null;
-
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
 
@@ -95,7 +94,7 @@ export class PlayerService {
     }
 
     getPlayerBooleanAnswers(): boolean[] {
-        return this.getPlayerAnswers().map((answer) => answer.isCorrect);
+        return this.getPlayerAnswers().map((answer) => answer.isCorrect ?? false);
     }
 
     isConnected(): boolean {
@@ -145,6 +144,14 @@ export class PlayerService {
         }
 
         this.playerSocketService.emitUpdatePlayer(this.internalPin, this.player);
+    }
+
+    updateModificationDate(): void {
+        if (!this.player) {
+            return;
+        }
+
+        this.player.questions[this.player.questions.length - 1].lastModification = new Date();
     }
 
     handleKeyUp(event: KeyboardEvent): void {

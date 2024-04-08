@@ -115,6 +115,7 @@ export const TEST_QUESTIONS: Question[] = [
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,
+        qrlAnswer: '',
     },
     {
         text: 'Test Question 2',
@@ -122,6 +123,7 @@ export const TEST_QUESTIONS: Question[] = [
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,
+        qrlAnswer: '',
     }
 ];
 
@@ -157,6 +159,7 @@ export const TEST_PLAYERS: Player[] = [
         hasConfirmedAnswer: false,
         hasInteracted: false,
         hasLeft: false,
+        isActive: false,
     },
     {
         id: '2',
@@ -168,6 +171,7 @@ export const TEST_PLAYERS: Player[] = [
         hasConfirmedAnswer: false,
         hasInteracted: false,
         hasLeft: false,
+        isActive: false,
     },
 ];
 

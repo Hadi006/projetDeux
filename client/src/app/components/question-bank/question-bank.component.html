@@ -1,17 +1,25 @@
+<div>
+    <!-- Dropdown for selecting the question type -->
+    <select [(ngModel)]="selectedType" (change)="filterQuestions()">
+        <option value="">Tout</option>
+        <option value="QCM">QCM</option>
+        <option value="QRL">QRL</option>
+    </select>
+</div>
+
 <div
     id="question-bank"
     cdkDropList
-    [cdkDropListData]="questions | async"
+    [cdkDropListData]="filteredQuestions | async"
     (cdkDropListDropped)="drop($event)"
     cdkDropListConnectedTo="question-list"
     cdkDroplistSortingDisabled="true"
 >
     Banque de Questions (drag and drop pour transférer vers la liste de questions)
-    <div *ngFor="let question of questions | async; let i = index" cdkDrag>
+    <div *ngFor="let question of filteredQuestions | async; let i = index" cdkDrag>
         <app-question-item [question]="question" [index]="i" (action)="handle($event)"></app-question-item>
     </div>
-<button type="button" class="create-button" (click)="openQuestionForm()">
-    <span>Créer une question</span>
-</button>
-
+    <button type="button" class="create-button" (click)="openQuestionForm()">
+        <span>Créer une question</span>
+    </button>
 </div>

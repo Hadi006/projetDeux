@@ -37,7 +37,6 @@ export class HostService {
                 this.verifyUsesSockets();
             }
         });
-
         this.questionEndedSubject = new Subject<void>();
         this.gameEndedSubject = new Subject<void>();
 
@@ -167,15 +166,29 @@ export class HostService {
 
         this.internalQuestionEnded = false;
 
-        const newHistogram: HistogramData = {
-            labels: currentQuestion?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
-            datasets: [
-                {
-                    label: currentQuestion?.text || '',
-                    data: currentQuestion?.choices.map(() => 0) || [],
-                },
-            ],
-        };
+        // check if its qrl, if so, create qrl histogram
+        let newHistogram: HistogramData;
+        if (currentQuestion.type === 'QCM') {
+            newHistogram = {
+                labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: currentQuestion.choices.map(() => 0),
+                    },
+                ],
+            };
+        } else {
+            newHistogram = {
+                labels: ['Joueurs actifs', 'Joueurs inactifs'],
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: [0, this.internalGame.players.length],
+                    },
+                ],
+            };
+        }
         this.internalHistograms.push(newHistogram);
 
         this.hostSocketService.emitNextQuestion(this.internalGame.pin, {

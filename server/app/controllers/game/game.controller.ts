@@ -1,5 +1,6 @@
 import { GameService } from '@app/services/game/game.service';
 import { ChatMessage } from '@common/chat-message';
+import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
@@ -7,7 +8,6 @@ import { Answer, Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Server as HTTPServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
-import { JoinGameEventData } from '@common/join-game-event-data';
 
 export class GameController {
     private sio: SocketIOServer;

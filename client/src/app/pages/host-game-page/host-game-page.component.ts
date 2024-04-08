@@ -17,6 +17,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     order = 'asc';
 
     private gameEndedSubscription: Subscription;
+    private histogramSubscription: Subscription;
 
     constructor(
         private hostService: HostService,
@@ -127,5 +128,8 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.gameEndedSubscription.unsubscribe();
+        if (this.histogramSubscription) {
+            this.histogramSubscription.unsubscribe();
+        }
     }
 }

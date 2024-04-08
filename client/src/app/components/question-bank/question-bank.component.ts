@@ -4,8 +4,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { QuestionFormComponent } from '@app/components/question-form/question-form.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
-import { Action, ActionType } from '@common/action';
 import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
+import { Action, ActionType } from '@common/action';
 import { INVALID_INDEX } from '@common/constant';
 import { Question } from '@common/quiz';
 import { Observable, map, take } from 'rxjs';
@@ -17,6 +17,8 @@ import { Observable, map, take } from 'rxjs';
 })
 export class QuestionBankComponent implements OnInit {
     questions: Observable<Question[]>;
+    filteredQuestions: Observable<Question[]>;
+    selectedType: string = '';
 
     constructor(
         private questionBank: QuestionBankService,
@@ -34,8 +36,17 @@ export class QuestionBankComponent implements OnInit {
                 }),
             ),
         );
+        this.filterQuestions();
 
         this.questionBank.fetchQuestions();
+    }
+
+    filterQuestions(): void {
+        if (this.selectedType) {
+            this.filteredQuestions = this.questions.pipe(map((questions) => questions.filter((question) => question.type === this.selectedType)));
+        } else {
+            this.filteredQuestions = this.questions;
+        }
     }
 
     handle(action: Action) {
