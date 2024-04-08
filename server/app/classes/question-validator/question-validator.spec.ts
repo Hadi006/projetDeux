@@ -18,12 +18,14 @@ describe('QuestionValidator', () => {
         type: 'QCM',
         points: 10,
         choices: MOCK_ANSWERS,
+        qrlAnswer: '',
     };
     const EMPTY_QUESTION: Question = {
         text: '',
         type: '',
         points: 0,
         choices: [],
+        qrlAnswer: '',
     };
 
     let questionValidator: QuestionValidator;

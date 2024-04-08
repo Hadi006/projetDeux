@@ -14,6 +14,7 @@ describe('QuestionBankService', () => {
             { text: 'Answer 1', isCorrect: true },
             { text: 'Answer 2', isCorrect: false },
         ],
+        qrlAnswer: '',
     };
 
     let questionBankService: QuestionBankService;
