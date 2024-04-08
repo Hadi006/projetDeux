@@ -148,6 +148,12 @@ describe('HostService', () => {
         expect(service.histograms).toContain(histogram);
     });
 
+    it('should update game when new host is selected', () => {
+        service.handleSockets();
+        newHostSubject.next(TEST_GAME_DATA);
+        expect(service.game).toEqual(TEST_GAME_DATA);
+    });
+
     it('should create game', (done) => {
         service['reset']();
         service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
