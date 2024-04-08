@@ -219,6 +219,34 @@ describe('QuestionComponent', () => {
         }
     }));
 
+    it('should still get time if question has not modification date', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QRL',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        playerHandlerServiceSpy.getTime.and.returnValue(0);
+        const time = component.getTime();
+
+        expect(time).toBe(0);
+    });
+
     it('updatePlayer should update player and call playerService.updatePlayer if question type is QCM', () => {
         playerHandlerServiceSpy.player = {
             id: '1',
