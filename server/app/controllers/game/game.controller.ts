@@ -90,9 +90,15 @@ export class GameController {
             }
 
             const player = game.players.find((p) => p.name === playerName);
+            player.hasLeft = true;
             game.players = game.players.filter((p) => p.name !== playerName);
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('player-left', { players: game.players, player });
+            this.sio.to(pin).emit('message-received', {
+                text: `${playerName} a quitté la partie`,
+                timestamp: new Date(),
+                author: 'Système',
+            });
         });
     }
 
@@ -193,7 +199,8 @@ export class GameController {
             const player = roomData.data;
 
             player.questions[player.questions.length - 1].lastModification = new Date();
-            await this.gameService.updatePlayer(pin, player);
+            const histogram = await this.gameService.updatePlayer(pin, player);
+            this.sio.to(pin).emit('player-updated', { player, histogram });
             this.sio.to(pin).emit('confirm-player-answer');
         });
     }

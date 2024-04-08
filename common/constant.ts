@@ -150,6 +150,7 @@ export const TEST_PLAYERS: Player[] = [
         muted: false,
         hasConfirmedAnswer: false,
         hasInteracted: false,
+        hasLeft: false,
     },
     {
         id: '2',
@@ -160,6 +161,7 @@ export const TEST_PLAYERS: Player[] = [
         muted: false,
         hasConfirmedAnswer: false,
         hasInteracted: false,
+        hasLeft: false,
     },
 ];
 

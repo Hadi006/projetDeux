@@ -153,9 +153,9 @@ export class PlayerService {
             return;
         }
 
+        this.player.hasConfirmedAnswer = true;
         this.playerSocketService.emitConfirmPlayerAnswer(this.internalPin, this.player);
         this.internalAnswerConfirmed = true;
-        this.player.hasConfirmedAnswer = true;
     }
 
     getTime(): number {

@@ -24,14 +24,25 @@
             </mat-card>
             <div class="players-container">
                 <section class="playerCardContainer">
+                    <!-- <h1>Liste de joueurs</h1>
                     <div *ngFor="let player of getPlayers()">
-                        <h1>{{ player.name }}</h1>
+                        <h1 [style.color]="getColor(player)">{{ player.name }}</h1>
                         <h1>{{ player.score }}</h1>
                         <button (click)="mutePlayer(player.name)">{{ player.muted ? 'Unmute' : 'Mute' }}</button>
                     </div>
+                    <h1 *ngIf="getQuitters().length">Joueurs ayant quitté</h1>
                     <div *ngFor="let quitter of getQuitters()">
-                        <h1 class="quitter">{{ quitter.name }}</h1>
+                        <h1 class="quitter" [style.color]="'black'" [style.text-decoration]="'line-through'">{{ quitter.name }}</h1>
                         <h1>{{ quitter.score }}</h1>
+                    </div> -->
+                    <h1>Liste de joueurs</h1>
+                    <button (click)="sortBy('name')">Trier par nom</button>
+                    <button (click)="sortBy('score')">Trier par points</button>
+                    <button (click)="sortBy('color')">Trier par couleur</button>
+                    <div *ngFor="let player of players">
+                        <h1 [style.color]="getColor(player)" [style.text-decoration]="player.hasLeft ? 'line-through' : ''">{{ player.name }}</h1>
+                        <h1>{{ player.score }}</h1>
+                        <button *ngIf="!player.hasLeft" (click)="mutePlayer(player.name)">{{ player.muted ? 'Unmute' : 'Mute' }}</button>
                     </div>
                 </section>
             </div>

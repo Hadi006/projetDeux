@@ -5,6 +5,7 @@ import { ChatMessage } from '@common/chat-message';
 import { MAX_MESSAGE_LENGTH } from '@common/constant';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Subscription } from 'rxjs';
+import { PlayerService } from '../player/player.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +13,6 @@ import { Subscription } from 'rxjs';
 export class ChatService {
     pin: string;
     participantName: string;
-    muted = false;
 
     private socketSubscription: Subscription;
 
@@ -21,6 +21,7 @@ export class ChatService {
     constructor(
         private chatSocketService: ChatSocketService,
         private router: Router,
+        private playerService: PlayerService,
     ) {
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
@@ -49,8 +50,8 @@ export class ChatService {
         if (!this.validateMessage(newMessage)) {
             return;
         }
-        console.log(this.muted);
-        if (this.muted) {
+
+        if (this.participantName !== 'Organisateur' && this.playerService.player?.muted) {
             return;
         }
 
@@ -74,7 +75,6 @@ export class ChatService {
         this.pin = '';
         this.participantName = '';
         this.internalMessages = [];
-        this.muted = false;
     }
 
     private verifyUsesSockets() {
@@ -102,7 +102,10 @@ export class ChatService {
     private subscribeToPlayerMuted(): Subscription {
         return this.chatSocketService.onPlayerMuted().subscribe((message: ChatMessage) => {
             this.internalMessages.push(message);
-            this.muted = message.text === 'Vous avez été muté';
+            if (this.playerService.player) {
+                this.playerService.player.muted = message.text === 'Vous avez été muté';
+            }
+
         })
     }
 

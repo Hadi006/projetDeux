@@ -243,8 +243,9 @@ export class HostService {
 
             const { players, player } = data;
             this.internalGame.players = players;
-
             this.internalQuitters.push(player);
+            player.hasLeft = true;
+
 
             if (this.internalGame.players.length === 0) {
                 this.gameEndedSubject.next();
@@ -268,11 +269,12 @@ export class HostService {
     private subscribeToPlayerUpdated(): Subscription {
         return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
-            this.internalGame?.players.forEach((p) => {
-                if (p.name === player.name) {
-                    p = player;
-                }
-            });
+            const playerIndex = this.internalGame?.players.findIndex((p) => p.name === player.name);
+            if (playerIndex === undefined || playerIndex === -1 || !this.internalGame) {
+                return;
+            }
+
+            this.internalGame.players[playerIndex] = player;
         });
     }
 
@@ -289,6 +291,11 @@ export class HostService {
             this.gameEndedSubject.next();
             return;
         }
+
+        this.internalGame.players.forEach((player) => {
+            player.hasInteracted = false;
+            player.hasConfirmedAnswer = false;
+        });
 
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));

@@ -9,6 +9,7 @@ interface Player {
     muted: boolean;
     hasInteracted: boolean;
     hasConfirmedAnswer: boolean;
+    hasLeft: boolean;
 }
 
 class Player implements Player {
@@ -21,6 +22,7 @@ class Player implements Player {
         this.muted = false;
         this.hasInteracted = false;
         this.hasConfirmedAnswer = false;
+        this.hasLeft = false;
     }
 }
 
