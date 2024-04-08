@@ -36,6 +36,7 @@ describe('HostService', () => {
             'onPlayerUpdated',
             'onNewHost',
             'emitCreateGame',
+            'emitRequestGame',
             'emitToggleLock',
             'emitKick',
             'emitStartGame',
@@ -162,6 +163,14 @@ describe('HostService', () => {
         service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
             expect(result).toBe(false);
             expect(service.game).toBeNull();
+            done();
+        });
+    });
+
+    it('should request game', (done) => {
+        hostSocketServiceSpy.emitRequestGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
+        service.requestGame('1234').subscribe(() => {
+            expect(service.game).toEqual(JSON.parse(JSON.stringify(TEST_GAME_DATA)));
             done();
         });
     });
