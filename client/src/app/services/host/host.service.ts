@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -270,7 +270,6 @@ export class HostService {
             this.internalQuitters.push(player);
             player.hasLeft = true;
 
-
             if (this.internalGame.players.length === 0) {
                 this.gameEndedSubject.next();
             }
@@ -292,10 +291,9 @@ export class HostService {
 
     private subscribeToPlayerUpdated(): Subscription {
         return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
-            console.log(histogramData);
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
             const playerIndex = this.internalGame?.players.findIndex((p) => p.name === player.name);
-            if (playerIndex === undefined || playerIndex === -1 || !this.internalGame) {
+            if (playerIndex === undefined || playerIndex === INVALID_INDEX || !this.internalGame) {
                 return;
             }
 

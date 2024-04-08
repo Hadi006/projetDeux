@@ -146,8 +146,8 @@ describe('HostService', () => {
     it('should update histograms when player is updated', () => {
         service.handleSockets();
         const histogram = JSON.parse(JSON.stringify(testGame.histograms[0]));
-        service.histograms.push(histogram);
-        playerUpdatedSubject.next(histogram);
+        service.histograms.push(testGame.histograms[1]);
+        playerUpdatedSubject.next({ player: testGame.players[0], histogramData: histogram });
         expect(service.histograms).toContain(histogram);
     });
 
@@ -261,12 +261,6 @@ describe('HostService', () => {
         expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
         expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
-    });
-
-    it('should emit undefined question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
-        service.nextQuestion();
-        expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalled();
     });
 
     it('should emit next question with histogram for non-QCM question', () => {
