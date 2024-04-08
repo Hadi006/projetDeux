@@ -125,6 +125,19 @@ describe('HostSocketService', () => {
         });
     });
 
+    it('should emit request game', (done) => {
+        service.connect();
+        const pin = '1';
+        const expectedGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        spyOn(webSocketServiceMock, 'emit').and.callFake((event, data, callback: (response: unknown) => void) => {
+            callback(expectedGame);
+        });
+        service.emitRequestGame(pin).subscribe((game) => {
+            expect(game).toEqual(expectedGame);
+            done();
+        });
+    });
+
     it('should emit toggle lock', () => {
         service.connect();
         const pin = '1';
