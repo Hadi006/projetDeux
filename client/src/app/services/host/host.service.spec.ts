@@ -45,6 +45,7 @@ describe('HostService', () => {
             'emitKick',
             'emitStartGame',
             'emitNextQuestion',
+            'emitUpdatePlayers',
             'emitEndGame',
             'emitEndQuestion',
             'emitUpdateScores',
@@ -304,6 +305,11 @@ describe('HostService', () => {
 
         expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+    });
+
+    it('should update players', () => {
+        service.updatePlayers();
+        expect(hostSocketServiceSpy.emitUpdatePlayers).toHaveBeenCalled();
     });
 
     it('should end game', () => {
