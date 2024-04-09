@@ -135,7 +135,6 @@ export class GameService {
         for (const player of roomData.data) {
             const newScore = player.score;
             const oldScore = game.players.find((p) => p.name === player.name)?.score || 0;
-            console.log(newScore, oldScore, currentQuestion.points);
             const multiplier = (newScore - oldScore) / currentQuestion.points;
             switch (multiplier) {
                 case 0: {
@@ -177,7 +176,7 @@ export class GameService {
 
         const isInTestMode = game.players.length === 1 && game.players[0].name === 'Organisateur';
         if (question.type === 'QRL' && isInTestMode) {
-            game.players[0].score += question.points;
+            game.players[0].score += question.points + question.points * GOOD_ANSWER_BONUS;
             await this.updateGame(game);
             return;
         }

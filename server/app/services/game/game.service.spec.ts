@@ -246,6 +246,18 @@ describe('GameService', () => {
         expect(testPlayers[1].score).to.equal(0);
     });
 
+    it('should give full points if question type is QRL and is in test mode', async () => {
+        testPlayers[0].name = 'Organisateur';
+        const newGame: Game = { ...testGame, players: [testPlayers[0]] };
+        newGame.quiz.questions[0].type = 'QRL';
+        const getStub = stub(gameService, 'getGame').resolves(newGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updateScores(newGame.pin, 0);
+        expect(getStub.calledWith(newGame.pin)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+        expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+    });
+
     it('should not update scores if game is invalid', async () => {
         databaseServiceStub.get.resolves([]);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
