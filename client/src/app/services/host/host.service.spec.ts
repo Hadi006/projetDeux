@@ -312,6 +312,12 @@ describe('HostService', () => {
         expect(hostSocketServiceSpy.emitUpdatePlayers).toHaveBeenCalled();
     });
 
+    it('should not update players', () => {
+        service['reset']();
+        service.updatePlayers();
+        expect(hostSocketServiceSpy.emitUpdatePlayers).not.toHaveBeenCalled();
+    });
+
     it('should end game', () => {
         hostSocketServiceSpy.emitEndGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
         service.endGame();
