@@ -156,6 +156,14 @@ describe('HostService', () => {
         expect(service.histograms).toContain(histogram);
     });
 
+    it('should not update player if game is undefined', () => {
+        service['reset']();
+        service.handleSockets();
+        const histogram = JSON.parse(JSON.stringify(testGame.histograms[0]));
+        playerUpdatedSubject.next({ player: testGame.players[0], histogramData: histogram });
+        expect(service.histograms).not.toContain(histogram);
+    });
+
     it('should update game when new host is selected', () => {
         service.handleSockets();
         newHostSubject.next(testGame);
