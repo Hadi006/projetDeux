@@ -172,6 +172,8 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should sort in ascending', () => {
+        component.sortBy('name');
+        component.sortBy('name');
         expect(component.sort).toEqual('name');
         expect(component.order).toEqual('asc');
     });
