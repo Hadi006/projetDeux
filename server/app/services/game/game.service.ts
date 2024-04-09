@@ -135,6 +135,7 @@ export class GameService {
         for (const player of roomData.data) {
             const newScore = player.score;
             const oldScore = game.players.find((p) => p.name === player.name)?.score || 0;
+            console.log(newScore, oldScore, currentQuestion.points);
             const multiplier = (newScore - oldScore) / currentQuestion.points;
             switch (multiplier) {
                 case 0: {

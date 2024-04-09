@@ -1,6 +1,6 @@
 import { DatabaseService } from '@app/services/database/database.service';
 import { GameService } from '@app/services/game/game.service';
-import { GAME_ID_MAX, GOOD_ANSWER_BONUS, INVALID_INDEX, TEST_GAME_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { GAME_ID_MAX, GOOD_ANSWER_BONUS, INVALID_INDEX, SELECTED_MULTIPLIER, TEST_GAME_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
@@ -206,6 +206,30 @@ describe('GameService', () => {
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updatePlayer(testGame.pin, new Player('1', 'Player'));
         expect(updateStub.calledWith(testGame)).to.equal(true);
+    });
+
+    it('should update players', async () => {
+        stub(gameService, 'getGame').resolves(testGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updatePlayers({ pin: testGame.pin, data: testPlayers });
+        expect(updateStub.calledWith(testGame)).to.equal(true);
+    });
+
+    it('should not update players if game is invalid', async () => {
+        stub(gameService, 'getGame').resolves(undefined);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updatePlayers({ pin: testGame.pin, data: testPlayers });
+        expect(updateStub.called).to.equal(false);
+    });
+
+    it('should update players with different score multipliers', async () => {
+        const currentQuestion = testGame.players[0].questions[testGame.players[0].questions.length - 1];
+        testPlayers[0].score = SELECTED_MULTIPLIER * currentQuestion.points + testGame.players[0].score;
+        testPlayers[1].score = currentQuestion.points + testGame.players[1].score;
+        stub(gameService, 'getGame').resolves(testGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.updatePlayers({ pin: testGame.pin, data: testPlayers });
+        expect(updateStub.called).to.equal(true);
     });
 
     it('should update scores', async () => {
