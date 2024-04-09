@@ -14,6 +14,9 @@ export enum MouseButton {
     Back = 3,
     Forward = 4,
 }
+
+export const SELECTED_MULTIPLIER = 0.5;
+
 /* Guards */
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */

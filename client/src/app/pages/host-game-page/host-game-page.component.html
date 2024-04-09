@@ -49,6 +49,25 @@
         </div>
         <button routerLink="/home">Quitter</button>
     </div>
+    <div *ngIf="getQrlEnded()">
+        <h1 class="evaluation">Evaluation des reponses</h1>
+        <h2 [style.color]="'black'">Joueur : {{ getCurrentPlayer().name }}</h2>
+        <p [style.color]="'black'">Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
+        <label>
+            <input type="radio" name="option1" value="0" [(ngModel)]="selectedMultiplier">
+            <p [style.color]="'black'">0 %</p>
+        </label>
+        <label>
+            <input type="radio" name="option1" value="0.5" [(ngModel)]="selectedMultiplier">
+            <p [style.color]="'black'">50 %</p>
+        </label>
+        <label>
+            <input type="radio" name="option1" value="1" [(ngModel)]="selectedMultiplier">
+            <p [style.color]="'black'">100 %</p>
+        </label>
+        <button *ngIf="!isTheLastPlayer()" (click)="nextPlayer()">Prochaine question</button>
+        <button *ngIf="isTheLastPlayer()" (click)="sendEvaluationResults()">Envoyer la correction</button>
+    </div>
     <app-chatbox> </app-chatbox>
     <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
 </body>

@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { PlayerService } from '@app/services/player/player.service';
-import { POLL_RATE, MAX_QRL_LENGTH } from '@common/constant';
+import { INVALID_INDEX, MAX_QRL_LENGTH, POLL_RATE } from '@common/constant';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 
@@ -40,7 +40,7 @@ export class QuestionComponent {
         }
 
         const question = this.playerService.player.questions[this.playerService.player.questions.length - 1];
-        if (question && question.type === 'QRL') {
+        if (question && question.type === 'QRL' && this.playerService.getTime() > 0) {
             const wasActive = this.playerService.player.isActive;
             const isActive = new Date().getTime() - new Date(question.lastModification || '').getTime() < POLL_RATE;
             if (wasActive !== isActive) {
@@ -66,10 +66,6 @@ export class QuestionComponent {
         return player.questions[player.questions.length - 1];
     }
 
-    getIsChecked(): boolean[] {
-        return this.playerService.getPlayerBooleanAnswers();
-    }
-
     updatePlayer(): void {
         const player = this.getPlayer();
         if (!player) {
@@ -80,6 +76,10 @@ export class QuestionComponent {
         if (player.questions[player.questions.length - 1].type === 'QCM') {
             this.playerService.updatePlayer();
         }
+    }
+
+    isWaitingForEvaluation(): boolean {
+        return this.getQuestionData()?.type === 'QRL' && this.playerService.getTime() === 0 && this.playerService.qrlCorrect === INVALID_INDEX;
     }
 
     private canEditAnswer(): boolean {

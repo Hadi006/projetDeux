@@ -32,6 +32,7 @@ export class GameController {
             this.onStartGame(socket);
             this.onNextQuestion(socket);
             this.onUpdatePlayer(socket);
+            this.onUpdatePlayers(socket);
             this.onUpdateScores(socket);
             this.onEndQuestion(socket);
             this.onConfirmPlayerAnswer(socket);
@@ -161,6 +162,7 @@ export class GameController {
 
             const game = await this.gameService.getGame(roomData.pin);
             game.nPlayers = game.players.length;
+            await this.gameService.updateGame(game);
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
@@ -194,6 +196,43 @@ export class GameController {
             const histogramData = await this.gameService.updatePlayer(roomData.pin, roomData.data);
             const hostId = (await this.gameService.getGame(roomData.pin))?.hostId;
             this.sio.sockets.sockets.get(hostId)?.emit('player-updated', { player: roomData.data, histogramData });
+        });
+    }
+
+    private onUpdatePlayers(socket: Socket): void {
+        socket.on('update-players', async (roomData: RoomData<Player[]>) => {
+            const game = await this.gameService.getGame(roomData.pin);
+            if (!game) {
+                return;
+            }
+
+            const currentQuestion = game.players[0].questions[game.players[0].questions.length - 1];
+            const newHistogram = {
+                labels: ['0%', '50%', '100%'],
+                datasets: [{
+                    label: currentQuestion.text,
+                    data: [0, 0, 0],
+                }]
+            }
+            for (const player of roomData.data) {
+                const newScore = player.score;
+                const oldScore = game.players.find((p) => p.name === player.name)?.score || 0;
+                const multiplier = (newScore - oldScore) / currentQuestion.points;
+                if (multiplier === 0) {
+                    newHistogram.datasets[0].data[0]++;
+                } else if (multiplier === 0.5) {
+                    newHistogram.datasets[0].data[1]++;
+                } else if (multiplier === 1) {
+                    newHistogram.datasets[0].data[2]++;
+                }
+            }
+            game.histograms.pop();
+            game.histograms.push(newHistogram);
+            game.players = roomData.data;
+            await this.gameService.updateGame(game);
+            game.players.forEach((player) => {
+                this.sio.to(roomData.pin).emit('new-score', player);
+            });
         });
     }
 

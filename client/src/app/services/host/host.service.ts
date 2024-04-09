@@ -23,7 +23,7 @@ export class HostService {
     private internalGame: Game | null;
     private internalNAnswered: number;
     private internalQuestionEnded: boolean;
-    private currentQuestionIndex: number;
+    public currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
 
@@ -160,6 +160,8 @@ export class HostService {
     nextQuestion(): void {
         const currentQuestion = this.getCurrentQuestion();
         if (!this.internalGame || !currentQuestion) {
+            this.timeService.stopTimerById(this.timerId);
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
             return;
         }
 
@@ -198,12 +200,21 @@ export class HostService {
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
+
+    updatePlayers(): void {
+        if (!this.internalGame) {
+            return;
+        }
+        this.hostSocketService.emitUpdatePlayers(this.internalGame.pin, this.internalGame.players);
+    }
+
     endGame(): void {
         if (!this.internalGame) {
             return;
         }
 
         this.hostSocketService.emitEndGame(this.internalGame.pin).subscribe((game: Game) => {
+            console.log(game.histograms)
             this.router.navigate(['/endgame'], { state: { game } });
         });
     }
@@ -244,6 +255,13 @@ export class HostService {
         }
 
         this.hostSocketService.emitEndQuestion(this.internalGame.pin);
+        const isTestMode = this.internalGame?.players.length === 1 && this.internalGame.players[0].name === 'Organisateur';
+        if (this.getCurrentQuestion()?.type === 'QRL' && !isTestMode) {
+            this.internalQuestionEnded = true;
+            this.currentQuestionIndex++;
+            this.questionEndedSubject.next();
+            return;
+        }
         this.hostSocketService.emitUpdateScores(this.internalGame.pin, this.currentQuestionIndex).subscribe((game: Game) => {
             this.internalGame = game;
             this.questionEndedSubject.next();
@@ -251,6 +269,7 @@ export class HostService {
         this.hostSocketService.emitAnswer(this.internalGame.pin, currentAnswer);
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
+
     }
 
     private subscribeToPlayerJoined(): Subscription {
