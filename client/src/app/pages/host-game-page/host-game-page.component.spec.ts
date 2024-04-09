@@ -6,6 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUESTIONS } from '@common/constant';
+import { Player } from '@common/player';
 import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
@@ -216,6 +217,20 @@ describe('HostGamePageComponent', () => {
     it('should mute player', () => {
         component.mutePlayer(TEST_GAME_DATA.players[0].name);
         expect(hostServiceSpy.mute).toHaveBeenCalledWith(TEST_GAME_DATA.players[0].name);
+    });
+
+    it('should get current player', () => {
+        expect(component.getCurrentPlayer()).toEqual(TEST_GAME_DATA.players[0]);
+    });
+
+    it('should not get current player if game is undefined', () => {
+        Object.defineProperty(hostServiceSpy, 'game', {
+            get: () => {
+                return undefined;
+            },
+            configurable: true,
+        });
+        expect(component.getCurrentPlayer()).toEqual(new Player('', ''));
     });
 
     it('should navigate to home if not connected or no current question', () => {
