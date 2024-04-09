@@ -414,6 +414,17 @@ describe('HostService', () => {
         expect(service.questionEnded).toBe(false);
     });
 
+    it('should not end question if qrl and not in test mode', () => {
+        testQuizzes[0].questions[0].type = 'QRL';
+        testGame.players = [testGame.players[0]];
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
+        service['endQuestion']();
+        expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitUpdateScores).not.toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitAnswer).not.toHaveBeenCalled();
+        expect(service.questionEnded).toBe(true);
+    });
+
     it('getTimer should return time', () => {
         const time = 10;
         timeServiceSpy.getTimeById.and.returnValue(time);
