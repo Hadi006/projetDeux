@@ -182,6 +182,29 @@ describe('HostGamePageComponent', () => {
         expect(component.order).toEqual('asc');
     });
 
+    it('should return black', () => {
+        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
+        player.hasLeft = true;
+        expect(component.getColor(player)).toEqual('black');
+    });
+
+    it('should return green', () => {
+        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
+        player.hasConfirmedAnswer = true;
+        expect(component.getColor(player)).toEqual('green');
+    });
+
+    it('should return yellow', () => {
+        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
+        player.hasInteracted = true;
+        expect(component.getColor(player)).toEqual('yellow');
+    });
+
+    it('should return red', () => {
+        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
+        expect(component.getColor(player)).toEqual('red');
+    });
+
     it('should navigate to home if not connected or no current question', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
