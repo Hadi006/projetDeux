@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
 import { MAX_QRL_LENGTH, TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Player } from '@common/player';
@@ -179,7 +179,7 @@ describe('QuestionComponent', () => {
         expect(length).toBe(0);
     });
 
-    it('should update player isActive status and call updatePlayer if status changed', fakeAsync(() => {
+    it('should update player isActive status and call updatePlayer if status changed', () => {
         playerHandlerServiceSpy.player = {
             id: '1',
             name: 'John Doe',
@@ -202,12 +202,11 @@ describe('QuestionComponent', () => {
             hasLeft: false,
         };
 
+        playerHandlerServiceSpy.getTime.and.returnValue(1);
         component.getTime();
 
-        if (playerHandlerServiceSpy.player) {
-            expect(playerHandlerServiceSpy.player.isActive).toBe(true);
-        }
-    }));
+        expect(playerHandlerServiceSpy.player.isActive).toBe(true);
+    });
 
     it('should still get time if question has not modification date', () => {
         playerHandlerServiceSpy.player = {

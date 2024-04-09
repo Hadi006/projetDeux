@@ -213,7 +213,6 @@ export class HostService {
         }
 
         this.hostSocketService.emitEndGame(this.internalGame.pin).subscribe((game: Game) => {
-            console.log(game.histograms);
             this.router.navigate(['/endgame'], { state: { game } });
         });
     }
