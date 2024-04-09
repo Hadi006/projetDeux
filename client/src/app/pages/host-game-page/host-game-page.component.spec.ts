@@ -165,6 +165,23 @@ describe('HostGamePageComponent', () => {
         expect(hostServiceSpy.endGame).toHaveBeenCalled();
     });
 
+    it('should sort in ascending', () => {
+        expect(component.sort).toEqual('name');
+        expect(component.order).toEqual('asc');
+    });
+
+    it('should sort in descending', () => {
+        component.sortBy('name');
+        expect(component.sort).toEqual('name');
+        expect(component.order).toEqual('desc');
+    });
+
+    it('should change sort', () => {
+        component.sortBy('score');
+        expect(component.sort).toEqual('score');
+        expect(component.order).toEqual('asc');
+    });
+
     it('should navigate to home if not connected or no current question', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
