@@ -43,6 +43,7 @@ describe('HostService', () => {
             'emitRequestGame',
             'emitToggleLock',
             'emitKick',
+            'emitMute',
             'emitStartGame',
             'emitNextQuestion',
             'emitUpdatePlayers',
@@ -221,6 +222,30 @@ describe('HostService', () => {
         service['reset']();
         service.kick('Player 1');
         expect(hostSocketServiceSpy.emitKick).not.toHaveBeenCalled();
+    });
+
+    it('should mute player', () => {
+        const player = JSON.parse(JSON.stringify(testGame.players[0]));
+        service.mute(player.name);
+        player.muted = true;
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitMute).toHaveBeenCalledWith(service.game.pin, player);
+    });
+
+    it('should not mute player if game is undefined', () => {
+        service['reset']();
+        service.mute('Player 1');
+        expect(hostSocketServiceSpy.emitMute).not.toHaveBeenCalled();
+    });
+
+    it('should not mute player if player is undefined', () => {
+        service.mute('');
+        expect(hostSocketServiceSpy.emitMute).not.toHaveBeenCalled();
     });
 
     it('should start game', () => {
