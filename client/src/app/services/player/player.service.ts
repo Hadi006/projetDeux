@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, TRANSITION_DELAY } from '@common/constant';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
@@ -30,7 +30,7 @@ export class PlayerService {
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
-    private internalQrlCorrect: number = -1;
+    private internalQrlCorrect: number = INVALID_INDEX;
 
     constructor(
         private playerSocketService: PlayerSocketService,
