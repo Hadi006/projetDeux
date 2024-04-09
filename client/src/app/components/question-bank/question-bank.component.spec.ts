@@ -1,6 +1,7 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
@@ -53,7 +54,7 @@ describe('QuestionBankComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionBankComponent, QuestionItemComponent],
-            imports: [HttpClientTestingModule, DragDropModule, MatIconModule],
+            imports: [HttpClientTestingModule, DragDropModule, MatIconModule, FormsModule],
             providers: [
                 { provide: QuestionBankService, useValue: questionBankServiceSpy },
                 { provide: MatDialog, useValue: matDialogSpy },
