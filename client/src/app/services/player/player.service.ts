@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
 import { Answer, Question } from '@common/quiz';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
-import { JoinGameEventData } from '@common/join-game-event-data';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
     player: Player | null;
-
     readonly startGameSubject: Subject<void>;
     readonly endGameSubject: Subject<void>;
 
@@ -31,6 +30,7 @@ export class PlayerService {
     private internalAnswerConfirmed: boolean;
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
+    private internalQrlCorrect: number = INVALID_INDEX;
 
     constructor(
         private playerSocketService: PlayerSocketService,
@@ -86,16 +86,16 @@ export class PlayerService {
         return this.internalIsCorrect;
     }
 
+    get qrlCorrect(): number {
+        return this.internalQrlCorrect;
+    }
+
     getPlayerAnswers(): Answer[] {
         if (!this.player) {
             return [];
         }
 
         return this.player.questions[this.player.questions.length - 1].choices;
-    }
-
-    getPlayerBooleanAnswers(): boolean[] {
-        return this.getPlayerAnswers().map((answer) => answer.isCorrect);
     }
 
     isConnected(): boolean {
@@ -147,6 +147,14 @@ export class PlayerService {
         this.playerSocketService.emitUpdatePlayer(this.internalPin, this.player);
     }
 
+    updateModificationDate(): void {
+        if (!this.player) {
+            return;
+        }
+
+        this.player.questions[this.player.questions.length - 1].lastModification = new Date();
+    }
+
     handleKeyUp(event: KeyboardEvent): void {
         if (event.key === 'Enter') {
             this.confirmPlayerAnswer();
@@ -164,6 +172,7 @@ export class PlayerService {
             return;
         }
 
+        this.player.hasConfirmedAnswer = true;
         this.playerSocketService.emitConfirmPlayerAnswer(this.internalPin, this.player);
         this.internalAnswerConfirmed = true;
     }
@@ -191,6 +200,7 @@ export class PlayerService {
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
+        this.internalQrlCorrect = -1;
     }
 
     private verifyUsesSockets(): void {
@@ -258,8 +268,10 @@ export class PlayerService {
             }
 
             if (player.name === this.player.name) {
-                if (player.score > this.player.score) {
+                if (player.score > this.player.score && player.questions[player.questions.length - 1].type === 'QCM') {
                     this.internalIsCorrect = true;
+                } else if (player.questions[player.questions.length - 1].type === 'QRL' && player.score > this.player.score) {
+                    this.internalQrlCorrect = (player.score - this.player.score) / player.questions[player.questions.length - 1].points;
                 }
                 this.player = player;
             }
@@ -293,9 +305,12 @@ export class PlayerService {
         }
 
         this.player.questions.push(question);
+        this.player.hasInteracted = false;
+        this.player.hasConfirmedAnswer = false;
         this.internalAnswerConfirmed = false;
         this.internalAnswer = [];
         this.internalIsCorrect = false;
+        this.internalQrlCorrect = -1;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
     }

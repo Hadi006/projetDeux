@@ -8,6 +8,7 @@ import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Answer, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Observable, Subject } from 'rxjs';
+import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +17,7 @@ export class HostSocketService {
     private readonly playerLeftSubject = new Subject<PlayerLeftEventData>();
     private readonly playerJoinedSubject = new Subject<Player>();
     private readonly confirmPlayerAnswerSubject = new Subject<void>();
-    private readonly playerUpdatedSubject = new Subject<HistogramData>();
+    private readonly playerUpdatedSubject = new Subject<PlayerUpdatedEventData>();
     private readonly newHostSubject = new Subject<Game>();
 
     constructor(private webSocketService: WebSocketService) {}
@@ -57,8 +58,8 @@ export class HostSocketService {
         return this.confirmPlayerAnswerSubject;
     }
 
-    onPlayerUpdated(): Subject<HistogramData> {
-        this.webSocketService.onEvent<HistogramData>('player-updated', (data) => {
+    onPlayerUpdated(): Subject<{ player: Player; histogramData: HistogramData }> {
+        this.webSocketService.onEvent<{ player: Player; histogramData: HistogramData }>('player-updated', (data) => {
             this.playerUpdatedSubject.next(data);
         });
 
@@ -101,6 +102,10 @@ export class HostSocketService {
         this.webSocketService.emit<RoomData<string>>('kick', { pin, data: playerName });
     }
 
+    emitMute(pin: string, player: Player): void {
+        this.webSocketService.emit<RoomData<Player>>('mute', { pin, data: player });
+    }
+
     emitStartGame(pin: string, countdown: number): void {
         this.webSocketService.emit<RoomData<number>>('start-game', { pin, data: countdown });
     }
@@ -131,5 +136,9 @@ export class HostSocketService {
 
     emitAnswer(pin: string, currentAnswer: Answer[]): void {
         this.webSocketService.emit<RoomData<Answer[]>>('answer', { pin, data: currentAnswer });
+    }
+
+    emitUpdatePlayers(pin: string, players: Player[]): void {
+        this.webSocketService.emit<RoomData<Player[]>>('update-players', { pin, data: players });
     }
 }

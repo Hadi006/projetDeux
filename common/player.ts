@@ -6,6 +6,11 @@ interface Player {
     score: number;
     questions: Question[];
     fastestResponseCount: number;
+    muted: boolean;
+    hasInteracted: boolean;
+    hasConfirmedAnswer: boolean;
+    hasLeft: boolean;
+    isActive: boolean;
 }
 
 class Player implements Player {
@@ -15,6 +20,11 @@ class Player implements Player {
         this.score = 0;
         this.questions = [];
         this.fastestResponseCount = 0;
+        this.muted = false;
+        this.hasInteracted = false;
+        this.hasConfirmedAnswer = false;
+        this.hasLeft = false;
+        this.isActive = false;
     }
 }
 

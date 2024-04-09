@@ -1,15 +1,16 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
+import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
-import { HostSocketService } from '@app/services/host-socket/host-socket.service';
-import { firstValueFrom, of, ReplaySubject, Subject } from 'rxjs';
+import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
+import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
-import { HistogramData } from '@common/histogram-data';
-import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
+import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
+import { Quiz } from '@common/quiz';
 
 describe('HostService', () => {
     let service: HostService;
@@ -18,10 +19,11 @@ describe('HostService', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let eventSubject: ReplaySubject<NavigationEnd>;
     let testGame: Game;
+    let testQuizzes: Quiz[];
     const playerJoinedSubject: Subject<Player> = new Subject();
     const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
     const confirmPlayerAnswerSubject: Subject<void> = new Subject();
-    const playerUpdatedSubject: Subject<HistogramData> = new Subject();
+    const playerUpdatedSubject: Subject<PlayerUpdatedEventData> = new Subject();
     const newHostSubject: Subject<Game> = new Subject();
 
     beforeEach(async () => {
@@ -41,8 +43,10 @@ describe('HostService', () => {
             'emitRequestGame',
             'emitToggleLock',
             'emitKick',
+            'emitMute',
             'emitStartGame',
             'emitNextQuestion',
+            'emitUpdatePlayers',
             'emitEndGame',
             'emitEndQuestion',
             'emitUpdateScores',
@@ -55,6 +59,7 @@ describe('HostService', () => {
         hostSocketServiceSpy.onNewHost.and.returnValue(newHostSubject);
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(testGame));
+        testQuizzes = JSON.parse(JSON.stringify(TEST_QUIZZES));
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -75,7 +80,7 @@ describe('HostService', () => {
             ],
         });
         service = TestBed.inject(HostService);
-        await firstValueFrom(service.createGame(TEST_QUIZZES[0]));
+        await firstValueFrom(service.createGame(testQuizzes[0]));
     });
 
     it('should be created', () => {
@@ -146,9 +151,17 @@ describe('HostService', () => {
     it('should update histograms when player is updated', () => {
         service.handleSockets();
         const histogram = JSON.parse(JSON.stringify(testGame.histograms[0]));
-        service.histograms.push(histogram);
-        playerUpdatedSubject.next(histogram);
+        service.histograms.push(testGame.histograms[1]);
+        playerUpdatedSubject.next({ player: testGame.players[0], histogramData: histogram });
         expect(service.histograms).toContain(histogram);
+    });
+
+    it('should not update player if game is undefined', () => {
+        service['reset']();
+        service.handleSockets();
+        const histogram = JSON.parse(JSON.stringify(testGame.histograms[0]));
+        playerUpdatedSubject.next({ player: testGame.players[0], histogramData: histogram });
+        expect(service.histograms).not.toContain(histogram);
     });
 
     it('should update game when new host is selected', () => {
@@ -159,7 +172,7 @@ describe('HostService', () => {
 
     it('should create game', (done) => {
         service['reset']();
-        service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
+        service.createGame(testQuizzes[0]).subscribe((result) => {
             expect(result).toBe(true);
             expect(service.game).toEqual(JSON.parse(JSON.stringify(testGame)));
             done();
@@ -169,7 +182,7 @@ describe('HostService', () => {
     it('should not create game', (done) => {
         service['reset']();
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(undefined));
-        service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
+        service.createGame(testQuizzes[0]).subscribe((result) => {
             expect(result).toBe(false);
             expect(service.game).toBeNull();
             done();
@@ -219,6 +232,30 @@ describe('HostService', () => {
         expect(hostSocketServiceSpy.emitKick).not.toHaveBeenCalled();
     });
 
+    it('should mute player', () => {
+        const player = JSON.parse(JSON.stringify(testGame.players[0]));
+        service.mute(player.name);
+        player.muted = true;
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitMute).toHaveBeenCalledWith(service.game.pin, player);
+    });
+
+    it('should not mute player if game is undefined', () => {
+        service['reset']();
+        service.mute('Player 1');
+        expect(hostSocketServiceSpy.emitMute).not.toHaveBeenCalled();
+    });
+
+    it('should not mute player if player is undefined', () => {
+        service.mute('');
+        expect(hostSocketServiceSpy.emitMute).not.toHaveBeenCalled();
+    });
+
     it('should start game', () => {
         const countdown = 10;
         service.startGame(countdown);
@@ -238,7 +275,7 @@ describe('HostService', () => {
     });
 
     it('should emit next question', () => {
-        const question = JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0]));
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
         question.choices[1].isCorrect = true;
         spyOn(service, 'getCurrentQuestion').and.returnValue(question);
         const histogramLength = service.histograms.length;
@@ -259,14 +296,59 @@ describe('HostService', () => {
         service['reset']();
         service.nextQuestion();
         expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
-        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
-        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
     });
 
-    it('should emit undefined question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+    it('should emit next question with histogram for non-QCM question', () => {
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
+        question.type = 'QRL'; // Simulate a non-QCM question
+        spyOn(service, 'getCurrentQuestion').and.returnValue(question);
+        const histogramLength = service.histograms.length;
+
         service.nextQuestion();
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
         expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalled();
+        const expectedHistogram = {
+            labels: ['Joueurs actifs', 'Joueurs inactifs'],
+            datasets: [
+                {
+                    label: question.text,
+                    data: [0, service.game.players.length],
+                },
+            ],
+        };
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalledWith(service.game.pin, {
+            question,
+            countdown: service.game.quiz.duration,
+            histogram: expectedHistogram,
+        });
+
+        expect(service.histograms.length).toBe(histogramLength + 1);
+
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+    });
+
+    it('should update players', () => {
+        service.updatePlayers();
+        expect(hostSocketServiceSpy.emitUpdatePlayers).toHaveBeenCalled();
+    });
+
+    it('should not update players', () => {
+        service['reset']();
+        service.updatePlayers();
+        expect(hostSocketServiceSpy.emitUpdatePlayers).not.toHaveBeenCalled();
     });
 
     it('should end game', () => {
@@ -297,7 +379,7 @@ describe('HostService', () => {
     });
 
     it('should set up next question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[1]);
         service['setupNextQuestion']();
         expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
@@ -321,12 +403,12 @@ describe('HostService', () => {
     });
 
     it('should end question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
-        hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(JSON.parse(JSON.stringify(testGame))));
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
+        hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(testGame));
         service['endQuestion']();
         expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
         expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();
-        expect(service.game).toEqual(JSON.parse(JSON.stringify(testGame)));
+        expect(service.game).toEqual(testGame);
         expect(hostSocketServiceSpy.emitAnswer).toHaveBeenCalled();
         expect(service.questionEnded).toBe(true);
     });
@@ -340,6 +422,17 @@ describe('HostService', () => {
         expect(service.questionEnded).toBe(false);
     });
 
+    it('should not end question if qrl and not in test mode', () => {
+        testQuizzes[0].questions[0].type = 'QRL';
+        testGame.players = [testGame.players[0]];
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
+        service['endQuestion']();
+        expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitUpdateScores).not.toHaveBeenCalled();
+        expect(hostSocketServiceSpy.emitAnswer).not.toHaveBeenCalled();
+        expect(service.questionEnded).toBe(true);
+    });
+
     it('getTimer should return time', () => {
         const time = 10;
         timeServiceSpy.getTimeById.and.returnValue(time);
@@ -347,7 +440,7 @@ describe('HostService', () => {
     });
 
     it('should get current question', () => {
-        expect(service.getCurrentQuestion()).toEqual(JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0])));
+        expect(service.getCurrentQuestion()).toEqual(JSON.parse(JSON.stringify(testQuizzes[0].questions[0])));
     });
 
     it('should check connection', () => {

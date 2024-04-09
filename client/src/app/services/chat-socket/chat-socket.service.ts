@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 export class ChatSocketService {
     private readonly messageReceivedSubject = new Subject<ChatMessage>();
     private readonly playerLeftSubject = new Subject<PlayerLeftEventData>();
+    private readonly playerMutedSubject = new Subject<ChatMessage>();
 
     constructor(private webSocketService: WebSocketService) {}
 
@@ -32,6 +33,14 @@ export class ChatSocketService {
         });
 
         return this.messageReceivedSubject;
+    }
+
+    onPlayerMuted(): Subject<ChatMessage> {
+        this.webSocketService.onEvent<ChatMessage>('player-muted', (message) => {
+            this.playerMutedSubject.next(message);
+        });
+
+        return this.playerMutedSubject;
     }
 
     onPlayerLeft(): Subject<PlayerLeftEventData> {
