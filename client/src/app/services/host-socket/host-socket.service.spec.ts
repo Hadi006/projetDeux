@@ -156,6 +156,15 @@ describe('HostSocketService', () => {
         expect(emitSpy).toHaveBeenCalledWith('kick', { pin, data: playerName });
     });
 
+    it('should emit mute player', () => {
+        service.connect();
+        const pin = '1';
+        const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitMute(pin, player);
+        expect(emitSpy).toHaveBeenCalledWith('mute', { pin, data: player });
+    });
+
     it('should emit start game', () => {
         service.connect();
         const pin = '1';
