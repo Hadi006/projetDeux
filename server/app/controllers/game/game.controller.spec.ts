@@ -276,7 +276,7 @@ describe('GameController', () => {
         const histogram = testHistogram;
         const countdown = 5;
         gameServiceStub.getGame.resolves(testGame);
-        gameServiceStub.updateGame.resolves();
+        gameServiceStub.createNextQuestion.resolves({ question, countdown });
         clientSocket.emit('create-game', testGame.quiz, () => {
             clientSocket.on('question-changed', (response) => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
@@ -290,9 +290,8 @@ describe('GameController', () => {
     it('should broadcast undefined question-changed if no question', (done) => {
         const histogram = testHistogram;
         const countdown = 5;
-        gameServiceStub.createGame.resolves(testGame);
         gameServiceStub.getGame.resolves(testGame);
-        gameServiceStub.updateGame.resolves();
+        gameServiceStub.createNextQuestion.resolves({ countdown });
         clientSocket.emit('create-game', testGame.quiz, () => {
             clientSocket.on('question-changed', (response) => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
