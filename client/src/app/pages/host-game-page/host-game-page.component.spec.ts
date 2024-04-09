@@ -33,6 +33,7 @@ describe('HostGamePageComponent', () => {
             'getGame',
             'endGame',
             'mute',
+            'updatePlayers',
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
@@ -250,6 +251,17 @@ describe('HostGamePageComponent', () => {
     it('should not check if it is the last player if game is undefined', () => {
         spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
         expect(component.isTheLastPlayer()).toBeFalse();
+    });
+
+    it('should send evaluation results', () => {
+        component.sendEvaluationResults();
+        expect(hostServiceSpy.updatePlayers).toHaveBeenCalled();
+    });
+
+    it('should not send evaluation results if game is undefined', () => {
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
+        component.sendEvaluationResults();
+        expect(hostServiceSpy.updatePlayers).not.toHaveBeenCalled();
     });
 
     it('should navigate to home if not connected or no current question', () => {
