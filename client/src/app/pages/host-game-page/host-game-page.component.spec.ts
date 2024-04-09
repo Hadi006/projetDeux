@@ -5,7 +5,7 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
-import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
+import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUESTIONS } from '@common/constant';
 import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
@@ -86,6 +86,29 @@ describe('HostGamePageComponent', () => {
             done();
         });
         hostServiceSpy.gameEndedSubject.next();
+    });
+
+    it('should open evaluation form if current question is QRL', (done) => {
+        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(TEST_QUESTIONS[1]);
+        hostServiceSpy.questionEndedSubject.subscribe(() => {
+            expect(component.shouldOpenEvaluationForm).toBeTrue();
+            done();
+        });
+        hostServiceSpy.questionEndedSubject.next();
+    });
+
+    it('should do nothing if game is undefined', (done) => {
+        Object.defineProperty(hostServiceSpy, 'game', {
+            get: () => {
+                return undefined;
+            },
+            configurable: true,
+        });
+        hostServiceSpy.questionEndedSubject.subscribe(() => {
+            expect(component.shouldOpenEvaluationForm).toBeFalse();
+            done();
+        });
+        hostServiceSpy.questionEndedSubject.next();
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
