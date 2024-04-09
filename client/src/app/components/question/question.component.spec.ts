@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { MAX_QRL_LENGTH, TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
+import { INVALID_INDEX, MAX_QRL_LENGTH, TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';
@@ -270,5 +270,40 @@ describe('QuestionComponent', () => {
         playerHandlerServiceSpy.player = null;
         component.updatePlayer();
         expect(playerHandlerServiceSpy.updatePlayer).not.toHaveBeenCalled();
+    });
+
+    it('should verify if waiting for evaluation', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QRL',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        playerHandlerServiceSpy.getTime.and.returnValue(0);
+        Object.defineProperty(playerHandlerServiceSpy, 'qrlCorrect', {
+            get: () => {
+                return INVALID_INDEX;
+            },
+            configurable: true,
+        });
+
+        const isWaiting = component.isWaitingForEvaluation();
+
+        expect(isWaiting).toBeTrue();
     });
 });
