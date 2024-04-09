@@ -154,16 +154,6 @@ describe('PlayerService', () => {
         expect(result).not.toEqual([]);
     });
 
-    it('should get the player boolean answers', () => {
-        spyOn(service, 'getPlayerAnswers').and.returnValue([
-            { text: 'Answer 1', isCorrect: true },
-            { text: 'Answer 2', isCorrect: false },
-            { text: 'Answer 3' },
-        ]);
-
-        expect(service.getPlayerBooleanAnswers()).toEqual([true, false, false]);
-    });
-
     it('should check if the player is connected', () => {
         playerSocketServiceSpy.isConnected.and.returnValue(true);
         expect(service.isConnected()).toBeTrue();

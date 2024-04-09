@@ -18,13 +18,7 @@ describe('QuestionComponent', () => {
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', [
-            'joinGame',
-            'handleKeyUp',
-            'getPlayerBooleanAnswers',
-            'getTime',
-            'updatePlayer',
-        ]);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', ['joinGame', 'handleKeyUp', 'getTime', 'updatePlayer']);
         playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
             get: () => {
@@ -108,10 +102,6 @@ describe('QuestionComponent', () => {
     it('getQuestionData should return undefined if there is no player', () => {
         spyOn(component, 'getPlayer').and.returnValue(undefined);
         expect(component.getQuestionData()).toBeUndefined();
-    });
-
-    it('getIsChecked should return the players answer', () => {
-        expect(component.getIsChecked()).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
     });
 
     it('should return the remaining length', () => {
