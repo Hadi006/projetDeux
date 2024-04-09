@@ -18,7 +18,15 @@ describe('HostGamePageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'getCurrentQuestion', 'getTime', 'nextQuestion', 'getGame', 'endGame']);
+        hostServiceSpy = jasmine.createSpyObj('HostService', [
+            'isConnected',
+            'getCurrentQuestion',
+            'getTime',
+            'nextQuestion',
+            'getGame',
+            'endGame',
+            'mute',
+        ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
                 return TEST_GAME_DATA;
@@ -203,6 +211,11 @@ describe('HostGamePageComponent', () => {
     it('should return red', () => {
         const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
         expect(component.getColor(player)).toEqual('red');
+    });
+
+    it('should mute player', () => {
+        component.mutePlayer(TEST_GAME_DATA.players[0].name);
+        expect(hostServiceSpy.mute).toHaveBeenCalledWith(TEST_GAME_DATA.players[0].name);
     });
 
     it('should navigate to home if not connected or no current question', () => {
