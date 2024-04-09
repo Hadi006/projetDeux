@@ -226,4 +226,13 @@ describe('HostSocketService', () => {
         service.emitAnswer(pin, currentAnswer);
         expect(emitSpy).toHaveBeenCalledWith('answer', { pin, data: currentAnswer });
     });
+
+    it('should emit update players', () => {
+        service.connect();
+        const pin = '1';
+        const players = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitUpdatePlayers(pin, players);
+        expect(emitSpy).toHaveBeenCalledWith('update-players', { pin, data: players });
+    });
 });
