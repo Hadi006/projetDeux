@@ -18,15 +18,7 @@ describe('HostGamePageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', [
-            'isConnected',
-            'getCurrentQuestion',
-            'getTime',
-            'questionEnded',
-            'nextQuestion',
-            'getGame',
-            'endGame',
-        ]);
+        hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'getCurrentQuestion', 'getTime', 'nextQuestion', 'getGame', 'endGame']);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
                 return TEST_GAME_DATA;
@@ -37,6 +29,13 @@ describe('HostGamePageComponent', () => {
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', {
             get: () => {
                 return gameEndedSubject;
+            },
+            configurable: true,
+        });
+        const questionEndedSubject = new Subject<void>();
+        Object.defineProperty(hostServiceSpy, 'questionEndedSubject', {
+            get: () => {
+                return questionEndedSubject;
             },
             configurable: true,
         });
