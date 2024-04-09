@@ -6,6 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUESTIONS } from '@common/constant';
+import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { Subject } from 'rxjs';
 
@@ -17,8 +18,13 @@ describe('HostGamePageComponent', () => {
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let dialogSpy: jasmine.SpyObj<MatDialog>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let testGame: Game;
+    let testPlayer: Player;
 
     beforeEach(() => {
+        testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        testPlayer = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
+
         hostServiceSpy = jasmine.createSpyObj('HostService', [
             'isConnected',
             'getCurrentQuestion',
@@ -30,7 +36,7 @@ describe('HostGamePageComponent', () => {
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
-                return TEST_GAME_DATA;
+                return testGame;
             },
             configurable: true,
         });
@@ -107,12 +113,7 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should do nothing if game is undefined', (done) => {
-        Object.defineProperty(hostServiceSpy, 'game', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
         hostServiceSpy.questionEndedSubject.subscribe(() => {
             expect(component.shouldOpenEvaluationForm).toBeFalse();
             done();
@@ -125,12 +126,7 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should not get the real current question if game is undefined', () => {
-        Object.defineProperty(hostServiceSpy, 'game', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
         expect(component.getTheRealCurrentQuestion()).toBeUndefined();
     });
 
@@ -140,12 +136,12 @@ describe('HostGamePageComponent', () => {
     });
 
     it('getGame should return the game from the hostService', () => {
-        expect(component.game).toEqual(TEST_GAME_DATA);
+        expect(component.game).toEqual(testGame);
     });
 
     it('getCurrentQuestion should return the current question from the hostService', () => {
-        hostServiceSpy.getCurrentQuestion.and.returnValue(TEST_GAME_DATA.quiz?.questions[0]);
-        expect(component.getCurrentQuestion()).toEqual(TEST_GAME_DATA.quiz?.questions[0]);
+        hostServiceSpy.getCurrentQuestion.and.returnValue(testGame.quiz?.questions[0]);
+        expect(component.getCurrentQuestion()).toEqual(testGame.quiz?.questions[0]);
     });
 
     it('getTime should return the time from the hostService', () => {
@@ -192,45 +188,48 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should return black', () => {
-        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
-        player.hasLeft = true;
-        expect(component.getColor(player)).toEqual('black');
+        testPlayer.hasLeft = true;
+        expect(component.getColor(testPlayer)).toEqual('black');
     });
 
     it('should return green', () => {
-        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
-        player.hasConfirmedAnswer = true;
-        expect(component.getColor(player)).toEqual('green');
+        testPlayer.hasConfirmedAnswer = true;
+        expect(component.getColor(testPlayer)).toEqual('green');
     });
 
     it('should return yellow', () => {
-        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
-        player.hasInteracted = true;
-        expect(component.getColor(player)).toEqual('yellow');
+        testPlayer.hasInteracted = true;
+        expect(component.getColor(testPlayer)).toEqual('yellow');
     });
 
     it('should return red', () => {
-        const player = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
-        expect(component.getColor(player)).toEqual('red');
+        expect(component.getColor(testPlayer)).toEqual('red');
     });
 
     it('should mute player', () => {
-        component.mutePlayer(TEST_GAME_DATA.players[0].name);
-        expect(hostServiceSpy.mute).toHaveBeenCalledWith(TEST_GAME_DATA.players[0].name);
+        component.mutePlayer(testPlayer.name);
+        expect(hostServiceSpy.mute).toHaveBeenCalledWith(testPlayer.name);
     });
 
     it('should get current player', () => {
-        expect(component.getCurrentPlayer()).toEqual(TEST_GAME_DATA.players[0]);
+        expect(JSON.parse(JSON.stringify(component.getCurrentPlayer()))).toEqual(testPlayer);
     });
 
     it('should not get current player if game is undefined', () => {
-        Object.defineProperty(hostServiceSpy, 'game', {
-            get: () => {
-                return undefined;
-            },
-            configurable: true,
-        });
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
         expect(component.getCurrentPlayer()).toEqual(new Player('', ''));
+    });
+
+    it('should update player score', () => {
+        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(TEST_QUESTIONS[0]);
+        component.updatePlayerScore(1);
+        expect(testGame.players[0].score).toEqual(TEST_QUESTIONS[0].points);
+    });
+
+    it('should not update player score if game is undefined', () => {
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
+        component.updatePlayerScore(1);
+        expect(testPlayer.score).toEqual(0);
     });
 
     it('should navigate to home if not connected or no current question', () => {
