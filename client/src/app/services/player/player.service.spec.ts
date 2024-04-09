@@ -5,7 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { QuestionChangedEventData } from '@common/question-changed-event-data';
@@ -343,12 +343,12 @@ describe('PlayerService', () => {
         expect(service.pin).toEqual('');
         expect(service.gameTitle).toEqual('');
         expect(service.players).toEqual([]);
-        // eslint-disable-next-line max-lines
         expect(service.gameStarted).toBeFalse();
         expect(service.gameEnded).toBeFalse();
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();
+        expect(service.qrlCorrect).toEqual(INVALID_INDEX);
     });
 
     it('should set up next question', () => {
