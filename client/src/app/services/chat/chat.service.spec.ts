@@ -88,6 +88,23 @@ describe('ChatService', () => {
         expect(service.messages).toContain(expectedMessage);
     });
 
+    it('should add system message when player is muted', () => {
+        service.handleSockets();
+        const expectedMessage: ChatMessage = {
+            text: 'test',
+            timestamp: new Date(),
+            author: 'author',
+        };
+        const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        player.muted = true;
+        Object.defineProperty(playerServiceSpy, 'player', {
+            get: () => player,
+        });
+        playerMutedSubject.next(expectedMessage);
+        expect(service.messages).toContain(expectedMessage);
+        expect(playerServiceSpy.player?.muted).toBeFalse();
+    });
+
     it('should add system message when player leaves', () => {
         service.handleSockets();
         const expectedData: PlayerLeftEventData = {
