@@ -58,6 +58,16 @@ describe('ChatSocketService', () => {
         socketHelper.peerSideEmit('message-received', expectedMessage);
     });
 
+    it('should listen for player muted', (done) => {
+        service.connect();
+        const expectedMessage = { text: 'text', author: 'author', timestamp: new Date() };
+        service.onPlayerMuted().subscribe((message) => {
+            expect(message).toEqual(expectedMessage);
+            done();
+        });
+        socketHelper.peerSideEmit('player-muted', expectedMessage);
+    });
+
     it('should listen for player left', (done) => {
         service.connect();
         const expectedData = { player: TEST_PLAYERS[0], players: TEST_PLAYERS };
