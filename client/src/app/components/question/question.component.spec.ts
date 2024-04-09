@@ -230,10 +230,10 @@ describe('QuestionComponent', () => {
             hasLeft: false,
         };
 
-        playerHandlerServiceSpy.getTime.and.returnValue(0);
+        playerHandlerServiceSpy.getTime.and.returnValue(1);
         const time = component.getTime();
 
-        expect(time).toBe(0);
+        expect(time).toBe(1);
     });
 
     it('updatePlayer should update player and call playerService.updatePlayer if question type is QCM', () => {
