@@ -1,5 +1,6 @@
 import { GameService } from '@app/services/game/game.service';
 import { ChatMessage } from '@common/chat-message';
+import { SELECTED_MULTIPLIER } from '@common/constant';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { NextQuestionEventData } from '@common/next-question-event-data';
@@ -209,21 +210,34 @@ export class GameController {
             const currentQuestion = game.players[0].questions[game.players[0].questions.length - 1];
             const newHistogram = {
                 labels: ['0%', '50%', '100%'],
-                datasets: [{
-                    label: currentQuestion.text,
-                    data: [0, 0, 0],
-                }]
-            }
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: [0, 0, 0],
+                    },
+                ],
+            };
             for (const player of roomData.data) {
                 const newScore = player.score;
                 const oldScore = game.players.find((p) => p.name === player.name)?.score || 0;
                 const multiplier = (newScore - oldScore) / currentQuestion.points;
-                if (multiplier === 0) {
-                    newHistogram.datasets[0].data[0]++;
-                } else if (multiplier === 0.5) {
-                    newHistogram.datasets[0].data[1]++;
-                } else if (multiplier === 1) {
-                    newHistogram.datasets[0].data[2]++;
+                switch (multiplier) {
+                    case 0: {
+                        newHistogram.datasets[0].data[0]++;
+
+                        break;
+                    }
+                    case SELECTED_MULTIPLIER: {
+                        newHistogram.datasets[0].data[1]++;
+
+                        break;
+                    }
+                    case 1: {
+                        newHistogram.datasets[0].data[2]++;
+
+                        break;
+                    }
+                    // No default
                 }
             }
             game.histograms.pop();
