@@ -229,10 +229,16 @@ describe('HostGamePageComponent', () => {
         expect(testGame.players[0].score).toEqual(TEST_QUESTIONS[0].points);
     });
 
+    it('should update player score if current question is undefined', () => {
+        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(undefined);
+        component.updatePlayerScore(1);
+        expect(testGame.players[0].score).toEqual(0);
+    });
+
     it('should not update player score if game is undefined', () => {
         spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
         component.updatePlayerScore(1);
-        expect(testPlayer.score).toEqual(0);
+        expect(testGame.players[0].score).toEqual(0);
     });
 
     it('should increment current player index', () => {
