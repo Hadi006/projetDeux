@@ -229,12 +229,26 @@ describe('PlayerService', () => {
     it('should update the score when the host sends a new score', (done) => {
         service.handleSockets();
         const newScoreSubscription = newScoreSubject.subscribe((p) => {
-            expect(p).toEqual(player);
+            expect(p).toEqual(newPlayer);
             done();
             newScoreSubscription.unsubscribe();
         });
-        player.score++;
-        newScoreSubject.next(player);
+        const newPlayer = JSON.parse(JSON.stringify(player));
+        newPlayer.score++;
+        newScoreSubject.next(newPlayer);
+    });
+
+    it('should update score for QCM question', (done) => {
+        player.questions[1].type = 'QCM';
+        service.handleSockets();
+        const newScoreSubscription = newScoreSubject.subscribe((p) => {
+            expect(p).toEqual(newPlayer);
+            done();
+            newScoreSubscription.unsubscribe();
+        });
+        const newPlayer = JSON.parse(JSON.stringify(player));
+        newPlayer.score++;
+        newScoreSubject.next(newPlayer);
     });
 
     it('should not update the score if the player is not in the game', () => {
