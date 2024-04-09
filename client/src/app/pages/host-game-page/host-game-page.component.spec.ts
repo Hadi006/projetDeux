@@ -232,6 +232,17 @@ describe('HostGamePageComponent', () => {
         expect(testPlayer.score).toEqual(0);
     });
 
+    it('should increment current player index', () => {
+        component.nextPlayer();
+        expect(component.currentPlayerIndex).toEqual(1);
+    });
+
+    it('should not increment current player index if game is undefined', () => {
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
+        component.nextPlayer();
+        expect(component.currentPlayerIndex).toEqual(0);
+    });
+
     it('should navigate to home if not connected or no current question', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
