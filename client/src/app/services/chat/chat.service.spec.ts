@@ -5,11 +5,13 @@ import { ChatMessage } from '@common/chat-message';
 import { TEST_PLAYERS } from '@common/constant';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { ReplaySubject, Subject } from 'rxjs';
+import { PlayerService } from '@app/services/player/player.service';
 import { ChatService } from './chat.service';
 
 describe('ChatService', () => {
     let service: ChatService;
     let chatSocketService: jasmine.SpyObj<ChatSocketService>;
+    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let eventSubject: ReplaySubject<NavigationEnd>;
     const messageReceivedSubject: Subject<ChatMessage> = new Subject();
@@ -30,6 +32,8 @@ describe('ChatService', () => {
         chatSocketService.onPlayerLeft.and.returnValue(playerLeftSubject);
         chatSocketService.onPlayerMuted.and.returnValue(playerMutedSubject);
 
+        playerServiceSpy = {} as jasmine.SpyObj<PlayerService>;
+
         eventSubject = new ReplaySubject();
         routerSpy = {} as jasmine.SpyObj<Router>;
         Object.defineProperty(routerSpy, 'events', {
@@ -45,6 +49,7 @@ describe('ChatService', () => {
             providers: [
                 { provide: ChatSocketService, useValue: chatSocketService },
                 { provide: Router, useValue: routerSpy },
+                { provide: PlayerService, useValue: playerServiceSpy },
             ],
         });
 
@@ -105,6 +110,15 @@ describe('ChatService', () => {
             timestamp: jasmine.any(Date),
             author: service.participantName,
         });
+    });
+
+    it('should not emit new message if player is muted', () => {
+        service.participantName = '';
+        Object.defineProperty(playerServiceSpy, 'player', {
+            get: () => ({ muted: true }),
+        });
+        service.sendMessage('test');
+        expect(chatSocketService.emitNewMessage).not.toHaveBeenCalled();
     });
 
     it('should not emit new message if message is invalid', () => {
