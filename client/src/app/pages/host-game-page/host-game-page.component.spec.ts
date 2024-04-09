@@ -111,6 +111,20 @@ describe('HostGamePageComponent', () => {
         hostServiceSpy.questionEndedSubject.next();
     });
 
+    it('should get the real current question', () => {
+        expect(component.getTheRealCurrentQuestion()).toBeUndefined();
+    });
+
+    it('should not get the real current question if game is undefined', () => {
+        Object.defineProperty(hostServiceSpy, 'game', {
+            get: () => {
+                return undefined;
+            },
+            configurable: true,
+        });
+        expect(component.getTheRealCurrentQuestion()).toBeUndefined();
+    });
+
     it('stopCountDown should set isCountingDown to false', () => {
         component.stopCountDown();
         expect(component.isCountingDown).toBeFalse();
