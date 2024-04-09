@@ -21,7 +21,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     shouldOpenEvaluationForm = false;
 
     private gameEndedSubscription: Subscription;
-    private histogramSubscription: Subscription;
     private questionEndedSubscription: Subscription;
 
     constructor(
@@ -169,8 +168,5 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.gameEndedSubscription.unsubscribe();
         this.questionEndedSubscription.unsubscribe();
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
     }
 }

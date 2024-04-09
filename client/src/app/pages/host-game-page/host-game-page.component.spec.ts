@@ -6,7 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
 
@@ -142,12 +142,5 @@ describe('HostGamePageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
         });
         hostServiceSpy.gameEndedSubject.next();
-    });
-
-    it('should unsubscribe from histogramSubscription if it exists', () => {
-        const unsubscribeSpy = jasmine.createSpy('unsubscribe');
-        component['histogramSubscription'] = { unsubscribe: unsubscribeSpy } as unknown as Subscription;
-        component.ngOnDestroy();
-        expect(unsubscribeSpy).toHaveBeenCalled();
     });
 });
