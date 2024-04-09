@@ -16,6 +16,8 @@ export class HostService {
     readonly questionEndedSubject: Subject<void>;
     readonly gameEndedSubject: Subject<void>;
 
+    currentQuestionIndex: number;
+
     private socketSubscription: Subscription;
 
     private timerId: number;
@@ -23,7 +25,6 @@ export class HostService {
     private internalGame: Game | null;
     private internalNAnswered: number;
     private internalQuestionEnded: boolean;
-    public currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
 
@@ -158,10 +159,11 @@ export class HostService {
     }
 
     nextQuestion(): void {
+        this.timeService.stopTimerById(this.timerId);
+        this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
+
         const currentQuestion = this.getCurrentQuestion();
         if (!this.internalGame || !currentQuestion) {
-            this.timeService.stopTimerById(this.timerId);
-            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
             return;
         }
 
@@ -196,9 +198,6 @@ export class HostService {
             countdown: this.internalGame.quiz.duration,
             histogram: newHistogram,
         });
-
-        this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
     }
 
     updatePlayers(): void {
@@ -214,7 +213,7 @@ export class HostService {
         }
 
         this.hostSocketService.emitEndGame(this.internalGame.pin).subscribe((game: Game) => {
-            console.log(game.histograms)
+            console.log(game.histograms);
             this.router.navigate(['/endgame'], { state: { game } });
         });
     }
@@ -269,7 +268,6 @@ export class HostService {
         this.hostSocketService.emitAnswer(this.internalGame.pin, currentAnswer);
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
-
     }
 
     private subscribeToPlayerJoined(): Subscription {

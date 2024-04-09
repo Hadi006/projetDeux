@@ -10,6 +10,7 @@ import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
 import { Game } from '@common/game';
 import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
+import { Quiz } from '@common/quiz';
 
 describe('HostService', () => {
     let service: HostService;
@@ -18,6 +19,7 @@ describe('HostService', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let eventSubject: ReplaySubject<NavigationEnd>;
     let testGame: Game;
+    let testQuizzes: Quiz[];
     const playerJoinedSubject: Subject<Player> = new Subject();
     const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
     const confirmPlayerAnswerSubject: Subject<void> = new Subject();
@@ -55,6 +57,7 @@ describe('HostService', () => {
         hostSocketServiceSpy.onNewHost.and.returnValue(newHostSubject);
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(testGame));
+        testQuizzes = JSON.parse(JSON.stringify(TEST_QUIZZES));
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -75,7 +78,7 @@ describe('HostService', () => {
             ],
         });
         service = TestBed.inject(HostService);
-        await firstValueFrom(service.createGame(TEST_QUIZZES[0]));
+        await firstValueFrom(service.createGame(testQuizzes[0]));
     });
 
     it('should be created', () => {
@@ -159,7 +162,7 @@ describe('HostService', () => {
 
     it('should create game', (done) => {
         service['reset']();
-        service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
+        service.createGame(testQuizzes[0]).subscribe((result) => {
             expect(result).toBe(true);
             expect(service.game).toEqual(JSON.parse(JSON.stringify(testGame)));
             done();
@@ -169,7 +172,7 @@ describe('HostService', () => {
     it('should not create game', (done) => {
         service['reset']();
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(undefined));
-        service.createGame(TEST_QUIZZES[0]).subscribe((result) => {
+        service.createGame(testQuizzes[0]).subscribe((result) => {
             expect(result).toBe(false);
             expect(service.game).toBeNull();
             done();
@@ -238,7 +241,7 @@ describe('HostService', () => {
     });
 
     it('should emit next question', () => {
-        const question = JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0]));
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
         question.choices[1].isCorrect = true;
         spyOn(service, 'getCurrentQuestion').and.returnValue(question);
         const histogramLength = service.histograms.length;
@@ -259,12 +262,12 @@ describe('HostService', () => {
         service['reset']();
         service.nextQuestion();
         expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
-        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
-        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
     });
 
     it('should emit next question with histogram for non-QCM question', () => {
-        const question = JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0]));
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
         question.type = 'QRL'; // Simulate a non-QCM question
         spyOn(service, 'getCurrentQuestion').and.returnValue(question);
         const histogramLength = service.histograms.length;
@@ -331,7 +334,7 @@ describe('HostService', () => {
     });
 
     it('should set up next question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[1]);
         service['setupNextQuestion']();
         expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
@@ -355,12 +358,12 @@ describe('HostService', () => {
     });
 
     it('should end question', () => {
-        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_QUIZZES[0].questions[1]);
-        hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(JSON.parse(JSON.stringify(testGame))));
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
+        hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(testGame));
         service['endQuestion']();
         expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
         expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();
-        expect(service.game).toEqual(JSON.parse(JSON.stringify(testGame)));
+        expect(service.game).toEqual(testGame);
         expect(hostSocketServiceSpy.emitAnswer).toHaveBeenCalled();
         expect(service.questionEnded).toBe(true);
     });
@@ -381,7 +384,7 @@ describe('HostService', () => {
     });
 
     it('should get current question', () => {
-        expect(service.getCurrentQuestion()).toEqual(JSON.parse(JSON.stringify(TEST_QUIZZES[0].questions[0])));
+        expect(service.getCurrentQuestion()).toEqual(JSON.parse(JSON.stringify(testQuizzes[0].questions[0])));
     });
 
     it('should check connection', () => {
