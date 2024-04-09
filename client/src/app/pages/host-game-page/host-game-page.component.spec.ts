@@ -243,6 +243,15 @@ describe('HostGamePageComponent', () => {
         expect(component.currentPlayerIndex).toEqual(0);
     });
 
+    it('should check if it is the last player', () => {
+        expect(component.isTheLastPlayer()).toBeFalse();
+    });
+
+    it('should not check if it is the last player if game is undefined', () => {
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
+        expect(component.isTheLastPlayer()).toBeFalse();
+    });
+
     it('should navigate to home if not connected or no current question', () => {
         hostServiceSpy.isConnected.and.returnValue(true);
         hostServiceSpy.getCurrentQuestion.and.returnValue(undefined);
