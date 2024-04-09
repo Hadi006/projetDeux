@@ -174,21 +174,7 @@ export class GameController {
                 return;
             }
 
-            const blankQuestion: Question | undefined = roomData.data.question;
-
-            if (blankQuestion) {
-                blankQuestion.choices.forEach((choice) => {
-                    choice.isCorrect = false;
-                });
-                const game = await this.gameService.getGame(roomData.pin);
-                game.players.forEach((player) => {
-                    player.questions.push(blankQuestion);
-                });
-                game.histograms.push(roomData.data.histogram);
-                await this.gameService.updateGame(game);
-            }
-
-            this.sio.to(roomData.pin).emit('question-changed', { question: blankQuestion, countdown: roomData.data.countdown });
+            this.sio.to(roomData.pin).emit('question-changed', await this.gameService.createNextQuestion(roomData));
         });
     }
 
@@ -202,49 +188,7 @@ export class GameController {
 
     private onUpdatePlayers(socket: Socket): void {
         socket.on('update-players', async (roomData: RoomData<Player[]>) => {
-            const game = await this.gameService.getGame(roomData.pin);
-            if (!game) {
-                return;
-            }
-
-            const currentQuestion = game.players[0].questions[game.players[0].questions.length - 1];
-            const newHistogram = {
-                labels: ['0%', '50%', '100%'],
-                datasets: [
-                    {
-                        label: currentQuestion.text,
-                        data: [0, 0, 0],
-                    },
-                ],
-            };
-            for (const player of roomData.data) {
-                const newScore = player.score;
-                const oldScore = game.players.find((p) => p.name === player.name)?.score || 0;
-                const multiplier = (newScore - oldScore) / currentQuestion.points;
-                switch (multiplier) {
-                    case 0: {
-                        newHistogram.datasets[0].data[0]++;
-
-                        break;
-                    }
-                    case SELECTED_MULTIPLIER: {
-                        newHistogram.datasets[0].data[1]++;
-
-                        break;
-                    }
-                    case 1: {
-                        newHistogram.datasets[0].data[2]++;
-
-                        break;
-                    }
-                    // No default
-                }
-            }
-            game.histograms.pop();
-            game.histograms.push(newHistogram);
-            game.players = roomData.data;
-            await this.gameService.updateGame(game);
-            game.players.forEach((player) => {
+            (await this.gameService.updatePlayers(roomData)).forEach((player) => {
                 this.sio.to(roomData.pin).emit('new-score', player);
             });
         });
