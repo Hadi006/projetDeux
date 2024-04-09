@@ -181,7 +181,7 @@ export class GameController {
         socket.on('update-player', async (roomData: RoomData<Player>) => {
             const histogramData = await this.gameService.updatePlayer(roomData.pin, roomData.data);
             const hostId = (await this.gameService.getGame(roomData.pin))?.hostId;
-            this.sio.sockets.sockets.get(hostId)?.emit('player-updated', { player: roomData.data, histogramData });
+            this.sio.to(hostId).emit('player-updated', { player: roomData.data, histogramData });
         });
     }
 

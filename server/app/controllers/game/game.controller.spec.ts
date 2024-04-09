@@ -320,13 +320,11 @@ describe('GameController', () => {
     it('should update player and tell the host', (done) => {
         gameServiceStub.updatePlayer.resolves(TEST_HISTOGRAM_DATA[0]);
         gameServiceStub.getGame.resolves(testGame);
-        const getStub = stub().returns(clientSocket);
-        stub(service['sio'].sockets.sockets, 'get').callsFake(getStub);
-        clientSocket.emit('update-player', { pin: testGame.pin, data: testGame.players[0] });
-        setTimeout(() => {
+        clientSocket.on('player-updated', () => {
             expect(gameServiceStub.updatePlayer.calledWith(testGame.pin, testGame.players[0])).to.equal(true);
             done();
-        }, RESPONSE_DELAY);
+        });
+        clientSocket.emit('update-player', { pin: testGame.pin, data: testGame.players[0] });
     });
 
     it('should not tell the host if host is not in the game', (done) => {
@@ -337,6 +335,19 @@ describe('GameController', () => {
             expect(gameServiceStub.updatePlayer.called).to.equal(true);
             done();
         }, RESPONSE_DELAY);
+    });
+
+    it('should update players', (done) => {
+        const players = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        const roomData = { pin: testGame.pin, data: players };
+        gameServiceStub.updatePlayers.resolves(players);
+        clientSocket.emit('create-game', testGame.quiz, () => {
+            clientSocket.emit('update-players', roomData);
+            setTimeout(() => {
+                expect(gameServiceStub.updatePlayers.calledWith(roomData)).to.equal(true);
+                done();
+            }, RESPONSE_DELAY);
+        });
     });
 
     it('should update scores', (done) => {
@@ -395,11 +406,11 @@ describe('GameController', () => {
         gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.emit('end-question', testGame.pin);
-            setTimeout(() => {
+            clientSocket.on('end-question', () => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
                 done();
-            }, RESPONSE_DELAY);
+            });
+            clientSocket.emit('end-question', testGame.pin);
         });
     });
 
@@ -421,11 +432,11 @@ describe('GameController', () => {
         gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.emit('answer', { pin: testGame.pin, data: answer });
-            setTimeout(() => {
+            clientSocket.on('answer', () => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
                 done();
-            }, RESPONSE_DELAY);
+            });
+            clientSocket.emit('answer', { pin: testGame.pin, data: answer });
         });
     });
 
@@ -447,11 +458,11 @@ describe('GameController', () => {
         gameServiceStub.getGame.resolves(testGame);
         gameServiceStub.createGame.resolves(testGame);
         clientSocket.emit('create-game', testGame.quiz, () => {
-            clientSocket.emit('end-game', testGame.pin);
-            setTimeout(() => {
+            clientSocket.on('game-ended', () => {
                 expect(toSpy.calledWith(testGame.pin)).to.equal(true);
                 done();
-            }, RESPONSE_DELAY);
+            });
+            clientSocket.emit('end-game', testGame.pin);
         });
     });
 
@@ -489,7 +500,7 @@ describe('GameController', () => {
             setTimeout(() => {
                 expect(gameServiceStub.deleteGame.called).to.equal(false);
                 done();
-            }, RESPONSE_DELAY);
+            });
         });
     });
 
