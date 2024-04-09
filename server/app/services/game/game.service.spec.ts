@@ -222,6 +222,7 @@ describe('GameService', () => {
     });
 
     it('should update players', async () => {
+        testGame.players = [testPlayers[0]];
         stub(gameService, 'getGame').resolves(testGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updatePlayers({ pin: testGame.pin, data: testPlayers });
