@@ -1,7 +1,18 @@
+/* eslint-disable max-lines */
 import { DatabaseService } from '@app/services/database/database.service';
 import { GameService } from '@app/services/game/game.service';
-import { GAME_ID_MAX, GOOD_ANSWER_BONUS, INVALID_INDEX, SELECTED_MULTIPLIER, TEST_GAME_DATA, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import {
+    GAME_ID_MAX,
+    GOOD_ANSWER_BONUS,
+    INVALID_INDEX,
+    SELECTED_MULTIPLIER,
+    TEST_GAME_DATA,
+    TEST_HISTOGRAM_DATA,
+    TEST_QUESTIONS,
+    TEST_QUIZZES,
+} from '@common/constant';
 import { Game } from '@common/game';
+import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
@@ -12,6 +23,7 @@ describe('GameService', () => {
     let testQuestion: Question;
     let testQuiz: Quiz;
     let testGame: Game;
+    let testHistogram: HistogramData;
 
     let gameService: GameService;
     let databaseServiceStub: SinonStubbedInstance<DatabaseService>;
@@ -21,6 +33,7 @@ describe('GameService', () => {
         testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
         testQuiz = JSON.parse(JSON.stringify({ ...TEST_QUIZZES[0], questions: [testQuestion] }));
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
+        testHistogram = JSON.parse(JSON.stringify(TEST_HISTOGRAM_DATA[0]));
 
         databaseServiceStub = createStubInstance(DatabaseService);
         gameService = new GameService(databaseServiceStub);
@@ -349,5 +362,27 @@ describe('GameService', () => {
         expect(updateStub.called).to.equal(true);
         expect(testPlayers[0].questions[0].lastModification).to.not.equal(undefined);
         expect(testPlayers[1].questions[0].lastModification).to.not.equal(undefined);
+    });
+
+    it('should create a new question', async () => {
+        const countdown = 10;
+        const newGame: Game = { ...testGame, quiz: { ...testGame.quiz, questions: [] } };
+        const getStub = stub(gameService, 'getGame').resolves(newGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        await gameService.createNextQuestion({ pin: newGame.pin, data: { question: testQuestion, countdown, histogram: testHistogram } });
+        expect(getStub.calledWith(newGame.pin)).to.equal(true);
+        expect(updateStub.called).to.equal(true);
+    });
+
+    it('should return undefined question', async () => {
+        const countdown = 10;
+        const newGame: Game = { ...testGame, quiz: { ...testGame.quiz, questions: [] } };
+        const getStub = stub(gameService, 'getGame').resolves(newGame);
+        const updateStub = stub(gameService, 'updateGame').resolves(true);
+        expect(await gameService.createNextQuestion({ pin: newGame.pin, data: { countdown, histogram: testHistogram } })).to.deep.equal({
+            countdown,
+        });
+        expect(getStub.calledWith(newGame.pin)).to.equal(false);
+        expect(updateStub.called).to.equal(false);
     });
 });
