@@ -41,7 +41,7 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
     openConfirmationDialog(): void {
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
             width: '250px',
-            data: 'Êtes-vous sûr de voiloir quitter cette partie?',
+            data: 'Êtes-vous sûr de vouloir quitter cette partie?',
         });
 
         dialogRef.afterClosed().subscribe((result) => {
