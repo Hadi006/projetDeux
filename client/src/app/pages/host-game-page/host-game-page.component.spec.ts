@@ -122,6 +122,15 @@ describe('HostGamePageComponent', () => {
         hostServiceSpy.questionEndedSubject.next();
     });
 
+    it('should get the players', () => {
+        expect(component.getPlayers()).toEqual(testGame.players);
+    });
+
+    it('should return empty array if game is undefined', () => {
+        spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
+        expect(component.getPlayers()).toEqual([]);
+    });
+
     it('should get the real current question', () => {
         expect(component.getTheRealCurrentQuestion()).toBeUndefined();
     });

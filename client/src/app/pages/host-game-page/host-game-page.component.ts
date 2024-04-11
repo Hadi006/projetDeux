@@ -50,6 +50,10 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         return this.hostService.histograms[this.hostService.histograms.length - 1];
     }
 
+    getPlayers() {
+        return this.hostService.game?.players || [];
+    }
+
     getTheRealCurrentQuestion() {
         if (!this.hostService.game) {
             return;
