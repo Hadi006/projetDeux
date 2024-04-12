@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TRANSITION_DELAY } from '@common/constant';
+import { PANIC_MODE_TIMER, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -81,7 +81,6 @@ export class HostService {
     }
     stopPanicMode(): void {
         this.isPanicMode = false;
-        // this.timerId = this.timeService.createTimerById();
         return this.timeService.stopPanicMode();
     }
 
@@ -210,8 +209,8 @@ export class HostService {
     }
     canActivatePanicMode(): boolean {
         return (
-            ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) ||
-                (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)) &&
+            ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= QCM_TIME_FOR_PANIC) ||
+                (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= QRL_TIME_FOR_PANIC)) &&
             !this.isPanicMode
         );
     }
@@ -222,7 +221,7 @@ export class HostService {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startPanicMode();
             this.startPanicModeForEveryone();
-            this.timerId = this.timeService.createTimerById(4);
+            this.timerId = this.timeService.createTimerById(PANIC_MODE_TIMER);
             this.timeService.startTimerById(this.timerId, startTimerValue, this.endQuestion.bind(this));
         }
         return;

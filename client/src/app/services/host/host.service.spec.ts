@@ -382,5 +382,15 @@ describe('HostService', () => {
             service.startPanicMode();
             expect(hostSocketServiceSpy.emitPanicMode).not.toHaveBeenCalled();
         });
+        it('should set isPanicMode to false and call timeService.stopPanicMode', () => {
+            // Arrange
+
+            // Act
+            service.stopPanicMode();
+
+            // Assert
+            expect(service.isPanic).toBeFalse();
+            expect(timeServiceSpy.stopPanicMode).toHaveBeenCalled();
+        });
     });
 });

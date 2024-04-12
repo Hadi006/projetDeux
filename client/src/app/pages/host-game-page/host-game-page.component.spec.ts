@@ -5,7 +5,7 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { HistogramComponent } from '@app/components/histogram/histogram.component';
 import { HostService } from '@app/services/host/host.service';
-import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
+import { QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TEST_GAME_DATA, TEST_HISTOGRAM_DATA } from '@common/constant';
 import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
@@ -170,14 +170,14 @@ describe('HostGamePageComponent', () => {
     });
     it('canActivatePanicMode should return true if current question type is QCM and time is >= 5', () => {
         spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
-        spyOn(component, 'getTime').and.returnValue(5);
+        spyOn(component, 'getTime').and.returnValue(QCM_TIME_FOR_PANIC);
 
         expect(component.canActivatePanicMode()).toBeTrue();
     });
 
     it('canActivatePanicMode should return true if current question type is QRL and time is >= 20', () => {
         spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[1]);
-        spyOn(component, 'getTime').and.returnValue(20);
+        spyOn(component, 'getTime').and.returnValue(QRL_TIME_FOR_PANIC);
 
         expect(component.canActivatePanicMode()).toBeTrue();
     });
@@ -191,14 +191,14 @@ describe('HostGamePageComponent', () => {
 
     it('canActivatePanicMode should return false if time is less than 5 for QCM', () => {
         spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
-        spyOn(component, 'getTime').and.returnValue(4);
+        spyOn(component, 'getTime').and.returnValue(QCM_TIME_FOR_PANIC - 1);
 
         expect(component.canActivatePanicMode()).toBeFalse();
     });
 
     it('canActivatePanicMode should return false if time is less than 20 for QRL', () => {
         spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
-        spyOn(component, 'getTime').and.returnValue(19);
+        spyOn(component, 'getTime').and.returnValue(QRL_TIME_FOR_PANIC - 1);
 
         expect(component.canActivatePanicMode()).toBeFalse();
     });

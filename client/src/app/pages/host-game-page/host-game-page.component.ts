@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { HostService } from '@app/services/host/host.service';
+import { QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC } from '@common/constant';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -47,7 +48,8 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
     canActivatePanicMode(): boolean {
         return (
-            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= 5) || (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= 20)
+            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= QCM_TIME_FOR_PANIC) ||
+            (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= QRL_TIME_FOR_PANIC)
         );
     }
     pauseTimer() {

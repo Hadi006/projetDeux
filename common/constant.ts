@@ -93,6 +93,11 @@ export const RANDOM_QUIZ_DURATION = 20;
 
 export const RANDOM_QUIZ_ID = '-1';
 
+export const QCM_TIME_FOR_PANIC = 5;
+
+export const QRL_TIME_FOR_PANIC = 20;
+export const PANIC_MODE_TIMER = 4;
+
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 
@@ -122,7 +127,7 @@ export const TEST_QUESTIONS: Question[] = [
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,
-    }
+    },
 ];
 
 export const TEST_QUIZZES: Quiz[] = [
@@ -163,25 +168,26 @@ export const TEST_PLAYERS: Player[] = [
     },
 ];
 
-export const TEST_HISTOGRAM_DATA: HistogramData[] = [{
-    labels: ['Test Label 1', 'Test Label 2'],
-    datasets: [
-        {
-            label: 'Test Dataset',
-            data: [1, 2],
-        },
-    ],
-},
-{
-    labels: ['Test Label 3', 'Test Label 4'],
-    datasets: [
-        {
-            label: 'Test Dataset 2',
-            data: [3, 4],
-        },
-    ],
-}];
-
+export const TEST_HISTOGRAM_DATA: HistogramData[] = [
+    {
+        labels: ['Test Label 1', 'Test Label 2'],
+        datasets: [
+            {
+                label: 'Test Dataset',
+                data: [1, 2],
+            },
+        ],
+    },
+    {
+        labels: ['Test Label 3', 'Test Label 4'],
+        datasets: [
+            {
+                label: 'Test Dataset 2',
+                data: [3, 4],
+            },
+        ],
+    },
+];
 
 export const TEST_GAME_DATA: Game = {
     pin: '1',
@@ -197,4 +203,3 @@ export const TEST_GAME_DATA: Game = {
     bestScore: 0,
     ended: false,
 };
-
