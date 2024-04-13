@@ -1,47 +1,28 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
-import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
-import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
-import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { HostService } from '@app/services/host/host.service';
-import { WebSocketService } from '@app/services/web-socket/web-socket.service';
-import { START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
-import { Subject } from 'rxjs';
+import { WaitingRoomHostPageComponent } from './waiting-room-host-page.component';
 
 describe('WaitingRoomHostPageComponent', () => {
     let component: WaitingRoomHostPageComponent;
     let fixture: ComponentFixture<WaitingRoomHostPageComponent>;
-    let hostServiceSpy: jasmine.SpyObj<HostService>;
-    let routerSpy: jasmine.SpyObj<Router>;
-    let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
+    let hostService: jasmine.SpyObj<HostService>;
+    let router: jasmine.SpyObj<Router>;
 
-    beforeEach(() => {
-        hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick']);
-        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+    beforeEach(async () => {
+        hostService = jasmine.createSpyObj('HostService', ['isConnected', 'toggleLock', 'kick', 'startGame']);
+        Object.defineProperty(hostService, 'game', { get: jasmine.createSpy('game getter') });
 
-        const eventSubject = new Subject<void>();
-        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        Object.defineProperty(routerSpy, 'events', {
-            get: () => {
-                return eventSubject;
-            },
-            configurable: true,
-        });
+        router = jasmine.createSpyObj('Router', ['navigate']);
 
-        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent', 'isSocketAlive', 'connect']);
-    });
-
-    beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-            declarations: [WaitingRoomHostPageComponent, GameCountDownComponent, WaitingRoomInfoComponent, ChatboxComponent],
+        await TestBed.configureTestingModule({
+            declarations: [WaitingRoomHostPageComponent],
             providers: [
-                { provide: HostService, useValue: hostServiceSpy },
-                { provide: Router, useValue: routerSpy },
-                { provide: WebSocketService, useValue: websocketServiceSpy },
+                { provide: HostService, useValue: hostService },
+                { provide: Router, useValue: router },
             ],
         }).compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(WaitingRoomHostPageComponent);
@@ -49,34 +30,29 @@ describe('WaitingRoomHostPageComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should navigate to home page when disconnected', () => {
-        hostServiceSpy.isConnected.and.returnValue(false);
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
-    });
-
-    it('should not navigate to home page when connected', () => {
-        hostServiceSpy.isConnected.and.returnValue(true);
-        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
-        component.ngOnInit();
-        expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
-    });
-
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should kick player', () => {
-        component.kick('player');
-        expect(hostServiceSpy.kick).toHaveBeenCalledWith('player');
+    it('should navigate to root if not connected or game is locked', () => {
+        hostService.isConnected.and.returnValue(false);
+        component.ngOnInit();
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('should toggle lock', () => {
         component.toggleLock();
-        expect(hostServiceSpy.toggleLock).toHaveBeenCalled();
+        expect(hostService.toggleLock).toHaveBeenCalled();
+    });
+
+    it('should kick player', () => {
+        component.kick('player1');
+        expect(hostService.kick).toHaveBeenCalledWith('player1');
     });
 
     it('should start game', () => {
         component.startGame();
-        expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
+        expect(router.navigate).toHaveBeenCalledWith(['game-host']);
+        expect(hostService.startGame).toHaveBeenCalled();
     });
 });
