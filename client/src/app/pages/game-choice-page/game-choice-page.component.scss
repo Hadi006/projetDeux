@@ -1,15 +1,41 @@
-.container {
-    text-align: center;
-    padding: 20px;
-    background-color: #f4f4f4;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+$primary-color: #007bff;
+$secondary-color: #ccc;
+$background-color: #f0f0f0;
+$text-color: #212529;
+
+.home-page-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 100vh;
+    background-color: $background-color;
+    padding: 40px;
 }
 
-h1 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 20px;
+.grid-title {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.title {
+    margin: 0;
+}
+
+.container {
+    margin-top: 40px;
+    text-align: center;
+    padding: 20px;
+    background-color: $background-color;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .games-list {
@@ -22,16 +48,17 @@ h1 {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    background-color: #007bff;
-    color: white;
+    background-color: $secondary-color;
+    color: $text-color;
     border: none;
+    font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .game-button:hover {
-    background-color: #0056b3;
+    background-color: darken($secondary-color, 10%);
 }
 
 p {
@@ -40,41 +67,39 @@ p {
 }
 
 .button-navigation {
-    text-align: center;
-    margin-top: 20px;
+    position: absolute;
+    bottom: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-weight: bold;
 }
 
-.CreateGame,
-.testGame {
+.return-button,
+.testGame,
+.startGame {
     padding: 10px 20px;
     margin: 0 10px;
-    background-color: #000000;
+    background-color: $primary-color;
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
-
     transition: background-color 0.3s;
+
+    &:hover {
+        background-color: darken($primary-color, 10%);
+    }
 }
 
-.startGame {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    background-color: #4caf50;
-    color: white;
-}
+.return-button {
+    background-color: grey;
 
-.CreateGame:hover,
-.next:hover {
-    background-color: #0056b3;
-}
-
-.CreateGame.disabled,
-.testGame.disabled {
-    background-color: #cccccc;
-    cursor: default;
+    &:hover {
+        background-color: darkgrey;
+    }
 }
