@@ -30,9 +30,18 @@ describe('PlayerService', () => {
     const answerSubject: Subject<Answer[]> = new Subject();
     const gameEndedSubject: Subject<Game> = new Subject();
     const gameDeletedSubject: Subject<void> = new Subject();
+    const pauseTimerSubject: Subject<void> = new Subject();
+    const startPanicModeSubject: Subject<void> = new Subject();
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'startTimerById', 'stopTimerById', 'setTimeById', 'getTimeById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', [
+            'createTimerById',
+            'startTimerById',
+            'stopTimerById',
+            'setTimeById',
+            'getTimeById',
+            'stopPanicMode',
+        ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
         playerSocketServiceSpy = jasmine.createSpyObj('PlayerSocketService', [
             'connect',
@@ -48,6 +57,8 @@ describe('PlayerService', () => {
             'onAnswer',
             'onGameEnded',
             'onGameDeleted',
+            'onPauseTimerForPlayers',
+            'onStartPanicMode',
             'emitJoinGame',
             'emitUpdatePlayer',
             'emitConfirmPlayerAnswer',
@@ -63,6 +74,8 @@ describe('PlayerService', () => {
         playerSocketServiceSpy.onAnswer.and.returnValue(answerSubject);
         playerSocketServiceSpy.onGameEnded.and.returnValue(gameEndedSubject);
         playerSocketServiceSpy.onGameDeleted.and.returnValue(gameDeletedSubject);
+        playerSocketServiceSpy.onPauseTimerForPlayers.and.returnValue(pauseTimerSubject);
+        playerSocketServiceSpy.onStartPanicMode.and.returnValue(startPanicModeSubject);
         player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
         playerSocketServiceSpy.emitJoinGame.and.returnValue(
             of({ player, gameTitle: 'title', gameId: TEST_GAME_DATA.quiz.id, otherPlayers: [], error: '' }),

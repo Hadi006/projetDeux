@@ -27,7 +27,16 @@ describe('HostService', () => {
     const newHostSubject: Subject<Game> = new Subject();
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', [
+            'createTimerById',
+            'stopTimerById',
+            'startTimerById',
+            'setTimeById',
+            'getTimeById',
+            'startPanicMode',
+            'stopPanicMode',
+            'toggleTimerById',
+        ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
 
         hostSocketServiceSpy = jasmine.createSpyObj('HostSocketService', [
@@ -51,6 +60,8 @@ describe('HostService', () => {
             'emitEndQuestion',
             'emitUpdateScores',
             'emitAnswer',
+            'emitPauseTimer',
+            'emitPanicMode',
         ]);
         hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
         hostSocketServiceSpy.onPlayerLeft.and.returnValue(playerLeftSubject);
@@ -405,8 +416,8 @@ describe('HostService', () => {
     it('should end question', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
         hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(testGame));
-        service['endQuestion']();
         service.togglePanic();
+        service['endQuestion']();
         expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
         expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();
         expect(service.game).toEqual(testGame);

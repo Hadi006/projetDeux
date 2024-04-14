@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Timer } from '@app/classes/timer';
 import { TimeService } from '@app/services/time/time.service';
-import { Howl } from 'howler';
 
 describe('TimeService', () => {
     let service: TimeService;
@@ -223,21 +222,17 @@ describe('TimeService', () => {
         expect(result).toBeUndefined();
     });
     it('should start panic mode and play sound', () => {
-        spyOn(Howl.prototype, 'play').and.callThrough();
+        const howlSpy = jasmine.createSpyObj('Howl', ['play']);
+        service.panicModeSound = howlSpy;
         service.startPanicMode();
-        expect(service.panicModeSound).toBeDefined();
-        expect(Howl.prototype.play).toHaveBeenCalled();
+        expect(service.panicModeSound.play).toHaveBeenCalled();
     });
 
     it('should stop panic mode and stop sound if sound is playing', () => {
+        const howlSpy = jasmine.createSpyObj('Howl', ['play', 'stop']);
+        service.panicModeSound = howlSpy;
+        service.startPanicMode();
         service.stopPanicMode();
-        expect(service.panicModeSound).toBeDefined();
-        expect(service.panicModeSound.playing()).toBe(false);
-    });
-
-    it('should not stop panic mode if sound is not playing', () => {
-        service.stopPanicMode();
-        expect(service.panicModeSound).toBeDefined();
-        expect(service.panicModeSound.playing()).toBe(false);
+        expect(service.panicModeSound.stop).toHaveBeenCalled();
     });
 });

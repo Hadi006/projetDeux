@@ -1,3 +1,4 @@
+/* esilnt-disable max-lines */
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -8,6 +9,7 @@ import { HostService } from '@app/services/host/host.service';
 import { QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUESTIONS } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
+import { Question } from '@common/quiz';
 import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
@@ -20,10 +22,12 @@ describe('HostGamePageComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let testGame: Game;
     let testPlayer: Player;
+    let testQuestions: Question[];
 
     beforeEach(() => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         testPlayer = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
+        testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
 
         hostServiceSpy = jasmine.createSpyObj('HostService', [
             'isConnected',
@@ -34,6 +38,9 @@ describe('HostGamePageComponent', () => {
             'endGame',
             'mute',
             'updatePlayers',
+            'startPanicMode',
+            'stopPanicMode',
+            'pauseTimer',
         ]);
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
@@ -105,7 +112,7 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should open evaluation form if current question is QRL', (done) => {
-        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(TEST_QUESTIONS[1]);
+        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(testQuestions[1]);
         hostServiceSpy.questionEndedSubject.subscribe(() => {
             expect(component.shouldOpenEvaluationForm).toBeTrue();
             done();
@@ -233,9 +240,9 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should update player score', () => {
-        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(TEST_QUESTIONS[0]);
+        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(testQuestions[0]);
         component.updatePlayerScore(1);
-        expect(testGame.players[0].score).toEqual(TEST_QUESTIONS[0].points);
+        expect(testGame.players[0].score).toEqual(testQuestions[0].points);
     });
 
     it('should update player score if current question is undefined', () => {
@@ -317,14 +324,14 @@ describe('HostGamePageComponent', () => {
     });
 
     it('canActivatePanicMode should return false if time is less than 5 for QCM', () => {
-        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(component, 'getCurrentQuestion').and.returnValue(testQuestions[0]);
         spyOn(component, 'getTime').and.returnValue(QCM_TIME_FOR_PANIC - 1);
 
         expect(component.canActivatePanicMode()).toBeFalse();
     });
 
     it('canActivatePanicMode should return false if time is less than 20 for QRL', () => {
-        spyOn(component, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(component, 'getCurrentQuestion').and.returnValue(testQuestions[1]);
         spyOn(component, 'getTime').and.returnValue(QRL_TIME_FOR_PANIC - 1);
 
         expect(component.canActivatePanicMode()).toBeFalse();

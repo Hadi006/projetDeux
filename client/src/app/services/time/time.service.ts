@@ -11,6 +11,12 @@ export class TimeService {
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
 
+    constructor() {
+        this.panicModeSound = new Howl({
+            src: ['./assets/sound.mp3'],
+        });
+    }
+
     createTimerById(decrement: number = 1): number {
         const timer = new Timer(decrement);
         this.nextId++;
@@ -53,12 +59,9 @@ export class TimeService {
         this.timers.get(timerId)?.resume();
     }
     startPanicMode(): void {
-        this.panicModeSound = new Howl({
-            src: ['./assets/sound.mp3'],
-        });
         this.panicModeSound.play();
     }
     stopPanicMode(): void {
-        this.panicModeSound?.stop();
+        this.panicModeSound.stop();
     }
 }
