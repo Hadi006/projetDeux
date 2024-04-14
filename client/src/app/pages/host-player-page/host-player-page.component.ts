@@ -14,6 +14,8 @@ import { Subscription } from 'rxjs';
 export class HostPlayerPageComponent implements OnInit, OnDestroy {
     @ViewChild(ChatboxComponent) chatbox: ChatboxComponent;
 
+    isCountingDown = true;
+
     private questionEndedSubscription: Subscription;
     private gameEndedSubscription: Subscription;
 
@@ -28,6 +30,14 @@ export class HostPlayerPageComponent implements OnInit, OnDestroy {
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
             this.hostService.endGame();
         });
+    }
+
+    stopCountDown() {
+        this.isCountingDown = false;
+    }
+
+    gameTitle() {
+        return this.playerService.gameTitle;
     }
 
     ngOnInit() {

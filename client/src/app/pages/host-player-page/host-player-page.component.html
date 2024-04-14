@@ -1,6 +1,7 @@
-<app-question [isFocused]="!chatbox.isFocused()"></app-question>
-<app-chatbox></app-chatbox>
+<app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()" [gameName]="gameTitle()"></app-game-count-down>
+<app-question *ngIf="!isCountingDown" [isFocused]="!chatbox.isFocused()"></app-question>
 
 <div id="controls-container">
     <button (click)="leaveGame()">Quitter</button>
 </div>
+<app-chatbox></app-chatbox>
