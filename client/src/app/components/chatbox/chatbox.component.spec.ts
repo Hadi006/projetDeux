@@ -1,3 +1,4 @@
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatService } from '@app/services/chat/chat.service';
 import { Subject } from 'rxjs';
@@ -7,6 +8,8 @@ describe('ChatboxComponent', () => {
     let component: ChatboxComponent;
     let fixture: ComponentFixture<ChatboxComponent>;
     let chatServiceSpy: jasmine.SpyObj<ChatService>;
+    let elementRefSpy: jasmine.SpyObj<ElementRef>;
+    let element: HTMLElement;
 
     beforeEach(() => {
         chatServiceSpy = jasmine.createSpyObj('ChatService', ['sendMessage']);
@@ -15,12 +18,19 @@ describe('ChatboxComponent', () => {
         const messagesSubject = new Subject<void>();
 
         Object.defineProperty(chatServiceSpy, 'messagesSubjectGetter', { value: messagesSubject });
+
+        elementRefSpy = {} as jasmine.SpyObj<ElementRef>;
+        element = document.createElement('input');
+        Object.defineProperty(elementRefSpy, 'nativeElement', { get: () => element, configurable: true });
     });
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [ChatboxComponent],
-            providers: [{ provide: ChatService, useValue: chatServiceSpy }],
+            providers: [
+                { provide: ChatService, useValue: chatServiceSpy },
+                { provide: ElementRef, useValue: elementRefSpy },
+            ],
         }).compileComponents();
     }));
 
@@ -68,5 +78,9 @@ describe('ChatboxComponent', () => {
         component.keyEnter(event);
 
         expect(sendMessageSpy).toHaveBeenCalled();
+    });
+
+    it('isFocused should return false when elementRef does not contain activeElement', () => {
+        expect(component.isFocused()).toBe(false);
     });
 });
