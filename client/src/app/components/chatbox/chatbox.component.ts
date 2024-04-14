@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { ChatService } from '@app/services/chat/chat.service';
 
 @Component({
@@ -12,7 +12,10 @@ export class ChatboxComponent implements OnInit {
     showChat = false;
     newMessage = '';
 
-    constructor(private chatService: ChatService) {}
+    constructor(
+        private chatService: ChatService,
+        private elementRef: ElementRef,
+    ) {}
 
     ngOnInit() {
         if (!this.chatService.pin) {
@@ -41,5 +44,9 @@ export class ChatboxComponent implements OnInit {
         if (event.key === 'Enter') {
             this.sendMessage();
         }
+    }
+
+    isFocused() {
+        return this.elementRef.nativeElement.contains(document.activeElement);
     }
 }

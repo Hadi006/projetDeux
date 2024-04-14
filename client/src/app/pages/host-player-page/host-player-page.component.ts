@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { START_GAME_COUNTDOWN } from '@common/constant';
@@ -11,6 +12,8 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./host-player-page.component.scss'],
 })
 export class HostPlayerPageComponent implements OnInit, OnDestroy {
+    @ViewChild(ChatboxComponent) chatbox: ChatboxComponent;
+
     private questionEndedSubscription: Subscription;
     private gameEndedSubscription: Subscription;
 
