@@ -1,9 +1,11 @@
 <div>
-    <select [(ngModel)]="selectedType" (change)="filterQuestions()">
-        <option value="">Tout</option>
-        <option value="QCM">QCM</option>
-        <option value="QRL">QRL</option>
-    </select>
+    <div class="question-bank-select">
+        <select [(ngModel)]="selectedType" (change)="filterQuestions()">
+            <option value="">Tout</option>
+            <option value="QCM">QCM</option>
+            <option value="QRL">QRL</option>
+        </select>
+    </div>
 </div>
 
 <div

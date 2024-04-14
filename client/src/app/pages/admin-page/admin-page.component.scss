@@ -35,7 +35,7 @@
 .app-question-bank,
 .game-list {
     border: 1px solid black;
-    padding: 20px;
+    padding: 10px;
     flex: 1;
     background-color: white;
     margin: 0 10px;
@@ -47,7 +47,6 @@
 }
 
 .app-question-bank {
-    margin-top: 100px;
     margin-left: 10px;
 }
 
@@ -112,4 +111,34 @@
 
 .return-button:hover {
     background-color: darkgrey !important;
+}
+
+.game-item {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    margin-bottom: 10px; /* Add space between game items */
+}
+
+.game-item span {
+    margin-right: 10px; /* Add space between spans */
+}
+
+.delete-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background-color: transparent !important;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+}
+
+.delete-button mat-icon {
+    font-size: 20px;
+    color: #333;
+}
+
+.delete-button:hover mat-icon {
+    color: #007bff;
 }

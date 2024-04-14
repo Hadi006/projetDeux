@@ -1,4 +1,3 @@
-/* Container for each question item */
 .question-item {
     display: flex;
     align-items: center;
@@ -7,44 +6,46 @@
     margin-bottom: 10px;
     background-color: #f9f9f9;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .question-detail {
     display: flex;
     align-items: center;
-    gap: 10px; /* Creates space between elements */
+    gap: 10px;
 }
 
-.truncated-text {
-    max-width: 60%; /* Adjusts based on your layout */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.title-last-modification {
+    display: flex;
+    flex-direction: column;
 }
 
 .question-info {
     display: flex;
     align-items: center;
-    gap: 5px; /* Adjusts spacing between info spans */
+    gap: 5px;
 }
 
-button[type="button"] {
+.truncated-text {
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.action-button {
     border: none;
     background-color: transparent;
     cursor: pointer;
-    color: #333; /* Icon color */
-    padding: 0; /* Remove default button padding */
+    color: #333;
+    padding: 0;
 }
 
-button[type="button"]:hover {
-    color: #007bff; /* Change color on hover */
+.action-button mat-icon {
+    font-size: 24px;
+    color: #333;
 }
 
-.mat-icon {
-    display: inline-block;
-    vertical-align: middle;
-    width: 24px; /* Icon size */
-    height: 24px; /* Icon size */
-    fill: currentColor; /* Icon color inherits from button */
+.action-button:hover mat-icon {
+    color: #007bff;
 }
