@@ -188,4 +188,25 @@ describe('AdminPageComponent', () => {
         component.sortByDate();
         expect(adminService.sortGamesByDate).toHaveBeenCalled();
     });
+    it('should confirm when user deletes Game', () => {
+        const dialogRef = jasmine.createSpyObj('dialogRef', { afterClosed: of(true) });
+        dialog.open.and.returnValue(dialogRef);
+        spyOn(component, 'deleteGame');
+
+        component.confirmDeleteGame(1);
+
+        expect(dialog.open).toHaveBeenCalled();
+        expect(component.deleteGame).toHaveBeenCalledWith(1);
+    });
+
+    it('should confirm when user deletes all Game', () => {
+        const dialogRef = jasmine.createSpyObj('dialogRef', { afterClosed: of(true) });
+        dialog.open.and.returnValue(dialogRef);
+        spyOn(component, 'deleteAllGames');
+
+        component.confirmDeleteAllGames();
+
+        expect(dialog.open).toHaveBeenCalled();
+        expect(component.deleteAllGames).toHaveBeenCalledWith();
+    });
 });

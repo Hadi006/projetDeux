@@ -13,7 +13,7 @@
 <app-question-bank></app-question-bank>
 <div class="game-list">
     Liste des parties complétées
-    <button type="button" (click)="deleteAllGames()">supprimer tout</button>
+    <button type="button" (click)="confirmDeleteAllGames()">supprimer tout</button>
     <button type="button" (click)="sortByName()">trier par nom</button>
     <button type="button" (click)="sortByDate()">trier par date</button>
     <div *ngFor="let game of games | async; let i = index">
@@ -22,7 +22,7 @@
             <span>Date : {{ game.date.toString().slice(0, 10) }} {{ game.date.toString().slice(11, 19) }} |</span>
             <span>Nb de joueurs : {{ game.nPlayers }} |</span>
             <span>Meilleur score : {{ game.bestScore }} |</span>
-            <button type="button" (click)="deleteGame(i)">supprimer</button>
+            <button type="button" (click)="confirmDeleteGame(i)">supprimer</button>
         </div>
     </div>
 </div>

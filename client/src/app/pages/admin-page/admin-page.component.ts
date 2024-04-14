@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { PromptComponent } from '@app/components/prompt/prompt.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Action, ActionType } from '@common/action';
@@ -97,6 +98,32 @@ export class AdminPageComponent implements OnInit {
 
     sortByDate() {
         this.adminService.sortGamesByDate();
+    }
+
+    confirmDeleteGame(index: number): void {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '250px',
+            data: 'Êtes-vous sûr de vouloir supprimer cette partie?',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.deleteGame(index);
+            }
+        });
+    }
+
+    confirmDeleteAllGames(): void {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '250px',
+            data: 'Êtes-vous sûr de vouloir supprimer toutes les parties?',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.deleteAllGames();
+            }
+        });
     }
 
     private promptForNewTitle(): MatDialogRef<PromptComponent> {
