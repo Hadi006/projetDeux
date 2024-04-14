@@ -33,6 +33,7 @@ import { TestPageComponent } from './pages/test-page/test-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 import { ChatService } from './services/chat/chat.service';
 import { HostPlayerPageComponent } from './pages/host-player-page/host-player-page.component';
+import { CssAnimationComponent } from './css-animation/css-animation.component';
 
 /**
  * Main module that is used in main.ts.
@@ -68,6 +69,7 @@ import { HostPlayerPageComponent } from './pages/host-player-page/host-player-pa
         HistogramComponent,
         EndgameResultPageComponent,
         HostPlayerPageComponent,
+        CssAnimationComponent,
     ],
     imports: [
         AppMaterialModule,
