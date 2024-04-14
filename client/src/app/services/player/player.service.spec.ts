@@ -40,7 +40,9 @@ describe('PlayerService', () => {
             'stopTimerById',
             'setTimeById',
             'getTimeById',
+            'startPanicMode',
             'stopPanicMode',
+            'toggleTimerById',
         ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
         playerSocketServiceSpy = jasmine.createSpyObj('PlayerSocketService', [
@@ -305,6 +307,18 @@ describe('PlayerService', () => {
         spyOn(service, 'cleanUp');
         gameDeletedSubject.next();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should pause the timer for players', () => {
+        service.handleSockets();
+        pauseTimerSubject.next();
+        expect(timeServiceSpy.toggleTimerById).toHaveBeenCalledWith(1);
+    });
+
+    it('should start panic mode', () => {
+        service.handleSockets();
+        startPanicModeSubject.next();
+        expect(timeServiceSpy.startPanicMode).toHaveBeenCalled();
     });
 
     it('should join the game if there is no error', (done) => {
