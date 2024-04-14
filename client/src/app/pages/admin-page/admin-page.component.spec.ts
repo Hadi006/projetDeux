@@ -1,6 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
@@ -42,7 +43,7 @@ describe('AdminPageComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent, QuestionBankComponent],
-            imports: [DragDropModule, MatIconModule, HttpClientTestingModule],
+            imports: [DragDropModule, MatIconModule, HttpClientTestingModule, FormsModule],
             providers: [
                 { provide: AdminQuizzesService, useValue: adminService },
                 { provide: Router, useValue: router },

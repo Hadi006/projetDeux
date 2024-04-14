@@ -1,6 +1,6 @@
+import { AnswerValidator } from '@app/classes/answer-validator/answer-validator';
 import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
-import { AnswerValidator } from '@app/classes/answer-validator/answer-validator';
 import { ValidationResult } from '@common/validation-result';
 
 export class QuestionValidator {
@@ -17,6 +17,7 @@ export class QuestionValidator {
             type: '',
             points: 0,
             choices: [],
+            qrlAnswer: '',
         };
     }
 
@@ -77,13 +78,15 @@ export class QuestionValidator {
                 return;
             }
 
-            if (this.question.choices.length < MIN_CHOICES || this.question.choices.length > MAX_CHOICES) {
-                this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
-                return;
-            }
+            if (this.question.type === 'QCM') {
+                if (this.question.choices.length < MIN_CHOICES || this.question.choices.length > MAX_CHOICES) {
+                    this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
+                    return;
+                }
 
-            if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
-                this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
+                if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
+                    this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
+                }
             }
         });
         return this;

@@ -1,6 +1,6 @@
 interface Answer {
     text: string;
-    isCorrect: boolean;
+    isCorrect?: boolean;
 }
 
 interface Question {
@@ -9,6 +9,7 @@ interface Question {
     points: number;
     lastModification?: Date;
     choices: Answer[];
+    qrlAnswer: string;
 }
 
 interface Quiz {
@@ -34,6 +35,7 @@ class Question implements Question {
         this.type = '';
         this.points = 0;
         this.choices = [new Answer(), new Answer()];
+        this.qrlAnswer = '';
     }
 }
 

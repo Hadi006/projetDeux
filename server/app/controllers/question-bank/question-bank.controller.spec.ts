@@ -17,6 +17,7 @@ describe('QuestionBankController', () => {
                 { text: 'Answer 1', isCorrect: true },
                 { text: 'Answer 2', isCorrect: false },
             ],
+            qrlAnswer: '',
         },
         {
             text: 'Question 2',
@@ -26,6 +27,7 @@ describe('QuestionBankController', () => {
                 { text: 'Answer 1', isCorrect: true },
                 { text: 'Answer 2', isCorrect: false },
             ],
+            qrlAnswer: '',
         },
     ];
     const PARAM_TEXT = 'Question 1';

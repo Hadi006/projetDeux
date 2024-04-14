@@ -148,6 +148,24 @@ describe('PlayerSocketService', () => {
         socketHelper.peerSideEmit('game-deleted');
     });
 
+    it('should listen for timer paused event', (done) => {
+        service.connect();
+        service.onPauseTimerForPlayers().subscribe(() => {
+            expect(true).toBeTrue();
+            done();
+        });
+        socketHelper.peerSideEmit('timer-paused');
+    });
+
+    it('should listen for panic mode start event', (done) => {
+        service.connect();
+        service.onStartPanicMode().subscribe(() => {
+            expect(true).toBeTrue();
+            done();
+        });
+        socketHelper.peerSideEmit('in-panic');
+    });
+
     it('should emit join game', (done) => {
         service.connect();
         const expectedPin = '1234';
@@ -176,35 +194,6 @@ describe('PlayerSocketService', () => {
         expect(webSocketServiceMock.emit).toHaveBeenCalledWith('confirm-player-answer', {
             pin: '1234',
             data: JSON.parse(JSON.stringify(TEST_PLAYERS[0])),
-        });
-    });
-    it('should listen for timer paused event', () => {
-        spyOn(webSocketServiceMock, 'onEvent').and.callFake((eventName, callback) => {
-            if (eventName === 'timer-paused') {
-                // Passer un argument vide à la fonction callback
-                callback(undefined as any);
-            }
-        });
-
-        // Utilisation de la méthode sans déclarer explicitement la variable
-        service.onPauseTimerForPlayers().subscribe(() => {
-            expect(true).toBeTrue(); // Test successful emission of event
-        });
-    });
-
-    it('should listen for panic mode start event', (done) => {
-        // Espionnage de la méthode onEvent du service WebSocket et déclenchement de l'événement 'in-panic'
-        spyOn(webSocketServiceMock, 'onEvent').and.callFake((eventName, callback) => {
-            if (eventName === 'in-panic') {
-                callback(undefined as any);
-            }
-        });
-
-        // Souscription à l'événement onStartPanicMode
-        service.onStartPanicMode().subscribe(() => {
-            // Assertion pour vérifier si l'événement a été émis avec succès
-            expect(true).toBeTrue();
-            done(); // Indiquer que le test est terminé
         });
     });
 });

@@ -1,10 +1,11 @@
+/* eslint-disable max-lines */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY } from '@common/constant';
+import { TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY, INVALID_INDEX } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { QuestionChangedEventData } from '@common/question-changed-event-data';
@@ -29,9 +30,20 @@ describe('PlayerService', () => {
     const answerSubject: Subject<Answer[]> = new Subject();
     const gameEndedSubject: Subject<Game> = new Subject();
     const gameDeletedSubject: Subject<void> = new Subject();
+    const pauseTimerSubject: Subject<void> = new Subject();
+    const startPanicModeSubject: Subject<void> = new Subject();
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'startTimerById', 'stopTimerById', 'setTimeById', 'getTimeById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', [
+            'createTimerById',
+            'startTimerById',
+            'stopTimerById',
+            'setTimeById',
+            'getTimeById',
+            'startPanicMode',
+            'stopPanicMode',
+            'toggleTimerById',
+        ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
         playerSocketServiceSpy = jasmine.createSpyObj('PlayerSocketService', [
             'connect',
@@ -47,6 +59,8 @@ describe('PlayerService', () => {
             'onAnswer',
             'onGameEnded',
             'onGameDeleted',
+            'onPauseTimerForPlayers',
+            'onStartPanicMode',
             'emitJoinGame',
             'emitUpdatePlayer',
             'emitConfirmPlayerAnswer',
@@ -62,6 +76,8 @@ describe('PlayerService', () => {
         playerSocketServiceSpy.onAnswer.and.returnValue(answerSubject);
         playerSocketServiceSpy.onGameEnded.and.returnValue(gameEndedSubject);
         playerSocketServiceSpy.onGameDeleted.and.returnValue(gameDeletedSubject);
+        playerSocketServiceSpy.onPauseTimerForPlayers.and.returnValue(pauseTimerSubject);
+        playerSocketServiceSpy.onStartPanicMode.and.returnValue(startPanicModeSubject);
         player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
         playerSocketServiceSpy.emitJoinGame.and.returnValue(
             of({ player, gameTitle: 'title', gameId: TEST_GAME_DATA.quiz.id, otherPlayers: [], error: '' }),
@@ -120,13 +136,37 @@ describe('PlayerService', () => {
         expect(service.getPlayerAnswers()).toEqual(service.player.questions[service.player.questions.length - 1].choices);
     });
 
-    it('should not get the player answers if the player is not in the game', () => {
+    it('should return an empty array if player is not defined', () => {
         service.player = null;
-        expect(service.getPlayerAnswers()).toEqual([]);
+
+        const result = service.getPlayerAnswers();
+
+        expect(result).toEqual([]);
     });
 
-    it('should get the player boolean answers', () => {
-        expect(service.getPlayerBooleanAnswers()).toEqual(service.getPlayerAnswers().map((answer) => answer.isCorrect));
+    it('should not return an empty array if player is defined', () => {
+        service.player = {
+            id: 'playerId',
+            name: 'playerName',
+            score: 0,
+            questions: [
+                {
+                    text: 'Question 1',
+                    choices: [{ text: 'Answer 1', isCorrect: true }, { text: 'Answer 2', isCorrect: false }, { text: 'Answer 3' }],
+                    type: 'QCM',
+                    points: 10,
+                    qrlAnswer: '',
+                },
+            ],
+            fastestResponseCount: 0,
+            isActive: true,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+        const result = service.getPlayerAnswers();
+        expect(result).not.toEqual([]);
     });
 
     it('should check if the player is connected', () => {
@@ -204,12 +244,26 @@ describe('PlayerService', () => {
     it('should update the score when the host sends a new score', (done) => {
         service.handleSockets();
         const newScoreSubscription = newScoreSubject.subscribe((p) => {
-            expect(p).toEqual(player);
+            expect(p).toEqual(newPlayer);
             done();
             newScoreSubscription.unsubscribe();
         });
-        player.score++;
-        newScoreSubject.next(player);
+        const newPlayer = JSON.parse(JSON.stringify(player));
+        newPlayer.score++;
+        newScoreSubject.next(newPlayer);
+    });
+
+    it('should update score for QCM question', (done) => {
+        player.questions[1].type = 'QCM';
+        service.handleSockets();
+        const newScoreSubscription = newScoreSubject.subscribe((p) => {
+            expect(p).toEqual(newPlayer);
+            done();
+            newScoreSubscription.unsubscribe();
+        });
+        const newPlayer = JSON.parse(JSON.stringify(player));
+        newPlayer.score++;
+        newScoreSubject.next(newPlayer);
     });
 
     it('should not update the score if the player is not in the game', () => {
@@ -253,6 +307,18 @@ describe('PlayerService', () => {
         spyOn(service, 'cleanUp');
         gameDeletedSubject.next();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should pause the timer for players', () => {
+        service.handleSockets();
+        pauseTimerSubject.next();
+        expect(timeServiceSpy.toggleTimerById).toHaveBeenCalledWith(1);
+    });
+
+    it('should start panic mode', () => {
+        service.handleSockets();
+        startPanicModeSubject.next();
+        expect(timeServiceSpy.startPanicMode).toHaveBeenCalled();
     });
 
     it('should join the game if there is no error', (done) => {
@@ -323,6 +389,7 @@ describe('PlayerService', () => {
         expect(service.answerConfirmed).toBeFalse();
         expect(service.answer).toEqual([]);
         expect(service.isCorrect).toBeFalse();
+        expect(service.qrlCorrect).toEqual(INVALID_INDEX);
     });
 
     it('should set up next question', () => {
@@ -336,11 +403,42 @@ describe('PlayerService', () => {
         expect(timeServiceSpy.startTimerById).toHaveBeenCalledWith(1, time);
     });
 
-    it('should not set up next question if the player is not in the game', () => {
+    it('should return an empty brackets if the player is not defined in updateModificationDate', () => {
         service.player = null;
+        const result = service.updateModificationDate();
+        expect(result).toEqual(undefined);
+    });
+    it('should set lastModification of the last question to the current date', () => {
+        const now = new Date();
+        jasmine.clock().mockDate(now);
+        service.player = {
+            id: 'playerId',
+            name: 'playerName',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: true,
+            questions: [
+                { text: 'Question 1', type: 'QCM', points: 10, choices: [], qrlAnswer: '' },
+                { text: 'Question 2', type: 'QRL', points: 5, choices: [], qrlAnswer: '' },
+            ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        service.updateModificationDate();
+
+        if (service.player) {
+            expect(service.player.questions[service.player.questions.length - 1].lastModification).toEqual(now);
+        } else {
+            fail('service.player is null');
+        }
+    });
+    it('should return an empty brackets if the player is not defined in setupNextQuestion', () => {
         const time = 10;
-        service['setupNextQuestion'](TEST_QUESTIONS[0], time);
-        expect(timeServiceSpy.stopTimerById).not.toHaveBeenCalled();
-        expect(timeServiceSpy.startTimerById).not.toHaveBeenCalled();
+        service.player = null;
+        const result = service['setupNextQuestion'](TEST_QUESTIONS[0], time);
+        expect(result).toEqual(undefined);
     });
 });

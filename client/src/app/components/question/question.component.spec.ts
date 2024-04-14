@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
+import { INVALID_INDEX, MAX_QRL_LENGTH, TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Player } from '@common/player';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';
@@ -18,12 +18,7 @@ describe('QuestionComponent', () => {
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
         testPlayer = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
 
-        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', [
-            'joinGame',
-            'handleKeyUp',
-            'getPlayerBooleanAnswers',
-            'getTime',
-        ]);
+        playerHandlerServiceSpy = jasmine.createSpyObj<PlayerService>('PlayerService', ['joinGame', 'handleKeyUp', 'getTime', 'updatePlayer']);
         playerHandlerServiceSpy.joinGame.and.returnValue(of(''));
         Object.defineProperty(playerHandlerServiceSpy, 'answerConfirmed', {
             get: () => {
@@ -109,7 +104,206 @@ describe('QuestionComponent', () => {
         expect(component.getQuestionData()).toBeUndefined();
     });
 
-    it('getIsChecked should return the players answer', () => {
-        expect(component.getIsChecked()).toEqual(playerHandlerServiceSpy.getPlayerBooleanAnswers());
+    it('should return the remaining length', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: false,
+            questions: [
+                {
+                    text: 'Sample question',
+                    type: 'QRL',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+        const length = component.getLength();
+        expect(length).toBe(MAX_QRL_LENGTH - 'test'.length);
+    });
+
+    it('should return 200 if qrlAnswer is empty string', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: false,
+            questions: [
+                {
+                    text: 'Sample question',
+                    type: 'QRL',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: '',
+                },
+            ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+        const length = component.getLength();
+        expect(length).toBe(MAX_QRL_LENGTH);
+    });
+
+    it('should return 0 if qrlAnswer length is 200', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            isActive: false,
+            questions: [
+                {
+                    text: 'Sample question',
+                    type: 'QRL',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'a'.repeat(MAX_QRL_LENGTH),
+                },
+            ],
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+        const length = component.getLength();
+        expect(length).toBe(0);
+    });
+
+    it('should update player isActive status and call updatePlayer if status changed', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QRL',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                    lastModification: new Date(),
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        playerHandlerServiceSpy.getTime.and.returnValue(1);
+        component.getTime();
+
+        expect(playerHandlerServiceSpy.player.isActive).toBe(true);
+    });
+
+    it('should still get time if question has not modification date', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QRL',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        playerHandlerServiceSpy.getTime.and.returnValue(1);
+        const time = component.getTime();
+
+        expect(time).toBe(1);
+    });
+
+    it('updatePlayer should update player and call playerService.updatePlayer if question type is QCM', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QCM',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                    lastModification: new Date(),
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        component.updatePlayer();
+
+        if (playerHandlerServiceSpy.player) {
+            expect(playerHandlerServiceSpy.player.hasInteracted).toBe(true);
+        }
+    });
+
+    it('should do nothing if player is null', () => {
+        playerHandlerServiceSpy.player = null;
+        component.updatePlayer();
+        expect(playerHandlerServiceSpy.updatePlayer).not.toHaveBeenCalled();
+    });
+
+    it('should verify if waiting for evaluation', () => {
+        playerHandlerServiceSpy.player = {
+            id: '1',
+            name: 'John Doe',
+            score: 0,
+            fastestResponseCount: 0,
+            questions: [
+                {
+                    type: 'QRL',
+                    text: 'Sample question',
+                    points: 10,
+                    choices: [],
+                    qrlAnswer: 'test',
+                },
+            ],
+            isActive: false,
+            muted: false,
+            hasInteracted: false,
+            hasConfirmedAnswer: false,
+            hasLeft: false,
+        };
+
+        playerHandlerServiceSpy.getTime.and.returnValue(0);
+        Object.defineProperty(playerHandlerServiceSpy, 'qrlCorrect', {
+            get: () => {
+                return INVALID_INDEX;
+            },
+            configurable: true,
+        });
+
+        const isWaiting = component.isWaitingForEvaluation();
+
+        expect(isWaiting).toBeTrue();
     });
 });
