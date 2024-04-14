@@ -10,8 +10,8 @@ import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { SinonSpy, SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
-import { Socket as socketClient, io as ioClient } from 'socket.io-client';
 import { Socket as socketServer } from 'socket.io';
+import { io as ioClient, Socket as socketClient } from 'socket.io-client';
 import { Container } from 'typedi';
 
 describe('GameController', () => {
@@ -473,5 +473,26 @@ describe('GameController', () => {
                 done();
             }, RESPONSE_DELAY);
         });
+    });
+    it('should emit timer-paused event when pause-timer event is received', (done) => {
+        const pin = 'test_pin';
+        clientSocket.emit('pause-timer', pin);
+
+        setTimeout(() => {
+            expect(toSpy.calledWith(pin)).to.equal(true);
+
+            done();
+        }, RESPONSE_DELAY);
+    });
+
+    it('should emit in-panic event when panic-mode event is received', (done) => {
+        const pin = 'test_pin';
+        clientSocket.emit('panic-mode', pin);
+
+        setTimeout(() => {
+            expect(toSpy.calledWith(pin)).to.equal(true);
+
+            done();
+        }, RESPONSE_DELAY);
     });
 });
