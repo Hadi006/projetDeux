@@ -1,28 +1,34 @@
-<button type="button" routerLink="/home">Accueil</button>
-<div class="quiz-list">
-    <div>
-        <input type="file" accept=".json" (change)="importQuiz($event)" />
-        <button (click)="goToQuizPage()">Créer un quiz</button>
+<div class="admin-page-container">
+    <div class="grid-title">
+        <h2 class="title">Administrer des jeux / Connexion</h2>
     </div>
-    <br />
-    Liste de quiz
-    <div *ngFor="let quiz of quizzes | async; let i = index">
-        <app-quiz-item [quiz]="quiz" [index]="i" (action)="handle($event)"></app-quiz-item>
+    <button class="return-button" type="button" routerLink="/home">Retour</button>
+    <div class="grid-container">
+        <div class="quiz-list">
+            <div class="quiz-list-title">Liste de quiz</div>
+            <div *ngFor="let quiz of quizzes | async; let i = index">
+                <app-quiz-item [quiz]="quiz" [index]="i" (action)="handle($event)"></app-quiz-item>
+            </div>
+            <div>
+                <input type="file" accept=".json" (change)="importQuiz($event)" />
+                <button (click)="goToQuizPage()">Créer un quiz</button>
+            </div>
+        </div>
+        <app-question-bank></app-question-bank>
     </div>
-</div>
-<app-question-bank></app-question-bank>
-<div class="game-list">
-    Liste des parties complétées
-    <button type="button" (click)="deleteAllGames()">supprimer tout</button>
-    <button type="button" (click)="sortByName()">trier par nom</button>
-    <button type="button" (click)="sortByDate()">trier par date</button>
-    <div *ngFor="let game of games | async; let i = index">
-        <div class="game-item">
-            <span>Nom : {{ game.name }} |</span>
-            <span>Date : {{ game.date.toString().slice(0, 10) }} {{ game.date.toString().slice(11, 19) }} |</span>
-            <span>Nb de joueurs : {{ game.nPlayers }} |</span>
-            <span>Meilleur score : {{ game.bestScore }} |</span>
-            <button type="button" (click)="deleteGame(i)">supprimer</button>
+    <div class="game-list">
+        <div class="game-list-title">Liste des parties complétées</div>
+        <button type="button" (click)="deleteAllGames()">supprimer tout</button>
+        <button type="button" (click)="sortByName()">trier par nom</button>
+        <button type="button" (click)="sortByDate()">trier par date</button>
+        <div *ngFor="let game of games | async; let i = index">
+            <div class="game-item">
+                <span>Nom : {{ game.name }} |</span>
+                <span>Date : {{ game.date.toString().slice(0, 10) }} {{ game.date.toString().slice(11, 19) }} |</span>
+                <span>Nb de joueurs : {{ game.nPlayers }} |</span>
+                <span>Meilleur score : {{ game.bestScore }} |</span>
+                <button type="button" (click)="deleteGame(i)">supprimer</button>
+            </div>
         </div>
     </div>
 </div>

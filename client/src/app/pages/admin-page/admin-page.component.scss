@@ -1,10 +1,115 @@
-.quiz-list {
-    margin: 20px;
+.admin-page-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.grid-title {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.title {
+    margin: 0;
+}
+
+.grid-container {
+    display: flex;
+    width: 100%;
+    margin-top: 20px;
+    padding: 0 40px;
+}
+
+.quiz-list,
+.app-question-bank,
+.game-list {
     border: 1px solid black;
     padding: 20px;
-    width: 100%;
-    max-width: 800px;
+    flex: 1;
+    background-color: white;
+    margin: 0 10px;
+    margin-top: 50px;
+}
+
+.quiz-list {
+    margin-right: 10px;
+}
+
+.app-question-bank {
+    margin-top: 100px;
+    margin-left: 10px;
+}
+
+.game-list {
+    border: 1px solid black;
+    padding: 20px;
+    flex: 1;
+    background-color: white;
+    margin: 20px 10px 0;
+}
+
+.quiz-list > div,
+.app-question-bank > div,
+.game-list > div {
+    margin-top: 10px;
+}
+
+.admin-page-container input[type='file'] {
+    display: none;
+}
+
+.admin-page-container label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.admin-page-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+.admin-page-container button:hover {
+    background-color: #0056b3;
+}
+
+.quiz-list-title,
+.question-bank-title,
+.game-list-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.return-button {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: grey !important;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.return-button:hover {
+    background-color: darkgrey !important;
 }
