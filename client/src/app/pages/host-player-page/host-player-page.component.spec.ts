@@ -52,6 +52,7 @@ describe('HostPlayerPageComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(HostPlayerPageComponent);
         component = fixture.componentInstance;
+        component.chatbox = jasmine.createSpyObj('ChatboxComponent', ['isFocused']);
         fixture.detectChanges();
     });
 
