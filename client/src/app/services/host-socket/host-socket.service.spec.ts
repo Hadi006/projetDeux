@@ -82,7 +82,7 @@ describe('HostSocketService', () => {
 
     it('should listen for player updated', (done) => {
         service.connect();
-        const expectedData = TEST_HISTOGRAM_DATA[0];
+        const expectedData = { player: TEST_PLAYERS[0], histogramData: TEST_HISTOGRAM_DATA[0] };
         service.onPlayerUpdated().subscribe((data) => {
             expect(data).toEqual(expectedData);
             done();
@@ -156,6 +156,15 @@ describe('HostSocketService', () => {
         expect(emitSpy).toHaveBeenCalledWith('kick', { pin, data: playerName });
     });
 
+    it('should emit mute player', () => {
+        service.connect();
+        const pin = '1';
+        const player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitMute(pin, player);
+        expect(emitSpy).toHaveBeenCalledWith('mute', { pin, data: player });
+    });
+
     it('should emit start game', () => {
         service.connect();
         const pin = '1';
@@ -216,5 +225,14 @@ describe('HostSocketService', () => {
         const emitSpy = spyOn(webSocketServiceMock, 'emit');
         service.emitAnswer(pin, currentAnswer);
         expect(emitSpy).toHaveBeenCalledWith('answer', { pin, data: currentAnswer });
+    });
+
+    it('should emit update players', () => {
+        service.connect();
+        const pin = '1';
+        const players = JSON.parse(JSON.stringify(TEST_PLAYERS));
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitUpdatePlayers(pin, players);
+        expect(emitSpy).toHaveBeenCalledWith('update-players', { pin, data: players });
     });
 });

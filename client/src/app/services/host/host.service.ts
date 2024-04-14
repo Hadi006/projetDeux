@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { PANIC_MODE_TIMER, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TRANSITION_DELAY } from '@common/constant';
+import { PANIC_MODE_TIMER, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TRANSITION_DELAY, INVALID_INDEX } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -16,13 +16,13 @@ export class HostService {
     readonly questionEndedSubject: Subject<void>;
     readonly gameEndedSubject: Subject<void>;
 
-    private socketSubscription: Subscription;
+    currentQuestionIndex: number;
 
+    private socketSubscription: Subscription;
     private timerId: number;
     private internalGame: Game | null;
     private internalNAnswered: number;
     private internalQuestionEnded: boolean;
-    private currentQuestionIndex: number;
     private internalQuitters: Player[] = [];
     private internalHistograms: HistogramData[] = [];
     private isPanicMode = false;
@@ -37,10 +37,8 @@ export class HostService {
                 this.verifyUsesSockets();
             }
         });
-
         this.questionEndedSubject = new Subject<void>();
         this.gameEndedSubject = new Subject<void>();
-
         this.timerId = timeService.createTimerById();
         this.reset();
     }
@@ -64,21 +62,24 @@ export class HostService {
     get histograms(): HistogramData[] {
         return this.internalHistograms;
     }
+
     get isPanic(): boolean {
         return this.isPanicMode;
     }
+
     togglePanic(): void {
-        if (!this.isPanicMode) {
-            this.isPanicMode = true;
-        }
+        if (!this.isPanicMode) this.isPanicMode = true;
     }
+
     getTime(): number {
         return this.timeService.getTimeById(this.timerId);
     }
+
     pauseTimer(): void {
         this.pauseTimerForEveryone();
         return this.timeService.toggleTimerById(this.timerId);
     }
+
     stopPanicMode(): void {
         this.isPanicMode = false;
         return this.timeService.stopPanicMode();
@@ -93,13 +94,9 @@ export class HostService {
     }
 
     handleSockets(): void {
-        if (!this.hostSocketService.isConnected()) {
-            this.hostSocketService.connect();
-        }
-
+        if (!this.hostSocketService.isConnected()) this.hostSocketService.connect();
         this.socketSubscription.unsubscribe();
         this.socketSubscription = new Subscription();
-
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToConfirmPlayerAnswer());
@@ -131,71 +128,78 @@ export class HostService {
     }
 
     toggleLock(): void {
-        if (!this.internalGame) {
-            return;
-        }
-
+        if (!this.internalGame) return;
         this.internalGame.locked = !this.internalGame.locked;
         this.hostSocketService.emitToggleLock(this.internalGame.pin, this.internalGame.locked);
     }
 
     kick(playerName: string): void {
-        if (!this.internalGame) {
-            return;
-        }
-
+        if (!this.internalGame) return;
         this.hostSocketService.emitKick(this.internalGame.pin, playerName);
     }
 
-    startGame(countdown: number): void {
-        if (!this.internalGame) {
-            return;
-        }
+    mute(playerName: string): void {
+        if (!this.internalGame) return;
+        const player = this.internalGame.players.find((p) => p.name === playerName);
+        if (!player) return;
 
+        player.muted = !player.muted;
+
+        this.hostSocketService.emitMute(this.internalGame.pin, player);
+    }
+
+    startGame(countdown: number): void {
+        if (!this.internalGame) return;
         this.hostSocketService.emitStartGame(this.internalGame.pin, countdown);
         this.internalQuitters = [];
-
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }
 
     nextQuestion(): void {
-        if (!this.internalGame) {
-            return;
-        }
+        this.timeService.stopTimerById(this.timerId);
+        this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
 
         const currentQuestion = this.getCurrentQuestion();
-
+        if (!this.internalGame || !currentQuestion) return;
         this.internalQuestionEnded = false;
-
-        const newHistogram: HistogramData = {
-            labels: currentQuestion?.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`) || [],
-            datasets: [
-                {
-                    label: currentQuestion?.text || '',
-                    data: currentQuestion?.choices.map(() => 0) || [],
-                },
-            ],
-        };
+        let newHistogram: HistogramData;
+        if (currentQuestion.type === 'QCM') {
+            newHistogram = {
+                labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: currentQuestion.choices.map(() => 0),
+                    },
+                ],
+            };
+        } else {
+            newHistogram = {
+                labels: ['Joueurs actifs', 'Joueurs inactifs'],
+                datasets: [
+                    {
+                        label: currentQuestion.text,
+                        data: [0, this.internalGame.players.length],
+                    },
+                ],
+            };
+        }
         this.internalHistograms.push(newHistogram);
-
         this.hostSocketService.emitNextQuestion(this.internalGame.pin, {
             question: currentQuestion,
             countdown: this.internalGame.quiz.duration,
             histogram: newHistogram,
         });
+    }
 
-        this.timeService.stopTimerById(this.timerId);
-        this.timerId = this.timeService.createTimerById();
-
-        this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
+    updatePlayers(): void {
+        if (!this.internalGame) return;
+        this.hostSocketService.emitUpdatePlayers(this.internalGame.pin, this.internalGame.players);
     }
 
     endGame(): void {
-        if (!this.internalGame) {
-            return;
-        }
-
+        if (!this.internalGame) return;
         this.hostSocketService.emitEndGame(this.internalGame.pin).subscribe((game: Game) => {
             this.router.navigate(['/endgame'], { state: { game } });
         });
@@ -207,6 +211,7 @@ export class HostService {
         this.timeService.stopTimerById(this.timerId);
         this.reset();
     }
+
     canActivatePanicMode(): boolean {
         return (
             ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= QCM_TIME_FOR_PANIC) ||
@@ -224,7 +229,6 @@ export class HostService {
             this.timerId = this.timeService.createTimerById(PANIC_MODE_TIMER);
             this.timeService.startTimerById(this.timerId, startTimerValue, this.endQuestion.bind(this));
         }
-        return;
     }
 
     private reset(): void {
@@ -236,7 +240,6 @@ export class HostService {
         this.internalQuitters = [];
         this.internalHistograms = [];
     }
-
     private verifyUsesSockets(): void {
         let currentRoute = this.router.routerState.snapshot.root;
 
@@ -251,11 +254,15 @@ export class HostService {
 
     private endQuestion(): void {
         const currentAnswer = this.getCurrentAnswer();
-        if (!this.internalGame || !currentAnswer) {
+        if (!this.internalGame || !currentAnswer) return;
+        this.hostSocketService.emitEndQuestion(this.internalGame.pin);
+        const isTestMode = this.internalGame?.players.length === 1 && this.internalGame.players[0].name === 'Organisateur';
+        if (this.getCurrentQuestion()?.type === 'QRL' && !isTestMode) {
+            this.internalQuestionEnded = true;
+            this.currentQuestionIndex++;
+            this.questionEndedSubject.next();
             return;
         }
-
-        this.hostSocketService.emitEndQuestion(this.internalGame.pin);
         this.hostSocketService.emitUpdateScores(this.internalGame.pin, this.currentQuestionIndex).subscribe((game: Game) => {
             this.internalGame = game;
             this.questionEndedSubject.next();
@@ -274,40 +281,32 @@ export class HostService {
             this.internalGame?.players.push(player);
         });
     }
-
     private subscribeToPlayerLeft(): Subscription {
         return this.hostSocketService.onPlayerLeft().subscribe((data) => {
-            if (!this.internalGame) {
-                return;
-            }
-
+            if (!this.internalGame) return;
             const { players, player } = data;
             this.internalGame.players = players;
-
             this.internalQuitters.push(player);
-
-            if (this.internalGame.players.length === 0) {
-                this.gameEndedSubject.next();
-            }
+            player.hasLeft = true;
+            if (this.internalGame.players.length === 0) this.gameEndedSubject.next();
         });
     }
 
     private subscribeToConfirmPlayerAnswer(): Subscription {
         return this.hostSocketService.onConfirmPlayerAnswer().subscribe(() => {
-            if (!this.internalGame) {
-                return;
-            }
-
+            if (!this.internalGame) return;
             if (++this.internalNAnswered >= this.internalGame.players.length) {
                 this.timeService.setTimeById(this.timerId, 0);
                 this.internalNAnswered = 0;
             }
         });
     }
-
     private subscribeToPlayerUpdated(): Subscription {
-        return this.hostSocketService.onPlayerUpdated().subscribe((histogramData: HistogramData) => {
+        return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
+            const playerIndex = this.internalGame?.players.findIndex((p) => p.name === player.name);
+            if (playerIndex === undefined || playerIndex === INVALID_INDEX || !this.internalGame) return;
+            this.internalGame.players[playerIndex] = player;
         });
     }
 
@@ -322,28 +321,26 @@ export class HostService {
     }
 
     private setupNextQuestion(): void {
-        if (!this.internalGame) {
-            return;
-        }
-
+        if (!this.internalGame) return;
         if (!this.getCurrentQuestion()) {
             this.gameEndedSubject.next();
             return;
         }
-
+        this.internalGame.players.forEach((player) => {
+            player.hasInteracted = false;
+            player.hasConfirmedAnswer = false;
+        });
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
     }
+
     private pauseTimerForEveryone(): void {
-        if (!this.internalGame) {
-            return;
-        }
+        if (!this.internalGame) return;
         this.hostSocketService.emitPauseTimer(this.internalGame.pin);
     }
+
     private startPanicModeForEveryone(): void {
-        if (!this.internalGame) {
-            return;
-        }
+        if (!this.internalGame) return;
         this.hostSocketService.emitPanicMode(this.internalGame.pin);
     }
 }

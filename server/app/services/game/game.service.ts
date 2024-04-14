@@ -1,12 +1,15 @@
 import { DatabaseService } from '@app/services/database/database.service';
-import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA } from '@common/constant';
+import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA, SELECTED_MULTIPLIER } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
+import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
+import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { Service } from 'typedi';
-import { JoinGameEventData } from '@common/join-game-event-data';
+import { QuestionChangedEventData } from '@common/question-changed-event-data';
+import { RoomData } from '@common/room-data';
 
 @Service()
 export class GameService {
@@ -72,6 +75,22 @@ export class GameService {
             return { ...NEW_HISTOGRAM_DATA };
         }
 
+        const currentQuestion = player.questions[player.questions.length - 1];
+        if (currentQuestion?.type === 'QRL') {
+            game.players.forEach((p, index) => {
+                if (p.name === player.name) {
+                    game.players[index] = player;
+                }
+            });
+
+            const currentHistogram = game.histograms[game.histograms.length - 1];
+            currentHistogram.datasets[0].data[0] = game.players.filter((p) => p.isActive).length;
+            currentHistogram.datasets[0].data[1] = game.players.filter((p) => !p.isActive).length;
+
+            await this.updateGame(game);
+
+            return currentHistogram;
+        }
         const selectionChanges: number[] = [];
         let previousSelections: boolean[] = [];
         let currentSelections: boolean[] = [];
@@ -95,6 +114,55 @@ export class GameService {
         return game.histograms[game.histograms.length - 1];
     }
 
+    async updatePlayers(roomData: RoomData<Player[]>): Promise<Player[]> {
+        const game = await this.getGame(roomData.pin);
+
+        if (!game) {
+            return [];
+        }
+
+        const currentQuestion = game.players[0].questions[game.players[0].questions.length - 1];
+        const newHistogram = {
+            labels: ['0%', '50%', '100%'],
+            datasets: [
+                {
+                    label: currentQuestion.text,
+                    data: [0, 0, 0],
+                },
+            ],
+        };
+
+        for (const player of roomData.data) {
+            const newScore = player.score;
+            const oldScore = game.players.find((p) => p.name === player.name)?.score || 0;
+            const multiplier = (newScore - oldScore) / currentQuestion.points;
+            switch (multiplier) {
+                case 0: {
+                    newHistogram.datasets[0].data[0]++;
+
+                    break;
+                }
+                case SELECTED_MULTIPLIER: {
+                    newHistogram.datasets[0].data[1]++;
+
+                    break;
+                }
+                case 1: {
+                    newHistogram.datasets[0].data[2]++;
+
+                    break;
+                }
+            }
+        }
+
+        game.histograms.pop();
+        game.histograms.push(newHistogram);
+        game.players = roomData.data;
+        await this.updateGame(game);
+
+        return game.players;
+    }
+
     async updateScores(pin: string, questionIndex: number): Promise<void> {
         const game = await this.getGame(pin);
         if (!game || game.pin !== pin) {
@@ -103,6 +171,13 @@ export class GameService {
 
         const question = game.quiz.questions[questionIndex];
         if (!question) {
+            return;
+        }
+
+        const isInTestMode = game.players.length === 1 && game.players[0].name === 'Organisateur';
+        if (question.type === 'QRL' && isInTestMode) {
+            game.players[0].score += question.points + question.points * GOOD_ANSWER_BONUS;
+            await this.updateGame(game);
             return;
         }
 
@@ -121,6 +196,29 @@ export class GameService {
         }
 
         await this.updateGame(game);
+    }
+
+    async createNextQuestion(roomData: RoomData<NextQuestionEventData>): Promise<QuestionChangedEventData> {
+        const blankQuestion: Question | undefined = roomData.data.question;
+
+        if (!blankQuestion) {
+            return { countdown: roomData.data.countdown };
+        }
+
+        blankQuestion.choices.forEach((choice) => {
+            choice.isCorrect = false;
+        });
+
+        const game = await this.getGame(roomData.pin);
+
+        game.players.forEach((player) => {
+            player.questions.push(blankQuestion);
+        });
+
+        game.histograms.push(roomData.data.histogram);
+        await this.updateGame(game);
+
+        return { question: blankQuestion, countdown: roomData.data.countdown };
     }
 
     private generatePin(games: Game[]) {

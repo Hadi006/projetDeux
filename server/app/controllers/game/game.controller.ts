@@ -4,7 +4,7 @@ import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
-import { Answer, Question, Quiz } from '@common/quiz';
+import { Answer, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
 import { Server as HTTPServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
@@ -28,9 +28,11 @@ export class GameController {
             this.onPlayerLeave(socket);
             this.onDeleteGame(socket);
             this.onKick(socket);
+            this.onMute(socket);
             this.onStartGame(socket);
             this.onNextQuestion(socket);
             this.onUpdatePlayer(socket);
+            this.onUpdatePlayers(socket);
             this.onUpdateScores(socket);
             this.onEndQuestion(socket);
             this.onConfirmPlayerAnswer(socket);
@@ -100,9 +102,15 @@ export class GameController {
             }
 
             const player = game.players.find((p) => p.name === playerName);
+            player.hasLeft = true;
             game.players = game.players.filter((p) => p.name !== playerName);
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('player-left', { players: game.players, player });
+            this.sio.to(pin).emit('message-received', {
+                text: `${playerName} a quitté la partie`,
+                timestamp: new Date(),
+                author: 'Système',
+            });
         });
     }
 
@@ -131,6 +139,23 @@ export class GameController {
         });
     }
 
+    private onMute(socket: Socket): void {
+        socket.on('mute', async (roomData: RoomData<Player>) => {
+            const pin = roomData.pin;
+            const player = roomData.data;
+
+            const game = await this.gameService.getGame(pin);
+            game.players.find((p) => p.id === player.id).muted = player.muted;
+            await this.gameService.updateGame(game);
+
+            this.sio.to(player.id).emit('player-muted', {
+                text: player.muted ? 'Vous avez été muté' : 'Vous avez été démuté',
+                timestamp: new Date(),
+                author: 'Système',
+            });
+        });
+    }
+
     private onStartGame(socket: Socket): void {
         socket.on('start-game', async (roomData: RoomData<number>) => {
             if (!(await this.isHost(socket, roomData.pin))) {
@@ -139,6 +164,7 @@ export class GameController {
 
             const game = await this.gameService.getGame(roomData.pin);
             game.nPlayers = game.players.length;
+            await this.gameService.updateGame(game);
             this.sio.to(roomData.pin).emit('start-game', roomData.data);
         });
     }
@@ -149,21 +175,7 @@ export class GameController {
                 return;
             }
 
-            const blankQuestion: Question | undefined = roomData.data.question;
-
-            if (blankQuestion) {
-                blankQuestion.choices.forEach((choice) => {
-                    choice.isCorrect = false;
-                });
-                const game = await this.gameService.getGame(roomData.pin);
-                game.players.forEach((player) => {
-                    player.questions.push(blankQuestion);
-                });
-                game.histograms.push(roomData.data.histogram);
-                await this.gameService.updateGame(game);
-            }
-
-            this.sio.to(roomData.pin).emit('question-changed', { question: blankQuestion, countdown: roomData.data.countdown });
+            this.sio.to(roomData.pin).emit('question-changed', await this.gameService.createNextQuestion(roomData));
         });
     }
 
@@ -171,7 +183,15 @@ export class GameController {
         socket.on('update-player', async (roomData: RoomData<Player>) => {
             const histogramData = await this.gameService.updatePlayer(roomData.pin, roomData.data);
             const hostId = (await this.gameService.getGame(roomData.pin))?.hostId;
-            this.sio.sockets.sockets.get(hostId)?.emit('player-updated', histogramData);
+            this.sio.to(hostId).emit('player-updated', { player: roomData.data, histogramData });
+        });
+    }
+
+    private onUpdatePlayers(socket: Socket): void {
+        socket.on('update-players', async (roomData: RoomData<Player[]>) => {
+            (await this.gameService.updatePlayers(roomData)).forEach((player) => {
+                this.sio.to(roomData.pin).emit('new-score', player);
+            });
         });
     }
 
@@ -198,7 +218,8 @@ export class GameController {
             const player = roomData.data;
 
             player.questions[player.questions.length - 1].lastModification = new Date();
-            await this.gameService.updatePlayer(pin, player);
+            const histogramData = await this.gameService.updatePlayer(pin, player);
+            this.sio.to(pin).emit('player-updated', { player, histogramData });
             this.sio.to(pin).emit('confirm-player-answer');
         });
     }

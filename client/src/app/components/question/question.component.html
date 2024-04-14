@@ -1,4 +1,7 @@
-Temps restant: {{ playerService.getTime() }}
+Temps restant: {{ getTime() }}
+<div *ngIf="isWaitingForEvaluation()">
+    <p>En attente de l'évaluation de la réponse...</p>
+</div>
 <div *ngIf="playerService.player && getQuestionData() as questionData">
     <div *ngIf="getPlayer() as player" class="player-container">
         <h2>{{ questionData.text }}</h2>
@@ -15,7 +18,7 @@ Temps restant: {{ playerService.getTime() }}
                         type="checkbox"
                         class="choice-input"
                         [(ngModel)]="choice.isCorrect"
-                        (ngModelChange)="playerService.updatePlayer()"
+                        (ngModelChange)="updatePlayer()"
                     />
                     {{ i + 1 }}) {{ choice.text }}
                 </label>
@@ -23,10 +26,19 @@ Temps restant: {{ playerService.getTime() }}
         </div>
 
         <div *ngIf="questionData.type === 'QRL'" class="question-container">
-            <textarea [disabled]="this.playerService.answerConfirmed" class="answer-textarea" placeholder="Tapez votre réponse ici..."></textarea>
+            <textarea
+                [disabled]="playerService.answerConfirmed"
+                class="answer-textarea"
+                placeholder="Tapez votre réponse ici..."
+                maxlength="200"
+                [(ngModel)]="player.questions[player.questions.length - 1].qrlAnswer"
+                (ngModelChange)="updatePlayer()"
+                >
+            </textarea>
+            <div class="char-limit">{{ getLength() }} caractères restants</div>
         </div>
 
-        <div class="score-display">Score: {{ player.score }}</div>
+        <div class="score-display">Points cumulés: {{ player.score }}</div>
 
         <div class="correct-answers-container">
             <div *ngFor="let correctAnswer of playerService.answer; let i = index">
@@ -36,6 +48,10 @@ Temps restant: {{ playerService.getTime() }}
 
         <div *ngIf="playerService.isCorrect" class="correct-answer-feedback">
             <p>Bonne réponse!</p>
+        </div>
+
+        <div *ngIf="playerService.qrlCorrect >= 0">
+            Note : {{ playerService.qrlCorrect * 100 }}%
         </div>
 
         <div class="button-container">

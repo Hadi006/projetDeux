@@ -1,6 +1,7 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
@@ -53,7 +54,7 @@ describe('QuestionBankComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [QuestionBankComponent, QuestionItemComponent],
-            imports: [HttpClientTestingModule, DragDropModule, MatIconModule],
+            imports: [HttpClientTestingModule, DragDropModule, MatIconModule, FormsModule],
             providers: [
                 { provide: QuestionBankService, useValue: questionBankServiceSpy },
                 { provide: MatDialog, useValue: matDialogSpy },
@@ -180,5 +181,48 @@ describe('QuestionBankComponent', () => {
         questionBankServiceSpy.updateQuestion.and.returnValue(of(ERROR_MSG));
         component.openQuestionForm(0);
         expect(matDialogSpy.open).toHaveBeenCalledWith(AlertComponent, { data: { message: ERROR_MSG } });
+    });
+
+    it('should filter questions by selected type', () => {
+        component.selectedType = 'QRL';
+        component.questions = of<Question[]>([
+            {
+                text: 'Question 1',
+                type: 'QRL',
+                points: 10,
+                choices: [],
+                qrlAnswer: 'Answer 1',
+            },
+            {
+                text: 'Question 2',
+                type: 'QRL',
+                points: 5,
+                choices: [],
+                qrlAnswer: 'Answer 2',
+            },
+            {
+                text: 'Question 3',
+                type: 'QCM', // Different type
+                points: 8,
+                choices: [],
+                qrlAnswer: 'Answer 3',
+            },
+            {
+                text: 'Question 4',
+                type: 'QRL',
+                points: 3,
+                choices: [],
+                qrlAnswer: 'Answer 4',
+            },
+        ]);
+
+        component.filterQuestions();
+
+        component.filteredQuestions.subscribe((filteredQuestions) => {
+            expect(filteredQuestions.length).toBe(3); // Only QRL questions should be filtered
+            expect(filteredQuestions[0].type).toBe('QRL');
+            expect(filteredQuestions[1].type).toBe('QRL');
+            expect(filteredQuestions[2].type).toBe('QRL');
+        });
     });
 });

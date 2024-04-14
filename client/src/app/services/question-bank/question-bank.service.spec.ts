@@ -2,9 +2,9 @@ import { HttpClientModule, HttpStatusCode } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { BLANK_QUESTION, TEST_QUESTIONS } from '@common/constant';
 import { Question } from '@common/quiz';
-import { CommunicationService } from '@app/services/communication/communication.service';
 import { QuestionBankService } from './question-bank.service';
 
 describe('QuestionBankService', () => {
@@ -119,6 +119,7 @@ describe('QuestionBankService', () => {
                 { text: 'UI Component Library', isCorrect: true },
                 { text: 'Framework', isCorrect: false },
             ],
+            qrlAnswer: '',
         };
 
         service.addQuestion(newQuestion).subscribe((error) => {

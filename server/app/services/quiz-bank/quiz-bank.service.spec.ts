@@ -15,6 +15,7 @@ describe('QuizBankService', () => {
         type: 'QCM',
         points: 10,
         choices: MOCK_ANSWERS,
+        qrlAnswer: '',
     };
     const N_QUESTIONS = 4;
     const MOCK_QUIZ: Quiz = {

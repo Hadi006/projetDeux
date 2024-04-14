@@ -14,6 +14,9 @@ export enum MouseButton {
     Back = 3,
     Forward = 4,
 }
+
+export const SELECTED_MULTIPLIER = 0.5;
+
 /* Guards */
 export const UNAUTHORIZED_REDIRECT_URL = 'home/admin/login';
 /* Pages */
@@ -97,9 +100,14 @@ export const QCM_TIME_FOR_PANIC = 5;
 
 export const QRL_TIME_FOR_PANIC = 20;
 export const PANIC_MODE_TIMER = 4;
+export const POLL_RATE = 5000;
+
+export const MAX_QRL_LENGTH = 200;
 
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
+
+export const QRL_DURATION = 60;
 
 /* Tests */
 export const TEST_ANSWERS: Answer[] = [
@@ -120,6 +128,7 @@ export const TEST_QUESTIONS: Question[] = [
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,
+        qrlAnswer: '',
     },
     {
         text: 'Test Question 2',
@@ -127,7 +136,8 @@ export const TEST_QUESTIONS: Question[] = [
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,
-    },
+        qrlAnswer: '',
+    }
 ];
 
 export const TEST_QUIZZES: Quiz[] = [
@@ -158,6 +168,11 @@ export const TEST_PLAYERS: Player[] = [
         score: 0,
         questions: TEST_QUESTIONS,
         fastestResponseCount: 0,
+        muted: false,
+        hasConfirmedAnswer: false,
+        hasInteracted: false,
+        hasLeft: false,
+        isActive: false,
     },
     {
         id: '2',
@@ -165,6 +180,11 @@ export const TEST_PLAYERS: Player[] = [
         score: 0,
         questions: TEST_QUESTIONS,
         fastestResponseCount: 0,
+        muted: false,
+        hasConfirmedAnswer: false,
+        hasInteracted: false,
+        hasLeft: false,
+        isActive: false,
     },
 ];
 

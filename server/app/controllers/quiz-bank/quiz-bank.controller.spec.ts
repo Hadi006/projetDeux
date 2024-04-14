@@ -15,6 +15,7 @@ describe('QuizBankController', () => {
         type: 'QCM',
         points: 1,
         choices: [MOCK_ANSWER],
+        qrlAnswer: '',
     };
     const MOCK_QUIZZES: Quiz[] = [
         {
