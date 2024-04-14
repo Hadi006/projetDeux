@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { QuestionComponent } from '@app/components/question/question.component';
 import { ChatService } from '@app/services/chat/chat.service';
 import { HostService } from '@app/services/host/host.service';
@@ -39,7 +40,7 @@ describe('HostPlayerPageComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [HostPlayerPageComponent, QuestionComponent, ChatboxComponent],
+            declarations: [HostPlayerPageComponent, QuestionComponent, ChatboxComponent, GameCountDownComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
