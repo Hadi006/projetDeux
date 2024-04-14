@@ -60,6 +60,11 @@ describe('HostPlayerPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should stop counting down when stopCountDown is called', () => {
+        component.stopCountDown();
+        expect(component.isCountingDown).toBeFalse();
+    });
+
     it('should call nextQuestion and endGame when questionEndedSubject and gameEndedSubject emit', () => {
         hostServiceSpy.questionEndedSubject.next();
         expect(hostServiceSpy.nextQuestion).toHaveBeenCalled();
