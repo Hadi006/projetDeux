@@ -1,6 +1,22 @@
-<button (click)="onAction('change visibility')">{{ quiz.visible ? 'visible' : 'caché' }}</button>
-<span>Titre : {{ quiz.title }} |</span>
-<span>| Dernière modification : {{ quiz.lastModification.toString().slice(0, 10) }}</span>
-<button type="button" (click)="onAction('edit')">modifier</button>
-<button type="button" (click)="onAction('export')">exporter</button>
-<button type="button" (click)="onAction('delete')">supprimer</button>
+<div class="quiz-item">
+    <div class="quiz-detail">
+        <button class="visibility-button" (click)="onAction('change visibility')">
+            <mat-icon>{{ quiz.visible ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        <div class="title-last-modification">
+            <span class="quiz-title">Titre : {{ quiz.title }}</span>
+            <span class="last-modification">Dernière modification : {{ quiz.lastModification | date }}</span>
+        </div>
+    </div>
+    <div class="actions">
+        <button type="button" class="action-button" (click)="onAction('edit')">
+            <mat-icon>edit</mat-icon>
+        </button>
+        <button type="button" class="action-button" (click)="onAction('export')">
+            <mat-icon>save_alt</mat-icon>
+        </button>
+        <button type="button" class="action-button" (click)="onAction('delete')">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </div>
+</div>
