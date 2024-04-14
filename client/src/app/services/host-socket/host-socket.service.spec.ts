@@ -227,6 +227,22 @@ describe('HostSocketService', () => {
         expect(emitSpy).toHaveBeenCalledWith('answer', { pin, data: currentAnswer });
     });
 
+    it('should emit pause timer', () => {
+        service.connect();
+        const pin = '1';
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitPauseTimer(pin);
+        expect(emitSpy).toHaveBeenCalledWith('pause-timer', pin);
+    });
+
+    it('should emit panic mode', () => {
+        service.connect();
+        const pin = '1';
+        const emitSpy = spyOn(webSocketServiceMock, 'emit');
+        service.emitPanicMode(pin);
+        expect(emitSpy).toHaveBeenCalledWith('panic-mode', pin);
+    });
+
     it('should emit update players', () => {
         service.connect();
         const pin = '1';
