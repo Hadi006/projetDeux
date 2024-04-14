@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./waiting-room-player-page.component.scss'],
 })
 export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
+    playerImages: { [key: string]: string } = {};
     private startGameSubscription: Subscription;
     private endGameSubscription: Subscription;
 
@@ -51,10 +52,26 @@ export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
         if (!this.playerService.isConnected() || this.playerService.gameStarted) {
             this.router.navigate(['/']);
         }
+        this.randomizePlayerImages();
     }
 
     ngOnDestroy() {
         this.startGameSubscription.unsubscribe();
         this.endGameSubscription.unsubscribe();
+    }
+
+    randomizePlayerImages(): void {
+        // Define an array of image URLs
+        const imageUrls = [
+            'https://us-tuna-sounds-images.voicemod.net/e7bad044-1e0e-46c9-bc37-7cfffe3de120-1712161984981.png',
+            'https://i.ytimg.com/vi/wYZux3BMc5k/maxresdefault.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjTOLAyE4xbnja5OYpZM1oASmTwRsqlg2aOUGUVd4siQ&s',
+        ];
+
+        // Randomly assign an image URL to each player
+        this.playerService.players.forEach((player) => {
+            const randomIndex = Math.floor(Math.random() * imageUrls.length);
+            this.playerImages[player] = imageUrls[randomIndex];
+        });
     }
 }

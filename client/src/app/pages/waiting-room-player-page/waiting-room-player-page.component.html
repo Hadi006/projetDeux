@@ -1,9 +1,12 @@
 <div *ngIf="player">
     <app-waiting-room-info [title]="gameTitle" [pin]="pin" [nPlayers]="players.length"></app-waiting-room-info>
 
-    <p>Joueurs:</p>
-    <div *ngFor="let playerName of players">
-        {{ playerName }}
+    <div class="player-container" *ngFor="let playerName of players">
+        <div class="player">
+            <img class="player-image" [src]="playerImages[playerName]" alt="Player Image" />
+            <div class="player-name">{{ playerName }}</div>
+        </div>
     </div>
+
     <app-chatbox [pin]="pin" [name]="player.name"></app-chatbox>
 </div>
