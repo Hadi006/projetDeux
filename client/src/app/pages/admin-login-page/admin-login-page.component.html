@@ -1,6 +1,19 @@
-<a routerLink="../">Retour</a>
-<form [formGroup]="loginForm" (ngSubmit)="login()">
-    <label for="password">Mot de passe</label>
-    <input id="password" type="password" formControlName="password" />
-    <button type="submit">Continuer</button>
-</form>
+<div class="container">
+    <div class="grid-title">
+        <h2 class="title">Administrer des jeux / Connexion</h2>
+    </div>
+    <div class="form-container">
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <label for="password">Saisir le mot de passe pour continuer</label>
+            <div class="input-container">
+                <input id="password" type="password" formControlName="password" />
+            </div>
+            <div class="item-2">
+                <button class="button return-button" routerLink="../">Retour</button>
+            </div>
+            <div class="item-2">
+                <button type="submit">Se connecter</button>
+            </div>
+        </form>
+    </div>
+</div>

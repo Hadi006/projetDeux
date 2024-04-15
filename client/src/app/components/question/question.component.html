@@ -1,4 +1,6 @@
-Temps restant: {{ getTime() }}
+<div class="time-container">
+    <div class="time-content">Temps restant: {{ getTime() }}</div>
+</div>
 <div *ngIf="isWaitingForEvaluation()">
     <p>En attente de l'évaluation de la réponse...</p>
 </div>
@@ -33,7 +35,7 @@ Temps restant: {{ getTime() }}
                 maxlength="200"
                 [(ngModel)]="player.questions[player.questions.length - 1].qrlAnswer"
                 (ngModelChange)="updatePlayer()"
-                >
+            >
             </textarea>
             <div class="char-limit">{{ getLength() }} caractères restants</div>
         </div>
@@ -50,9 +52,7 @@ Temps restant: {{ getTime() }}
             <p>Bonne réponse!</p>
         </div>
 
-        <div *ngIf="playerService.qrlCorrect >= 0">
-            Note : {{ playerService.qrlCorrect * 100 }}%
-        </div>
+        <div *ngIf="playerService.qrlCorrect >= 0">Note : {{ playerService.qrlCorrect * 100 }}%</div>
 
         <div class="button-container">
             <button class="button-confirm" [disabled]="this.playerService.answerConfirmed" (click)="playerService.confirmPlayerAnswer()">

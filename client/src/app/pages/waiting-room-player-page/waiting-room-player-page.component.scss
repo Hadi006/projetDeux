@@ -1,0 +1,48 @@
+p {
+    font-weight: bold;
+}
+
+.player-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.player {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.player-box {
+    width: 80px;
+    height: 80px;
+    background-color: lightblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    animation: colorChange 6s infinite alternate;
+}
+
+.player-name {
+    flex-grow: 1;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: large;
+}
+
+@keyframes colorChange {
+    0% {
+        background-color: lightblue; /* Initial color */
+    }
+    50% {
+        background-color: lightgreen; /* First target color */
+    }
+    100% {
+        background-color: lightcoral; /* Second target color */
+    }
+}
