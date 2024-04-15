@@ -1,5 +1,6 @@
 /* Structure de base pour le chatbox */
-app-question {
+app-question,
+app-game-count-down {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -11,10 +12,13 @@ app-question {
     border: 2px solid #333333;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: backgroundAnimation 20s linear infinite alternate; /* Add animation */
 }
 
 app-question:before,
-app-question:after {
+app-question:after,
+app-game-count-down:before,
+app-game-count-down:after {
     content: '';
     position: absolute;
     left: 0;
@@ -23,10 +27,41 @@ app-question:after {
     background: linear-gradient(to right, #333, #333);
 }
 
-app-question:before {
+app-question:before,
+app-game-count-down:before {
     top: 0;
 }
 
-app-question:after {
+app-question:after,
+app-game-count-down:after {
     bottom: 0;
+}
+
+button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Background animation */
+@keyframes backgroundAnimation {
+    0% {
+        background-color: #e6e6e6;
+    }
+    50% {
+        background-color: #b9f7f6;
+    }
+    100% {
+        background-color: hwb(192 55% 0%);
+    }
 }

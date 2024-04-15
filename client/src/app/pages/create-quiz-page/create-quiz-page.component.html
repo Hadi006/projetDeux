@@ -29,13 +29,10 @@
                 <app-question-item [question]="question" [index]="i" (action)="handle($event)"></app-question-item>
             </div>
         </div>
-        <button type="button" id="addButton" class="create-button" (click)="openQuestionForm()">
-            Créer une question
-            <mat-icon>add</mat-icon>
-        </button>
+        <button type="button" id="addButton" class="create-button" (click)="openQuestionForm()">Créer une question</button>
         <div class="button-container">
-            <button type="button" class="submit-button" (click)="submitQuiz()">sauvegarder</button>
-            <button type="button" class="cancel-button" (click)="close()">annuler</button>
+            <button type="button" class="submit-button" (click)="submitQuiz()">Sauvegarder</button>
+            <button type="button" class="cancel-button" (click)="close()">Retour</button>
         </div>
     </div>
     <div class="right-content">

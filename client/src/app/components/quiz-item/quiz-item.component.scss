@@ -1,4 +1,96 @@
 .quiz-item {
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.title-last-modification {
+    display: flex;
+    flex-direction: column;
+}
+
+.quiz-title,
+.last-modification {
+    font-size: 14px;
+    color: #333;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.action-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+}
+
+.action-button mat-icon {
+    font-size: 24px;
+    color: #333;
+}
+
+.action-button:hover mat-icon {
+    color: #007bff;
+}
+
+.visibility-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+.visibility-button mat-icon {
+    font-size: 24px;
+    color: #333;
+}
+
+.visibility-button:hover mat-icon {
+    color: #007bff;
+}
+
+.game-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.game-item span {
+    margin-right: 10px;
+}
+
+.delete-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background-color: transparent !important;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+}
+
+.delete-button mat-icon {
+    font-size: 24px;
+    color: #333 !important;
+}
+
+.delete-button:hover mat-icon {
+    color: #007bff !important;
 }

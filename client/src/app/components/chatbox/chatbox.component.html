@@ -1,7 +1,7 @@
 <div class="chatbox-component">
     <button (click)="toggleChat()">
-        <span *ngIf="showChat">Close chat</span>
-        <span *ngIf="!showChat">Open chat</span>
+        <span *ngIf="showChat">Fermer clavardage</span>
+        <span *ngIf="!showChat">Ouvrir clavardage</span>
     </button>
     <div *ngIf="showChat" class="chat-container">
         <h4 id="username">{{ name }}</h4>

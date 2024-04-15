@@ -1,15 +1,19 @@
-<div class="container">
-    <h1>Choisissez un jeu</h1>
-    <div class="games-list">
-        <button *ngFor="let quiz of getQuizzes()" (click)="chooseQuiz(quiz)" class="game-button">
-            {{ quiz.title }}
-        </button>
+<div class="home-page-container">
+    <div class="grid-title">
+        <h2 class="title">Choisir un jeu</h2>
     </div>
-    <p *ngIf="chosenQuiz">Jeu sélectionné: {{ chosenQuiz.title }}</p>
-    <app-description-panel [selectedQuiz]="chosenQuiz"></app-description-panel>
-</div>
-<div class="button-navigation">
-    <button routerLink="/home">Retour</button>
-    <button *ngIf="chosenQuiz?.id !== '-1'" class="testGame" (click)="testGame()">Tester le quiz</button>
-    <button class="startGame" (click)="startGame()">Commencer une partie</button>
+    <div class="container">
+        <div class="games-list">
+            <button *ngFor="let quiz of getQuizzes()" (click)="chooseQuiz(quiz)" class="game-button">
+                {{ quiz.title }}
+            </button>
+        </div>
+        <p *ngIf="chosenQuiz">Jeu sélectionné: {{ chosenQuiz.title }}</p>
+        <app-description-panel [selectedQuiz]="chosenQuiz"></app-description-panel>
+    </div>
+    <div class="button-navigation">
+        <button class="button return-button" routerLink="/home">Retour</button>
+        <button *ngIf="chosenQuiz?.id !== '-1'" class="testGame" (click)="testGame()">Tester le quiz</button>
+        <button class="startGame" (click)="startGame()">Commencer une partie</button>
+    </div>
 </div>

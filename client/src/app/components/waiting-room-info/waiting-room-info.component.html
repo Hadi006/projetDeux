@@ -1,9 +1,15 @@
-<button (click)="openConfirmationDialog()">Quitter</button>
-
-<div class="title-container">
-    <h2>{{ title }}</h2>
+<div class="action-buttons">
+    <button (click)="openConfirmationDialog()">Quitter</button>
 </div>
 
-<div>Pin du jeu: {{ pin }}</div>
+<div class="title-container">
+    <h1>{{ title }}</h1>
+</div>
+<div class="waiting-room-container">
+    <div class="pin-container">
+        <h2>Pin du Jeu:</h2>
+        <h1>{{ pin }}</h1>
+    </div>
 
-<div id="nPlayers">Nombre de joueurs: {{ nPlayers }}</div>
+    <div id="nPlayers">Nombre de Joueurs: {{ nPlayers }}</div>
+</div>
