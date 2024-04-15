@@ -149,6 +149,7 @@ export class HostService {
     }
     nextQuestion(): void {
         this.timeService.stopTimerById(this.timerId);
+        this.timerId = this.timeService.createTimerById();
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
 
         const currentQuestion = this.getCurrentQuestion();

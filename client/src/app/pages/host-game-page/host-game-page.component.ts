@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
 import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { HostService } from '@app/services/host/host.service';
-import { SELECTED_MULTIPLIER } from '@common/constant';
+import { QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, SELECTED_MULTIPLIER } from '@common/constant';
 import { Player } from '@common/player';
 import { Subscription } from 'rxjs';
 
@@ -101,8 +101,12 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         return this.hostService.getTime();
     }
     canActivatePanicMode(): boolean {
-        return this.hostService.canActivatePanicMode();
+        return (
+            (this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= QCM_TIME_FOR_PANIC) ||
+            (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= QRL_TIME_FOR_PANIC)
+        );
     }
+
     pauseTimer() {
         return this.hostService.pauseTimer();
     }
