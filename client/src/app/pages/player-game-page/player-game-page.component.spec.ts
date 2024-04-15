@@ -6,7 +6,7 @@ import { GameCountDownComponent } from '@app/components/game-count-down/game-cou
 import { QuestionComponent } from '@app/components/question/question.component';
 import { PlayerService } from '@app/services/player/player.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 
 import { PlayerGamePageComponent } from './player-game-page.component';
 
@@ -115,5 +115,20 @@ describe('PlayerGamePageComponent', () => {
         });
         component.ngOnDestroy();
         playerServiceSpy.endGameSubject.next();
+    });
+
+    it('should open a confirmation dialog and navigate to home if confirmed', () => {
+        const dialogRef = { afterClosed: () => of(true) };
+        (dialogSpy.open as jasmine.Spy).and.returnValue(dialogRef);
+        component.openConfirmationDialog();
+        expect(dialogSpy.open).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should open a confirmation dialog and not navigate to home if not confirmed', () => {
+        const dialogRef = { afterClosed: () => of(false) };
+        (dialogSpy.open as jasmine.Spy).and.returnValue(dialogRef);
+        component.openConfirmationDialog();
+        expect(dialogSpy.open).toHaveBeenCalled();
     });
 });
