@@ -24,8 +24,8 @@
 }
 
 /* Input, select, and textarea styling */
-input[type="text"],
-input[type="number"],
+input[type='text'],
+input[type='number'],
 select,
 textarea {
     width: 100%;
@@ -37,7 +37,7 @@ textarea {
 }
 
 /* Style adjustments for checkboxes */
-input[type="checkbox"] {
+input[type='checkbox'] {
     margin-top: 0.5em;
 }
 
@@ -45,6 +45,7 @@ input[type="checkbox"] {
 button {
     background-color: #007bff; /* Blue */
     color: white;
+    margin-bottom: 10px;
     padding: 10px 15px;
     border: none;
     border-radius: 4px;
@@ -52,49 +53,32 @@ button {
     font-size: 16px;
     transition: background-color 0.3s;
 }
-#delete-button{
-    background-color: red; /* Green */
-}
-#add-button{
-    background-color: blue; /* Green */
-}
 
 button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Specific styles for 'Add Choice' and 'Remove' buttons */
-[type="button"] {
-    background-color: #28a745; /* Green */
-    margin-top: 10px; /* Additional spacing */
+.delete-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background-color: transparent; /* Transparent background */
+    cursor: pointer;
+    color: #333;
+    padding: 5px; /* Add padding */
 }
 
-[type="button"]:hover {
-    background-color: #218838; /* Darker green on hover */
+.delete-button mat-icon {
+    font-size: 20px;
+    color: #000; /* Black icon */
 }
 
-/* Styling for the submit button */
-[type="submit"] {
-    background-color:green; /* Yellow */
-    color: #212529; /* Black text for contrast */
+.delete-button:hover mat-icon {
+    color: #007bff;
 }
 
-[type="submit"]:hover {
-    background-color: green; /* Darker yellow on hover */
+/* Add padding between buttons */
+.form-container button + button {
+    margin-left: 10px;
 }
-// .remove-button {
-//     background-color: #ff4d4d; /* Red background */
-//     color: white; /* White text */
-//     border: none;
-//     border-radius: 50%; /* Circular button */
-//     cursor: pointer;
-//     width: 30px;
-//     height: 30px;
-//     display: inline-flex;
-//     align-items: center;
-//     justify-content: center;
-//     transition: background-color 0.2s;
-// }
-// .remove-button:hover {
-//     background-color: #cc0000; /* Darker shade of red on hover */
-// }
