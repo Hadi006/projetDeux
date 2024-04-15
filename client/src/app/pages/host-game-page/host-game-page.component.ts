@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
-import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { HostService } from '@app/services/host/host.service';
 import { SELECTED_MULTIPLIER } from '@common/constant';
 import { Player } from '@common/player';
@@ -195,19 +194,6 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         if (!this.hostService.isConnected() || !this.hostService.getCurrentQuestion()) {
             this.router.navigate(['/']);
         }
-    }
-
-    openConfirmationDialog(): void {
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            width: '250px',
-            data: 'Êtes-vous sûr de vouloir quitter cette partie?',
-        });
-
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-                this.router.navigate(['/home']);
-            }
-        });
     }
 
     ngOnDestroy() {

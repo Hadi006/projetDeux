@@ -1,51 +1,36 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { QuestionItemComponent } from './question-item.component';
+import { QuestionItemComponent } from '@app/components/question-item/question-item.component';
+import { ActionType } from '@common/action';
+import { TEST_QUESTIONS } from '@common/constant';
+import { Question } from '@common/quiz';
 
 describe('QuestionItemComponent', () => {
+    let testQuestion: Question;
+
     let component: QuestionItemComponent;
     let fixture: ComponentFixture<QuestionItemComponent>;
-    let mockDialog: jasmine.SpyObj<MatDialog>;
+    let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
 
-    beforeEach(async () => {
-        const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
-        await TestBed.configureTestingModule({
-            declarations: [QuestionItemComponent],
-            imports: [BrowserAnimationsModule],
-            providers: [
-                {
-                    provide: MatDialog,
-                    useValue: dialogSpy,
-                },
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: { url: ['home', 'admin', 'quizzes'] },
-                    },
-                },
-            ],
-        }).compileComponents();
+    beforeEach(() => {
+        testQuestion = JSON.parse(JSON.stringify(TEST_QUESTIONS[0]));
 
-        mockDialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+        activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', ['snapshot'], { snapshot: { url: ['home', 'admin', 'quizzes'] } });
     });
+
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [QuestionItemComponent, MatIcon],
+            imports: [MatIconModule],
+            providers: [{ provide: ActivatedRoute, useValue: activatedRouteSpy }],
+        }).compileComponents();
+    }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(QuestionItemComponent);
         component = fixture.componentInstance;
-        component.question = {
-            text: 'Mock Question',
-            type: 'QCM',
-            points: 10,
-            choices: [
-                { text: 'Choice 1', isCorrect: false },
-                { text: 'Choice 2', isCorrect: true },
-            ],
-            qrlAnswer: '',
-        };
+        component.question = testQuestion;
         component.index = 0;
         fixture.detectChanges();
     });
@@ -54,40 +39,10 @@ describe('QuestionItemComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should open confirmation dialog for edit action', () => {
-        const mockDialogRef = jasmine.createSpyObj(['afterClosed']);
-        mockDialogRef.afterClosed.and.returnValue(of(true));
-        mockDialog.open.and.returnValue(mockDialogRef);
-
-        component.openConfirmationDialog('edit');
-
-        expect(mockDialog.open).toHaveBeenCalledOnceWith(ConfirmationDialogComponent, {
-            width: '250px',
-            data: 'Êtes-vous sûr de vouloir modifier cette question?',
-        });
-    });
-
-    it('should emit action for edit when user confirms in confirmation dialog', () => {
-        const mockDialogRef = jasmine.createSpyObj(['afterClosed']);
-        mockDialogRef.afterClosed.and.returnValue(of(true));
-        mockDialog.open.and.returnValue(mockDialogRef);
-
+    it('should emit an action with the index', () => {
         spyOn(component.action, 'emit');
-
-        component.openConfirmationDialog('edit');
-
-        expect(component.action.emit).toHaveBeenCalledOnceWith(jasmine.objectContaining({ type: 'edit', target: 0 }));
-    });
-
-    it('should emit action for delete when user confirms in confirmation dialog', () => {
-        const mockDialogRef = jasmine.createSpyObj(['afterClosed']);
-        mockDialogRef.afterClosed.and.returnValue(of(true));
-        mockDialog.open.and.returnValue(mockDialogRef);
-
-        spyOn(component.action, 'emit');
-
-        component.openConfirmationDialog('delete');
-
-        expect(component.action.emit).toHaveBeenCalledOnceWith(jasmine.objectContaining({ type: 'delete', target: 0 }));
+        const ACTION_TYPE = ActionType.DELETE;
+        component.onAction(ACTION_TYPE);
+        expect(component.action.emit).toHaveBeenCalledWith({ type: ACTION_TYPE, target: component.index });
     });
 });
