@@ -176,7 +176,7 @@ export class GameService {
 
         const isInTestMode = game.players.length === 1 && game.players[0].name === 'Organisateur';
         if (question.type === 'QRL' && isInTestMode) {
-            game.players[0].score += question.points + question.points * GOOD_ANSWER_BONUS;
+            game.players[0].score += question.points;
             await this.updateGame(game);
             return;
         }

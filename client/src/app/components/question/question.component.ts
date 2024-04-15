@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { PlayerService } from '@app/services/player/player.service';
 import { INVALID_INDEX, MAX_QRL_LENGTH, POLL_RATE } from '@common/constant';
 import { Player } from '@common/player';
@@ -10,15 +10,13 @@ import { Question } from '@common/quiz';
     styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent {
+    @Input() isFocused: boolean;
+
     constructor(public playerService: PlayerService) {}
 
     @HostListener('window:keyup', ['$event'])
     handleKeyUp(event: KeyboardEvent): void {
-        if (!this.getPlayer()) {
-            return;
-        }
-
-        if (!this.canEditAnswer()) {
+        if (!this.canEditAnswer() || !this.isFocused) {
             return;
         }
 

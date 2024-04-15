@@ -269,7 +269,7 @@ describe('GameService', () => {
         await gameService.updateScores(newGame.pin, 0);
         expect(getStub.calledWith(newGame.pin)).to.equal(true);
         expect(updateStub.called).to.equal(true);
-        expect(testPlayers[0].score).to.equal(testQuestion.points + testQuestion.points * GOOD_ANSWER_BONUS);
+        expect(testPlayers[0].score).to.equal(testQuestion.points);
     });
 
     it('should not update scores if game is invalid', async () => {
