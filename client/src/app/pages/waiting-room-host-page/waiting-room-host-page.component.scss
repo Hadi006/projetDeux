@@ -42,10 +42,9 @@ div[ngIf='game'] {
     font-size: 14px;
 }
 
-/* Styliser les boutons de gestion du jeu */
-button[click] {
-    margin-top: 20px;
-    padding: 10px 20px;
+.host-buttons {
+    margin-top: 20px; /* Adds space between the buttons and any elements above */
+    margin-right: 10px;
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -54,7 +53,7 @@ button[click] {
     transition: background-color 0.2s ease;
 }
 
-button[click]:hover {
+.host-buttons:hover {
     background-color: #0056b3;
 }
 
