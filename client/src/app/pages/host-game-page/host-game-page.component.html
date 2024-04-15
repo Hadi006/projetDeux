@@ -1,6 +1,6 @@
 <body *ngIf="game">
-    <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()"
-        [gameName]="game.quiz.title"></app-game-count-down>
+    <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()" [gameName]="game.quiz.title"></app-game-count-down>
+    <button (click)="openConfirmationDialog()">Quitter</button>
     <div class="container" *ngIf="!isCountingDown">
         <div class="organizer-container">
             <div class="question-display" *ngIf="getCurrentQuestion() as question">
@@ -55,7 +55,7 @@
                 </section>
             </div>
         </div>
-        <button routerLink="/home">Quitter</button>
+        <!--<button (click)="openConfirmationDialog()">Quitter</button>-->
     </div>
     <div *ngIf="getQrlEnded()">
         <h1 class="evaluation">Evaluation des reponses</h1>
