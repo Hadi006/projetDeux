@@ -28,6 +28,15 @@ describe('HostService', () => {
     const newHostSubject: Subject<Game> = new Subject();
 
     beforeEach(async () => {
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: HostSocketService, useValue: hostSocketServiceSpy },
+                { provide: TimeService, useValue: timeServiceSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
+        });
+        service = TestBed.inject(HostService);
+        await firstValueFrom(service.createGame(testQuizzes[0]));
         timeServiceSpy = jasmine.createSpyObj('TimeService', [
             'createTimerById',
             'stopTimerById',
@@ -72,7 +81,6 @@ describe('HostService', () => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(testGame));
         testQuizzes = JSON.parse(JSON.stringify(TEST_QUIZZES));
-        testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -82,18 +90,6 @@ describe('HostService', () => {
             },
             configurable: true,
         });
-    });
-
-    beforeEach(async () => {
-        TestBed.configureTestingModule({
-            providers: [
-                { provide: HostSocketService, useValue: hostSocketServiceSpy },
-                { provide: TimeService, useValue: timeServiceSpy },
-                { provide: Router, useValue: routerSpy },
-            ],
-        });
-        service = TestBed.inject(HostService);
-        await firstValueFrom(service.createGame(testQuizzes[0]));
     });
 
     it('should be created', () => {
@@ -453,7 +449,6 @@ describe('HostService', () => {
     it('should end question', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
         hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(testGame));
-        service.togglePanic();
         service['endQuestion']();
         expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
         expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();

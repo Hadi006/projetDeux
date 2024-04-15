@@ -48,11 +48,9 @@
                     <button (click)="sortBy('score')">Trier par points</button>
                     <button (click)="sortBy('color')">Trier par couleur</button>
                     <div *ngFor="let player of getPlayers()">
-                        <h1 [style.color]="getColor(player)"
-                            [style.text-decoration]="player.hasLeft ? 'line-through' : ''">{{ player.name }}</h1>
+                        <h1 [style.color]="getColor(player)" [style.text-decoration]="player.hasLeft ? 'line-through' : ''">{{ player.name }}</h1>
                         <h1>{{ player.score }}</h1>
-                        <button *ngIf="!player.hasLeft" (click)="mutePlayer(player.name)">{{ player.muted ? 'Unmute' :
-                            'Mute' }}</button>
+                        <button *ngIf="!player.hasLeft" (click)="mutePlayer(player.name)">{{ player.muted ? 'Unmute' : 'Mute' }}</button>
                     </div>
                 </section>
             </div>
@@ -62,8 +60,7 @@
     <div *ngIf="getQrlEnded()">
         <h1 class="evaluation">Evaluation des reponses</h1>
         <h2 [style.color]="'black'">Joueur : {{ getCurrentPlayer().name }}</h2>
-        <p [style.color]="'black'">Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length -
-            1].qrlAnswer }}</p>
+        <p [style.color]="'black'">Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
         <label>
             <input type="radio" name="option1" value="0" [(ngModel)]="selectedMultiplier" />
             <p [style.color]="'black'">0 %</p>

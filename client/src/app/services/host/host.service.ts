@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { PANIC_MODE_TIMER, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TRANSITION_DELAY, INVALID_INDEX } from '@common/constant';
+import { INVALID_INDEX, PANIC_MODE_TIMER, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -19,6 +19,7 @@ export class HostService {
     currentQuestionIndex: number;
 
     private socketSubscription: Subscription;
+
     private timerId: number;
     private internalGame: Game | null;
     private internalNAnswered: number;
@@ -42,57 +43,44 @@ export class HostService {
         this.timerId = timeService.createTimerById();
         this.reset();
     }
-
     get game(): Game | null {
         return this.internalGame;
     }
-
     get nAnswered(): number {
         return this.internalNAnswered;
     }
-
     get questionEnded(): boolean {
         return this.internalQuestionEnded;
     }
-
     get quitters(): Player[] {
         return this.internalQuitters;
     }
-
     get histograms(): HistogramData[] {
         return this.internalHistograms;
     }
-
     get isPanic(): boolean {
         return this.isPanicMode;
     }
-
     togglePanic(): void {
         if (!this.isPanicMode) this.isPanicMode = true;
     }
-
     getTime(): number {
         return this.timeService.getTimeById(this.timerId);
     }
-
     pauseTimer(): void {
         this.pauseTimerForEveryone();
         return this.timeService.toggleTimerById(this.timerId);
     }
-
     stopPanicMode(): void {
         this.isPanicMode = false;
         return this.timeService.stopPanicMode();
     }
-
     getCurrentQuestion(): Question | undefined {
         return this.internalGame?.quiz.questions[this.currentQuestionIndex];
     }
-
     isConnected(): boolean {
         return this.hostSocketService.isConnected();
     }
-
     handleSockets(): void {
         if (!this.hostSocketService.isConnected()) this.hostSocketService.connect();
         this.socketSubscription.unsubscribe();
@@ -103,7 +91,6 @@ export class HostService {
         this.socketSubscription.add(this.subscribeToPlayerUpdated());
         this.socketSubscription.add(this.subscribeToNewHost());
     }
-
     createGame(quiz: Quiz): Observable<boolean> {
         return new Observable<boolean>((subscriber) => {
             this.hostSocketService.emitCreateGame(quiz).subscribe((game: Game | undefined) => {
@@ -117,7 +104,6 @@ export class HostService {
             });
         });
     }
-
     requestGame(pin: string): Observable<void> {
         return new Observable<void>((subscriber) => {
             this.hostSocketService.emitRequestGame(pin).subscribe((game: Game) => {
@@ -126,43 +112,52 @@ export class HostService {
             });
         });
     }
-
     toggleLock(): void {
         if (!this.internalGame) return;
         this.internalGame.locked = !this.internalGame.locked;
         this.hostSocketService.emitToggleLock(this.internalGame.pin, this.internalGame.locked);
     }
-
     kick(playerName: string): void {
-        if (!this.internalGame) return;
+        if (!this.internalGame) {
+            return;
+        }
+
         this.hostSocketService.emitKick(this.internalGame.pin, playerName);
     }
-
     mute(playerName: string): void {
-        if (!this.internalGame) return;
+        if (!this.internalGame) {
+            return;
+        }
         const player = this.internalGame.players.find((p) => p.name === playerName);
-        if (!player) return;
+        if (!player) {
+            return;
+        }
 
         player.muted = !player.muted;
 
         this.hostSocketService.emitMute(this.internalGame.pin, player);
     }
-
     startGame(countdown: number): void {
-        if (!this.internalGame) return;
+        if (!this.internalGame) {
+            return;
+        }
+
         this.hostSocketService.emitStartGame(this.internalGame.pin, countdown);
         this.internalQuitters = [];
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown, this.nextQuestion.bind(this));
     }
-
     nextQuestion(): void {
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, TRANSITION_DELAY, this.setupNextQuestion.bind(this));
 
         const currentQuestion = this.getCurrentQuestion();
-        if (!this.internalGame || !currentQuestion) return;
+        if (!this.internalGame || !currentQuestion) {
+            return;
+        }
+
         this.internalQuestionEnded = false;
+
         let newHistogram: HistogramData;
         if (currentQuestion.type === 'QCM') {
             newHistogram = {
@@ -192,26 +187,27 @@ export class HostService {
             histogram: newHistogram,
         });
     }
-
     updatePlayers(): void {
-        if (!this.internalGame) return;
+        if (!this.internalGame) {
+            return;
+        }
         this.hostSocketService.emitUpdatePlayers(this.internalGame.pin, this.internalGame.players);
     }
-
     endGame(): void {
-        if (!this.internalGame) return;
+        if (!this.internalGame) {
+            return;
+        }
+
         this.hostSocketService.emitEndGame(this.internalGame.pin).subscribe((game: Game) => {
             this.router.navigate(['/endgame'], { state: { game } });
         });
     }
-
     cleanUp(): void {
         this.hostSocketService.disconnect();
         this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
     }
-
     canActivatePanicMode(): boolean {
         return (
             ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= QCM_TIME_FOR_PANIC) ||
@@ -251,7 +247,6 @@ export class HostService {
             this.cleanUp();
         }
     }
-
     private endQuestion(): void {
         const currentAnswer = this.getCurrentAnswer();
         if (!this.internalGame || !currentAnswer) return;
@@ -275,7 +270,6 @@ export class HostService {
         this.internalQuestionEnded = true;
         this.currentQuestionIndex++;
     }
-
     private subscribeToPlayerJoined(): Subscription {
         return this.hostSocketService.onPlayerJoined().subscribe((player: Player) => {
             this.internalGame?.players.push(player);
@@ -288,7 +282,10 @@ export class HostService {
             this.internalGame.players = players;
             this.internalQuitters.push(player);
             player.hasLeft = true;
-            if (this.internalGame.players.length === 0) this.gameEndedSubject.next();
+
+            if (this.internalGame.players.length === 0) {
+                this.gameEndedSubject.next();
+            }
         });
     }
 
@@ -305,7 +302,10 @@ export class HostService {
         return this.hostSocketService.onPlayerUpdated().subscribe(({ player, histogramData }) => {
             this.internalHistograms[this.internalHistograms.length - 1] = histogramData;
             const playerIndex = this.internalGame?.players.findIndex((p) => p.name === player.name);
-            if (playerIndex === undefined || playerIndex === INVALID_INDEX || !this.internalGame) return;
+            if (playerIndex === undefined || playerIndex === INVALID_INDEX || !this.internalGame) {
+                return;
+            }
+
             this.internalGame.players[playerIndex] = player;
         });
     }
@@ -326,10 +326,12 @@ export class HostService {
             this.gameEndedSubject.next();
             return;
         }
+
         this.internalGame.players.forEach((player) => {
             player.hasInteracted = false;
             player.hasConfirmedAnswer = false;
         });
+
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
     }

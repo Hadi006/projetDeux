@@ -5,7 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY, INVALID_INDEX } from '@common/constant';
+import { INVALID_INDEX, TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { QuestionChangedEventData } from '@common/question-changed-event-data';
