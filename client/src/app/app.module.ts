@@ -12,7 +12,6 @@ import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice
 import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
-import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { HistogramComponent } from './components/histogram/histogram.component';
 import { PromptComponent } from './components/prompt/prompt.component';
@@ -28,12 +27,12 @@ import { CreateQuizPageComponent } from './pages/create-quiz-page/create-quiz-pa
 import { EndgameResultPageComponent } from './pages/endgame-result-page/endgame-result-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { HostGamePageComponent } from './pages/host-game-page/host-game-page.component';
-import { HostPlayerPageComponent } from './pages/host-player-page/host-player-page.component';
 import { JoinRoomPageComponent } from './pages/join-room-page/join-room-page.component';
 import { PlayerGamePageComponent } from './pages/player-game-page/player-game-page.component';
 import { TestPageComponent } from './pages/test-page/test-page.component';
 import { WaitingRoomPlayerPageComponent } from './pages/waiting-room-player-page/waiting-room-player-page.component';
 import { ChatService } from './services/chat/chat.service';
+import { HostPlayerPageComponent } from './pages/host-player-page/host-player-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -69,7 +68,6 @@ import { ChatService } from './services/chat/chat.service';
         HistogramComponent,
         EndgameResultPageComponent,
         HostPlayerPageComponent,
-        ConfirmationDialogComponent,
     ],
     imports: [
         AppMaterialModule,

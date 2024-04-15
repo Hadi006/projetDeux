@@ -9,7 +9,7 @@ import { HostService } from '@app/services/host/host.service';
 import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUESTIONS } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
-import { Subject, of } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { HostGamePageComponent } from './host-game-page.component';
 
@@ -418,20 +418,5 @@ describe('HostGamePageComponent', () => {
             expect(dialogSpy.open).not.toHaveBeenCalled();
         });
         hostServiceSpy.gameEndedSubject.next();
-    });
-
-    it('should open a confirmation dialog and navigate to home if confirmed', () => {
-        const dialogRef = { afterClosed: () => of(true) };
-        (dialogSpy.open as jasmine.Spy).and.returnValue(dialogRef);
-        component.openConfirmationDialog();
-        expect(dialogSpy.open).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
-    });
-
-    it('should open a confirmation dialog and not navigate to home if not confirmed', () => {
-        const dialogRef = { afterClosed: () => of(false) };
-        (dialogSpy.open as jasmine.Spy).and.returnValue(dialogRef);
-        component.openConfirmationDialog();
-        expect(dialogSpy.open).toHaveBeenCalled();
     });
 });

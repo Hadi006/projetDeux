@@ -1,21 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
+import { WaitingRoomInfoComponent } from '@app/components/waiting-room-info/waiting-room-info.component';
+import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { WebSocketService } from '@app/services/web-socket/web-socket.service';
-import { RANDOM_QUIZ_ID, TEST_GAME_DATA } from '@common/constant';
-import { Subject, of } from 'rxjs';
-import { WaitingRoomHostPageComponent } from './waiting-room-host-page.component';
+import { RANDOM_QUIZ_ID, START_GAME_COUNTDOWN, TEST_GAME_DATA } from '@common/constant';
+import { of, Subject } from 'rxjs';
 
 describe('WaitingRoomHostPageComponent', () => {
     let component: WaitingRoomHostPageComponent;
     let fixture: ComponentFixture<WaitingRoomHostPageComponent>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
+    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let websocketServiceSpy: jasmine.SpyObj<WebSocketService>;
-    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
 
-    beforeEach(async () => {
+    beforeEach(() => {
         hostServiceSpy = jasmine.createSpyObj('HostService', ['isConnected', 'cleanUp', 'startGame', 'handleSockets', 'toggleLock', 'kick']);
         Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
 
@@ -30,10 +33,12 @@ describe('WaitingRoomHostPageComponent', () => {
             configurable: true,
         });
 
-        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        websocketServiceSpy = jasmine.createSpyObj('WebSocketService', ['onEvent', 'isSocketAlive', 'connect']);
+    });
 
-        await TestBed.configureTestingModule({
-            declarations: [WaitingRoomHostPageComponent],
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [WaitingRoomHostPageComponent, GameCountDownComponent, WaitingRoomInfoComponent, ChatboxComponent],
             providers: [
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: PlayerService, useValue: playerServiceSpy },
@@ -41,12 +46,24 @@ describe('WaitingRoomHostPageComponent', () => {
                 { provide: WebSocketService, useValue: websocketServiceSpy },
             ],
         }).compileComponents();
-    });
+    }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(WaitingRoomHostPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    it('should navigate to home page when disconnected', () => {
+        hostServiceSpy.isConnected.and.returnValue(false);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should not navigate to home page when connected', () => {
+        hostServiceSpy.isConnected.and.returnValue(true);
+        Object.defineProperty(hostServiceSpy, 'game', { get: () => TEST_GAME_DATA, configurable: true });
+        component.ngOnInit();
+        expect(routerSpy.navigate).not.toHaveBeenCalledTimes(2);
     });
 
     it('should create', () => {
@@ -67,10 +84,9 @@ describe('WaitingRoomHostPageComponent', () => {
         });
     });
 
-    it('should navigate to root if not connected or game is locked', () => {
-        hostServiceSpy.isConnected.and.returnValue(false);
-        component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    it('should kick player', () => {
+        component.kick('player');
+        expect(hostServiceSpy.kick).toHaveBeenCalledWith('player');
     });
 
     it('should toggle lock', () => {
@@ -78,27 +94,9 @@ describe('WaitingRoomHostPageComponent', () => {
         expect(hostServiceSpy.toggleLock).toHaveBeenCalled();
     });
 
-    it('should kick player', () => {
-        component.kick('player1');
-        expect(hostServiceSpy.kick).toHaveBeenCalledWith('player1');
-    });
-
     it('should start game', () => {
         component.startGame();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['game-host']);
-        expect(hostServiceSpy.startGame).toHaveBeenCalled();
-    });
-
-    it('should not start game if game is undefined', () => {
-        Object.defineProperty(hostServiceSpy, 'game', { get: () => undefined });
-        component.startGame();
-        expect(hostServiceSpy.startGame).not.toHaveBeenCalled();
-    });
-
-    it('should navigate to host player page if quiz id is -1', () => {
-        Object.defineProperty(hostServiceSpy, 'game', { get: () => ({ ...TEST_GAME_DATA, quiz: { id: RANDOM_QUIZ_ID } }) });
-        component.startGame();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['host-player']);
+        expect(hostServiceSpy.startGame).toHaveBeenCalledWith(START_GAME_COUNTDOWN);
     });
 
     it('should not start game if game is undefined', () => {

@@ -28,8 +28,6 @@ describe('QuestionFormComponent', () => {
     });
 
     beforeEach(waitForAsync(() => {
-        // const dialog = jasmine.createSpyObj('MatDialog', ['open']);
-
         TestBed.configureTestingModule({
             declarations: [QuestionFormComponent],
             imports: [FormsModule, MatIconModule],
@@ -100,16 +98,5 @@ describe('QuestionFormComponent', () => {
         adminQuizzesServiceSpy.submitQuestion.and.returnValue(of(errorMsg));
         component.submit();
         expect(dialogSpy.open).toHaveBeenCalledWith(jasmine.anything(), { data: { message: errorMsg } });
-    });
-
-    it('should open a confirmation dialog and remove choice if confirmed', () => {
-        const dialogRef = jasmine.createSpyObj('dialogRef', { afterClosed: of(true) });
-        dialogSpy.open.and.returnValue(dialogRef);
-        spyOn(component, 'removeChoice');
-
-        component.openConfirmationDialog(1);
-
-        expect(dialogSpy.open).toHaveBeenCalled();
-        expect(component.removeChoice).toHaveBeenCalledWith(1);
     });
 });
