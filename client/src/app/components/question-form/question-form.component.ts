@@ -2,6 +2,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertComponent } from '@app/components/alert/alert.component';
+import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { Question } from '@common/quiz';
 import { take } from 'rxjs/operators';
@@ -49,5 +50,17 @@ export class QuestionFormComponent {
                     this.dialogRef.close(this.question);
                 }
             });
+    }
+    openConfirmationDialog(index: number): void {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '250px',
+            data: 'Êtes-vous sûr de vouloir supprimer cette réponse ?',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.removeChoice(index);
+            }
+        });
     }
 }
