@@ -1,42 +1,47 @@
-/* Button styling to resemble an upload area */
 .create-button {
     display: inline-block;
-    width: 100%; /* Make the button full-width */
-    padding: 15px; /* Increased padding */
-    margin-top: 20px; /* Add margin on the top */
-    background-color: #ffffff; /* White background */
-    color: #007bff; /* Blue text, similar to the border color */
-    font-size: 16px; /* Button text size */
-    border: 2px dashed #007bff; /* Blue dashed border */
-    border-radius: 25px; /* Rounded corners */
-    cursor: pointer; /* Indicates the button is clickable */
-    text-align: center; /* Center text and icon */
-    vertical-align: middle; /* Align text and icon vertically */
-    transition: background-color 0.3s; /* Smooth transition for background color */
-    position: relative; /* Position relative for absolute positioning of the icon */
+    width: auto;
+    padding: 10px 15px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    transition: background-color 0.3s;
+    font-weight: bold;
 }
 
 .create-button:hover {
-    background-color: #f0f8ff; /* Light blue background on hover */
+    background-color: #f0f8ff;
 }
 
 .create-button:active {
-    background-color: #e0f0ff; /* Even lighter blue background on click */
+    background-color: #e0f0ff;
 }
 
-/* Icon styling */
-.create-button mat-icon {
-    vertical-align: middle; /* Align icon vertically */
-    font-size: 24px; /* Larger icon size */
-    position: absolute; /* Absolute positioning */
-    top: 50%; /* Position at the center */
-    left: 50%; /* Position at the center */
-    transform: translate(-50%, -50%); /* Offset the icon to the exact center */
-    fill: #007bff; /* Blue icon color */
-}
-
-/* Adjustments for the text in the button to accommodate the icon */
 .create-button span {
-    display: block;
-    margin-top: -12px; /* Adjust the text position to sit above the icon */
+    font-weight: bold;
+}
+
+.create-button:hover {
+    background-color: #0056b3;
+}
+
+.create-button:active {
+    background-color: #004080;
+}
+
+.question-bank-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.question-bank-select {
+    margin-top: 20px;
 }

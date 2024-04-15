@@ -72,6 +72,25 @@ body {
     margin: 20px 0;
 }
 
+.player-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.player {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.player h1 {
+    margin-right: 10px;
+}
+
+.player button {
+    margin-left: auto;
+}
+
 .timer-card {
     display: flex;
     justify-content: center;
@@ -84,7 +103,6 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     margin: 20px;
 }
-
 
 button {
     background-color: #3498db;

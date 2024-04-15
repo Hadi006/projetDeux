@@ -1,9 +1,14 @@
 <div *ngIf="player">
     <app-waiting-room-info [title]="gameTitle" [pin]="pin" [nPlayers]="players.length"></app-waiting-room-info>
-
     <p>Joueurs:</p>
-    <div *ngFor="let playerName of players">
-        {{ playerName }}
+    <div class="player-container">
+        <br />
+        <div class="player" *ngFor="let playerName of players; let i = index">
+            <div class="player-box">
+                <div class="player-name">{{ playerName }}</div>
+            </div>
+        </div>
     </div>
+
     <app-chatbox [pin]="pin" [name]="player.name"></app-chatbox>
 </div>

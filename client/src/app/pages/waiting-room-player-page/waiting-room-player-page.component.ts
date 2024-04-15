@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./waiting-room-player-page.component.scss'],
 })
 export class WaitingRoomPlayerPageComponent implements OnInit, OnDestroy {
+    playerImages: { [key: string]: string } = {};
     private startGameSubscription: Subscription;
     private endGameSubscription: Subscription;
 
