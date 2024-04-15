@@ -1,4 +1,6 @@
-<button (click)="openConfirmationDialog()">Quitter</button>
+<div class="action-buttons">
+    <button (click)="openConfirmationDialog()">Quitter</button>
+</div>
 
 <div class="title-container">
     <h1>{{ title }}</h1>
@@ -10,7 +12,4 @@
     </div>
 
     <div id="nPlayers">Nombre de Joueurs: {{ nPlayers }}</div>
-</div>
-<div class="action-buttons">
-    <button routerLink="/home">Quitter</button>
 </div>
