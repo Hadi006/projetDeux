@@ -12,6 +12,7 @@ import { GameChoicePageComponent } from '@app/pages/game-choice-page/game-choice
 import { WaitingRoomHostPageComponent } from '@app/pages/waiting-room-host-page/waiting-room-host-page.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { CssAnimationComponent } from './components/css-animation/css-animation.component';
 import { DescriptionPanelComponent } from './components/description-panel/description-panel.component';
 import { HistogramComponent } from './components/histogram/histogram.component';
@@ -70,6 +71,7 @@ import { ChatService } from './services/chat/chat.service';
         HistogramComponent,
         EndgameResultPageComponent,
         HostPlayerPageComponent,
+        ConfirmationDialogComponent,
     ],
     imports: [
         AppMaterialModule,
