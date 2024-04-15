@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -58,6 +59,12 @@ describe('HostGamePageComponent', () => {
         Object.defineProperty(hostServiceSpy, 'histograms', {
             get: () => {
                 return TEST_HISTOGRAM_DATA;
+            },
+            configurable: true,
+        });
+        Object.defineProperty(hostServiceSpy, 'quitters', {
+            get: () => {
+                return [];
             },
             configurable: true,
         });
@@ -122,11 +129,128 @@ describe('HostGamePageComponent', () => {
         hostServiceSpy.questionEndedSubject.next();
     });
 
-    it('should get the players', () => {
-        expect(component.getPlayers()).toEqual(testGame.players);
+    it('should get players sorted by name in ascending order', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        expect(component.getPlayers()).toEqual([p1, p2]);
     });
 
-    it('should return empty array if game is undefined', () => {
+    it('should get players sorted by name in descending order', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        component.sortBy('name');
+        expect(component.getPlayers()).toEqual([p2, p1]);
+    });
+
+    it('should get players sorted by score', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.score = 1;
+        p2.score = 2;
+        testGame.players = [p2, p1];
+        component.sortBy('score');
+        expect(component.getPlayers()).toEqual([p1, p2]);
+    });
+
+    it('should get players sorted by score in descending order', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.score = 1;
+        p2.score = 2;
+        testGame.players = [p2, p1];
+        component.sortBy('score');
+        component.sortBy('score');
+        expect(component.getPlayers()).toEqual([p2, p1]);
+    });
+
+    it('should sort by score, then by name', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.score = 1;
+        p2.score = 1;
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        component.sortBy('score');
+        expect(component.getPlayers()).toEqual([p1, p2]);
+    });
+
+    it('should sort by score, then by name in descending order', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.score = 1;
+        p2.score = 1;
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        component.sortBy('score');
+        component.sortBy('score');
+        expect(component.getPlayers()).toEqual([p1, p2]);
+    });
+
+    it('should sort by color', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.hasConfirmedAnswer = true;
+        p2.hasLeft = true;
+        testGame.players = [p2, p1];
+        component.sortBy('color');
+        expect(component.getPlayers()).toEqual([p1, p2]);
+    });
+
+    it('should sort by color in descending order', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.hasConfirmedAnswer = true;
+        p2.hasLeft = true;
+        testGame.players = [p2, p1];
+        component.sortBy('color');
+        component.sortBy('color');
+        expect(component.getPlayers()).toEqual([p2, p1]);
+    });
+
+    it('should sort by color, then by name', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.hasConfirmedAnswer = true;
+        p2.hasConfirmedAnswer = true;
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        component.sortBy('color');
+        expect(component.getPlayers()).toEqual([p1, p2]);
+    });
+
+    it('should sort by color, then by name in descending order', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.hasConfirmedAnswer = true;
+        p2.hasConfirmedAnswer = true;
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        component.sortBy('color');
+        component.sortBy('color');
+        expect(component.getPlayers()).toEqual([p1, p2]);
+    });
+
+    it('should be unsorted', () => {
+        const p1 = JSON.parse(JSON.stringify(testPlayer));
+        const p2 = JSON.parse(JSON.stringify(testPlayer));
+        p1.name = 'a';
+        p2.name = 'b';
+        testGame.players = [p2, p1];
+        component.sortBy('none');
+        expect(component.getPlayers()).toEqual([p2, p1]);
+    });
+
+    it('should return empty players if game is undefined', () => {
         spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
         expect(component.getPlayers()).toEqual([]);
     });
