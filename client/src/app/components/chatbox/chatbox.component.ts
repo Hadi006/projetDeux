@@ -1,21 +1,22 @@
-import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ChatService } from '@app/services/chat/chat.service';
+import { ChatMessage } from '@common/chat-message';
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
     styleUrls: ['./chatbox.component.scss'],
 })
-export class ChatboxComponent implements OnInit, AfterViewChecked {
+export class ChatboxComponent implements OnInit {
     @Input() pin: string;
     @Input() name: string;
     showChat = false;
     newMessage = '';
     @ViewChild('chatbox') private chatbox: ElementRef;
-    private scrollDown = false;
 
     constructor(
         private chatService: ChatService,
         private elementRef: ElementRef,
+        private cdRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit() {
@@ -26,14 +27,13 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
         if (!this.chatService.participantName) {
             this.chatService.participantName = this.name;
         }
-    }
 
-    ngAfterViewChecked() {
-        if (this.scrollDown) {
-            this.chatbox.nativeElement.scrollTop = this.chatbox.nativeElement.scrollHeight;
-            this.scrollDown = false;
-            this.chatbox.nativeElement.scrollTop = this.chatbox.nativeElement.scrollHeight;
-        }
+        this.chatService.newMessage$.subscribe((message: ChatMessage) => {
+            if (message && message.author === this.chatService.participantName) {
+                this.cdRef.detectChanges()
+                this.chatbox.nativeElement.scrollTop = this.chatbox.nativeElement.scrollHeight;
+            }
+        })
     }
 
     getMessages() {
@@ -45,7 +45,6 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
     }
 
     sendMessage() {
-        this.scrollDown = true
         this.chatService.sendMessage(this.newMessage);
         this.newMessage = '';
     }
