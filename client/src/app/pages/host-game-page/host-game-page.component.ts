@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AlertComponent } from '@app/components/alert/alert.component';
+import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { HostService } from '@app/services/host/host.service';
 import { SELECTED_MULTIPLIER } from '@common/constant';
 import { Player } from '@common/player';
@@ -29,7 +30,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         private router: Router,
     ) {
         this.gameEndedSubscription = this.hostService.gameEndedSubject.subscribe(() => {
-            this.dialog.open(AlertComponent, { data: { message: 'Tous les joueurs on quittés' } });
+            this.dialog.open(AlertComponent, { data: { message: 'Tous les joueurs ont quitté' } });
             this.router.navigate(['/']);
         });
 
@@ -51,7 +52,34 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     getPlayers() {
-        return this.hostService.game?.players || [];
+        const players = this.game?.players || [];
+        const quitters = this.hostService.quitters;
+        const playersWithQuitters = [...players, ...quitters];
+        switch (this.sort) {
+            case 'name':
+                return playersWithQuitters.sort((a, b) => {
+                    return this.order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+                });
+            case 'score':
+                return playersWithQuitters.sort((a, b) => {
+                    if (a.score === b.score) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return this.order === 'asc' ? a.score - b.score : b.score - a.score;
+                });
+            case 'color':
+                return playersWithQuitters.sort((a, b) => {
+                    const colorOrder = ['red', 'yellow', 'green', 'black'];
+                    if (this.getColor(a) === this.getColor(b)) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return this.order === 'asc'
+                        ? colorOrder.indexOf(this.getColor(a)) - colorOrder.indexOf(this.getColor(b))
+                        : colorOrder.indexOf(this.getColor(b)) - colorOrder.indexOf(this.getColor(a));
+                });
+            default:
+                return playersWithQuitters;
+        }
     }
 
     getTheRealCurrentQuestion() {
@@ -167,6 +195,19 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         if (!this.hostService.isConnected() || !this.hostService.getCurrentQuestion()) {
             this.router.navigate(['/']);
         }
+    }
+
+    openConfirmationDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '250px',
+            data: 'Êtes-vous sûr de vouloir quitter cette partie?',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/home']);
+            }
+        });
     }
 
     ngOnDestroy() {

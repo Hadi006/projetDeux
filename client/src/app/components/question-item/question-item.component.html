@@ -1,19 +1,18 @@
 <div class="question-item">
     <div class="question-detail">
-        <div class="title-last-modification">
-            <span class="truncated-text">Question: {{ question.text }}</span>
-            <div class="question-info">
-                <span>{{ question.type }}</span>
-                <span>{{ question.points }} pts</span>
-                <span *ngIf="displayDate">| Dernière Modification: {{ question.lastModification | date }}</span>
-            </div>
+        <span>{{ index + 1 }}</span>
+        <div class="truncated-text">| Question: {{ question.text }}</div>
+        <div class="question-info">
+            <span>{{ question.type }}</span>
+            <span>{{ question.points }} pts</span>
+            <span *ngIf="displayDate">| Dernière Modification: {{ question.lastModification | date }}</span>
         </div>
     </div>
-    <div class="actions">
-        <button type="button" class="action-button" (click)="onAction('edit')">
+    <div>
+        <button type="button" mat-icon-button (click)="openConfirmationDialog('edit')">
             <mat-icon>edit</mat-icon>
         </button>
-        <button type="button" class="action-button" (click)="onAction('delete')">
+        <button type="button" mat-icon-button (click)="openConfirmationDialog('delete')">
             <mat-icon>delete</mat-icon>
         </button>
     </div>

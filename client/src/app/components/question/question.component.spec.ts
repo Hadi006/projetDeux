@@ -45,19 +45,9 @@ describe('QuestionComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('handleKeyUp should do nothing if there is no player', () => {
-        const mockEvent = new KeyboardEvent('keyup');
-        spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'getPlayer').and.returnValue(undefined);
-        component.handleKeyUp(mockEvent);
-        expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
-        expect(playerHandlerServiceSpy.handleKeyUp).not.toHaveBeenCalled();
-    });
-
     it('handleKeyUp should do nothing if question is open ended', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
         spyOn(component, 'getQuestionData').and.returnValue(testQuestions[1]);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
@@ -67,7 +57,6 @@ describe('QuestionComponent', () => {
     it('handleKeyUp should do nothing if answer is confirmed', () => {
         const mockEvent = new KeyboardEvent('keyup');
         spyOn(mockEvent, 'stopPropagation');
-        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
         spyOnProperty(playerHandlerServiceSpy, 'answerConfirmed', 'get').and.returnValue(true);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
@@ -76,9 +65,9 @@ describe('QuestionComponent', () => {
 
     it('handleKeyUp should call playerHandlerService.handleKeyUp', () => {
         const mockEvent = new KeyboardEvent('keyup');
+        component.isFocused = true;
         spyOn(mockEvent, 'stopPropagation');
         spyOn(component, 'getQuestionData').and.returnValue(testQuestions[0]);
-        spyOn(component, 'getPlayer').and.returnValue(testPlayer);
         component.handleKeyUp(mockEvent);
         expect(mockEvent.stopPropagation).toHaveBeenCalled();
         expect(playerHandlerServiceSpy.handleKeyUp).toHaveBeenCalledWith(mockEvent);

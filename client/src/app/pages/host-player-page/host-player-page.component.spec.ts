@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
+import { GameCountDownComponent } from '@app/components/game-count-down/game-count-down.component';
 import { QuestionComponent } from '@app/components/question/question.component';
+import { ChatService } from '@app/services/chat/chat.service';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { of, Subject } from 'rxjs';
@@ -13,6 +16,7 @@ describe('HostPlayerPageComponent', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let hostServiceSpy: jasmine.SpyObj<HostService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
     beforeEach(() => {
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['cleanUp', 'getTime']);
@@ -30,15 +34,18 @@ describe('HostPlayerPageComponent', () => {
         const gameEndedSubject = new Subject<void>();
         Object.defineProperty(hostServiceSpy, 'gameEndedSubject', { get: () => gameEndedSubject });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
+        chatServiceSpy = jasmine.createSpyObj('ChatService', ['handleSockets']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [HostPlayerPageComponent, QuestionComponent],
+            declarations: [HostPlayerPageComponent, QuestionComponent, ChatboxComponent, GameCountDownComponent],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: ChatService, useValue: chatServiceSpy },
             ],
         });
     });
@@ -46,11 +53,17 @@ describe('HostPlayerPageComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(HostPlayerPageComponent);
         component = fixture.componentInstance;
+        component.chatbox = jasmine.createSpyObj('ChatboxComponent', ['isFocused']);
         fixture.detectChanges();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should stop counting down when stopCountDown is called', () => {
+        component.stopCountDown();
+        expect(component.isCountingDown).toBeFalse();
     });
 
     it('should call nextQuestion and endGame when questionEndedSubject and gameEndedSubject emit', () => {

@@ -123,7 +123,7 @@
     margin-right: 10px;
 }
 
-.delete-button {
+.delete-item {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -134,11 +134,11 @@
     padding: 0;
 }
 
-.delete-button mat-icon {
+.delete-item mat-icon {
     font-size: 20px;
-    color: #333;
+    color: #333 !important;
 }
 
-.delete-button:hover mat-icon {
-    color: #007bff;
+.delete-item:hover mat-icon {
+    color: #007bff !important;
 }

@@ -24,7 +24,7 @@
                 <label [for]="'text' + i">Réponse(s) {{ i + 1 }} :</label>
                 <input type="text" [id]="'text' + i" [name]="'text' + i" [(ngModel)]="answer.text" required />
                 <input type="checkbox" [id]="'checkbox' + i" [name]="'checkbox' + i" [(ngModel)]="answer.isCorrect" />
-                <button mat-fab color="primary" type="button" id="delete-button" (click)="removeChoice(i)">
+                <button mat-fab color="primary" type="button" id="delete-button" (click)="openConfirmationDialog(i)">
                     <mat-icon>delete</mat-icon>
                 </button>
             </div>
