@@ -3,7 +3,6 @@ import { WebSocketService } from '@app/services/web-socket/web-socket.service';
 import { SocketTestHelper } from '@app/test/socket-test-helper';
 import { TEST_ANSWERS, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS } from '@common/constant';
 import { Socket } from 'socket.io-client';
-
 import { PlayerSocketService } from './player-socket.service';
 
 class WebSocketServiceMock extends WebSocketService {
@@ -147,6 +146,24 @@ describe('PlayerSocketService', () => {
             done();
         });
         socketHelper.peerSideEmit('game-deleted');
+    });
+
+    it('should listen for timer paused event', (done) => {
+        service.connect();
+        service.onPauseTimerForPlayers().subscribe(() => {
+            expect(true).toBeTrue();
+            done();
+        });
+        socketHelper.peerSideEmit('timer-paused');
+    });
+
+    it('should listen for panic mode start event', (done) => {
+        service.connect();
+        service.onStartPanicMode().subscribe(() => {
+            expect(true).toBeTrue();
+            done();
+        });
+        socketHelper.peerSideEmit('in-panic');
     });
 
     it('should emit join game', (done) => {

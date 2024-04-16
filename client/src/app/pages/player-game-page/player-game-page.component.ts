@@ -33,6 +33,10 @@ export class PlayerGamePageComponent implements OnInit, OnDestroy {
         return this.playerService.players;
     }
 
+    get name() {
+        return this.playerService.player?.name || '';
+    }
+
     stopCountDown() {
         this.isCountingDown = false;
     }

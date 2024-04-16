@@ -9,7 +9,7 @@
             <div *ngFor="let quiz of quizzes | async; let i = index">
                 <app-quiz-item [quiz]="quiz" [index]="i" (action)="handle($event)"></app-quiz-item>
             </div>
-            <button (click)="goToQuizPage()">Créer un quiz</button>
+            <button class="admin-buttons" (click)="goToQuizPage()">Créer un quiz</button>
         </div>
         <div class="app-question-bank">
             <app-question-bank></app-question-bank>
@@ -17,16 +17,30 @@
     </div>
     <div class="game-list">
         <div class="game-list-title">Liste des parties complétées</div>
-        <button type="button" (click)="confirmDeleteAllGames()">supprimer tout</button>
-        <button type="button" (click)="sortByName()">trier par nom</button>
-        <button type="button" (click)="sortByDate()">trier par date</button>
+        <button class="remove-button" type="button" (click)="confirmDeleteAllGames()">supprimer tout</button>
+        <button class="admin-buttons" type="button" (click)="sortByName()">trier par nom</button>
+        <button class="admin-buttons" type="button" (click)="sortByDate()">trier par date</button>
         <div *ngFor="let game of games | async; let i = index">
             <div class="game-item">
-                <span>Nom : {{ game.name }} |</span>
-                <span>Date : {{ game.date.toString().slice(0, 10) }} {{ game.date.toString().slice(11, 19) }} |</span>
-                <span>Nb de joueurs : {{ game.nPlayers }} |</span>
-                <span>Meilleur score : {{ game.bestScore }} |</span>
-                <button class="delete-item" type="button" (click)="confirmDeleteGame(i)">
+                <div class="game-details">
+                    <div class="game-info">
+                        <span class="label">Nom :</span>
+                        <span class="value">{{ game.name }}</span>
+                    </div>
+                    <div class="game-info">
+                        <span class="label">Date :</span>
+                        <span class="value">{{ game.date | date: 'medium' }}</span>
+                    </div>
+                    <div class="game-info">
+                        <span class="label">Nb de joueurs :</span>
+                        <span class="value">{{ game.nPlayers }}</span>
+                    </div>
+                    <div class="game-info">
+                        <span class="label">Meilleur score :</span>
+                        <span class="value">{{ game.bestScore }}</span>
+                    </div>
+                </div>
+                <button class="delete-button" type="button" (click)="confirmDeleteGame(i)">
                     <mat-icon>delete</mat-icon>
                 </button>
             </div>

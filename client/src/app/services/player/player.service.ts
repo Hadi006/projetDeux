@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { INVALID_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, PANIC_MODE_TICK_RATE, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
@@ -120,6 +120,8 @@ export class PlayerService {
         this.socketSubscription.add(this.subscribeToOnAnswer());
         this.socketSubscription.add(this.subscribeToOnGameEnded());
         this.socketSubscription.add(this.subscribeToOnGameDeleted());
+        this.socketSubscription.add(this.subscribeToPauseTimer());
+        this.socketSubscription.add(this.subscribeToPanicMode());
     }
 
     joinGame(pin: string, data: JoinGameEventData): Observable<string> {
@@ -249,6 +251,10 @@ export class PlayerService {
 
     private subscribeToOnEndQuestion(): Subscription {
         return this.playerSocketService.onEndQuestion().subscribe(() => {
+            this.timeService.stopPanicMode();
+            this.timeService.stopTimerById(this.timerId);
+            this.timerId = this.timeService.createTimerById();
+            this.timeService.startTimerById(this.timerId, TRANSITION_DELAY);
             this.internalAnswerConfirmed = true;
             this.timeService.setTimeById(this.timerId, 0);
         });
@@ -286,8 +292,7 @@ export class PlayerService {
 
     private subscribeToOnGameEnded(): Subscription {
         return this.playerSocketService.onGameEnded().subscribe((game) => {
-            this.router.navigate(['/endgame'], { state: { game } });
-            this.cleanUp();
+            this.router.navigate(['/endgame'], { state: { game, name: this.player?.name || '' } });
             this.internalGameEnded = true;
         });
     }
@@ -296,6 +301,16 @@ export class PlayerService {
         return this.playerSocketService.onGameDeleted().subscribe(() => {
             this.endGameSubject.next();
             this.router.navigate(['/']);
+        });
+    }
+    private subscribeToPauseTimer(): Subscription {
+        return this.playerSocketService.onPauseTimerForPlayers().subscribe(() => {
+            this.pauseTimer();
+        });
+    }
+    private subscribeToPanicMode(): Subscription {
+        return this.playerSocketService.onStartPanicMode().subscribe(() => {
+            this.panicMode();
         });
     }
 
@@ -313,5 +328,15 @@ export class PlayerService {
         this.internalQrlCorrect = -1;
         this.timeService.stopTimerById(this.timerId);
         this.timeService.startTimerById(this.timerId, countdown);
+    }
+    private pauseTimer(): void {
+        return this.timeService.toggleTimerById(this.timerId);
+    }
+    private panicMode(): void {
+        const startTimerValue: number = this.getTime();
+        this.timeService.stopTimerById(this.timerId);
+        this.timerId = this.timeService.createTimerById(TIMER_DECREMENT, PANIC_MODE_TICK_RATE);
+        this.timeService.startTimerById(this.timerId, startTimerValue);
+        return this.timeService.startPanicMode();
     }
 }

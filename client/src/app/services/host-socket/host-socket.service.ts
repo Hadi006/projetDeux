@@ -137,6 +137,12 @@ export class HostSocketService {
     emitAnswer(pin: string, currentAnswer: Answer[]): void {
         this.webSocketService.emit<RoomData<Answer[]>>('answer', { pin, data: currentAnswer });
     }
+    emitPauseTimer(pin: string): void {
+        this.webSocketService.emit<string>('pause-timer', pin);
+    }
+    emitPanicMode(pin: string): void {
+        this.webSocketService.emit<string>('panic-mode', pin);
+    }
 
     emitUpdatePlayers(pin: string, players: Player[]): void {
         this.webSocketService.emit<RoomData<Player[]>>('update-players', { pin, data: players });

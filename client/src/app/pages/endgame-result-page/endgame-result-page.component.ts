@@ -9,10 +9,12 @@ import { Game } from '@common/game';
 })
 export class EndgameResultPageComponent implements OnInit {
     game: Game;
+    name: string;
     currentHistogramIndex = 0;
     constructor(private router: Router) {}
 
     ngOnInit() {
+        this.name = history.state.name;
         this.game = history.state.game;
         this.game.players = [...this.game.players, ...this.game.quitters];
         this.game.players.sort((a, b) => {
