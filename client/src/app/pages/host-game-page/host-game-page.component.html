@@ -78,7 +78,6 @@
         <button class="next-button" *ngIf="!isTheLastPlayer()" (click)="nextPlayer()">Prochaine question</button>
         <button class="finish-button" *ngIf="isTheLastPlayer()" (click)="sendEvaluationResults()">Envoyer la correction</button>
     </div>
-
-    <app-chatbox> </app-chatbox>
+    <app-chatbox [name]="'Organisateur'"></app-chatbox>
     <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
 </body>
