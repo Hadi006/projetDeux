@@ -310,7 +310,6 @@ export class HostService {
             if (playerIndex === undefined || playerIndex === INVALID_INDEX || !this.internalGame) {
                 return;
             }
-
             this.internalGame.players[playerIndex] = player;
         });
     }
@@ -332,11 +331,8 @@ export class HostService {
             player.hasInteracted = false;
             player.hasConfirmedAnswer = false;
         });
-
-        const duration = this.getCurrentQuestion()?.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration;
-
         this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, duration, this.endQuestion.bind(this));
+        this.timeService.startTimerById(this.timerId, this.getQuestionDuration(), this.endQuestion.bind(this));
     }
     private pauseTimerForEveryone(): void {
         if (!this.internalGame) return;
@@ -345,5 +341,9 @@ export class HostService {
     private startPanicModeForEveryone(): void {
         if (!this.internalGame) return;
         this.hostSocketService.emitPanicMode(this.internalGame.pin);
+    }
+    private getQuestionDuration(): number {
+        if (!this.internalGame) return 0;
+        return this.getCurrentQuestion()?.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration;
     }
 }
