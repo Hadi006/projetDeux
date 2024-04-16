@@ -5,7 +5,7 @@
     </button>
     <div *ngIf="showChat" class="chat-container">
         <h4 id="username">{{ name }}</h4>
-        <div class="messages">
+        <div #chatbox class="messages">
             <div *ngFor="let message of getMessages()" class="message">
                 <div class="message-header">
                     <span class="author">{{ message.author }} :</span>

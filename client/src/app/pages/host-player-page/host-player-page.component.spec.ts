@@ -6,8 +6,9 @@ import { QuestionComponent } from '@app/components/question/question.component';
 import { ChatService } from '@app/services/chat/chat.service';
 import { HostService } from '@app/services/host/host.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { of, Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 
+import { ChatMessage } from '@common/chat-message';
 import { HostPlayerPageComponent } from './host-player-page.component';
 
 describe('HostPlayerPageComponent', () => {
@@ -36,6 +37,8 @@ describe('HostPlayerPageComponent', () => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
         chatServiceSpy = jasmine.createSpyObj('ChatService', ['handleSockets']);
+        const newMessageSubject = new Subject<ChatMessage>();
+        Object.defineProperty(chatServiceSpy, 'newMessage$', { get: () => newMessageSubject });
     });
 
     beforeEach(() => {
