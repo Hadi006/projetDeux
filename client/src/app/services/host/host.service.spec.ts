@@ -4,13 +4,13 @@ import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
-import { QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
+import { QCM_TIME_FOR_PANIC, QRL_DURATION, QRL_TIME_FOR_PANIC, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
-import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
 import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
 import { Question, Quiz } from '@common/quiz';
+import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
 
 describe('HostService', () => {
     let service: HostService;
@@ -37,6 +37,7 @@ describe('HostService', () => {
             'startPanicMode',
             'stopPanicMode',
             'toggleTimerById',
+            'getQuestionDuration',
         ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
 
@@ -307,6 +308,8 @@ describe('HostService', () => {
 
     it('should not emit next question', () => {
         service['reset']();
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
+        spyOn(service, 'getCurrentQuestion').and.returnValue(question);
         service.nextQuestion();
         expect(hostSocketServiceSpy.emitNextQuestion).not.toHaveBeenCalled();
         expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
@@ -343,7 +346,7 @@ describe('HostService', () => {
 
         expect(hostSocketServiceSpy.emitNextQuestion).toHaveBeenCalledWith(service.game.pin, {
             question,
-            countdown: service.game.quiz.duration,
+            countdown: QRL_DURATION,
             histogram: expectedHistogram,
         });
 
@@ -351,6 +354,41 @@ describe('HostService', () => {
 
         expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
         expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+    });
+
+    it('should emit next question with histogram for QCM question', () => {
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
+        question.type = 'QCM'; // Simulate a non-QCM question
+        spyOn(service, 'getCurrentQuestion').and.returnValue(undefined);
+
+        service.nextQuestion();
+
+        if (!service.game) {
+            fail();
+            return;
+        }
+
+        expect(timeServiceSpy.stopTimerById).toHaveBeenCalled();
+        expect(timeServiceSpy.startTimerById).toHaveBeenCalled();
+    });
+
+    it('should get 0 duration', () => {
+        service['internalGame'] = null;
+        expect(service['getQuestionDuration']()).toBe(0);
+    });
+
+    it('should get quiz duration', () => {
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
+        question.type = 'QCM';
+        spyOn(service, 'getCurrentQuestion').and.returnValue(question);
+        expect(service['getQuestionDuration']()).toBe(testQuizzes[0].duration);
+    });
+
+    it('should get question duration', () => {
+        const question = JSON.parse(JSON.stringify(testQuizzes[0].questions[0]));
+        question.type = 'QRL';
+        spyOn(service, 'getCurrentQuestion').and.returnValue(question);
+        expect(service['getQuestionDuration']()).toBe(QRL_DURATION);
     });
 
     it('should update players', () => {
