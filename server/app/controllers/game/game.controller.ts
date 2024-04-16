@@ -99,9 +99,10 @@ export class GameController {
                 return;
             }
 
-            const player = game.players.find((p) => p.name === playerName);
+            const player = game.players.find((gamePlayer) => gamePlayer.name === playerName);
             player.hasLeft = true;
-            game.players = game.players.filter((p) => p.name !== playerName);
+            game.quitters.push(player);
+            game.players = game.players.filter((gamePlayer) => gamePlayer.name !== playerName);
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('player-left', { players: game.players, player });
             this.sio.to(pin).emit('message-received', {
@@ -128,8 +129,10 @@ export class GameController {
             const playerName = roomData.data;
 
             const game = await this.gameService.getGame(pin);
-            const player = game.players.find((p) => p.name === playerName);
-            game.players = game.players.filter((p) => p.name !== playerName);
+            const player = game.players.find((gamePlayer) => gamePlayer.name === playerName);
+            player.hasLeft = true;
+            game.quitters.push(player);
+            game.players = game.players.filter((gamePlayer) => gamePlayer.name !== playerName);
             game.bannedNames.push(playerName.toLocaleLowerCase());
             await this.gameService.updateGame(game);
             this.sio.to(pin).emit('kicked', playerName);
@@ -265,8 +268,8 @@ export class GameController {
                     return;
                 }
 
-                const player = game.players.find((p) => p.id === socket.id);
-                game.players = game.players.filter((p) => p.id !== socket.id);
+                const player = game.players.find((gamePlayer) => gamePlayer.id === socket.id);
+                game.players = game.players.filter((gamePlayer) => gamePlayer.id !== socket.id);
 
                 if (game.hostId === socket.id) {
                     if (game.quiz.id === '-1' && game.players.length >= 1) {
