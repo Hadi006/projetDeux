@@ -48,3 +48,36 @@
     bottom: 0;
     left: 10px;
 }
+
+.player-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-name {
+    font-weight: bold;
+}
+
+h3 {
+    font-size: medium;
+    font-weight: bold;
+}

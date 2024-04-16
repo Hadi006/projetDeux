@@ -4,8 +4,10 @@
     <div class="container" *ngIf="!isCountingDown">
         <div class="organizer-container">
             <div class="question-display" *ngIf="getCurrentQuestion() as question">
-                <h1>{{ question.text }}</h1>
-                <p>Points: + {{ question.points }}</p>
+                <div *ngIf="!getQuestionEnded()">
+                    <h1>{{ question.text }}</h1>
+                    <p>Points: + {{ question.points }}</p>
+                </div>
             </div>
             <div class="question-display">
                 <div *ngIf="getQuestionEnded()">
@@ -55,6 +57,7 @@
     <div *ngIf="getQrlEnded()" class="evaluation-section">
         <h1 class="section-title">Evaluation des réponses</h1>
         <div class="player-info">
+            <h2>Question : {{ getTheRealCurrentQuestion()?.text }}</h2>
             <h2>Joueur : {{ getCurrentPlayer().name }}</h2>
             <p>Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
         </div>

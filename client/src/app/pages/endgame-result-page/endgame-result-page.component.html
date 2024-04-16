@@ -1,8 +1,14 @@
 <div class="game-results-container">
     <div class="game-details">
         <div *ngIf="game">
-            <div class="player-list" *ngFor="let player of game.players">
-                <div>Nom: {{ player.name }} | Points: {{ player.score }} | Le plus rapide dans {{ player.fastestResponseCount }} questions</div>
+            <div class="player-list">
+                <div class="player-item" *ngFor="let player of game.players">
+                    <div class="player-info">
+                        <span class="player-name">{{ player.name }}</span>
+                        <span class="player-points">Points: {{ player.score }}</span>
+                        <span class="player-fastest">Le plus rapide dans {{ player.fastestResponseCount }} questions</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="histogram-container">
@@ -10,6 +16,7 @@
         </div>
     </div>
     <div class="control-buttons">
+        <h3>Histogrammes des Joueurs</h3>
         <button class="action-button" (click)="previousHistogram()">Précédent</button>
         <button class="action-button" (click)="nextHistogram()">Suivant</button>
         <button class="return-button" (click)="leaveGame()">Retour</button>
