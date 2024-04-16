@@ -10,8 +10,8 @@ import { Player } from '@common/player';
 import { Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { SinonSpy, SinonStubbedInstance, createStubInstance, restore, spy, stub } from 'sinon';
-import { Socket as socketClient, io as ioClient } from 'socket.io-client';
 import { Socket as socketServer } from 'socket.io';
+import { io as ioClient, Socket as socketClient } from 'socket.io-client';
 import { Container } from 'typedi';
 
 describe('GameController', () => {

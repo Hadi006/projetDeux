@@ -1,6 +1,50 @@
+.game-results-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.game-details {
+    flex-grow: 1;
+}
+
+.histogram-container {
+    margin-left: 20px;
+}
+
+.control-buttons {
+    display: inline-block;
+    gap: 10px;
+}
+
+.action-button,
+.return-button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.action-button:hover,
+.return-button:hover {
+    background-color: #0056b3;
+}
+
+.return-button {
+    background-color: grey;
+}
+
+.return-button:hover {
+    background-color: darkgrey;
+}
+
 .chatbox-container {
-    position: absolute;
+    position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 10px;
 }

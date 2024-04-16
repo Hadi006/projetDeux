@@ -14,6 +14,7 @@ export class EndgameResultPageComponent implements OnInit {
 
     ngOnInit() {
         this.game = history.state.game;
+        this.game.players = [...this.game.players, ...this.game.quitters];
         this.game.players.sort((a, b) => {
             return b.score - a.score || a.name.localeCompare(b.name);
         });
