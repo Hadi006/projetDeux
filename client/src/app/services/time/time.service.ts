@@ -7,7 +7,7 @@ import { Timer } from '@app/classes/timer';
 })
 export class TimeService {
     counterToggled: boolean = false;
-    private audio = new Audio();
+    audio = new Audio();
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
 
@@ -57,7 +57,9 @@ export class TimeService {
         this.timers.get(timerId)?.resume();
     }
     startPanicMode(): void {
-        this.audio.play();
+        if (this.audio.paused) {
+            this.audio.play();
+        }
     }
     stopPanicMode(): void {
         this.audio.pause();

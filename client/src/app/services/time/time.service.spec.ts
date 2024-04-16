@@ -222,17 +222,16 @@ describe('TimeService', () => {
         expect(result).toBeUndefined();
     });
     it('should start panic mode and play sound', () => {
-        const howlSpy = jasmine.createSpyObj('Howl', ['play']);
-        service.panicModeSound = howlSpy;
+        const audioPlaySpy = spyOn(service.audio, 'play');
         service.startPanicMode();
-        expect(service.panicModeSound.play).toHaveBeenCalled();
+        expect(audioPlaySpy).toHaveBeenCalled();
     });
 
     it('should stop panic mode and stop sound if sound is playing', () => {
-        const howlSpy = jasmine.createSpyObj('Howl', ['play', 'stop']);
-        service.panicModeSound = howlSpy;
+        const audioPauseSpy = spyOn(service.audio, 'pause');
         service.startPanicMode();
         service.stopPanicMode();
-        expect(service.panicModeSound.stop).toHaveBeenCalled();
+        expect(audioPauseSpy).toHaveBeenCalled();
+        expect(service.audio.currentTime).toBe(0);
     });
 });
