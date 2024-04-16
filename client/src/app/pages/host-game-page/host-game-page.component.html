@@ -1,11 +1,13 @@
 <body *ngIf="game">
     <app-game-count-down *ngIf="isCountingDown" (countdownEnded)="stopCountDown()" [gameName]="game.quiz.title"></app-game-count-down>
-    <button (click)="openConfirmationDialog()">Quitter</button>
+    <button id="leave-button" (click)="openConfirmationDialog()">Quitter</button>
     <div class="container" *ngIf="!isCountingDown">
         <div class="organizer-container">
             <div class="question-display" *ngIf="getCurrentQuestion() as question">
-                <h1>{{ question.text }}</h1>
-                <p>Points: + {{ question.points }}</p>
+                <div *ngIf="!getQuestionEnded()">
+                    <h1>{{ question.text }}</h1>
+                    <p>Points: + {{ question.points }}</p>
+                </div>
             </div>
             <div class="question-display">
                 <div *ngIf="getQuestionEnded()">
@@ -52,25 +54,31 @@
         </div>
         <!--<button (click)="openConfirmationDialog()">Quitter</button>-->
     </div>
-    <div *ngIf="getQrlEnded()">
-        <h1 class="evaluation">Evaluation des reponses</h1>
-        <h2 [style.color]="'black'">Joueur : {{ getCurrentPlayer().name }}</h2>
-        <p [style.color]="'black'">Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
-        <label>
-            <input type="radio" name="option1" value="0" [(ngModel)]="selectedMultiplier" />
-            <p [style.color]="'black'">0 %</p>
-        </label>
-        <label>
-            <input type="radio" name="option1" value="0.5" [(ngModel)]="selectedMultiplier" />
-            <p [style.color]="'black'">50 %</p>
-        </label>
-        <label>
-            <input type="radio" name="option1" value="1" [(ngModel)]="selectedMultiplier" />
-            <p [style.color]="'black'">100 %</p>
-        </label>
-        <button *ngIf="!isTheLastPlayer()" (click)="nextPlayer()">Prochaine question</button>
-        <button *ngIf="isTheLastPlayer()" (click)="sendEvaluationResults()">Envoyer la correction</button>
+    <div *ngIf="getQrlEnded()" class="evaluation-section">
+        <h1 class="section-title">Evaluation des réponses</h1>
+        <div class="player-info">
+            <h2>Question : {{ getTheRealCurrentQuestion()?.text }}</h2>
+            <h2>Joueur : {{ getCurrentPlayer().name }}</h2>
+            <p>Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
+        </div>
+        <div class="evaluation-options">
+            <label>
+                <input type="radio" name="option1" value="0" [(ngModel)]="selectedMultiplier" />
+                <span>0 %</span>
+            </label>
+            <label>
+                <input type="radio" name="option1" value="0.5" [(ngModel)]="selectedMultiplier" />
+                <span>50 %</span>
+            </label>
+            <label>
+                <input type="radio" name="option1" value="1" [(ngModel)]="selectedMultiplier" />
+                <span>100 %</span>
+            </label>
+        </div>
+        <button class="next-button" *ngIf="!isTheLastPlayer()" (click)="nextPlayer()">Prochaine question</button>
+        <button class="finish-button" *ngIf="isTheLastPlayer()" (click)="sendEvaluationResults()">Envoyer la correction</button>
     </div>
+
     <app-chatbox> </app-chatbox>
     <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
 </body>

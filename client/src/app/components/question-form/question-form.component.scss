@@ -52,26 +52,18 @@ button:hover {
     background-color: #0056b3;
 }
 
-.delete-button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    color: #333;
-    padding: 5px;
+#submit-button {
+    background-color: #28a745;
 }
 
-.delete-button mat-icon {
-    font-size: 20px;
-    color: #000;
+#submit-button:hover {
+    background-color: #218838;
 }
 
-.delete-button:hover mat-icon {
-    color: #007bff;
+#add-button {
+    background-color: #17a2b8;
 }
 
-.form-container button + button {
-    margin-left: 10px;
+#add-button:hover {
+    background-color: #138496;
 }

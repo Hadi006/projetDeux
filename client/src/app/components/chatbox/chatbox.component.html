@@ -1,5 +1,5 @@
 <div class="chatbox-component">
-    <button (click)="toggleChat()">
+    <button (click)="toggleChat()" [class.red-button]="showChat">
         <span *ngIf="showChat">Fermer clavardage</span>
         <span *ngIf="!showChat">Ouvrir clavardage</span>
     </button>
