@@ -30,22 +30,10 @@
                         <mat-icon *ngIf="!isTimerPaused">pause</mat-icon>
                     </button>
                     <button class="button-panic" (click)="startPanicMode()">Panic Mode</button>
-                    <!-- <button (click)="stopPanicMode()" > test</button> -->
                 </div>
             </mat-card>
             <div class="players-container">
                 <section class="playerCardContainer">
-                    <!-- <h1>Liste de joueurs</h1>
-                    <div *ngFor="let player of getPlayers()">
-                        <h1 [style.color]="getColor(player)">{{ player.name }}</h1>
-                        <h1>{{ player.score }}</h1>
-                        <button (click)="mutePlayer(player.name)">{{ player.muted ? 'Unmute' : 'Mute' }}</button>
-                    </div>
-                    <h1 *ngIf="getQuitters().length">Joueurs ayant quitté</h1>
-                    <div *ngFor="let quitter of getQuitters()">
-                        <h1 class="quitter" [style.color]="'black'" [style.text-decoration]="'line-through'">{{ quitter.name }}</h1>
-                        <h1>{{ quitter.score }}</h1>
-                    </div> -->
                     <h1>Liste de joueurs</h1>
                     <button class="sort-button" (click)="sortBy('name')">
                         Trier par nom
@@ -79,7 +67,6 @@
                 </section>
             </div>
         </div>
-        <!--<button (click)="openConfirmationDialog()">Quitter</button>-->
     </div>
     <div *ngIf="getQrlEnded()" class="evaluation-section">
         <h1 class="section-title">Evaluation des réponses</h1>
