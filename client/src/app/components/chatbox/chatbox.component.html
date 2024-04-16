@@ -1,11 +1,11 @@
 <div class="chatbox-component">
-    <button (click)="toggleChat()">
+    <button (click)="toggleChat()" [class.red-button]="showChat">
         <span *ngIf="showChat">Fermer clavardage</span>
         <span *ngIf="!showChat">Ouvrir clavardage</span>
     </button>
     <div *ngIf="showChat" class="chat-container">
-        <h4 id="username">{{ name }}</h4>
-        <div class="messages">
+        <h4 id="username" [style.color]="'black'">{{ name }}</h4>
+        <div #chatbox class="messages">
             <div *ngFor="let message of getMessages()" class="message">
                 <div class="message-header">
                     <span class="author">{{ message.author }} :</span>

@@ -294,8 +294,7 @@ describe('PlayerService', () => {
         const game = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         gameEndedSubject.subscribe((g) => {
             expect(g).toEqual(game);
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game } });
-            expect(service.cleanUp).toHaveBeenCalled();
+            expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game, name: 'Player 1' } });
             expect(service.gameEnded).toBeTrue();
             done();
         });

@@ -73,7 +73,7 @@
     margin-bottom: 10px;
 }
 
-.admin-page-container button {
+.admin-page-container .admin-buttons {
     padding: 10px 20px;
     background-color: #007bff;
     color: #fff;
@@ -84,8 +84,23 @@
     margin: 0 5px;
 }
 
-.admin-page-container button:hover {
+.admin-page-container .admin-buttons:hover {
     background-color: #0056b3;
+}
+
+.remove-button {
+    padding: 10px 20px;
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+.remove-button:hover {
+    background-color: #c62828;
 }
 
 .quiz-list-title,
@@ -97,19 +112,20 @@
     margin-bottom: 10px;
 }
 
-.return-button {
+.admin-page-container .return-button {
     position: absolute;
-    bottom: 10px;
+    top: 55px;
     left: 10px;
     background-color: grey !important;
     color: white;
-    padding: 10px 20px;
+    padding: 6px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 12px;
 }
 
-.return-button:hover {
+.admin-page-container .return-button:hover {
     background-color: darkgrey !important;
 }
 
@@ -123,22 +139,45 @@
     margin-right: 10px;
 }
 
-.delete-item {
+.delete-button {
     display: flex;
     align-items: center;
     gap: 5px;
     border: none;
     background-color: transparent !important;
     cursor: pointer;
-    color: #333;
+    color: #333 !important;
     padding: 0;
 }
 
-.delete-item mat-icon {
+.delete-button mat-icon {
     font-size: 20px;
     color: #333 !important;
 }
 
-.delete-item:hover mat-icon {
+.delete-button:hover mat-icon {
     color: #007bff !important;
+}
+.game-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.game-details {
+    flex: 1;
+}
+
+.game-info {
+    margin-bottom: 5px;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 5px;
 }

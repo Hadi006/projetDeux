@@ -1,6 +1,5 @@
 <div *ngIf="game">
-    <app-waiting-room-info [title]="game.quiz.title" [pin]="game.pin"
-        [nPlayers]="game.players.length"></app-waiting-room-info>
+    <app-waiting-room-info [title]="game.quiz.title" [pin]="game.pin" [nPlayers]="game.players.length"></app-waiting-room-info>
     <app-chatbox [pin]="game.pin" [name]="'Organisateur'"> </app-chatbox>
 
     <div id="players-container">
@@ -9,9 +8,9 @@
             {{ player.name }}
             <button *ngIf="player.name !== 'Organisateur'" (click)="kick(player.name)">X</button>
         </div>
-
-        <button (click)="toggleLock()">{{ game.locked ? 'Déverrouiller' : 'Verrouiller' }}</button>
-        <button *ngIf="game.quiz" [disabled]="!game.locked || !game.players.length" (click)="startGame()">Commencer la
-            partie</button>
+        <button class="host-buttons" (click)="toggleLock()">{{ game.locked ? 'Déverrouiller' : 'Verrouiller' }}</button>
+        <button class="host-buttons" *ngIf="game.quiz" [disabled]="!game.locked || !game.players.length" (click)="startGame()">
+            Commencer la partie
+        </button>
     </div>
 </div>

@@ -213,6 +213,7 @@ export const TEST_GAME_DATA: Game = {
     pin: '1',
     hostId: '1',
     players: TEST_PLAYERS,
+    quitters: [],
     quiz: TEST_QUIZZES[0],
     locked: false,
     bannedNames: [],

@@ -23,7 +23,7 @@ describe('HostGamePageComponent', () => {
     let testPlayer: Player;
     let testQuestions: Question[];
 
-    beforeEach(() => {
+    beforeEach(async () => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         testPlayer = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
         testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
@@ -41,6 +41,7 @@ describe('HostGamePageComponent', () => {
             'canActivatePanicMode',
             'pauseTimer',
         ]);
+
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
                 return testGame;

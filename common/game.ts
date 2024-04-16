@@ -6,6 +6,7 @@ interface Game {
     pin: string;
     hostId: string;
     players: Player[];
+    quitters: Player[];
     quiz: Quiz;
     locked: boolean;
     bannedNames: string[];
@@ -23,6 +24,7 @@ class Game implements Game {
         this.hostId = hostId;
         this.quiz = quiz;
         this.players = [];
+        this.quitters = [];
         this.locked = false;
         this.bannedNames = [];
         this.histograms = [];

@@ -1,6 +1,7 @@
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatService } from '@app/services/chat/chat.service';
+import { ChatMessage } from '@common/chat-message';
 import { Subject } from 'rxjs';
 import { ChatboxComponent } from './chatbox.component';
 
@@ -22,6 +23,8 @@ describe('ChatboxComponent', () => {
         elementRefSpy = {} as jasmine.SpyObj<ElementRef>;
         element = document.createElement('input');
         Object.defineProperty(elementRefSpy, 'nativeElement', { get: () => element, configurable: true });
+        const newMessageSubject = new Subject<ChatMessage>();
+        Object.defineProperty(chatServiceSpy, 'newMessage$', { get: () => newMessageSubject, configurable: true });
     });
 
     beforeEach(waitForAsync(() => {
@@ -59,6 +62,23 @@ describe('ChatboxComponent', () => {
     it('should call chatService.sendMessage when sendMessage is called', () => {
         component.sendMessage();
         expect(chatServiceSpy.sendMessage).toHaveBeenCalled();
+    });
+
+    it('should set chatbox scrollTop to chatbox scrollHeight when new message is received', () => {
+        component['chatbox'] = elementRefSpy;
+        chatServiceSpy.participantName = 'test author';
+        const newMessage: ChatMessage = { author: 'test author', text: 'test message', timestamp: new Date() };
+        chatServiceSpy.newMessage$.next(newMessage);
+        expect(component['chatbox'].nativeElement.scrollTop).toBe(component['chatbox'].nativeElement.scrollHeight);
+    });
+
+    it('should not set chatbox scrollTop to chatbox scrollHeight when new message is received from different author', () => {
+        component['chatbox'] = elementRefSpy;
+        component['chatbox'].nativeElement.scrollTop = 0;
+        chatServiceSpy.participantName = 'test author';
+        const newMessage: ChatMessage = { author: 'different author', text: 'test message', timestamp: new Date() };
+        chatServiceSpy.newMessage$.next(newMessage);
+        expect(component['chatbox'].nativeElement.scrollTop).toBe(0);
     });
 
     it('should return participant name from chat service', () => {
