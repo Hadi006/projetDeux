@@ -29,12 +29,8 @@
                 </button>
             </div>
         </div>
-        <button type="button" id="add-button" (click)="addChoice()">Ajouter une réponse</button>
+        <button id="add-button" type="button" id="add-button" (click)="addChoice()">Ajouter une réponse</button>
     </div>
-    <div class="form-group" *ngIf="question.type === 'QRL'">
-        <label for="answer">Réponse:</label>
-        <input type="text" id="answer" name="answer" [(ngModel)]="question.choices[0].text" required />
-    </div>
-
-    <button type="submit">Soumettre</button>
+    <div class="form-group" *ngIf="question.type === 'QRL'"></div>
+    <button id="submit-button" type="submit">Soumettre</button>
 </form>
