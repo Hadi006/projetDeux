@@ -40,6 +40,8 @@ export class GameController {
             this.chatMessages(socket);
             this.onEndGame(socket);
             this.onDisconnecting(socket);
+            this.onPauseTimer(socket);
+            this.onPanicMode(socket);
         });
     }
 
@@ -288,6 +290,17 @@ export class GameController {
                 await this.gameService.updateGame(game);
                 this.sio.to(room).emit('player-left', { players: game.players, player });
             });
+        });
+    }
+    private onPauseTimer(socket: Socket): void {
+        socket.on('pause-timer', (pin: string) => {
+            this.sio.to(pin).emit('timer-paused');
+        });
+    }
+
+    private onPanicMode(socket: Socket): void {
+        socket.on('panic-mode', (pin: string) => {
+            this.sio.to(pin).emit('in-panic');
         });
     }
 

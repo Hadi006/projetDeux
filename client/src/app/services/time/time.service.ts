@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Timer } from '@app/classes/timer';
+import { TIMER_TICK_RATE } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimeService {
+    counterToggled: boolean = false;
+    audio = new Audio();
     private timers: Map<number, Timer> = new Map<number, Timer>();
     private nextId: number = 0;
 
-    createTimerById(): number {
-        const timer = new Timer();
+    constructor() {
+        this.audio.src = './assets/sound.mp3';
+    }
+
+    createTimerById(decrement: number = 1, tickRate: number = TIMER_TICK_RATE): number {
+        const timer = new Timer(decrement, tickRate);
         this.nextId++;
         this.timers.set(this.nextId, timer);
         return this.nextId;
@@ -20,6 +27,7 @@ export class TimeService {
     }
 
     stopTimerById(timerId: number) {
+        this.audio.pause();
         this.timers.get(timerId)?.stop();
     }
 
@@ -33,12 +41,31 @@ export class TimeService {
             timer.time = time;
         }
     }
+    toggleTimerById(timerId: number) {
+        if (this.counterToggled) {
+            return this.resumeTimerById(timerId);
+        }
+        return this.pauseTimerById(timerId);
+    }
 
     pauseTimerById(timerId: number) {
+        this.audio.pause();
+        this.counterToggled = true;
         this.timers.get(timerId)?.pause();
     }
 
     resumeTimerById(timerId: number) {
+        this.counterToggled = false;
         this.timers.get(timerId)?.resume();
+    }
+    startPanicMode(): void {
+        if (this.audio.paused) {
+            this.audio.loop = true;
+            this.audio.play();
+        }
+    }
+    stopPanicMode(): void {
+        this.audio.pause();
+        this.audio.currentTime = 0;
     }
 }

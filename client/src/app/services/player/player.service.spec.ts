@@ -30,9 +30,20 @@ describe('PlayerService', () => {
     const answerSubject: Subject<Answer[]> = new Subject();
     const gameEndedSubject: Subject<Game> = new Subject();
     const gameDeletedSubject: Subject<void> = new Subject();
+    const pauseTimerSubject: Subject<void> = new Subject();
+    const startPanicModeSubject: Subject<void> = new Subject();
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'startTimerById', 'stopTimerById', 'setTimeById', 'getTimeById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', [
+            'createTimerById',
+            'startTimerById',
+            'stopTimerById',
+            'setTimeById',
+            'getTimeById',
+            'startPanicMode',
+            'stopPanicMode',
+            'toggleTimerById',
+        ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
         playerSocketServiceSpy = jasmine.createSpyObj('PlayerSocketService', [
             'connect',
@@ -48,6 +59,8 @@ describe('PlayerService', () => {
             'onAnswer',
             'onGameEnded',
             'onGameDeleted',
+            'onPauseTimerForPlayers',
+            'onStartPanicMode',
             'emitJoinGame',
             'emitUpdatePlayer',
             'emitConfirmPlayerAnswer',
@@ -63,6 +76,8 @@ describe('PlayerService', () => {
         playerSocketServiceSpy.onAnswer.and.returnValue(answerSubject);
         playerSocketServiceSpy.onGameEnded.and.returnValue(gameEndedSubject);
         playerSocketServiceSpy.onGameDeleted.and.returnValue(gameDeletedSubject);
+        playerSocketServiceSpy.onPauseTimerForPlayers.and.returnValue(pauseTimerSubject);
+        playerSocketServiceSpy.onStartPanicMode.and.returnValue(startPanicModeSubject);
         player = JSON.parse(JSON.stringify(TEST_PLAYERS[0]));
         playerSocketServiceSpy.emitJoinGame.and.returnValue(
             of({ player, gameTitle: 'title', gameId: TEST_GAME_DATA.quiz.id, otherPlayers: [], error: '' }),
@@ -291,6 +306,18 @@ describe('PlayerService', () => {
         spyOn(service, 'cleanUp');
         gameDeletedSubject.next();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should pause the timer for players', () => {
+        service.handleSockets();
+        pauseTimerSubject.next();
+        expect(timeServiceSpy.toggleTimerById).toHaveBeenCalledWith(1);
+    });
+
+    it('should start panic mode', () => {
+        service.handleSockets();
+        startPanicModeSubject.next();
+        expect(timeServiceSpy.startPanicMode).toHaveBeenCalled();
     });
 
     it('should join the game if there is no error', (done) => {

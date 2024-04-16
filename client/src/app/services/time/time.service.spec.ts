@@ -202,4 +202,37 @@ describe('TimeService', () => {
 
         expect(mockTimer.resume).not.toHaveBeenCalled();
     });
+
+    it('should pause timer if counterToggled is false', () => {
+        spyOn(service, 'pauseTimerById');
+        service.toggleTimerById(TIMER_ID);
+        expect(service.pauseTimerById).toHaveBeenCalledWith(TIMER_ID);
+    });
+
+    it('should resume timer if counterToggled is true', () => {
+        spyOn(service, 'resumeTimerById');
+        service.counterToggled = true;
+        service.toggleTimerById(TIMER_ID);
+        expect(service.resumeTimerById).toHaveBeenCalledWith(TIMER_ID);
+    });
+
+    it('should return undefined if timerId is invalid', () => {
+        const invalidTimerId = -1;
+        const result = service.toggleTimerById(invalidTimerId);
+        expect(result).toBeUndefined();
+    });
+    it('should start panic mode and play sound', () => {
+        const audioPlaySpy = spyOn(service.audio, 'play');
+        service.startPanicMode();
+        expect(audioPlaySpy).toHaveBeenCalled();
+    });
+
+    it('should stop panic mode and stop sound if sound is playing', () => {
+        const audioSpy = jasmine.createSpyObj('Audio', ['pause', 'play']);
+        service.audio = audioSpy;
+        service.startPanicMode();
+        service.stopPanicMode();
+        expect(audioSpy.pause).toHaveBeenCalled();
+        expect(service.audio.currentTime).toBe(0);
+    });
 });

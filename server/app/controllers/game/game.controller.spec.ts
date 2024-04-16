@@ -516,4 +516,25 @@ describe('GameController', () => {
             }, RESPONSE_DELAY);
         });
     });
+    it('should emit timer-paused event when pause-timer event is received', (done) => {
+        const pin = 'test_pin';
+        clientSocket.emit('pause-timer', pin);
+
+        setTimeout(() => {
+            expect(toSpy.calledWith(pin)).to.equal(true);
+
+            done();
+        }, RESPONSE_DELAY);
+    });
+
+    it('should emit in-panic event when panic-mode event is received', (done) => {
+        const pin = 'test_pin';
+        clientSocket.emit('panic-mode', pin);
+
+        setTimeout(() => {
+            expect(toSpy.calledWith(pin)).to.equal(true);
+
+            done();
+        }, RESPONSE_DELAY);
+    });
 });

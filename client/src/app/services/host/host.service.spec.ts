@@ -4,13 +4,13 @@ import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
-import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
+import { QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TEST_GAME_DATA, TEST_PLAYERS, TEST_QUESTIONS, TEST_QUIZZES } from '@common/constant';
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
-import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
-import { Quiz } from '@common/quiz';
 import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
+import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
+import { Question, Quiz } from '@common/quiz';
 
 describe('HostService', () => {
     let service: HostService;
@@ -20,6 +20,7 @@ describe('HostService', () => {
     let eventSubject: ReplaySubject<NavigationEnd>;
     let testGame: Game;
     let testQuizzes: Quiz[];
+    let testQuestions: Question[];
     const playerJoinedSubject: Subject<Player> = new Subject();
     const playerLeftSubject: Subject<PlayerLeftEventData> = new Subject();
     const confirmPlayerAnswerSubject: Subject<void> = new Subject();
@@ -27,7 +28,16 @@ describe('HostService', () => {
     const newHostSubject: Subject<Game> = new Subject();
 
     beforeEach(async () => {
-        timeServiceSpy = jasmine.createSpyObj('TimeService', ['createTimerById', 'stopTimerById', 'startTimerById', 'setTimeById', 'getTimeById']);
+        timeServiceSpy = jasmine.createSpyObj('TimeService', [
+            'createTimerById',
+            'stopTimerById',
+            'startTimerById',
+            'setTimeById',
+            'getTimeById',
+            'startPanicMode',
+            'stopPanicMode',
+            'toggleTimerById',
+        ]);
         timeServiceSpy.createTimerById.and.returnValue(1);
 
         hostSocketServiceSpy = jasmine.createSpyObj('HostSocketService', [
@@ -51,6 +61,8 @@ describe('HostService', () => {
             'emitEndQuestion',
             'emitUpdateScores',
             'emitAnswer',
+            'emitPauseTimer',
+            'emitPanicMode',
         ]);
         hostSocketServiceSpy.onPlayerJoined.and.returnValue(playerJoinedSubject);
         hostSocketServiceSpy.onPlayerLeft.and.returnValue(playerLeftSubject);
@@ -60,6 +72,7 @@ describe('HostService', () => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         hostSocketServiceSpy.emitCreateGame.and.returnValue(of(testGame));
         testQuizzes = JSON.parse(JSON.stringify(TEST_QUIZZES));
+        testQuestions = JSON.parse(JSON.stringify(TEST_QUESTIONS));
 
         eventSubject = new ReplaySubject();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -380,6 +393,41 @@ describe('HostService', () => {
         expect(service.histograms).toEqual([]);
     });
 
+    it('canActivatePanicMode should return true if current question type is QCM and time is >= 5', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(service, 'getTime').and.returnValue(QCM_TIME_FOR_PANIC);
+
+        expect(service.canActivatePanicMode()).toBeTrue();
+    });
+
+    it('canActivatePanicMode should return true if current question type is QRL and time is >= 20', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[1]);
+        spyOn(service, 'getTime').and.returnValue(QRL_TIME_FOR_PANIC);
+
+        expect(service.canActivatePanicMode()).toBeTrue();
+    });
+
+    it('canActivatePanicMode should return false if current question type is not QCM or QRL', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(TEST_GAME_DATA.quiz.questions[0]);
+        spyOn(service, 'getTime').and.returnValue(3);
+
+        expect(service.canActivatePanicMode()).toBeFalse();
+    });
+
+    it('canActivatePanicMode should return false if time is less than 5 for QCM', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuestions[0]);
+        spyOn(service, 'getTime').and.returnValue(QCM_TIME_FOR_PANIC - 1);
+
+        expect(service.canActivatePanicMode()).toBeFalse();
+    });
+
+    it('canActivatePanicMode should return false if time is less than 20 for QRL', () => {
+        spyOn(service, 'getCurrentQuestion').and.returnValue(testQuestions[1]);
+        spyOn(service, 'getTime').and.returnValue(QRL_TIME_FOR_PANIC - 1);
+
+        expect(service.canActivatePanicMode()).toBeFalse();
+    });
+
     it('should set up next question', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[1]);
         service['setupNextQuestion']();
@@ -407,11 +455,13 @@ describe('HostService', () => {
     it('should end question', () => {
         spyOn(service, 'getCurrentQuestion').and.returnValue(testQuizzes[0].questions[0]);
         hostSocketServiceSpy.emitUpdateScores.and.returnValue(of(testGame));
+        service.togglePanic();
         service['endQuestion']();
         expect(hostSocketServiceSpy.emitEndQuestion).toHaveBeenCalled();
         expect(hostSocketServiceSpy.emitUpdateScores).toHaveBeenCalled();
         expect(service.game).toEqual(testGame);
         expect(hostSocketServiceSpy.emitAnswer).toHaveBeenCalled();
+        expect(timeServiceSpy.stopPanicMode).toHaveBeenCalled();
         expect(service.questionEnded).toBe(true);
     });
 
@@ -448,5 +498,34 @@ describe('HostService', () => {
     it('should check connection', () => {
         hostSocketServiceSpy.isConnected.and.returnValue(true);
         expect(service.isConnected()).toBe(true);
+    });
+    it('should emit pauseTimer with game pin if internalGame exists', () => {
+        service.pauseTimer();
+        expect(hostSocketServiceSpy.emitPauseTimer).toHaveBeenCalledWith(testGame.pin);
+    });
+
+    it('should not emit pauseTimer if internalGame is null', () => {
+        service['reset']();
+        service.pauseTimer();
+        expect(hostSocketServiceSpy.emitPauseTimer).not.toHaveBeenCalled();
+    });
+
+    it('should emit startPanicMode with game pin if internalGame exists', () => {
+        spyOn(service, 'canActivatePanicMode').and.returnValue(true);
+        service.startPanicMode();
+        expect(hostSocketServiceSpy.emitPanicMode).toHaveBeenCalledWith(testGame.pin);
+    });
+
+    it('should not emit startPanicMode if internalGame is null', () => {
+        spyOn(service, 'canActivatePanicMode').and.returnValue(true);
+        service['reset']();
+        service.startPanicMode();
+        expect(hostSocketServiceSpy.emitPanicMode).not.toHaveBeenCalled();
+    });
+    it('should set isPanicMode to false and call timeService.stopPanicMode', () => {
+        service.stopPanicMode();
+
+        expect(service.isPanic).toBeFalse();
+        expect(timeServiceSpy.stopPanicMode).toHaveBeenCalled();
     });
 });
