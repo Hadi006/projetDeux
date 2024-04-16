@@ -12,8 +12,8 @@
             <div class="question-display">
                 <div *ngIf="getQuestionEnded()">
                     <h1>Question terminée</h1>
-                    <button *ngIf="getCurrentQuestion()" (click)="nextQuestion()">Prochaine question</button>
-                    <button *ngIf="!getCurrentQuestion()" (click)="showEndGameResult()">Terminer la partie</button>
+                    <button class="next-button" *ngIf="getCurrentQuestion()" (click)="nextQuestion()">Prochaine question</button>
+                    <button class="next-button" *ngIf="!getCurrentQuestion()" (click)="showEndGameResult()">Terminer la partie</button>
                 </div>
             </div>
         </div>
@@ -25,8 +25,9 @@
                     <p class="timer-text">{{ getTime() }}</p>
                 </mat-card-content>
                 <div class="timer-container">
-                    <button class="button-timer" (click)="pauseTimer()" >
-                        <mat-icon>pause</mat-icon>
+                    <button class="button-timer" [ngClass]="{ paused: isTimerPaused }" (click)="pauseTimer()" [disabled]="getQuestionEnded()">
+                        <mat-icon *ngIf="isTimerPaused">play_arrow</mat-icon>
+                        <mat-icon *ngIf="!isTimerPaused">pause</mat-icon>
                     </button>
                     <button class="button-panic" (click)="startPanicMode()">Panic Mode</button>
                     <!-- <button (click)="stopPanicMode()" > test</button> -->
@@ -46,9 +47,28 @@
                         <h1>{{ quitter.score }}</h1>
                     </div> -->
                     <h1>Liste de joueurs</h1>
-                    <button (click)="sortBy('name')">Trier par nom</button>
-                    <button (click)="sortBy('score')">Trier par points</button>
-                    <button (click)="sortBy('color')">Trier par couleur</button>
+                    <button class="sort-button" (click)="sortBy('name')">
+                        Trier par nom
+                        <span
+                            class="sort-icon"
+                            [ngClass]="{ 'arrow-up': sort === 'name' && order === 'asc', 'arrow-down': sort === 'name' && order === 'desc' }"
+                        ></span>
+                    </button>
+                    <button class="sort-button" (click)="sortBy('score')">
+                        Trier par points
+                        <span
+                            class="sort-icon"
+                            [ngClass]="{ 'arrow-up': sort === 'score' && order === 'desc', 'arrow-down': sort === 'score' && order === 'asc' }"
+                        ></span>
+                    </button>
+                    <button class="sort-button" (click)="sortBy('color')">
+                        Trier par couleur
+                        <span
+                            class="sort-icon"
+                            [ngClass]="{ 'arrow-up': sort === 'color' && order === 'asc', 'arrow-down': sort === 'color' && order === 'desc' }"
+                        ></span>
+                    </button>
+
                     <div class="player-container">
                         <div *ngFor="let player of getPlayers()" class="player">
                             <h1 [style.color]="getColor(player)" [style.text-decoration]="player.hasLeft ? 'line-through' : ''">{{ player.name }}</h1>
