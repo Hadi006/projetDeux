@@ -8,5 +8,5 @@
 <button (click)="nextHistogram()">Suivant</button>
 <button (click)="leaveGame()">Quitter</button>
 <div class="chatbox-container">
-    <app-chatbox></app-chatbox>
+    <app-chatbox [pin]="game.pin" [name]="name"></app-chatbox>
 </div>

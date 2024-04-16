@@ -5,12 +5,12 @@ import { HostSocketService } from '@app/services/host-socket/host-socket.service
 import { HostService } from '@app/services/host/host.service';
 import { TimeService } from '@app/services/time/time.service';
 import { TEST_GAME_DATA, TEST_PLAYERS, TEST_QUIZZES } from '@common/constant';
-import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
+import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { PlayerLeftEventData } from '@common/player-left-event-data';
-import { Game } from '@common/game';
-import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
+import { PlayerUpdatedEventData } from '@common/player-updated-event-data';
 import { Quiz } from '@common/quiz';
+import { ReplaySubject, Subject, firstValueFrom, of } from 'rxjs';
 
 describe('HostService', () => {
     let service: HostService;
@@ -355,7 +355,9 @@ describe('HostService', () => {
         hostSocketServiceSpy.emitEndGame.and.returnValue(of(JSON.parse(JSON.stringify(TEST_GAME_DATA))));
         service.endGame();
         expect(hostSocketServiceSpy.emitEndGame).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], { state: { game: JSON.parse(JSON.stringify(TEST_GAME_DATA)) } });
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/endgame'], {
+            state: { game: JSON.parse(JSON.stringify(TEST_GAME_DATA)), name: 'Organisateur' },
+        });
     });
 
     it('should not end game', () => {
