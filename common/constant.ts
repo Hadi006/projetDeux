@@ -107,6 +107,10 @@ export const MAX_QRL_LENGTH = 200;
 /* Classes */
 export const TIMER_TICK_RATE = 1000;
 
+export const TIMER_DECREMENT = 1;
+
+export const PANIC_MODE_TICK_RATE = 250;
+
 export const QRL_DURATION = 60;
 
 /* Tests */

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { PANIC_MODE_TIMER, TRANSITION_DELAY, INVALID_INDEX } from '@common/constant';
+import { INVALID_INDEX, PANIC_MODE_TICK_RATE, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
@@ -335,7 +335,7 @@ export class PlayerService {
     private panicMode(): void {
         const startTimerValue: number = this.getTime();
         this.timeService.stopTimerById(this.timerId);
-        this.timerId = this.timeService.createTimerById(PANIC_MODE_TIMER);
+        this.timerId = this.timeService.createTimerById(TIMER_DECREMENT, PANIC_MODE_TICK_RATE);
         this.timeService.startTimerById(this.timerId, startTimerValue);
         return this.timeService.startPanicMode();
     }

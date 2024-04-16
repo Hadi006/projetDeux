@@ -15,8 +15,8 @@ export class TimeService {
         this.audio.src = './assets/sound.mp3';
     }
 
-    createTimerById(decrement: number = 1): number {
-        const timer = new Timer(decrement);
+    createTimerById(decrement: number = 1, tickRate: number = 1000): number {
+        const timer = new Timer(decrement, tickRate);
         this.nextId++;
         this.timers.set(this.nextId, timer);
         return this.nextId;
@@ -27,6 +27,7 @@ export class TimeService {
     }
 
     stopTimerById(timerId: number) {
+        this.audio.pause();
         this.timers.get(timerId)?.stop();
     }
 
@@ -48,6 +49,7 @@ export class TimeService {
     }
 
     pauseTimerById(timerId: number) {
+        this.audio.pause();
         this.counterToggled = true;
         this.timers.get(timerId)?.pause();
     }
@@ -58,6 +60,7 @@ export class TimeService {
     }
     startPanicMode(): void {
         if (this.audio.paused) {
+            this.audio.loop = true;
             this.audio.play();
         }
     }

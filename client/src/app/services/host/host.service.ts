@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { INVALID_INDEX, PANIC_MODE_TIMER, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, PANIC_MODE_TICK_RATE, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -223,7 +223,7 @@ export class HostService {
             this.timeService.stopTimerById(this.timerId);
             this.timeService.startPanicMode();
             this.startPanicModeForEveryone();
-            this.timerId = this.timeService.createTimerById(PANIC_MODE_TIMER);
+            this.timerId = this.timeService.createTimerById(TIMER_DECREMENT, PANIC_MODE_TICK_RATE);
             this.timeService.startTimerById(this.timerId, startTimerValue, this.endQuestion.bind(this));
         }
     }
