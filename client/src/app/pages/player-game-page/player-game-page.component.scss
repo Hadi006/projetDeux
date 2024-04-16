@@ -1,4 +1,5 @@
 /* Structure de base pour le chatbox */
+
 app-question,
 app-game-count-down {
     position: absolute;
@@ -12,7 +13,7 @@ app-game-count-down {
     border: 2px solid #333333;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    animation: backgroundAnimation 20s linear infinite alternate; /* Add animation */
+    animation: changeBackgroundColor 20s linear infinite alternate; /* Add animation */
 }
 
 app-question:before,
@@ -53,16 +54,27 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Background animation */
-@keyframes backgroundAnimation {
+@keyframes changeBackgroundColor {
     0% {
+        background-color: #d9e2eb;
+    }
+    20% {
+        background-color: #87ceeb;
+    }
+    40% {
+        background-color: #b0c4de;
+    }
+    60% {
         background-color: #e6e6e6;
     }
-    50% {
-        background-color: #b9f7f6;
+    80% {
+        background-color: #b78acb;
+    }
+    90% {
+        background-color: #9361b0;
     }
     100% {
-        background-color: hwb(192 55% 0%);
+        background-color: #c13b7c;
     }
 }
 
