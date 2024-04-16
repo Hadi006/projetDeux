@@ -228,10 +228,11 @@ describe('TimeService', () => {
     });
 
     it('should stop panic mode and stop sound if sound is playing', () => {
-        const audioPauseSpy = spyOn(service.audio, 'pause');
+        const audioSpy = jasmine.createSpyObj('Audio', ['pause', 'play']);
+        service.audio = audioSpy;
         service.startPanicMode();
         service.stopPanicMode();
-        expect(audioPauseSpy).toHaveBeenCalled();
+        expect(audioSpy.pause).toHaveBeenCalled();
         expect(service.audio.currentTime).toBe(0);
     });
 });
