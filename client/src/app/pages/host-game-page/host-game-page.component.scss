@@ -187,3 +187,37 @@ button {
 .finish-button:hover {
     background-color: #0056b3;
 }
+
+.paused {
+    background-color: #ccc;
+}
+
+.sort-button:hover,
+.button-timer:hover,
+.button-panic:hover {
+    background-color: #0056b3;
+}
+
+.sort-button {
+    position: relative; /* Add relative positioning to the button */
+}
+
+.sort-icon {
+    position: absolute;
+    top: 50%;
+    right: 8px; /* Adjust as needed */
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.arrow-up {
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #000 transparent; /* Black color for arrow up */
+}
+
+.arrow-down {
+    border-width: 5px 5px 0 5px;
+    border-color: #000 transparent transparent transparent; /* Black color for arrow down */
+}

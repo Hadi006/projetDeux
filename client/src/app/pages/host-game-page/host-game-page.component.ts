@@ -20,6 +20,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     currentPlayerIndex = 0;
     selectedMultiplier = SELECTED_MULTIPLIER;
     shouldOpenEvaluationForm = false;
+    isTimerPaused = false;
 
     private gameEndedSubscription: Subscription;
     private questionEndedSubscription: Subscription;
@@ -108,6 +109,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
     }
 
     pauseTimer() {
+        this.isTimerPaused = !this.isTimerPaused;
         return this.hostService.pauseTimer();
     }
 
