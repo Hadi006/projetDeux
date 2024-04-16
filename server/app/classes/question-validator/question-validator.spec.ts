@@ -225,9 +225,9 @@ describe('QuestionValidator', () => {
             qrlAnswer: 'This is a test answer',
         };
         questionValidator = new QuestionValidator(qrlQuestion);
+        questionValidator.checkType();
         questionValidator.checkChoices();
         const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('');
     });
 });

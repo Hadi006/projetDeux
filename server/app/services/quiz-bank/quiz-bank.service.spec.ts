@@ -2,8 +2,8 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { QuizBankService } from '@app/services/quiz-bank/quiz-bank.service';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
-import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Request } from 'express';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 
 describe('QuizBankService', () => {
     const MOCK_ANSWERS: Answer[] = [
@@ -144,5 +144,19 @@ describe('QuizBankService', () => {
     it('should delete a quiz', async () => {
         await quizBankService.deleteQuiz('1');
         expect(databaseServiceStub.delete.calledWith('quizzes', { id: '1' })).to.equal(true);
+    });
+
+    it('should export a quiz', async () => {
+        const mockQuiz = { ...MOCK_QUIZ };
+        mockQuiz.questions[0].type = 'QRL';
+        databaseServiceStub.get.resolves([mockQuiz]);
+        const result = await quizBankService.exportQuiz('1');
+        expect(result).to.equal(mockQuiz);
+    });
+
+    it('should not export a quiz', async () => {
+        databaseServiceStub.get.resolves(undefined);
+        const result = await quizBankService.exportQuiz('1');
+        expect(result).to.equal(undefined);
     });
 });

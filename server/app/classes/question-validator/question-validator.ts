@@ -73,20 +73,22 @@ export class QuestionValidator {
 
     checkChoices(): QuestionValidator {
         this.tasks.push(() => {
+            if (this.newQuestion.type === 'QRL') {
+                return;
+            }
+
             if (!('choices' in this.question) || !Array.isArray(this.question.choices)) {
                 this.compilationError += 'Question : choix manquants !\n';
                 return;
             }
 
-            if (this.question.type === 'QCM') {
-                if (this.question.choices.length < MIN_CHOICES || this.question.choices.length > MAX_CHOICES) {
-                    this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
-                    return;
-                }
+            if (this.question.choices.length < MIN_CHOICES || this.question.choices.length > MAX_CHOICES) {
+                this.compilationError += 'Question : doit avoir entre 2 et 4 choix !\n';
+                return;
+            }
 
-                if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
-                    this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
-                }
+            if (!this.hasBothCorrectAndIncorrectAnswers(this.question.choices)) {
+                this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
             }
         });
         return this;

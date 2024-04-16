@@ -2,7 +2,15 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { INVALID_INDEX, PANIC_MODE_TICK_RATE, QCM_TIME_FOR_PANIC, QRL_TIME_FOR_PANIC, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
+import {
+    INVALID_INDEX,
+    PANIC_MODE_TICK_RATE,
+    QCM_TIME_FOR_PANIC,
+    QRL_DURATION,
+    QRL_TIME_FOR_PANIC,
+    TIMER_DECREMENT,
+    TRANSITION_DELAY,
+} from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -15,11 +23,8 @@ import { Observable, Subject, Subscription } from 'rxjs';
 export class HostService {
     readonly questionEndedSubject: Subject<void>;
     readonly gameEndedSubject: Subject<void>;
-
     currentQuestionIndex: number;
-
     private socketSubscription: Subscription;
-
     private timerId: number;
     private internalGame: Game | null;
     private internalNAnswered: number;
@@ -184,7 +189,7 @@ export class HostService {
         this.internalHistograms.push(newHistogram);
         this.hostSocketService.emitNextQuestion(this.internalGame.pin, {
             question: currentQuestion,
-            countdown: this.internalGame.quiz.duration,
+            countdown: currentQuestion.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration,
             histogram: newHistogram,
         });
     }
@@ -227,7 +232,6 @@ export class HostService {
             this.timeService.startTimerById(this.timerId, startTimerValue, this.endQuestion.bind(this));
         }
     }
-
     private reset(): void {
         this.socketSubscription = new Subscription();
         this.internalGame = null;
@@ -306,44 +310,40 @@ export class HostService {
             if (playerIndex === undefined || playerIndex === INVALID_INDEX || !this.internalGame) {
                 return;
             }
-
             this.internalGame.players[playerIndex] = player;
         });
     }
-
     private subscribeToNewHost(): Subscription {
         return this.hostSocketService.onNewHost().subscribe((game: Game) => {
             this.internalGame = game;
         });
     }
-
     private getCurrentAnswer(): Answer[] | undefined {
         return this.getCurrentQuestion()?.choices.filter((answer) => answer.isCorrect);
     }
-
     private setupNextQuestion(): void {
         if (!this.internalGame) return;
         if (!this.getCurrentQuestion()) {
             this.gameEndedSubject.next();
             return;
         }
-
         this.internalGame.players.forEach((player) => {
             player.hasInteracted = false;
             player.hasConfirmedAnswer = false;
         });
-
         this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
+        this.timeService.startTimerById(this.timerId, this.getQuestionDuration(), this.endQuestion.bind(this));
     }
-
     private pauseTimerForEveryone(): void {
         if (!this.internalGame) return;
         this.hostSocketService.emitPauseTimer(this.internalGame.pin);
     }
-
     private startPanicModeForEveryone(): void {
         if (!this.internalGame) return;
         this.hostSocketService.emitPanicMode(this.internalGame.pin);
+    }
+    private getQuestionDuration(): number {
+        if (!this.internalGame) return 0;
+        return this.getCurrentQuestion()?.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration;
     }
 }
