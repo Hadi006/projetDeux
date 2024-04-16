@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Timer } from '@app/classes/timer';
-// import { Howl } from 'howler';
+import { TIMER_TICK_RATE } from '@common/constant';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +15,7 @@ export class TimeService {
         this.audio.src = './assets/sound.mp3';
     }
 
-    createTimerById(decrement: number = 1, tickRate: number = 1000): number {
+    createTimerById(decrement: number = 1, tickRate: number = TIMER_TICK_RATE): number {
         const timer = new Timer(decrement, tickRate);
         this.nextId++;
         this.timers.set(this.nextId, timer);
