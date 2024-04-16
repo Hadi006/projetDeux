@@ -88,7 +88,6 @@ describe('HostGamePageComponent', () => {
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
                 { provide: Router, useValue: routerSpy },
-
             ],
         }).compileComponents();
     }));

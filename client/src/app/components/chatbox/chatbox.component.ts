@@ -11,9 +11,9 @@ import { Subscription } from 'rxjs';
 export class ChatboxComponent implements OnInit, OnDestroy {
     @Input() pin: string;
     @Input() name: string;
+    @ViewChild('chatbox') private chatbox: ElementRef;
     showChat = false;
     newMessage = '';
-    @ViewChild('chatbox') private chatbox: ElementRef;
     private newMessageSubscription: Subscription;
 
     constructor(
@@ -33,10 +33,10 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
         this.newMessageSubscription = this.chatService.newMessage$.subscribe((message: ChatMessage) => {
             if (message && message.author === this.chatService.participantName) {
-                this.cdRef.detectChanges()
+                this.cdRef.detectChanges();
                 this.chatbox.nativeElement.scrollTop = this.chatbox.nativeElement.scrollHeight;
             }
-        })
+        });
     }
 
     getMessages() {
