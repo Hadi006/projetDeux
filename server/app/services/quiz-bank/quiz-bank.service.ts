@@ -20,12 +20,11 @@ export class QuizBankService {
 
     async exportQuiz(quizId: string): Promise<Quiz | undefined> {
         const result = (await this.database.get('quizzes', { id: quizId }, { visible: 0 })) as Quiz[];
-        // let quiz = result[0];
-        // quiz = { ...quiz, questions: [] };
-        // result[0]?.questions.forEach((question) => {
-        //     quiz.questions.push(question);
-        // });
-        for (const question of result[0]?.questions) {
+        const quiz = result?.[0];
+        if (!quiz) {
+            return undefined;
+        }
+        for (const question of quiz.questions) {
             delete question.qrlAnswer;
             delete question.lastModification;
             if (question.type === 'QRL') {
