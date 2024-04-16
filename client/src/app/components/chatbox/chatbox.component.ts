@@ -1,17 +1,20 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatService } from '@app/services/chat/chat.service';
 import { ChatMessage } from '@common/chat-message';
+import { Subscription } from 'rxjs';
+
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
     styleUrls: ['./chatbox.component.scss'],
 })
-export class ChatboxComponent implements OnInit {
+export class ChatboxComponent implements OnInit, OnDestroy {
     @Input() pin: string;
     @Input() name: string;
     showChat = false;
     newMessage = '';
     @ViewChild('chatbox') private chatbox: ElementRef;
+    private newMessageSubscription: Subscription;
 
     constructor(
         private chatService: ChatService,
@@ -28,7 +31,7 @@ export class ChatboxComponent implements OnInit {
             this.chatService.participantName = this.name;
         }
 
-        this.chatService.newMessage$.subscribe((message: ChatMessage) => {
+        this.newMessageSubscription = this.chatService.newMessage$.subscribe((message: ChatMessage) => {
             if (message && message.author === this.chatService.participantName) {
                 this.cdRef.detectChanges()
                 this.chatbox.nativeElement.scrollTop = this.chatbox.nativeElement.scrollHeight;
@@ -57,5 +60,9 @@ export class ChatboxComponent implements OnInit {
 
     isFocused() {
         return this.elementRef.nativeElement.contains(document.activeElement);
+    }
+
+    ngOnDestroy() {
+        this.newMessageSubscription.unsubscribe();
     }
 }

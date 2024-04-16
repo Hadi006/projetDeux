@@ -10,7 +10,6 @@ import { TEST_GAME_DATA, TEST_HISTOGRAM_DATA, TEST_QUESTIONS } from '@common/con
 import { Game } from '@common/game';
 import { Player } from '@common/player';
 import { Subject, of } from 'rxjs';
-
 import { HostGamePageComponent } from './host-game-page.component';
 
 describe('HostGamePageComponent', () => {
@@ -22,7 +21,7 @@ describe('HostGamePageComponent', () => {
     let testGame: Game;
     let testPlayer: Player;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         testGame = JSON.parse(JSON.stringify(TEST_GAME_DATA));
         testPlayer = JSON.parse(JSON.stringify(TEST_GAME_DATA.players[0]));
 
@@ -36,6 +35,7 @@ describe('HostGamePageComponent', () => {
             'mute',
             'updatePlayers',
         ]);
+
         Object.defineProperty(hostServiceSpy, 'game', {
             get: () => {
                 return testGame;
@@ -88,6 +88,7 @@ describe('HostGamePageComponent', () => {
                 { provide: HostService, useValue: hostServiceSpy },
                 { provide: MatDialog, useValue: dialogSpy },
                 { provide: Router, useValue: routerSpy },
+
             ],
         }).compileComponents();
     }));
