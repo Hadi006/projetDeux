@@ -1,10 +1,10 @@
 import { QuizValidator } from '@app/classes/quiz-validator/quiz-validator';
 import { DatabaseService } from '@app/services/database/database.service';
 import { Quiz } from '@common/quiz';
-import { ValidationResult } from '@common/validation-result';
-import { Service } from 'typedi';
-import { Request } from 'express';
 import { QuizQuery } from '@common/quiz-query';
+import { ValidationResult } from '@common/validation-result';
+import { Request } from 'express';
+import { Service } from 'typedi';
 
 @Service()
 export class QuizBankService {
@@ -20,11 +20,18 @@ export class QuizBankService {
 
     async exportQuiz(quizId: string): Promise<Quiz | undefined> {
         const result = (await this.database.get('quizzes', { id: quizId }, { visible: 0 })) as Quiz[];
-        let quiz = result[0];
-        quiz = { ...quiz, questions: [] };
-        result[0]?.questions.forEach((question) => {
-            quiz.questions.push(question);
-        });
+        // let quiz = result[0];
+        // quiz = { ...quiz, questions: [] };
+        // result[0]?.questions.forEach((question) => {
+        //     quiz.questions.push(question);
+        // });
+        for (const question of result[0]?.questions) {
+            delete question.qrlAnswer;
+            delete question.lastModification;
+            if (question.type === 'QRL') {
+                delete question.choices;
+            }
+        }
         return result[0] as Quiz;
     }
 

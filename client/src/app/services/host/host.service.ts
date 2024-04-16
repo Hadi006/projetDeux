@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { HostSocketService } from '@app/services/host-socket/host-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { INVALID_INDEX, TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, QRL_DURATION, TRANSITION_DELAY } from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { Player } from '@common/player';
@@ -195,7 +195,7 @@ export class HostService {
 
         this.hostSocketService.emitNextQuestion(this.internalGame.pin, {
             question: currentQuestion,
-            countdown: this.internalGame.quiz.duration,
+            countdown: currentQuestion.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration,
             histogram: newHistogram,
         });
     }
@@ -342,7 +342,9 @@ export class HostService {
             player.hasConfirmedAnswer = false;
         });
 
+        const duration = this.getCurrentQuestion()?.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration;
+
         this.timeService.stopTimerById(this.timerId);
-        this.timeService.startTimerById(this.timerId, this.internalGame.quiz.duration, this.endQuestion.bind(this));
+        this.timeService.startTimerById(this.timerId, duration, this.endQuestion.bind(this));
     }
 }
