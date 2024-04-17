@@ -150,7 +150,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
             return 'black';
         }
         if (player.hasConfirmedAnswer) {
-            return 'green';
+            return 'limegreen';
         }
         if (player.hasInteracted) {
             return 'yellow';
