@@ -1,10 +1,11 @@
 import { QuestionValidator } from '@app/classes/question-validator/question-validator';
 import { DatabaseService } from '@app/services/database/database.service';
+import { QuestionType } from '@common/constant';
+import { QuestionQuery } from '@common/question-query';
 import { Question } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
-import { Service } from 'typedi';
 import { Request } from 'express';
-import { QuestionQuery } from '@common/question-query';
+import { Service } from 'typedi';
 
 @Service()
 export class QuestionBankService {
@@ -44,7 +45,7 @@ export class QuestionBankService {
             questionQuery.text = req.query.text;
         }
 
-        if (typeof req.query?.type === 'string' && (req.query.type === 'QCM' || req.query.type === 'QRL')) {
+        if (typeof req.query?.type === 'string' && (req.query.type === QuestionType.Qcm || req.query.type === QuestionType.Qrl)) {
             questionQuery.type = req.query.type;
         }
 

@@ -1,6 +1,6 @@
+import { CheckProperty } from '@app/classes/check-property/check-property';
 import { Answer } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
-import { CheckProperty } from '../check-property/check-property';
 
 export class AnswerValidator {
     private tasks: (() => void)[];

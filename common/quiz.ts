@@ -7,7 +7,7 @@ interface Answer {
 
 interface Question {
     text: string;
-    type: QuestionType | '';
+    type: QuestionType | '' | 'QCM' | 'QRL';
     points: number;
     lastModification?: Date;
     choices: Answer[];

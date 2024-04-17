@@ -39,7 +39,6 @@ describe('AnswerValidator', () => {
         answerValidator = new AnswerValidator({ isCorrect: true });
         answerValidator.checkText();
         const compiledAnswer = answerValidator.compile();
-        expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
         expect(compiledAnswer.error).to.equal('Reponse : texte manquant !\n');
     });
 

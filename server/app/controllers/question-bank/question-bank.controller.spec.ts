@@ -1,5 +1,6 @@
 import { Application } from '@app/app';
 import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
+import { QuestionType } from '@common/constant';
 import { Question } from '@common/quiz';
 import { expect } from 'chai';
 import httpStatus from 'http-status-codes';
@@ -11,7 +12,7 @@ describe('QuestionBankController', () => {
     const MOCK_QUESTIONS: Question[] = [
         {
             text: 'Question 1',
-            type: 'QCM',
+            type: QuestionType.Qcm,
             points: 10,
             choices: [
                 { text: 'Answer 1', isCorrect: true },
@@ -21,7 +22,7 @@ describe('QuestionBankController', () => {
         },
         {
             text: 'Question 2',
-            type: 'QCM',
+            type: QuestionType.Qcm,
             points: 10,
             choices: [
                 { text: 'Answer 1', isCorrect: true },

@@ -560,6 +560,11 @@ describe('HostService', () => {
         service.startPanicMode();
         expect(hostSocketServiceSpy.emitPanicMode).not.toHaveBeenCalled();
     });
+    it('should not emit startPanicMode if canActivatePanicMode is false', () => {
+        spyOn(service, 'canActivatePanicMode').and.returnValue(false);
+        service.startPanicMode();
+        expect(hostSocketServiceSpy.emitPanicMode).not.toHaveBeenCalled();
+    });
     it('should set isPanicMode to false and call timeService.stopPanicMode', () => {
         service.stopPanicMode();
 

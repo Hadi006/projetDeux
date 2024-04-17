@@ -11,9 +11,10 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 })
 export class QuestionBankService {
     readonly questions$: BehaviorSubject<Question[]>;
-    private questions: Question[] = [];
+    private questions: Question[];
 
     constructor(private http: CommunicationService) {
+        this.questions = [];
         this.questions$ = new BehaviorSubject<Question[]>(this.questions);
     }
 

@@ -1,9 +1,9 @@
+import { CheckProperty } from '@app/classes/check-property/check-property';
 import { QuestionValidator } from '@app/classes/question-validator/question-validator';
 import { MAX_DURATION, MIN_DURATION } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { randomUUID } from 'crypto';
-import { CheckProperty } from '../check-property/check-property';
 
 export class QuizValidator {
     private tasks: (() => Promise<void>)[];
@@ -40,17 +40,6 @@ export class QuizValidator {
         this.checkQuestions();
         this.checkVisibility();
         return await this.compile();
-    }
-
-    private checkId(): void {
-        this.tasks.push(async () => {
-            if (!('id' in this.quiz) || typeof this.quiz.id !== 'string' || this.quiz.id === '') {
-                this.newQuiz.id = randomUUID();
-                return;
-            }
-
-            this.newQuiz.id = this.quiz.id;
-        });
     }
 
     checkTitle(): void {
@@ -130,5 +119,16 @@ export class QuizValidator {
         this.newQuiz.lastModification = new Date();
 
         return new ValidationResult(this.compilationError, this.newQuiz);
+    }
+
+    private checkId(): void {
+        this.tasks.push(async () => {
+            if (!('id' in this.quiz) || typeof this.quiz.id !== 'string' || this.quiz.id === '') {
+                this.newQuiz.id = randomUUID();
+                return;
+            }
+
+            this.newQuiz.id = this.quiz.id;
+        });
     }
 }

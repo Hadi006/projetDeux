@@ -12,7 +12,7 @@ import { QuestionItemComponent } from '@app/components/question-item/question-it
 import { AdminQuizzesService } from '@app/services/admin-quizzes/admin-quizzes.service';
 import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
 import { ActionType } from '@common/action';
-import { TEST_QUESTIONS } from '@common/constant';
+import { QuestionType, TEST_QUESTIONS } from '@common/constant';
 import { Question } from '@common/quiz';
 import { of } from 'rxjs';
 
@@ -184,32 +184,32 @@ describe('QuestionBankComponent', () => {
     });
 
     it('should filter questions by selected type', () => {
-        component.selectedType = 'QRL';
+        component.selectedType = QuestionType.Qrl;
         component.questions = of<Question[]>([
             {
                 text: 'Question 1',
-                type: 'QRL',
+                type: QuestionType.Qrl,
                 points: 10,
                 choices: [],
                 qrlAnswer: 'Answer 1',
             },
             {
                 text: 'Question 2',
-                type: 'QRL',
+                type: QuestionType.Qrl,
                 points: 5,
                 choices: [],
                 qrlAnswer: 'Answer 2',
             },
             {
                 text: 'Question 3',
-                type: 'QCM', // Different type
+                type: QuestionType.Qcm,
                 points: 8,
                 choices: [],
                 qrlAnswer: 'Answer 3',
             },
             {
                 text: 'Question 4',
-                type: 'QRL',
+                type: QuestionType.Qrl,
                 points: 3,
                 choices: [],
                 qrlAnswer: 'Answer 4',

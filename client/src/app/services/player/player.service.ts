@@ -31,13 +31,14 @@ export class PlayerService {
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
     private internalQrlCorrect: number = INVALID_INDEX;
+    private routerSubscription: Subscription;
 
     constructor(
         private playerSocketService: PlayerSocketService,
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.router.events.subscribe((event) => {
+        this.routerSubscription = this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.verifyUsesSockets();
             }
@@ -90,14 +91,6 @@ export class PlayerService {
         return this.internalQrlCorrect;
     }
 
-    private getPlayerAnswers(): Answer[] {
-        if (!this.player) {
-            return [];
-        }
-
-        return this.player.questions[this.player.questions.length - 1].choices;
-    }
-
     isConnected(): boolean {
         return this.playerSocketService.isConnected();
     }
@@ -109,7 +102,6 @@ export class PlayerService {
 
         this.socketSubscription.unsubscribe();
         this.socketSubscription = new Subscription();
-
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToOnKick());
@@ -185,9 +177,18 @@ export class PlayerService {
 
     cleanUp(): void {
         this.playerSocketService.disconnect();
+        this.routerSubscription.unsubscribe();
         this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
+    }
+
+    private getPlayerAnswers(): Answer[] {
+        if (!this.player) {
+            return [];
+        }
+
+        return this.player.questions[this.player.questions.length - 1].choices;
     }
 
     private reset() {

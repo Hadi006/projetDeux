@@ -1,8 +1,8 @@
 import { AnswerValidator } from '@app/classes/answer-validator/answer-validator';
+import { CheckProperty } from '@app/classes/check-property/check-property';
 import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, QuestionType, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
-import { CheckProperty } from '../check-property/check-property';
 
 export class QuestionValidator {
     private tasks: (() => void)[];

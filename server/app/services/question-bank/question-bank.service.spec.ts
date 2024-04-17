@@ -1,14 +1,15 @@
 import { DatabaseService } from '@app/services/database/database.service';
 import { QuestionBankService } from '@app/services/question-bank/question-bank.service';
+import { QuestionType } from '@common/constant';
 import { Question } from '@common/quiz';
 import { expect } from 'chai';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Request } from 'express';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 
 describe('QuestionBankService', () => {
     const MOCK_QUESTION: Question = {
         text: 'Question 1',
-        type: 'QCM',
+        type: QuestionType.Qcm,
         points: 10,
         choices: [
             { text: 'Answer 1', isCorrect: true },

@@ -1,5 +1,13 @@
 import { DatabaseService } from '@app/services/database/database.service';
-import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA, QuestionType, SELECTED_MULTIPLIER } from '@common/constant';
+import {
+    ANSWER_TIME_BUFFER,
+    GAME_ID_LENGTH,
+    GAME_ID_MAX,
+    GOOD_ANSWER_BONUS,
+    NEW_HISTOGRAM_DATA,
+    QuestionType,
+    SELECTED_MULTIPLIER,
+} from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { JoinGameEventData } from '@common/join-game-event-data';
