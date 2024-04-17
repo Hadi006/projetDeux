@@ -15,12 +15,7 @@ export class HistogramComponent implements OnInit, OnChanges {
     constructor() {
         this.chartData = {
             labels: [],
-            datasets: [
-                {
-                    label: '',
-                    data: [],
-                },
-            ],
+            datasets: [],
         };
     }
 
@@ -28,6 +23,16 @@ export class HistogramComponent implements OnInit, OnChanges {
         this.chartConfig = {
             type: 'bar',
             data: this.chartData,
+            options: {
+                scales: {
+                    y: {
+                        ticks: {
+                            stepSize: 1,
+                            callback: (value: string | number) => Math.floor(Number(value)),
+                        },
+                    },
+                },
+            },
         };
 
         Chart.getChart('histogram')?.destroy();

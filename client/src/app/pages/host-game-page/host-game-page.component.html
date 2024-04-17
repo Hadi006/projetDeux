@@ -69,29 +69,33 @@
         </div>
     </div>
     <div *ngIf="getQrlEnded()" class="evaluation-section">
-        <h1 class="section-title">Evaluation des réponses</h1>
+        <h1 class="section-title">Évaluation des réponses</h1>
         <div class="player-info">
             <h2>Question : {{ getTheRealCurrentQuestion()?.text }}</h2>
             <h2>Joueur : {{ getCurrentPlayer().name }}</h2>
             <p>Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
         </div>
         <div class="evaluation-options">
-            <label>
-                <input type="radio" name="option1" value="0" [(ngModel)]="selectedMultiplier" />
-                <span>0 %</span>
-            </label>
-            <label>
-                <input type="radio" name="option1" value="0.5" [(ngModel)]="selectedMultiplier" />
-                <span>50 %</span>
-            </label>
-            <label>
-                <input type="radio" name="option1" value="1" [(ngModel)]="selectedMultiplier" />
-                <span>100 %</span>
-            </label>
+            <div class="option">
+                <input type="radio" name="multiplier" id="option0" value="0" [(ngModel)]="selectedMultiplier" />
+                <label for="option0">0 %</label>
+            </div>
+            <div class="option">
+                <input type="radio" name="multiplier" id="option50" value="0.5" [(ngModel)]="selectedMultiplier" />
+                <label for="option50">50 %</label>
+            </div>
+            <div class="option">
+                <input type="radio" name="multiplier" id="option100" value="1" [(ngModel)]="selectedMultiplier" />
+                <label for="option100">100 %</label>
+            </div>
         </div>
-        <button class="next-button" *ngIf="!isTheLastPlayer()" (click)="nextPlayer()">Prochaine question</button>
-        <button class="finish-button" *ngIf="isTheLastPlayer()" (click)="sendEvaluationResults()">Envoyer la correction</button>
+        <div class="buttons-container">
+            <button class="next-button" *ngIf="!isTheLastPlayer()" (click)="nextPlayer()">Prochaine question</button>
+            <button class="finish-button" *ngIf="isTheLastPlayer()" (click)="sendEvaluationResults()">Envoyer la correction</button>
+        </div>
+    </div>
+    <div class="app-histogram" *ngIf="histogramData">
+        <app-histogram [chartData]="histogramData"></app-histogram>
     </div>
     <app-chatbox [name]="'Organisateur'"></app-chatbox>
-    <app-histogram *ngIf="histogramData" [chartData]="histogramData"></app-histogram>
 </body>
