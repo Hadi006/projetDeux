@@ -52,7 +52,8 @@ describe('AnswerValidator', () => {
     });
 
     it('should check if the answer has a type', () => {
-        answerValidator.checkText().checkType();
+        answerValidator.checkText();
+        answerValidator.checkType();
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.data).to.deep.equal(MOCK_ANSWER);
         expect(compiledAnswer.error).to.equal('');
@@ -60,7 +61,8 @@ describe('AnswerValidator', () => {
 
     it('should check if the answer has a type and fail', () => {
         answerValidator = new AnswerValidator({ text: 'This is a test answer' });
-        answerValidator.checkText().checkType();
+        answerValidator.checkText();
+        answerValidator.checkType();
         const compiledAnswer = answerValidator.compile();
         expect(compiledAnswer.data).to.deep.equal({ text: 'This is a test answer', isCorrect: false });
         expect(compiledAnswer.error).to.equal('Reponse : type manquant !\n');
@@ -68,7 +70,8 @@ describe('AnswerValidator', () => {
 
     it('should check if the answer has a type and fail if it is not an object', () => {
         answerValidator = new AnswerValidator('This is a test answer');
-        answerValidator.checkText().checkType();
+        answerValidator.checkText();
+        answerValidator.checkType();
         const compiledAnswer = answerValidator.validate();
         expect(compiledAnswer.data).to.deep.equal({ text: '', isCorrect: false });
         expect(compiledAnswer.error).to.equal('Reponse : doit être un objet !\n');

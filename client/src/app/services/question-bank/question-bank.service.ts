@@ -1,10 +1,10 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { BLANK_QUESTION } from '@common/constant';
 import { Question } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { CommunicationService } from '@app/services/communication/communication.service';
 
 @Injectable({
     providedIn: 'root',
@@ -59,7 +59,7 @@ export class QuestionBankService {
                     return response.body.error;
                 }
 
-                const INDEX: number = this.questions.findIndex((q: Question) => q.text === question.text);
+                const INDEX: number = this.questions.findIndex((newQuestion: Question) => newQuestion.text === question.text);
                 this.questions[INDEX] = response.body.data;
                 this.questions$.next(this.questions);
 

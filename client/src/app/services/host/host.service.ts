@@ -8,6 +8,7 @@ import {
     QCM_TIME_FOR_PANIC,
     QRL_DURATION,
     QRL_TIME_FOR_PANIC,
+    QuestionType,
     TIMER_DECREMENT,
     TRANSITION_DELAY,
 } from '@common/constant';
@@ -29,15 +30,18 @@ export class HostService {
     private internalGame: Game | null;
     private internalNAnswered: number;
     private internalQuestionEnded: boolean;
-    private internalQuitters: Player[] = [];
-    private internalHistograms: HistogramData[] = [];
-    private isPanicMode = false;
+    private internalQuitters: Player[];
+    private internalHistograms: HistogramData[];
+    private isPanicMode;
 
     constructor(
         private hostSocketService: HostSocketService,
         private timeService: TimeService,
         private router: Router,
     ) {
+        this.internalQuitters = [];
+        this.internalHistograms = [];
+        this.isPanicMode = false;
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.verifyUsesSockets();
@@ -165,7 +169,7 @@ export class HostService {
         this.internalQuestionEnded = false;
 
         let newHistogram: HistogramData;
-        if (currentQuestion.type === 'QCM') {
+        if (currentQuestion.type === QuestionType.Qcm) {
             newHistogram = {
                 labels: currentQuestion.choices.map((choice) => `${choice.text} (${choice.isCorrect ? 'bonne' : 'mauvaise'} réponse)`),
                 datasets: [
@@ -189,7 +193,7 @@ export class HostService {
         this.internalHistograms.push(newHistogram);
         this.hostSocketService.emitNextQuestion(this.internalGame.pin, {
             question: currentQuestion,
-            countdown: currentQuestion.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration,
+            countdown: currentQuestion.type === QuestionType.Qrl ? QRL_DURATION : this.internalGame.quiz.duration,
             histogram: newHistogram,
         });
     }
@@ -216,8 +220,8 @@ export class HostService {
     }
     canActivatePanicMode(): boolean {
         return (
-            ((this.getCurrentQuestion()?.type === 'QCM' && this.getTime() >= QCM_TIME_FOR_PANIC) ||
-                (this.getCurrentQuestion()?.type === 'QRL' && this.getTime() >= QRL_TIME_FOR_PANIC)) &&
+            ((this.getCurrentQuestion()?.type === QuestionType.Qcm && this.getTime() >= QCM_TIME_FOR_PANIC) ||
+                (this.getCurrentQuestion()?.type === QuestionType.Qrl && this.getTime() >= QRL_TIME_FOR_PANIC)) &&
             !this.isPanicMode
         );
     }
@@ -257,7 +261,7 @@ export class HostService {
         if (!this.internalGame || !currentAnswer) return;
         this.hostSocketService.emitEndQuestion(this.internalGame.pin);
         const isTestMode = this.internalGame?.players.length === 1 && this.internalGame.players[0].name === 'Organisateur';
-        if (this.getCurrentQuestion()?.type === 'QRL' && !isTestMode) {
+        if (this.getCurrentQuestion()?.type === QuestionType.Qrl && !isTestMode) {
             this.internalQuestionEnded = true;
             this.currentQuestionIndex++;
             this.questionEndedSubject.next();
@@ -344,6 +348,6 @@ export class HostService {
     }
     private getQuestionDuration(): number {
         if (!this.internalGame) return 0;
-        return this.getCurrentQuestion()?.type === 'QRL' ? QRL_DURATION : this.internalGame.quiz.duration;
+        return this.getCurrentQuestion()?.type === QuestionType.Qrl ? QRL_DURATION : this.internalGame.quiz.duration;
     }
 }

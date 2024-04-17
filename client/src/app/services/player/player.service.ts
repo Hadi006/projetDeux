@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { INVALID_INDEX, PANIC_MODE_TICK_RATE, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, PANIC_MODE_TICK_RATE, QuestionType, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
@@ -90,7 +90,7 @@ export class PlayerService {
         return this.internalQrlCorrect;
     }
 
-    getPlayerAnswers(): Answer[] {
+    private getPlayerAnswers(): Answer[] {
         if (!this.player) {
             return [];
         }
@@ -274,9 +274,9 @@ export class PlayerService {
             }
 
             if (player.name === this.player.name) {
-                if (player.score > this.player.score && player.questions[player.questions.length - 1].type === 'QCM') {
+                if (player.score > this.player.score && player.questions[player.questions.length - 1].type === QuestionType.Qcm) {
                     this.internalIsCorrect = true;
-                } else if (player.questions[player.questions.length - 1].type === 'QRL' && player.score > this.player.score) {
+                } else if (player.questions[player.questions.length - 1].type === QuestionType.Qrl && player.score > this.player.score) {
                     this.internalQrlCorrect = (player.score - this.player.score) / player.questions[player.questions.length - 1].points;
                 }
                 this.player = player;

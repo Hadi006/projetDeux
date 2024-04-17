@@ -1,5 +1,6 @@
 import { Answer } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
+import { CheckProperty } from '../check-property/check-property';
 
 export class AnswerValidator {
     private tasks: (() => void)[];
@@ -18,21 +19,19 @@ export class AnswerValidator {
         if (!this.answer || typeof this.answer !== 'object') {
             return new ValidationResult('Reponse : doit être un objet !\n', this.newAnswer);
         }
-        return this.checkText().checkType().compile();
+        this.checkText();
+        this.checkType();
+        return this.compile();
     }
 
-    checkText(): AnswerValidator {
+    checkText(): void {
         this.tasks.push(() => {
-            if (!('text' in this.answer) || typeof this.answer.text !== 'string' || this.answer.text === '') {
-                this.compilationError += 'Reponse : texte manquant !\n';
-                return;
-            }
+            this.compilationError += CheckProperty.checkIfEmptyString(this.answer, 'text', 'Reponse : texte manquant !\n');
             this.newAnswer.text = this.answer.text;
         });
-        return this;
     }
 
-    checkType(): AnswerValidator {
+    checkType(): void {
         this.tasks.push(() => {
             if (!('isCorrect' in this.answer) || typeof this.answer.isCorrect !== 'boolean') {
                 this.compilationError += 'Reponse : type manquant !\n';
@@ -40,7 +39,6 @@ export class AnswerValidator {
             }
             this.newAnswer.isCorrect = this.answer.isCorrect;
         });
-        return this;
     }
 
     compile(): ValidationResult<Answer> {

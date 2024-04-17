@@ -133,13 +133,13 @@ describe('PlayerService', () => {
             return;
         }
 
-        expect(service.getPlayerAnswers()).toEqual(service.player.questions[service.player.questions.length - 1].choices);
+        expect(service['getPlayerAnswers']()).toEqual(service.player.questions[service.player.questions.length - 1].choices);
     });
 
     it('should return an empty array if player is not defined', () => {
         service.player = null;
 
-        const result = service.getPlayerAnswers();
+        const result = service['getPlayerAnswers']();
 
         expect(result).toEqual([]);
     });
@@ -165,7 +165,7 @@ describe('PlayerService', () => {
             hasConfirmedAnswer: false,
             hasLeft: false,
         };
-        const result = service.getPlayerAnswers();
+        const result = service['getPlayerAnswers']();
         expect(result).not.toEqual([]);
     });
 
@@ -354,7 +354,7 @@ describe('PlayerService', () => {
         expect(playerSocketServiceSpy.emitConfirmPlayerAnswer).toHaveBeenCalled();
 
         service.handleKeyUp({ key: '1' } as KeyboardEvent);
-        expect(service.getPlayerAnswers()[0].isCorrect).toBeTrue();
+        expect(service['getPlayerAnswers']()[0].isCorrect).toBeTrue();
     });
 
     it('should confirm the player answer', () => {

@@ -1,7 +1,8 @@
 import { AnswerValidator } from '@app/classes/answer-validator/answer-validator';
-import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, UPPER_BOUND } from '@common/constant';
+import { LOWER_BOUND, MAX_CHOICES, MIN_CHOICES, POINT_INTERVAL, QuestionType, UPPER_BOUND } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
+import { CheckProperty } from '../check-property/check-property';
 
 export class QuestionValidator {
     private tasks: (() => void)[];
@@ -25,37 +26,36 @@ export class QuestionValidator {
         if (!this.question || typeof this.question !== 'object') {
             return new ValidationResult('Question : doit être un objet !\n', this.newQuestion);
         }
-        return this.checkText().checkType().checkPoints().checkChoices().compile();
+
+        this.checkText();
+        this.checkType();
+        this.checkPoints();
+        this.checkChoices();
+        return this.compile();
     }
 
-    checkText(): QuestionValidator {
+    checkText(): void {
         this.tasks.push(() => {
-            if (!('text' in this.question) || typeof this.question.text !== 'string' || this.question.text === '') {
-                this.compilationError += 'Question : texte manquant !\n';
-                return;
-            }
-
+            this.compilationError += CheckProperty.checkIfEmptyString(this.question, 'text', 'Question : texte manquant !\n');
             this.newQuestion.text = this.question.text;
         });
-        return this;
     }
 
-    checkType(): QuestionValidator {
+    checkType(): void {
         this.tasks.push(() => {
             if (!('type' in this.question) || typeof this.question.type !== 'string') {
                 this.compilationError += 'Question : type manquant !\n';
                 return;
             }
-            if (this.question.type !== 'QCM' && this.question.type !== 'QRL') {
+            if (this.question.type !== QuestionType.Qcm && this.question.type !== QuestionType.Qrl) {
                 this.compilationError += 'Question : type doit être QCM ou QRL !\n';
                 return;
             }
             this.newQuestion.type = this.question.type;
         });
-        return this;
     }
 
-    checkPoints(): QuestionValidator {
+    checkPoints(): void {
         this.tasks.push(() => {
             if (!('points' in this.question) || typeof this.question.points !== 'number') {
                 this.compilationError += 'Question : points manquants !\n';
@@ -68,12 +68,11 @@ export class QuestionValidator {
             }
             this.newQuestion.points = this.question.points;
         });
-        return this;
     }
 
-    checkChoices(): QuestionValidator {
+    checkChoices(): void {
         this.tasks.push(() => {
-            if (this.newQuestion.type === 'QRL') {
+            if (this.newQuestion.type === QuestionType.Qrl) {
                 return;
             }
 
@@ -91,7 +90,6 @@ export class QuestionValidator {
                 this.compilationError += 'Question : doit avoir au moins une bonne et une mauvaise réponse !\n';
             }
         });
-        return this;
     }
 
     compile(): ValidationResult<Question> {

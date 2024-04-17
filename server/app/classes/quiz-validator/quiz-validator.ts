@@ -3,6 +3,7 @@ import { MAX_DURATION, MIN_DURATION } from '@common/constant';
 import { Quiz } from '@common/quiz';
 import { ValidationResult } from '@common/validation-result';
 import { randomUUID } from 'crypto';
+import { CheckProperty } from '../check-property/check-property';
 
 export class QuizValidator {
     private tasks: (() => Promise<void>)[];
@@ -31,10 +32,17 @@ export class QuizValidator {
         if (!this.quiz || typeof this.quiz !== 'object') {
             return new ValidationResult('Quiz : doit être un objet !\n', this.newQuiz);
         }
-        return await this.checkId().checkTitle().checkDescription().checkDuration().checkQuestions().checkVisibility().compile();
+
+        this.checkId();
+        this.checkTitle();
+        this.checkDescription();
+        this.checkDuration();
+        this.checkQuestions();
+        this.checkVisibility();
+        return await this.compile();
     }
 
-    checkId(): QuizValidator {
+    private checkId(): void {
         this.tasks.push(async () => {
             if (!('id' in this.quiz) || typeof this.quiz.id !== 'string' || this.quiz.id === '') {
                 this.newQuiz.id = randomUUID();
@@ -43,11 +51,9 @@ export class QuizValidator {
 
             this.newQuiz.id = this.quiz.id;
         });
-
-        return this;
     }
 
-    checkTitle(): QuizValidator {
+    checkTitle(): void {
         this.tasks.push(async () => {
             if (!('title' in this.quiz) || typeof this.quiz.title !== 'string' || this.quiz.title === '') {
                 this.compilationError += 'Quiz : titre manquant !\n';
@@ -62,23 +68,16 @@ export class QuizValidator {
 
             this.newQuiz.title = this.quiz.title;
         });
-
-        return this;
     }
 
-    checkDescription(): QuizValidator {
+    checkDescription(): void {
         this.tasks.push(async () => {
-            if (!('description' in this.quiz) || typeof this.quiz.description !== 'string' || this.quiz.description === '') {
-                this.compilationError += 'Quiz : description manquante !\n';
-                return;
-            }
+            this.compilationError += CheckProperty.checkIfEmptyString(this.quiz, 'description', 'Quiz : description manquante !\n');
             this.newQuiz.description = this.quiz.description;
         });
-
-        return this;
     }
 
-    checkDuration(): QuizValidator {
+    checkDuration(): void {
         this.tasks.push(async () => {
             if (!('duration' in this.quiz) || typeof this.quiz.duration !== 'number') {
                 this.compilationError += 'Quiz : durée manquante !\n';
@@ -91,11 +90,9 @@ export class QuizValidator {
             }
             this.newQuiz.duration = this.quiz.duration;
         });
-
-        return this;
     }
 
-    checkQuestions(): QuizValidator {
+    checkQuestions(): void {
         this.tasks.push(async () => {
             if (!('questions' in this.quiz) || !Array.isArray(this.quiz.questions)) {
                 this.compilationError += 'Quiz : questions manquantes !\n';
@@ -116,18 +113,14 @@ export class QuizValidator {
                 }
             }
         });
-
-        return this;
     }
 
-    checkVisibility(): QuizValidator {
+    checkVisibility(): void {
         this.tasks.push(async () => {
             if ('visible' in this.quiz && typeof this.quiz.visible === 'boolean') {
                 this.newQuiz.visible = this.quiz.visible;
             }
         });
-
-        return this;
     }
 
     async compile(): Promise<ValidationResult<Quiz>> {
