@@ -371,7 +371,7 @@ describe('HostGamePageComponent', () => {
 
     it('should return green', () => {
         testPlayer.hasConfirmedAnswer = true;
-        expect(component.getColor(testPlayer)).toEqual('green');
+        expect(component.getColor(testPlayer)).toEqual('limegreen');
     });
 
     it('should return yellow', () => {
