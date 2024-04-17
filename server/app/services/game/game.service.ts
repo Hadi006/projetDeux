@@ -1,15 +1,23 @@
 import { DatabaseService } from '@app/services/database/database.service';
-import { ANSWER_TIME_BUFFER, GAME_ID_LENGTH, GAME_ID_MAX, GOOD_ANSWER_BONUS, NEW_HISTOGRAM_DATA, SELECTED_MULTIPLIER } from '@common/constant';
+import {
+    ANSWER_TIME_BUFFER,
+    GAME_ID_LENGTH,
+    GAME_ID_MAX,
+    GOOD_ANSWER_BONUS,
+    NEW_HISTOGRAM_DATA,
+    QuestionType,
+    SELECTED_MULTIPLIER,
+} from '@common/constant';
 import { Game } from '@common/game';
 import { HistogramData } from '@common/histogram-data';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { NextQuestionEventData } from '@common/next-question-event-data';
 import { Player } from '@common/player';
-import { Question, Quiz } from '@common/quiz';
-import { Service } from 'typedi';
 import { QuestionChangedEventData } from '@common/question-changed-event-data';
+import { Question, Quiz } from '@common/quiz';
 import { RoomData } from '@common/room-data';
+import { Service } from 'typedi';
 
 @Service()
 export class GameService {
@@ -76,7 +84,7 @@ export class GameService {
         }
 
         const currentQuestion = player.questions[player.questions.length - 1];
-        if (currentQuestion?.type === 'QRL') {
+        if (currentQuestion?.type === QuestionType.Qrl) {
             game.players.forEach((p, index) => {
                 if (p.name === player.name) {
                     game.players[index] = player;
@@ -175,7 +183,7 @@ export class GameService {
         }
 
         const isInTestMode = game.players.length === 1 && game.players[0].name === 'Organisateur';
-        if (question.type === 'QRL' && isInTestMode) {
+        if (question.type === QuestionType.Qrl && isInTestMode) {
             game.players[0].score += question.points;
             await this.updateGame(game);
             return;
@@ -268,29 +276,30 @@ export class GameService {
         let isUnique = true;
 
         for (const player of players) {
-            if (this.isAnswerCorrect(player, questionIndex, question)) {
-                if (!firstCorrectPlayer) {
-                    firstCorrectPlayer = player;
-                } else {
-                    const date = new Date();
+            if (!this.isAnswerCorrect(player, questionIndex, question)) {
+                continue;
+            }
+            if (!firstCorrectPlayer) {
+                firstCorrectPlayer = player;
+                continue;
+            }
 
-                    if (!player.questions[questionIndex].lastModification) {
-                        player.questions[questionIndex].lastModification = date;
-                    }
+            const date = new Date();
+            if (!player.questions[questionIndex].lastModification) {
+                player.questions[questionIndex].lastModification = date;
+            }
 
-                    if (!firstCorrectPlayer.questions[questionIndex].lastModification) {
-                        firstCorrectPlayer.questions[questionIndex].lastModification = date;
-                    }
+            if (!firstCorrectPlayer.questions[questionIndex].lastModification) {
+                firstCorrectPlayer.questions[questionIndex].lastModification = date;
+            }
 
-                    const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
-                    const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
-                    if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
-                        isUnique = false;
-                    } else if (currentPlayerTime < firstPlayerTime) {
-                        firstCorrectPlayer = player;
-                        isUnique = true;
-                    }
-                }
+            const firstPlayerTime = new Date(firstCorrectPlayer.questions[questionIndex].lastModification).getTime();
+            const currentPlayerTime = new Date(player.questions[questionIndex].lastModification).getTime();
+            if (Math.abs(currentPlayerTime - firstPlayerTime) < ANSWER_TIME_BUFFER) {
+                isUnique = false;
+            } else if (currentPlayerTime < firstPlayerTime) {
+                firstCorrectPlayer = player;
+                isUnique = true;
             }
         }
 

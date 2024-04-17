@@ -9,7 +9,7 @@ import { Chart, ChartConfiguration } from 'chart.js/auto';
 })
 export class HistogramComponent implements OnInit, OnChanges {
     @Input() chartData: ChartData;
-    chart: Chart | undefined;
+    private chart: Chart | undefined;
     private chartConfig: ChartConfiguration;
 
     constructor() {

@@ -15,6 +15,11 @@ export enum MouseButton {
     Forward = 4,
 }
 
+export enum QuestionType {
+    Qcm = 'QCM',
+    Qrl = 'QRL',
+}
+
 export const SELECTED_MULTIPLIER = 0.5;
 
 /* Guards */
@@ -128,7 +133,7 @@ export const TEST_ANSWERS: Answer[] = [
 export const TEST_QUESTIONS: Question[] = [
     {
         text: 'Test Question',
-        type: 'QCM',
+        type: QuestionType.Qcm,
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,
@@ -136,7 +141,7 @@ export const TEST_QUESTIONS: Question[] = [
     },
     {
         text: 'Test Question 2',
-        type: 'QRL',
+        type: QuestionType.Qrl,
         points: 10,
         lastModification: new Date(),
         choices: TEST_ANSWERS,

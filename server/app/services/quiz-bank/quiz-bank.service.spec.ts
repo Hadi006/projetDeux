@@ -1,5 +1,6 @@
 import { DatabaseService } from '@app/services/database/database.service';
 import { QuizBankService } from '@app/services/quiz-bank/quiz-bank.service';
+import { QuestionType } from '@common/constant';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import { Request } from 'express';
@@ -12,7 +13,7 @@ describe('QuizBankService', () => {
     ];
     const MOCK_QUESTION: Question = {
         text: 'Question 1',
-        type: 'QCM',
+        type: QuestionType.Qcm,
         points: 10,
         choices: MOCK_ANSWERS,
         qrlAnswer: '',
@@ -148,7 +149,7 @@ describe('QuizBankService', () => {
 
     it('should export a quiz', async () => {
         const mockQuiz = { ...MOCK_QUIZ };
-        mockQuiz.questions[0].type = 'QRL';
+        mockQuiz.questions[0].type = QuestionType.Qrl;
         databaseServiceStub.get.resolves([mockQuiz]);
         const result = await quizBankService.exportQuiz('1');
         expect(result).to.equal(mockQuiz);

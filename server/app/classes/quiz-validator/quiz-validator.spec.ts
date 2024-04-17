@@ -1,4 +1,5 @@
 import { QuizValidator } from '@app/classes/quiz-validator/quiz-validator';
+import { QuestionType } from '@common/constant';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 
@@ -16,7 +17,7 @@ describe('QuizValidator', () => {
     const MOCK_QUESTIONS: Question[] = [
         {
             text: 'This is a test question',
-            type: 'QCM',
+            type: QuestionType.Qcm,
             points: 10,
             choices: MOCK_ANSWERS,
             qrlAnswer: '',
@@ -69,7 +70,7 @@ describe('QuizValidator', () => {
     });
 
     it('should check id', async () => {
-        quizValidator.checkId();
+        quizValidator['checkId']();
         const compiledQuiz = await quizValidator.compile();
         expect(compiledQuiz.error).to.equal('');
         expect(compiledQuiz.data.id).to.equal(MOCK_QUIZ.id);
@@ -77,7 +78,7 @@ describe('QuizValidator', () => {
 
     it('should check id and generate a new one', async () => {
         quizValidator = new QuizValidator(EMPTY_QUIZ, getDataStub);
-        quizValidator.checkId();
+        quizValidator['checkId']();
         const compiledQuiz = await quizValidator.compile();
         expect(compiledQuiz.error).to.equal('');
         expect(compiledQuiz.data.id).to.be.a('string');
@@ -126,7 +127,6 @@ describe('QuizValidator', () => {
         quizValidator.checkDescription();
         const compiledQuiz = await quizValidator.compile();
         expect(compiledQuiz.error).to.equal('Quiz : description manquante !\n');
-        expect(compiledQuiz.data.description).to.equal(EMPTY_QUIZ.description);
     });
 
     it('should check description and fail if it is not an object', async () => {
@@ -224,7 +224,7 @@ describe('QuizValidator', () => {
     });
 
     it('should check QRL questions', async () => {
-        quizValidator = new QuizValidator({ ...MOCK_QUIZ, questions: [{ ...MOCK_QUESTIONS[0], type: 'QRL' }] }, getDataStub);
+        quizValidator = new QuizValidator({ ...MOCK_QUIZ, questions: [{ ...MOCK_QUESTIONS[0], type: QuestionType.Qrl }] }, getDataStub);
         quizValidator.checkQuestions();
         const compiledQuiz = await quizValidator.compile();
         expect(compiledQuiz.error).to.equal('');

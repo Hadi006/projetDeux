@@ -32,22 +32,22 @@ describe('HistogramComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-        expect(component.chart).toBeDefined();
+        expect(component['chart']).toBeDefined();
     });
 
     it('should update chart', () => {
-        if (!component.chart) {
+        if (!component['chart']) {
             fail('Chart is not defined');
             return;
         }
-        spyOn(component.chart, 'update');
+        spyOn(component['chart'], 'update');
         component.ngOnChanges();
-        expect(component.chart.data.datasets[0].data).toEqual(chartData.datasets[0].data);
-        expect(component.chart.update).toHaveBeenCalled();
+        expect(component['chart'].data.datasets[0].data).toEqual(chartData.datasets[0].data);
+        expect(component['chart'].update).toHaveBeenCalled();
     });
 
     it('should update chart with different label', () => {
-        if (!component.chart) {
+        if (!component['chart']) {
             fail('Chart is not defined');
             return;
         }
@@ -56,32 +56,32 @@ describe('HistogramComponent', () => {
             datasets: [{ label: 'Different data', data: [2] }],
         };
         component.chartData = newChartData;
-        spyOn(component.chart, 'update');
+        spyOn(component['chart'], 'update');
         component.ngOnChanges();
-        expect(component.chart.data).toEqual(newChartData);
-        expect(component.chart.update).toHaveBeenCalled();
+        expect(component['chart'].data).toEqual(newChartData);
+        expect(component['chart'].update).toHaveBeenCalled();
     });
 
     it('should not update chart', () => {
-        if (!component.chart) {
+        if (!component['chart']) {
             fail('Chart is not defined');
             return;
         }
         spyOn(Chart.prototype, 'update');
-        component.chart = undefined;
+        component['chart'] = undefined;
         component.ngOnChanges();
         expect(Chart.prototype.update).not.toHaveBeenCalled();
     });
 
     it('should assign a new chart', () => {
-        if (!component.chart) {
+        if (!component['chart']) {
             fail('Chart is not defined');
             return;
         }
-        component.chart.destroy();
+        component['chart'].destroy();
         spyOn(Chart, 'getChart').and.returnValue(undefined);
         component.ngOnChanges();
         expect(Chart.getChart).toHaveBeenCalled();
-        expect(component.chart).toBeDefined();
+        expect(component['chart']).toBeDefined();
     });
 });

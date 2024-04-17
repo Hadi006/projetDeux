@@ -63,11 +63,10 @@ export class QuestionBankComponent implements OnInit {
     }
 
     drop(event: CdkDragDrop<Question[] | null>) {
-        if (event.container.data === null || event.previousContainer.data === null || event.previousContainer === event.container) {
+        const newQuestion = this.getQuestionFromContainer(event);
+        if (!newQuestion) {
             return;
         }
-
-        const newQuestion: Question = event.previousContainer.data[event.previousIndex];
 
         this.questionBank
             .addQuestion(newQuestion)
@@ -113,5 +112,13 @@ export class QuestionBankComponent implements OnInit {
 
     private submitQuestionChange(question: Question, isNew: boolean): Observable<string> {
         return isNew ? this.questionBank.addQuestion(question) : this.questionBank.updateQuestion(question);
+    }
+
+    private getQuestionFromContainer(event: CdkDragDrop<Question[] | null>): Question | null {
+        if (!event.container.data || !event.previousContainer.data || event.previousContainer === event.container) {
+            return null;
+        }
+
+        return event.previousContainer.data[event.previousIndex];
     }
 }

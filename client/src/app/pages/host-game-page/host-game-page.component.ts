@@ -39,7 +39,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
             if (!this.hostService.game) {
                 return;
             }
-            const currentQuestion = this.getTheRealCurrentQuestion();
+            const currentQuestion = this.getPreviousQuestion();
             this.shouldOpenEvaluationForm = currentQuestion?.type === 'QRL';
         });
     }
@@ -83,7 +83,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         }
     }
 
-    getTheRealCurrentQuestion() {
+    getPreviousQuestion() {
         if (!this.hostService.game) {
             return;
         }
@@ -178,7 +178,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const currentQuestionPoints = this.getTheRealCurrentQuestion()?.points || 0;
+        const currentQuestionPoints = this.getPreviousQuestion()?.points || 0;
 
         this.hostService.game.players[this.currentPlayerIndex].score += currentQuestionPoints * multiplier;
     }
@@ -187,7 +187,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         if (!this.hostService.game) {
             return;
         }
-        const currentQuestionPoints = this.getTheRealCurrentQuestion()?.points || 0;
+        const currentQuestionPoints = this.getPreviousQuestion()?.points || 0;
         this.hostService.game.players[this.currentPlayerIndex].score += currentQuestionPoints * this.selectedMultiplier;
         this.currentPlayerIndex++;
     }
@@ -203,7 +203,7 @@ export class HostGamePageComponent implements OnInit, OnDestroy {
         if (!this.hostService.game) {
             return;
         }
-        const currentQuestionPoints = this.getTheRealCurrentQuestion()?.points || 0;
+        const currentQuestionPoints = this.getPreviousQuestion()?.points || 0;
         this.hostService.game.players[this.currentPlayerIndex].score += currentQuestionPoints * this.selectedMultiplier;
         this.currentPlayerIndex = 0;
         this.shouldOpenEvaluationForm = false;

@@ -23,17 +23,17 @@ export class QuizItemComponent {
     openConfirmationDialog(action: 'edit' | 'delete' | 'export'): void {
         let message = '';
         switch (action) {
-            case 'edit': {
+            case ActionType.EDIT: {
                 message = 'Êtes-vous sûr de vouloir modifier ce quiz?';
 
                 break;
             }
-            case 'delete': {
+            case ActionType.DELETE: {
                 message = 'Êtes-vous sûr de vouloir supprimer ce quiz?';
 
                 break;
             }
-            case 'export': {
+            case ActionType.EXPORT: {
                 message = 'Êtes-vous sûr de vouloir exporter ce quiz?';
 
                 break;
@@ -46,12 +46,8 @@ export class QuizItemComponent {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result && action === 'edit') {
-                this.onAction('edit');
-            } else if (result && action === 'delete') {
-                this.onAction('delete');
-            } else if (result) {
-                this.onAction('export');
+            if (result) {
+                this.onAction(action);
             }
         });
     }

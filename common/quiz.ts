@@ -1,3 +1,5 @@
+import { QuestionType } from "./constant";
+
 interface Answer {
     text: string;
     isCorrect?: boolean;
@@ -5,7 +7,7 @@ interface Answer {
 
 interface Question {
     text: string;
-    type: 'QCM' | 'QRL' | '';
+    type: QuestionType | '' | 'QCM' | 'QRL';
     points: number;
     lastModification?: Date;
     choices: Answer[];

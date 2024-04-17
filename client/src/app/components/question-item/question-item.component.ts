@@ -3,7 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { Action, ActionType } from '@common/action';
-import { Question } from '@common/quiz';
+import { QuestionType } from '@common/constant';
+import { Answer, Question } from '@common/quiz';
 
 @Component({
     selector: 'app-question-item',
@@ -16,7 +17,12 @@ export class QuestionItemComponent {
     @Output() action: EventEmitter<Action> = new EventEmitter();
 
     displayDate: boolean = false;
-    component: { text: string; type: 'QCM'; choices: ({ text: string; isCorrect: false } | { text: string; isCorrect: true })[]; qrlAnswer: string };
+    component: {
+        text: string;
+        type: QuestionType.Qcm;
+        choices: Answer[];
+        qrlAnswer: string;
+    };
 
     constructor(
         private route: ActivatedRoute,
@@ -33,9 +39,9 @@ export class QuestionItemComponent {
 
     openConfirmationDialog(action: 'edit' | 'delete'): void {
         let message = '';
-        if (action === 'edit') {
+        if (action === ActionType.EDIT) {
             message = 'Êtes-vous sûr de vouloir modifier cette question?';
-        } else if (action === 'delete') {
+        } else if (action === ActionType.DELETE) {
             message = 'Êtes-vous sûr de vouloir supprimer cette question?';
         }
 
@@ -45,10 +51,10 @@ export class QuestionItemComponent {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result && action === 'edit') {
-                this.onAction('edit');
-            } else if (result && action === 'delete') {
-                this.onAction('delete');
+            if (result && action === ActionType.EDIT) {
+                this.onAction(ActionType.EDIT);
+            } else if (result && action === ActionType.DELETE) {
+                this.onAction(ActionType.DELETE);
             }
         });
     }
