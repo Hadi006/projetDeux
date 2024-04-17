@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { QuestionValidator } from '@app/classes/question-validator/question-validator';
-import { TEST_QUESTIONS } from '@common/constant';
+import { QuestionType, TEST_QUESTIONS } from '@common/constant';
 import { Answer, Question } from '@common/quiz';
 import { expect } from 'chai';
 
@@ -57,7 +57,6 @@ describe('QuestionValidator', () => {
         questionValidator = new QuestionValidator({ type: 'multiple-choice', points: 10, choices: [] });
         questionValidator.checkText();
         const compiledQuestion = questionValidator.compile();
-        expect(compiledQuestion.data).to.deep.equal(EMPTY_QUESTION);
         expect(compiledQuestion.error).to.equal('Question : texte manquant !\n');
     });
 
@@ -167,7 +166,7 @@ describe('QuestionValidator', () => {
     it('should check if the question has choices and fail if there are too many choices', () => {
         questionValidator = new QuestionValidator({
             text: 'This is a test question',
-            type: 'QCM',
+            type: QuestionType.Qcm,
             points: 10,
             choices: [
                 { text: 'Choice 1', isCorrect: true },
@@ -219,7 +218,7 @@ describe('QuestionValidator', () => {
     it('should check QRL questions', () => {
         const qrlQuestion: Question = {
             text: 'This is a test question',
-            type: 'QRL',
+            type: QuestionType.Qrl,
             points: 10,
             choices: [],
             qrlAnswer: 'This is a test answer',

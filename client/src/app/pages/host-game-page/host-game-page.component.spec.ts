@@ -118,7 +118,7 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should open evaluation form if current question is QRL', (done) => {
-        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(TEST_QUESTIONS[1]);
+        spyOn(component, 'getPreviousQuestion').and.returnValue(TEST_QUESTIONS[1]);
         hostServiceSpy.questionEndedSubject.subscribe(() => {
             expect(component.shouldOpenEvaluationForm).toBeTrue();
             done();
@@ -262,12 +262,12 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should get the real current question', () => {
-        expect(component.getTheRealCurrentQuestion()).toBeUndefined();
+        expect(component.getPreviousQuestion()).toBeUndefined();
     });
 
     it('should not get the real current question if game is undefined', () => {
         spyOnProperty(hostServiceSpy, 'game').and.returnValue(null);
-        expect(component.getTheRealCurrentQuestion()).toBeUndefined();
+        expect(component.getPreviousQuestion()).toBeUndefined();
     });
 
     it('stopCountDown should set isCountingDown to false', () => {
@@ -398,13 +398,13 @@ describe('HostGamePageComponent', () => {
     });
 
     it('should update player score', () => {
-        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(TEST_QUESTIONS[0]);
+        spyOn(component, 'getPreviousQuestion').and.returnValue(TEST_QUESTIONS[0]);
         component.updatePlayerScore(1);
         expect(testGame.players[0].score).toEqual(TEST_QUESTIONS[0].points);
     });
 
     it('should update player score if current question is undefined', () => {
-        spyOn(component, 'getTheRealCurrentQuestion').and.returnValue(undefined);
+        spyOn(component, 'getPreviousQuestion').and.returnValue(undefined);
         component.updatePlayerScore(1);
         expect(testGame.players[0].score).toEqual(0);
     });

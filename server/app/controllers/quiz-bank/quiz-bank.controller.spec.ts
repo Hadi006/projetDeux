@@ -1,5 +1,6 @@
 import { Application } from '@app/app';
 import { QuizBankService } from '@app/services/quiz-bank/quiz-bank.service';
+import { QuestionType } from '@common/constant';
 import { Answer, Question, Quiz } from '@common/quiz';
 import { expect } from 'chai';
 import httpStatus from 'http-status-codes';
@@ -12,7 +13,7 @@ describe('QuizBankController', () => {
 
     const MOCK_QUESTION: Question = {
         text: 'Question 1',
-        type: 'QCM',
+        type: QuestionType.Qcm,
         points: 1,
         choices: [MOCK_ANSWER],
         qrlAnswer: '',

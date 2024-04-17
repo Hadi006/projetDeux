@@ -5,6 +5,7 @@ import {
     GAME_ID_MAX,
     GOOD_ANSWER_BONUS,
     INVALID_INDEX,
+    QuestionType,
     SELECTED_MULTIPLIER,
     TEST_GAME_DATA,
     TEST_HISTOGRAM_DATA,
@@ -200,7 +201,7 @@ describe('GameService', () => {
     });
 
     it('should update a player with QCM', async () => {
-        testPlayers[0].questions[testPlayers[0].questions.length - 1].type = 'QCM';
+        testPlayers[0].questions[testPlayers[0].questions.length - 1].type = QuestionType.Qcm;
         stub(gameService, 'getGame').resolves(testGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updatePlayer(testGame.pin, testPlayers[0]);
@@ -263,7 +264,7 @@ describe('GameService', () => {
     it('should give full points if question type is QRL and is in test mode', async () => {
         testPlayers[0].name = 'Organisateur';
         const newGame: Game = { ...testGame, players: [testPlayers[0]] };
-        newGame.quiz.questions[0].type = 'QRL';
+        newGame.quiz.questions[0].type = QuestionType.Qrl;
         const getStub = stub(gameService, 'getGame').resolves(newGame);
         const updateStub = stub(gameService, 'updateGame').resolves(true);
         await gameService.updateScores(newGame.pin, 0);

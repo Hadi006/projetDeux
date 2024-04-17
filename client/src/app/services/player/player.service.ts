@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlayerSocketService } from '@app/services/player-socket/player-socket.service';
 import { TimeService } from '@app/services/time/time.service';
-import { INVALID_INDEX, PANIC_MODE_TICK_RATE, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
+import { INVALID_INDEX, PANIC_MODE_TICK_RATE, QuestionType, TIMER_DECREMENT, TRANSITION_DELAY } from '@common/constant';
 import { JoinGameEventData } from '@common/join-game-event-data';
 import { JoinGameResult } from '@common/join-game-result';
 import { Player } from '@common/player';
@@ -31,13 +31,14 @@ export class PlayerService {
     private internalAnswer: Answer[];
     private internalIsCorrect: boolean;
     private internalQrlCorrect: number = INVALID_INDEX;
+    private routerSubscription: Subscription;
 
     constructor(
         private playerSocketService: PlayerSocketService,
         private timeService: TimeService,
         private router: Router,
     ) {
-        this.router.events.subscribe((event) => {
+        this.routerSubscription = this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.verifyUsesSockets();
             }
@@ -90,14 +91,6 @@ export class PlayerService {
         return this.internalQrlCorrect;
     }
 
-    getPlayerAnswers(): Answer[] {
-        if (!this.player) {
-            return [];
-        }
-
-        return this.player.questions[this.player.questions.length - 1].choices;
-    }
-
     isConnected(): boolean {
         return this.playerSocketService.isConnected();
     }
@@ -109,7 +102,6 @@ export class PlayerService {
 
         this.socketSubscription.unsubscribe();
         this.socketSubscription = new Subscription();
-
         this.socketSubscription.add(this.subscribeToPlayerJoined());
         this.socketSubscription.add(this.subscribeToPlayerLeft());
         this.socketSubscription.add(this.subscribeToOnKick());
@@ -185,9 +177,18 @@ export class PlayerService {
 
     cleanUp(): void {
         this.playerSocketService.disconnect();
+        this.routerSubscription.unsubscribe();
         this.socketSubscription.unsubscribe();
         this.timeService.stopTimerById(this.timerId);
         this.reset();
+    }
+
+    private getPlayerAnswers(): Answer[] {
+        if (!this.player) {
+            return [];
+        }
+
+        return this.player.questions[this.player.questions.length - 1].choices;
     }
 
     private reset() {
@@ -274,9 +275,9 @@ export class PlayerService {
             }
 
             if (player.name === this.player.name) {
-                if (player.score > this.player.score && player.questions[player.questions.length - 1].type === 'QCM') {
+                if (player.score > this.player.score && player.questions[player.questions.length - 1].type === QuestionType.Qcm) {
                     this.internalIsCorrect = true;
-                } else if (player.questions[player.questions.length - 1].type === 'QRL' && player.score > this.player.score) {
+                } else if (player.questions[player.questions.length - 1].type === QuestionType.Qrl && player.score > this.player.score) {
                     this.internalQrlCorrect = (player.score - this.player.score) / player.questions[player.questions.length - 1].points;
                 }
                 this.player = player;

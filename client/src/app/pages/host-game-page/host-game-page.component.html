@@ -71,7 +71,7 @@
     <div *ngIf="getQrlEnded()" class="evaluation-section">
         <h1 class="section-title">Évaluation des réponses</h1>
         <div class="player-info">
-            <h2>Question : {{ getTheRealCurrentQuestion()?.text }}</h2>
+            <h2>Question : {{ getPreviousQuestion()?.text }}</h2>
             <h2>Joueur : {{ getCurrentPlayer().name }}</h2>
             <p>Réponse : {{ getCurrentPlayer().questions[getCurrentPlayer().questions.length - 1].qrlAnswer }}</p>
         </div>
